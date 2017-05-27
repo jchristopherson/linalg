@@ -73,11 +73,11 @@ endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
 # Specify source files for the various builds
 if (BUILD_SHARED_LIBS)
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f)
+    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f ferror/src/*f90)
 else()
     # Include everything into the static library
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        LAPACK/BLAS/src*f LAPACK/src/*f)
+        LAPACK/BLAS/src*f LAPACK/src/*f ferror/src/*f90)
 endif()
 
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;

@@ -80,7 +80,11 @@ contains
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
     !!
     !! @par Usage
     !! To solve a system of N equations of N unknowns using LU factorization,
@@ -172,7 +176,10 @@ contains
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
     !!
     !! @par Notes
     !! The routine is based upon the LAPACK routine DGETRS.
@@ -230,7 +237,10 @@ contains
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
     !!
     !! @par Notes
     !! The routine is based upon the LAPACK routine DGETRS.
@@ -291,7 +301,10 @@ contains
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
     !!
     !! @par Remarks
     !! This routine allows extraction of the actual "L", "U", and "P" matrices
@@ -302,8 +315,7 @@ contains
     !! 2. Second, solve the linear system: U*X = Y for X.
     !!
     !! Notice, as both L and U are triangular in structure, the above equations
-    !! can be solved by forward and backward substitution (see
-    !! @ref solve_triangular_system).
+    !! can be solved by forward and backward substitution.
     !!
     !! @par See Also
     !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
@@ -354,13 +366,13 @@ contains
         end if
 
         ! Ensure P starts off as an identity matrix
-        call to_identity_mtx(p)
+        call dlaset('A', n, n, zero, one, p, n)
 
         ! Process
         do j = 1, n
             ! Define the pivot matrix
             jp = ipvt(j)
-            if (j /= jp) call swap_arrays(p(j,:), p(jp,:))
+            if (j /= jp) call DSWAP(n, p(j,1:n), n, p(jp,1:n), n)
 
             ! Build L and U
             u(1:j,j) = lu(1:j,j)
@@ -381,7 +393,10 @@ contains
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
     subroutine form_lu_only(lu, u, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: lu

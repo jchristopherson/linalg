@@ -6,22 +6,13 @@
 !! Provides a set of routines for solving systems of equations using LU 
 !! factorization.
 module lu
-    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
-    use error_flags
+    use linalg_constants
     implicit none
     private
     public :: lu_factor
     public :: solve_lu
     public :: form_lu
-
-! ******************************************************************************
-! NUMERIC TYPE CONSTANTS
-! ------------------------------------------------------------------------------
-    !> @brief Defines a double-precision (64-bit) floating-point type.
-    integer, parameter :: dp = real64
-    !> @brief Defines a 32-bit signed integer type.
-    integer, parameter :: i32 = int32
 
 ! ******************************************************************************
 ! INTERFACES
@@ -217,8 +208,8 @@ contains
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly"
-            call errmgr%report_error("solve_lu_mtx", errmsg, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lu_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -277,8 +268,8 @@ contains
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly"
-            call errmgr%report_error("solve_lu_vec", errmsg, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lu_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -359,8 +350,8 @@ contains
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly"
-            call errmgr%report_error("form_lu_all", errmsg, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_all", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -431,8 +422,8 @@ contains
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly"
-            call errmgr%report_error("form_lu_only", errmsg, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_only", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if

@@ -14,7 +14,9 @@ module qr
     private
     public :: qr_factor
     public :: form_qr
+    public :: mult_qr
     public :: solve_qr
+    public :: qr_rank1_update
 
 ! ******************************************************************************
 ! INTERFACES
@@ -40,6 +42,14 @@ module qr
     interface form_qr
         module procedure :: form_qr_no_pivot
         module procedure :: form_qr_pivot
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
+    !! factorization.
+    interface mult_qr
+        module procedure :: mult_qr_mtx
+        module procedure :: mult_qr_vec
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -1564,6 +1574,140 @@ contains
             wptr(jpvt(i)) = b(i)
         end do
         b = wptr(1:n)
+    end subroutine
+
+! ******************************************************************************
+! RANK 1 UPDATE
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
+    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+    !!
+    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
+    !!  output, the updated matrix Q1.
+    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+    !!  matrix R1.
+    !! @param[in,out] u On input, the M-element U update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in,out] v On input, the N-element V update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least 2*K
+    !!  elements.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Remarks
+    !! @verbatim
+    !! Notice, K must either be equal to M, or to N.  In the event that K = N,
+    !! only the submatrix Qa is updated.  This is appropriate as the QR
+    !! factorization for an overdetermined system can be written as follows:
+    !!  A = Q * R = [Qa, Qb] * [Ra]
+    !!                         [0 ]
+    !!
+    !! Note: Ra is upper triangular of dimension N-by-N.
+    !! @endverbatim
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine DQR1UP.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    subroutine qr_rank1_update(q, r, u, v, work, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: q, r
+        real(dp), intent(inout), dimension(:) :: u, v
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        logical :: full
+        integer(i32) :: m, n, k, lwork, istat, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(u, 1)
+        n = size(r, 2)
+        k = min(m, n)
+        full = size(q, 2) == m
+        lwork = 2 * k
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m < n) then
+            flag = 1
+        else if (.not.full .and. size(q, 2) /= k) then
+            flag = 1
+        else if (size(r, 1) /= m) then
+            flag = 2
+        else if (size(u) /= m) then
+            flag = 3
+        else if (size(v) /= n) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("qr_rank1_update", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("qr_rank1_update", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("qr_rank1_update", &
+                        "Incorrectly sized input array WORK, argument 5.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("qr_rank1_update", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DQR1UP(m, n, k, q, m, r, m, u, v, wptr)
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
 ! ------------------------------------------------------------------------------

@@ -77,12 +77,21 @@ if (BUILD_SHARED_LIBS)
 else()
     # Include everything into the static library
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        LAPACK/BLAS/src*f LAPACK/src/*f ferror/src/*f90)
+        LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
 endif()
+
+# Remove testing items from the library build
+set(testing_sources ${sources})
+list(REMOVE_ITEM sources src/test.f90 src/test_core.f90)
 
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.
 add_library(linalg ${sources})
+
+# Build a test executable, only for debug builds
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_executable(linalg_test ${testing_sources})
+endif()
 
 if (BUILD_SHARED_LIBS)
     # Establish Dependicies - Only for a shared library build

@@ -1,0 +1,194 @@
+! test_core.f90
+
+! A module containing routines to support basic testing operations.
+module test_core
+    use linalg_constants
+    implicit none
+    private
+    public :: is_mtx_equal
+
+! ******************************************************************************
+! INTERFACES
+! ------------------------------------------------------------------------------
+    interface is_mtx_equal
+        module procedure :: is_mtx_equal_double
+        module procedure :: is_vec_equal_double
+        module procedure :: is_vec_equal_i32
+        module procedure :: is_mtx_equal_complex
+        module procedure :: is_vec_equal_complex
+        module procedure :: is_vec_equal_i64
+    end interface
+
+contains
+! ******************************************************************************
+! MATRIX COMPARISON TESTS
+! ------------------------------------------------------------------------------
+function is_mtx_equal_double(x, y, tol) result(check)
+    ! Arguments
+    real(dp), intent(in), dimension(:,:) :: x, y
+    real(dp), intent(in) :: tol
+    logical :: check
+
+    ! Local Variables
+    integer(i32) :: i, j, m, n
+
+    ! Initialization
+    m = size(x, 1)
+    n = size(x, 2)
+    check = .true.
+
+    ! Process
+    if (size(y, 1) /= m .or. size(y, 2) /= n) then
+        check = .false.
+        return
+    end if
+    do j = 1, n
+        do i = 1, m
+            if (abs(x(i,j) - y(i,j)) > tol) then
+                check = .false.
+                return
+            end if
+        end do
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function is_vec_equal_double(x, y, tol) result(check)
+    ! Arguments
+    real(dp), intent(in), dimension(:) :: x, y
+    real(dp), intent(in) :: tol
+    logical :: check
+
+    ! Local Variables
+    integer(i32) :: i, n
+
+    ! Initialization
+    n = size(x)
+    check = .true.
+
+    ! Process
+    if (size(y) /= n) then
+        check = .false.
+        return
+    end if
+    do i = 1, n
+        if (abs(x(i) - y(i)) > tol) then
+            check = .false.
+            return
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function is_vec_equal_i32(x, y) result(check)
+    ! Arguments
+    integer(i32), intent(in), dimension(:) :: x, y
+    logical :: check
+
+    ! Local Variables
+    integer(i32) :: i, n
+
+    ! Initialization
+    n = size(x)
+    check = .true.
+
+    ! Process
+    if (size(y) /= n) then
+        check = .false.
+        return
+    end if
+    do i = 1, n
+        if (x(i) /= y(i)) then
+            check = .false.
+            return
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function is_vec_equal_i64(x, y) result(check)
+    ! Arguments
+    integer(i64), intent(in), dimension(:) :: x, y
+    logical :: check
+
+    ! Local Variables
+    integer(i64) :: i, n
+
+    ! Initialization
+    n = size(x)
+    check = .true.
+
+    ! Process
+    if (size(y) /= n) then
+        check = .false.
+        return
+    end if
+    do i = 1, n
+        if (x(i) /= y(i)) then
+            check = .false.
+            return
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function is_mtx_equal_complex(x, y, tol) result(check)
+    ! Arguments
+    complex(dp), intent(in), dimension(:,:) :: x, y
+    real(dp), intent(in) :: tol
+    logical :: check
+
+    ! Local Variables
+    integer(i32) :: i, j, m, n
+
+    ! Initialization
+    m = size(x, 1)
+    n = size(x, 2)
+    check = .true.
+
+    ! Process
+    if (size(y, 1) /= m .or. size(y, 2) /= n) then
+        check = .false.
+        return
+    end if
+    do j = 1, n
+        do i = 1, m
+            if (abs(real(x(i,j), dp) - real(y(i,j), dp)) > tol .or. &
+                abs(aimag(x(i,j)) - aimag(y(i,j))) > tol) then
+                check = .false.
+                return
+            end if
+        end do
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function is_vec_equal_complex(x, y, tol) result(check)
+    ! Arguments
+    complex(dp), intent(in), dimension(:) :: x, y
+    real(dp), intent(in) :: tol
+    logical :: check
+
+    ! Local Variables
+    integer(i32) :: i, n
+
+    ! Initialization
+    n = size(x)
+    check = .true.
+
+    ! Process
+    if (size(y) /= n) then
+        check = .false.
+        return
+    end if
+    do i = 1, n
+        if (abs(real(x(i), dp) - real(y(i), dp)) > tol .or. &
+            abs(aimag(x(i)) - aimag(y(i))) > tol) then
+            check = .false.
+            return
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+end module

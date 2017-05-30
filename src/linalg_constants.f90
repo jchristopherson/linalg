@@ -5,7 +5,7 @@
 !! @par Purpose
 !! Provides a set of constants and error flags for the library.
 module linalg_constants
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : int32, int64, real64
     implicit none
 
 ! ******************************************************************************
@@ -15,6 +15,8 @@ module linalg_constants
     integer, parameter :: dp = real64
     !> @brief Defines a 32-bit signed integer type.
     integer, parameter :: i32 = int32
+    !> @brief Defines a 64-bit signed integer type.
+    integer, parameter :: i64 = int64
 
 ! ******************************************************************************
 ! ERROR FLAGS

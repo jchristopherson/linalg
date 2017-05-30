@@ -5,6 +5,7 @@ module test_qr
     use linalg_constants
     use qr
     use test_core
+    use linalg_core, only : rank1_update
     implicit none
 contains
 ! ******************************************************************************
@@ -511,5 +512,220 @@ subroutine test_qr_mult_vector()
     if (rst) print '(A)', "Test Passed: Vector QR Multiplication"
 end subroutine
 
+! ******************************************************************************
+! QR SOLUTION TEST
+! ------------------------------------------------------------------------------
+subroutine test_qr_solve_no_pivot()
+    ! Parameters
+    integer(i32), parameter :: m = 60
+    integer(i32), parameter :: n = 60
+    integer(i32), parameter :: nrhs = 20
+    real(dp), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    real(dp), dimension(m, n) :: a, a1
+    real(dp), dimension(m, nrhs) :: b, b1, ans1
+    real(dp), dimension(n, nrhs) :: x1
+    real(dp), dimension(n) :: tau
+    real(dp), dimension(m) :: b2a, b2, ans2
+    real(dp), dimension(n) :: x2
+    logical :: rst
+
+    ! Initialization
+    rst = .true.
+    call random_number(a)
+    call random_number(b)
+    call random_number(b2a)
+    a1 = a
+    b1 = b
+    b2 = b2a
+
+    ! Compute the QR factorization of A
+    call qr_factor(a1, tau)
+
+    ! Solve the system of equations
+    call solve_qr(a1, tau, b1)
+
+    ! Get X1 from B1
+    x1 = b1(1:n,:)
+
+    ! Test
+    ans1 = matmul(a, x1)
+    if (.not.is_mtx_equal(ans1, b, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: QR Solution Test 1, No Pivoting"
+    end if
+
+    ! Solve the system of equations - vector
+    call solve_qr(a1, tau, b2)
+
+    ! Get X2 from B2
+    x2 = b2(1:n)
+
+    ! Test
+    ans2 = matmul(a, x2)
+    if (.not.is_mtx_equal(ans2, b2a, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: QR Solution Test 2, No Pivoting"
+    end if
+    if (rst) print '(A)', "Test Passed: QR Solution, No Pivoting"
+end subroutine
+
+! ------------------------------------------------------------------------------
+subroutine test_qr_solve_pivot()
+    ! Parameters
+    integer(i32), parameter :: m = 60
+    integer(i32), parameter :: n = 60
+    integer(i32), parameter :: nrhs = 20
+    real(dp), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    real(dp), dimension(m, n) :: a, a1
+    real(dp), dimension(m, nrhs) :: b, b1, ans1
+    real(dp), dimension(n, nrhs) :: x1
+    real(dp), dimension(n) :: tau
+    real(dp), dimension(m) :: b2a, b2, ans2
+    real(dp), dimension(n) :: x2
+    integer(i32), dimension(n) :: pvt
+    logical :: rst
+
+    ! Initialization
+    rst = .true.
+    pvt = 0
+    call random_number(a)
+    call random_number(b)
+    call random_number(b2a)
+    a1 = a
+    b1 = b
+    b2 = b2a
+
+    ! Compute the QR factorization of A
+    call qr_factor(a1, tau, pvt)
+
+    ! Solve the system of equations
+    call solve_qr(a1, tau, pvt, b1)
+
+    ! Get X1 from B1
+    x1 = b1(1:n,:)
+
+    ! Test
+    ans1 = matmul(a, x1)
+    if (.not.is_mtx_equal(ans1, b, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: QR Solution Test 1, With Pivoting"
+    end if
+
+    ! Solve the system of equations - vector
+    call solve_qr(a1, tau, pvt, b2)
+
+    ! Get X2 from B2
+    x2 = b2(1:n)
+
+    ! Test
+    ans2 = matmul(a, x2)
+    if (.not.is_mtx_equal(ans2, b2a, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
+    end if
+    if (rst) print '(A)', "Test Passed: QR Solution, With Pivoting"
+end subroutine
+
+! ------------------------------------------------------------------------------
+subroutine test_qr_solve_pivot_ud()
+    ! Parameters
+    integer(i32), parameter :: m = 5
+    integer(i32), parameter :: n = 6
+    integer(i32), parameter :: nrhs = 20
+    real(dp), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    real(dp), dimension(m, n) :: a, a1, a2
+    real(dp), dimension(m, nrhs) :: b, ans1
+    real(dp), dimension(n, nrhs) :: x1
+    real(dp), dimension(m) :: tau
+    real(dp), dimension(m) :: b2, ans2
+    real(dp), dimension(n) :: x2
+    integer(i32), dimension(n) :: pvt
+    logical :: rst
+
+    ! Initialization
+    rst = .true.
+    pvt = 0
+    call random_number(a)
+    call random_number(b)
+    call random_number(b2)
+    a1 = a
+
+    ! Compute the QR factorization of A
+    call qr_factor(a1, tau, pvt)
+    a2 = a1
+
+    ! Solve the system of equations
+    x1(1:m,:) = b
+    call solve_qr(a1, tau, pvt, x1)
+
+    ! Test
+    ans1 = matmul(a, x1)
+    if (.not.is_mtx_equal(ans1, b, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: Underdetermined QR Solution Test 1, With Pivoting"
+    end if
+
+    ! Solve the system of equations - vector
+    x2(1:m) = b2
+    call solve_qr(a2, tau, pvt, x2)
+
+    ! Test
+    ans2 = matmul(a, x2)
+    if (.not.is_mtx_equal(ans2, b2, tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: Underdetermined QR Solution Test 2, With Pivoting"
+    end if
+    if (rst) print '(A)', "Test Passed: Underdetermined QR Solution, With Pivoting"
+end subroutine
+
+! ******************************************************************************
+! QR UPDATE TEST
+! ------------------------------------------------------------------------------
+subroutine test_qr_update_1()
+    ! Parameters
+    integer(i32), parameter :: m = 60
+    integer(i32), parameter :: n = 50
+    real(dp), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    real(dp), dimension(m, n) :: a, a1, r
+    real(dp), dimension(m, m) :: q
+    real(dp), dimension(m) :: u
+    real(dp), dimension(n) :: v, tau
+    logical :: rst
+
+    ! Initialization
+    rst = .true.
+    call random_number(a)
+    call random_number(u)
+    call random_number(v)
+
+    ! Compute the QR factorization of A
+    r = a
+    call qr_factor(r, tau)
+
+    ! Form Q and R
+    call form_qr(r, tau, q)
+
+    ! Compute A1 = A + u * v**T
+    a1 = a
+    call rank1_update(1.0d0, u, v, a1)
+
+    ! Use the QR update to update the original R and Q
+    call qr_rank1_update(q, r, u, v)
+
+    ! Test
+    if (.not.is_mtx_equal(a1, matmul(q, r), tol)) then
+        rst = .false.
+        print '(A)', "Test Failed: Rank 1 QR Update"
+    end if
+    if (rst) print '(A)', "Test Passed: Rank 1 QR Update"
+end subroutine
 
 end module

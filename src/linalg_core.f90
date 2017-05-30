@@ -11,6 +11,7 @@ module linalg_core
     private
     public :: solve_triangular_system
     public :: mtx_mult
+    public :: rank1_update
 
 ! ******************************************************************************
 ! INTERFACES
@@ -421,6 +422,70 @@ contains
 
         ! Call DGEMV
         call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+    end subroutine
+
+! ******************************************************************************
+! RANK 1 UPDATE
+! ------------------------------------------------------------------------------
+    !> @brief Performs the rank-1 update to matrix A such that:
+    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+    !! X is an M-element array, and N is an N-element array.
+    !!
+    !! @param[in] alpha The scalar multiplier.
+    !! @param[in] x An M-element array.
+    !! @param[in] y An N-element array.
+    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
+    !!  updated M-by-N matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with 
+    !!      @p x and @p y.
+    !!
+    !! @par Notes
+    !! This routine is based upon the BLAS routine DGER.
+    subroutine rank1_update(alpha, x, y, a, err)
+        ! Arguments
+        real(dp), intent(in) :: alpha
+        real(dp), intent(in), dimension(:) :: x, y
+        real(dp), intent(inout), dimension(:,:) :: a
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        integer(i32) :: j, m, n
+        real(dp) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(x)
+        n = size(y)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 1) /= m .or. size(a, 2) /= n) then
+            ! ERROR: Matrix dimension array
+            call errmgr%report_error("rank1_update", &
+                "Matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            if (y(j) /= zero) then
+                temp = alpha * y(j)
+                a(:,j) = a(:,j) + temp * x
+            end if
+        end do
     end subroutine
 
 ! ------------------------------------------------------------------------------

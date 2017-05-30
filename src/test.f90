@@ -8,7 +8,7 @@ program main
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
 
-    ! Tests
+    ! QR Factorization Tests
     call test_qr_factor()
     call test_qr_factor_od()
     call test_qr_factor_ud()
@@ -19,4 +19,8 @@ program main
     call test_qr_mult_right_od()
     call test_qr_mult_right_ud()
     call test_qr_mult_vector()
+    call test_qr_solve_no_pivot()
+    call test_qr_solve_pivot()
+    call test_qr_solve_pivot_ud()
+    call test_qr_update_1()
 end program

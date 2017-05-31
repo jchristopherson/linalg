@@ -3,9 +3,10 @@
 ! Tests for QR factorization/solution operations.
 module test_qr
     use linalg_constants
-    use qr
     use test_core
     use linalg_core, only : rank1_update
+    use linalg_factor, only : qr_factor, mult_qr, form_qr, qr_rank1_update
+    use linalg_solve, only : solve_qr
     implicit none
 contains
 ! ******************************************************************************

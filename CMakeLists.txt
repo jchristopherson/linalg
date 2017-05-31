@@ -3,53 +3,47 @@ cmake_minimum_required(VERSION 2.6)
 enable_language(Fortran)
 project(linalg)
 
-# Include the LAPACK Directory - If a shared build
-if (BUILD_SHARED_LIBS)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/LAPACK)
-endif()
-
 # Specify output directories
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   # Debug Build
   if (BUILD_SHARED_LIBS)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug/mod)
   else()
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug/mod)
   endif ()
 elseif (CMAKE_BUILD_TYPE MATCHES Release)
   # Release Build
   if (BUILD_SHARED_LIBS)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/bin)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/bin)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Release/bin/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release/mod)
   else()
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Release/lib)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Release/lib/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release/mod)
   endif ()
 else ()
   # Default Condition
   if (BUILD_SHARED_LIBS)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/bin/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug/mod)
   else()
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib)
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/Debug/lib/mod)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
+    set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug/mod)
   endif ()
 endif ()
-
 
 # FFLAGS depend on the compiler
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
@@ -71,13 +65,36 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   set (CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
 endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
-# Specify source files for the various builds
+# Specify source files
 if (BUILD_SHARED_LIBS)
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f ferror/src/*f90)
 else()
     # Include everything into the static library
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
+        src/BLAS/*f src/LAPACK/*f ferror/src/*f90)
+endif()
+
+# Straighten out dependencies
+if (BUILD_SHARED_LIBS)
+  # See if the user wishes to use the reference BLAS
+  option(use_ref_blas "Use reference BLAS?" ON)
+  if (use_ref_blas)
+    # Add the BLAS source files to the list
+    file(GLOB_RECURSE blas_sources src/BLAS/*f)
+    list(APPEND sources ${blas_sources})
+  else()
+    # TO DO: Ask user where to find BLAS library
+  endif()
+
+  # See if the user wishes to use the supplied LAPACK
+  option(use_lapack "Use supplied LAPACK?" ON)
+  if (use_lapack)
+    # Add the LAPACK source files to the list
+    file(GLOB_RECURSE lapack_sources src/LAPACK/*f)
+    list(APPEND sources ${lapack_sources})
+  else()
+    # TO DO: Ask user where to find LAPACK library
+  endif()
 endif()
 
 # Remove testing items from the library build
@@ -93,7 +110,3 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
   add_executable(linalg_test ${testing_sources})
 endif()
 
-if (BUILD_SHARED_LIBS)
-    # Establish Dependicies - Only for a shared library build
-    target_link_libraries(linalg lapack)
-endif()

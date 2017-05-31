@@ -1,25 +1,35 @@
-! qr.f90
+! linalg_factor.f90
 
-!> @brief \b qr
+!> @brief \b linalg_factor
 !!
 !! @par Purpose
-!! Provides a set of routines for solving systems of equations using QR
-!! factorization.
-module qr
+!! Provides a set of matrix factorization routines.
+module linalg_factor
     use ferror, only : errors
     use linalg_constants
-    use linalg_core, only : solve_triangular_system
-    use rz, only : rz_factor, mult_rz
     implicit none
     private
+    public :: lu_factor
+    public :: form_lu
     public :: qr_factor
     public :: form_qr
     public :: mult_qr
-    public :: solve_qr
     public :: qr_rank1_update
+    public :: cholesky_factor
+    public :: cholesky_rank1_update
+    public :: rz_factor
+    public :: mult_rz
 
 ! ******************************************************************************
 ! INTERFACES
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L and U matrices from the condensed [L\\U] storage 
+    !! format used by the @ref lu_factor.
+    interface form_lu
+        module procedure :: form_lu_all
+        module procedure :: form_lu_only
+    end interface
+
 ! ------------------------------------------------------------------------------
     !> @brief Computes the QR factorization of an M-by-N matrix.
     !!
@@ -53,20 +63,277 @@ module qr
     end interface
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
-    interface solve_qr
-        module procedure :: solve_qr_no_pivot_mtx
-        module procedure :: solve_qr_no_pivot_vec
-        module procedure :: solve_qr_pivot_mtx
-        module procedure :: solve_qr_pivot_vec
+    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
+    !! RZ factorization.
+    interface mult_rz
+        module procedure :: mult_rz_mtx
+        module procedure :: mult_rz_vec
     end interface
 
-
 contains
+! ******************************************************************************
+! LU FACTORIZATION
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of an M-by-N matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+    !! elements of L are not stored.
+    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+    !!  operations.  The array stored pivot information such that row I is
+    !!  interchanged with row IPVT(I).
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
+    !!
+    !! @par Usage
+    !! To solve a system of N equations of N unknowns using LU factorization,
+    !! the following code will suffice.
+    !! @code{.f90}
+    !! ! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are
+    !! ! N-by-NRHS in size.
+    !!
+    !! ! Variables
+    !! real(dp), dimension(n, n) :: a
+    !! real(dp), dimension(n, nrhs) :: b
+    !!
+    !! ! Define the array used to track row pivots.
+    !! integer(i32), dimension(n) :: pvt
+    !!
+    !! ! Initialize A and B...
+    !!
+    !! ! Compute the LU factorization of A.  On output, A contains [L\U].
+    !! call lu_factor(a, pvt)
+    !!
+    !! ! Solve A*X = B for X - Note: X overwrites B.
+    !! call solve_lu(a, pvt, b)
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGETRF.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    subroutine lu_factor(a, ipvt, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        integer(i32), intent(out), dimension(:) :: ipvt
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+
+        ! Local Variables
+        integer(i32) :: m, n, mn, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(ipvt) /= mn) then
+            ! ERROR: IPVT not sized correctly
+            call errmgr%report_error("lu_factor", &
+                "Incorrectly sized input array IPVT, argument 2.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Compute the LU factorization by calling the LAPACK routine DGETRF
+        call DGETRF(m, n, a, m, ipvt, flag)
+
+        ! If flag > 0, the matrix is singular.  Notice, flag should not be
+        ! able to be < 0 as we've already verrified inputs prior to making the
+        ! call to LAPACK
+        if (flag > 0) then
+            ! WARNING: Singular matrix
+            write(errmsg, '(AI0A)') &
+                "Singular matrix encountered (row ", flag, ")"
+            call errmgr%report_warning("lu_factor", trim(errmsg), &
+                LA_SINGULAR_MATRIX_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L, U, and P matrices from the output of the
+    !! @ref lu_factor routine.
+    !!
+    !! @param[in,out] lu On input, the N-by-N matrix as output by
+    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param[in] ipvt The N-element pivot array as output by
+    !!  @ref lu_factor.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
+    !!  written.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
+    !!
+    !! @par Remarks
+    !! This routine allows extraction of the actual "L", "U", and "P" matrices
+    !! of the decomposition.  To use these matrices to solve the system A*X = B,
+    !! the following approach is used.
+    !!
+    !! 1. First, solve the linear system: L*Y = P*B for Y.
+    !! 2. Second, solve the linear system: U*X = Y for X.
+    !!
+    !! Notice, as both L and U are triangular in structure, the above equations
+    !! can be solved by forward and backward substitution.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    subroutine form_lu_all(lu, ipvt, u, p, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: lu
+        integer(i32), intent(in), dimension(:) :: ipvt
+        real(dp), intent(out), dimension(:,:) :: u, p
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: j, jp, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+
+        ! Initialization
+        n = size(lu, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(lu, 2) /= n) then
+            flag = 1
+        else if (size(ipvt) /= n) then
+            flag = 2
+        else if (size(u, 1) /= n .or. size(u, 2) /= n) then
+            flag = 3
+        else if (size(p, 1) /= n .or. size(p, 2) /= n) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_all", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Ensure P starts off as an identity matrix
+        call dlaset('A', n, n, zero, one, p, n)
+
+        ! Process
+        do j = 1, n
+            ! Define the pivot matrix
+            jp = ipvt(j)
+            if (j /= jp) call DSWAP(n, p(j,1:n), n, p(jp,1:n), n)
+
+            ! Build L and U
+            u(1:j,j) = lu(1:j,j)
+            u(j+1:n,j) = zero
+
+            if (j > 1) lu(1:j-1,j) = zero
+            lu(j,j) = one
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L, and U matrices from the output of the
+    !! @ref lu_factor routine.
+    !!
+    !! @param[in,out] lu On input, the N-by-N matrix as output by
+    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
+    subroutine form_lu_only(lu, u, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: lu
+        real(dp), intent(out), dimension(:,:) :: u
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: j, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+
+        ! Initialization
+        n = size(lu, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(lu, 2) /= n) then
+            flag = 2
+        else if (size(u, 1) /= n .or. size(u, 2) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_only", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            ! Build L and U
+            u(1:j,j) = lu(1:j,j)
+            u(j+1:n,j) = zero
+
+            if (j > 1) lu(1:j-1,j) = zero
+            lu(j,j) = one
+        end do
+    end subroutine
+
+! ******************************************************************************
+! QR FACTORIZATION
 ! ------------------------------------------------------------------------------
     !> @brief Computes the QR factorization of an M-by-N matrix without
     !! pivoting.
@@ -410,8 +677,6 @@ contains
         if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
-! ******************************************************************************
-! FORM Q AND R MATRICES
 ! ------------------------------------------------------------------------------
     !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
     !! reflectors returned by the base QR factorization algorithm.
@@ -656,8 +921,6 @@ contains
         end do
     end subroutine
 
-! ******************************************************************************
-! Q MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
     !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
     !! factorization such that: C = op(Q) * C, or C = C * op(Q).
@@ -929,655 +1192,6 @@ contains
         call DORMQR(side, t, m, 1, k, a, nrowa, tau, c, m, wptr, lwork, flag)
     end subroutine
 
-! ******************************************************************************
-! QR SOLUTION ROUTINES
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
-    !!  the first N columns are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
-        ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
-        class(errors), intent(inout), optional, target :: err
-
-        ! Parameters
-        real(dp), parameter :: one = 1.0d0
-
-        ! Local Variables
-        integer(i32) :: m, n, nrhs, k, lwork, flag, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        class(errors), pointer :: errmgr
-        type(errors), target :: deferr
-        character(len = 128) :: errmsg
-
-        ! Initialization
-        m = size(a, 1)
-        n = size(a, 2)
-        nrhs = size(b, 2)
-        k = min(m, n)
-        if (present(err)) then
-            errmgr => err
-        else
-            errmgr => deferr
-        end if
-
-        ! Input Check
-        flag = 0
-        if (m < n) then
-            flag = 1
-        else if (size(tau) /= k) then
-            flag = 2
-        else if (size(b, 1) /= m) then
-            flag = 3
-        end if
-        if (flag /= 0) then
-            ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly."
-            call errmgr%report_error("solve_qr_no_pivot_mtx", trim(errmsg), &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-
-        ! Workspace Query
-        call mult_qr_mtx(.true., .true., a, tau, b, olwork = lwork)
-        if (present(olwork)) then
-            olwork = lwork
-            return
-        end if
-
-        ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            end if
-        else
-            allocate(wrk(lwork), stat = istat)
-            if (istat /= 0) then
-                ! ERROR: Out of memory
-                call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                    "Insufficient memory available.", &
-                    LA_OUT_OF_MEMORY_ERROR)
-                return
-            end if
-            wptr => wrk
-        end if
-
-        ! Compute Q**T * B, and store in B
-        call mult_qr(.true., .true., a, tau, b, wptr)
-
-        ! Solve the triangular system: A(1:N,1:N)*X = B(1:N,:)
-        call solve_triangular_system(.true., .true., .false., .true., one, &
-            a(1:n,1:n), b(1:n,:))
-    end subroutine
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] b On input, the M-element right-hand-side vector.  On output,
-    !!  the first N elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
-        ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
-        class(errors), intent(inout), optional, target :: err
-
-        ! Local Variables
-        integer(i32) :: m, n, k, flag, lwork, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        class(errors), pointer :: errmgr
-        type(errors), target :: deferr
-        character(len = 128) :: errmsg
-
-        ! Initialization
-        m = size(a, 1)
-        n = size(a, 2)
-        k = min(m, n)
-        if (present(err)) then
-            errmgr => err
-        else
-            errmgr => deferr
-        end if
-
-        ! Input Check
-        flag = 0
-        if (m < n) then
-            flag = 1
-        else if (size(tau) /= k) then
-            flag = 2
-        else if (size(b) /= m) then
-            flag = 3
-        end if
-        if (flag /= 0) then
-            ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly."
-            call errmgr%report_error("solve_qr_no_pivot_vec", trim(errmsg), &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-
-        ! Workspace Query
-        call mult_qr_vec(.true., a, tau, b, olwork = lwork)
-        if (present(olwork)) then
-            olwork = lwork
-            return
-        end if
-
-        ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_no_pivot_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_vec", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            end if
-        else
-            allocate(wrk(lwork), stat = istat)
-            if (istat /= 0) then
-                ! ERROR: Out of memory
-                call errmgr%report_error("solve_qr_no_pivot_vec", &
-                    "Insufficient memory available.", &
-                    LA_OUT_OF_MEMORY_ERROR)
-                return
-            end if
-            wptr => wrk
-        end if
-
-        ! Compute Q**T * B, and store in B
-        call mult_qr_vec(.true., a, tau, b, work = wptr)
-
-        ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
-        call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
-    end subroutine
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
-    !!  rows contain the right-hand-side matrix B.  On output, the first N rows
-    !!  are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
-        ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:,:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
-        class(errors), intent(inout), optional, target :: err
-
-        ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
-
-        ! Local Variables
-        integer(i32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
-            rnk, maxmn, flag, istat, lwork1, lwork2, lwork3
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
-        class(errors), pointer :: errmgr
-        type(errors), target :: deferr
-        character(len = 128) :: errmsg
-
-        ! Initialization
-        m = size(a, 1)
-        n = size(a, 2)
-        mn = min(m, n)
-        maxmn = max(m, n)
-        nrhs = size(b, 2)
-        ismin = mn + 1
-        ismax = 2 * mn + 1
-        rcond = epsilon(rcond)
-        if (present(err)) then
-            errmgr => err
-        else
-            errmgr => deferr
-        end if
-
-        ! Input Check
-        flag = 0
-        if (size(tau) /= mn) then
-            flag = 2
-        else if (size(jpvt) /= n) then
-            flag = 3
-        else if (size(b, 1) /= maxmn) then
-            flag = 4
-        end if
-        if (flag /= 0) then
-            ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly."
-            call errmgr%report_error("solve_qr_pivot_mtx", trim(errmsg), &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-
-        ! Workspace Query
-        call rz_factor(a(1:mn,:), a(1:mn,1), olwork = lwork1)
-        call mult_qr_mtx(.true., .true., a, tau, b(1:m,:), olwork = lwork2)
-        call mult_rz(.true., .true., n, a(1:mn,:), a(1:mn,1), b, &
-            olwork = lwork3)
-        lwork = max(lwork1, lwork2, lwork3, 2 * mn + 1) + mn
-        if (present(olwork)) then
-            olwork = lwork
-            return
-        end if
-
-        ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_pivot_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            end if
-        else
-            allocate(wrk(lwork), stat = istat)
-            if (istat /= 0) then
-                ! ERROR: Out of memory
-                call errmgr%report_error("solve_qr_pivot_mtx", &
-                    "Insufficient memory available.", &
-                    LA_OUT_OF_MEMORY_ERROR)
-                return
-            end if
-            wptr => wrk
-        end if
-
-        ! Determine the rank of R11 using an incremental condition estimation
-        wptr(ismin) = one
-        wptr(ismax) = one
-        smax = abs(a(1,1))
-        smin = smax
-        if (abs(a(1,1)) == zero) then
-            rnk = 0
-            b(maxmn,nrhs) = zero
-            return
-        else
-            rnk = 1
-        end if
-        do
-            if (rnk < mn) then
-                i = rnk + 1
-                call DLAIC1(imin, rnk, wptr(ismin:ismin+rnk-1), smin, &
-                    a(1:rnk-1,i), a(i,i), sminpr, s1, c1)
-                call DLAIC1(imax, rnk, wptr(ismax:ismax+rnk-1), smax, &
-                    a(1:rnk-1,i), a(i,i), smaxpr, s2, c2)
-                if (smaxpr * rcond <= sminpr) then
-                    do i = 1, rnk
-                        wptr(ismin+i-1) = s1 * wptr(ismin+i-1)
-                        wptr(ismax+i-1) = s2 * wptr(ismax+i-1)
-                    end do
-                    wptr(ismin+rnk) = c1
-                    wptr(ismax+rnk) = c2
-                    smin = sminpr
-                    smax = smaxpr
-                    rnk = rnk + 1
-                    cycle
-                end if
-            end if
-            exit
-        end do
-
-        ! Partition R = [R11 R12]
-        !               [ 0  R22]
-        tau2 => wptr(1:rnk)
-        w => wptr(rnk+1:lwork)
-        if (rnk < n) call rz_factor(a(1:rnk,:), tau2, w)
-
-        ! Compute B(1:m,1:NRHS) = Q**T * B(1:M,1:NRHS)
-        call mult_qr(.true., .true., a, tau, b(1:m,:), w)
-
-        ! Solve the triangular system T11 * B(1:rnk,1:nrhs) = B(1:rnk,1:nrhs)
-        call solve_triangular_system(.true., .true., .false., .true., one, &
-            a(1:rnk,1:rnk), b(1:rnk,:))
-        if (n > rnk) b(rnk+1:n,:) = zero
-
-        ! Compute B(1:n,1:nrhs) = Y**T * B(1:n,1:nrhs)
-        if (rnk < n) then
-            call mult_rz(.true., .true., n - rnk, a(1:rnk,:), tau2, b, w)
-        end if
-
-        ! Apply the pivoting: B(1:N,1:NRHS) = P * B(1:N,1:NRHS)
-        do j = 1, nrhs
-            do i = 1, n
-                wptr(jpvt(i)) = b(i,j)
-            end do
-            b(:,j) = wptr(1:n)
-        end do
-    end subroutine
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-element array where the first M
-    !!  elements contain the right-hand-side vector B.  On output, the first N
-    !!  elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
-        ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
-        class(errors), intent(inout), optional, target :: err
-
-        ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
-
-        ! Local Variables
-        integer(i32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
-            istat, lwork1, lwork2
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
-        class(errors), pointer :: errmgr
-        type(errors), target :: deferr
-        character(len = 128) :: errmsg
-
-        ! Initialization
-        m = size(a, 1)
-        n = size(a, 2)
-        mn = min(m, n)
-        maxmn = max(m, n)
-        ismin = mn + 1
-        ismax = 2 * mn + 1
-        rcond = epsilon(rcond)
-        if (present(err)) then
-            errmgr => err
-        else
-            errmgr => deferr
-        end if
-
-        ! Input Check
-        flag = 0
-        if (size(tau) /= mn) then
-            flag = 2
-        else if (size(jpvt) /= n) then
-            flag = 3
-        else if (size(b) /= maxmn) then
-            flag = 4
-        end if
-        if (flag /= 0) then
-            ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
-                " is not sized correctly."
-            call errmgr%report_error("solve_qr_pivot_vec", trim(errmsg), &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-
-        ! Workspace Query
-        call rz_factor(a(1:mn,:), a(1:mn,1), olwork = lwork1)
-        call mult_rz(.true., n, a(1:mn,:), a(1:mn,1), b(1:n), olwork = lwork2)
-        lwork = max(lwork1, lwork2, 2 * mn + 1) + mn
-        if (present(olwork)) then
-            olwork = lwork
-            return
-        end if
-
-        ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_pivot_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            end if
-        else
-            allocate(wrk(lwork), stat = istat)
-            if (istat /= 0) then
-                ! ERROR: Out of memory
-                call errmgr%report_error("solve_qr_pivot_vec", &
-                    "Insufficient memory available.", &
-                    LA_OUT_OF_MEMORY_ERROR)
-                return
-            end if
-            wptr => wrk
-        end if
-
-        ! Determine the rank of R11 using an incremental condition estimation
-        wptr(ismin) = one
-        wptr(ismax) = one
-        smax = abs(a(1,1))
-        smin = smax
-        if (abs(a(1,1)) == zero) then
-            rnk = 0
-            b(maxmn) = zero
-            return
-        else
-            rnk = 1
-        end if
-        do
-            if (rnk < mn) then
-                i = rnk + 1
-                call DLAIC1(imin, rnk, wptr(ismin:ismin+rnk-1), smin, &
-                    a(1:rnk-1,i), a(i,i), sminpr, s1, c1)
-                call DLAIC1(imax, rnk, wptr(ismax:ismax+rnk-1), smax, &
-                    a(1:rnk-1,i), a(i,i), smaxpr, s2, c2)
-                if (smaxpr * rcond <= sminpr) then
-                    do i = 1, rnk
-                        wptr(ismin+i-1) = s1 * wptr(ismin+i-1)
-                        wptr(ismax+i-1) = s2 * wptr(ismax+i-1)
-                    end do
-                    wptr(ismin+rnk) = c1
-                    wptr(ismax+rnk) = c2
-                    smin = sminpr
-                    smax = smaxpr
-                    rnk = rnk + 1
-                    cycle
-                end if
-            end if
-            exit
-        end do
-
-        ! Partition R = [R11 R12]
-        !               [ 0  R22]
-        tau2 => wptr(1:rnk)
-        w => wptr(rnk+1:lwork)
-        if (rnk < n) call rz_factor(a(1:rnk,:), tau2, w)
-
-        ! Compute B(1:m,1:NRHS) = Q**T * B(1:M,1:NRHS)
-        call mult_qr(.true., a, tau, b(1:m))
-
-        ! Solve the triangular system T11 * B(1:rnk) = B(1:rnk)
-        call solve_triangular_system(.true., .false., .true., a(1:rnk,1:rnk), &
-            b(1:rnk))
-        if (n > rnk) b(rnk+1:n) = zero
-
-        ! Compute B(1:n) = Y**T * B(1:n)
-        if (rnk < n) then
-            call mult_rz(.true., n - rnk, a(1:rnk,:), tau2, b(1:n), w)
-        end if
-
-        ! Apply the pivoting: B(1:N) = P * B(1:N)
-        do i = 1, n
-            wptr(jpvt(i)) = b(i)
-        end do
-        b = wptr(1:n)
-    end subroutine
-
-! ******************************************************************************
-! RANK 1 UPDATE
 ! ------------------------------------------------------------------------------
     !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
     !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
@@ -1710,5 +1324,665 @@ contains
         if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
+! ******************************************************************************
+! CHOLESKY FACTORIZATION
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the Cholesky factorization of a symmetric, positive
+    !! definite matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+    !!  factored matrix is returned in either the upper or lower triangular
+    !!  portion of the matrix, dependent upon the value of @p upper.
+    !! @param[in] upper An optional input that, if specified, provides control
+    !!  over whether the factorization is computed as A = U**T * U (set to
+    !!  true), or as A = L * L**T (set to false).  The default value is true
+    !!  such that A = U**T * U.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+    !!
+    !! @par Usage
+    !! To solve a system of N equations of N unknowns using Cholesky 
+    !! factorization, the following code will suffice.  Notice, the system of
+    !! equations must be positive definite.
+    !! @code{.f90}
+    !! ! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are
+    !! ! N-by-NRHS in size.
+    !!
+    !! ! Variables
+    !! real(dp), dimension(n, n) :: a
+    !! real(dp), dimension(n, nrhs) :: b
+    !! logical :: upper
+    !!
+    !! ! Initialize A and B...
+    !!
+    !! ! Specify that we're using the upper portion of A (remember positive 
+    !! ! definite matrices are symmetric)
+    !! upper = .true.
+    !!
+    !! ! Compute the factorization of A.
+    !! call cholesky_factor(a, upper)
+    !!
+    !! ! Solve A*X = B for X - Note: X overwrites B.
+    !! call solve_cholesky(upper, a, b)
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DPOTRF.
+    subroutine cholesky_factor(a, upper, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        logical, intent(in), optional :: upper
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        character :: uplo
+        integer(i32) :: i, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        if (present(upper)) then
+            if (upper) then
+                uplo = 'U'
+            else
+                uplo = 'L'
+            end if
+        else
+            uplo = 'U'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            ! ERROR: A must be square
+            call errmgr%report_error("cholesky_factor", &
+                "The input matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        call DPOTRF(uplo, n, a, n, flag)
+        if (flag > 0) then
+            ! ERROR: Matrix is not positive definite
+            write(errmsg, '(AI0A)') "The leading minor of order ", flag, &
+                " is not positive definite."
+            call errmgr%report_error("cholesky_factor", trim(errmsg), &
+                LA_MATRIX_FORMAT_ERROR)
+        end if
+
+        ! Zero out the non-used upper or lower diagonal
+        if (uplo == 'U') then
+            ! Zero out the lower
+            do i = 1, n - 1
+                a(i+1:n,i) = zero
+            end do
+        else
+            ! Zero out the upper
+            do i = 2, n
+                a(1:i-1,i) = zero
+            end do
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least N
+    !!  elements.  Additionally, this workspace array is used to contain the
+    !!  rotation cosines used to transform R to R1.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine DCH1UP.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    subroutine cholesky_rank1_update(r, u, work, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: r
+        real(dp), intent(inout), dimension(:) :: u
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: n, lwork, istat, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(r, 1)
+        lwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(r, 2) /= n) then
+            flag = 1
+        else if (size(u) /= n) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("cholesky_rank1_update", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    call errmgr%report_error("cholesky_rank1_update", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    call errmgr%report_error("cholesky_rank1_update", &
+                        "The workspace array is too short.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                call errmgr%report_error("cholesky_rank1_update", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DCH1UP(n, r, n, u, wptr)
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
+! ******************************************************************************
+! RZ FACTORIZATION ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Factors an upper trapezoidal matrix by means of orthogonal
+    !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
+    !! matrix of dimension (M+L)-by-(M+L), and R is an M-by-M upper triangular
+    !! matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
+    !!  On output, the leading M-by-M upper triangular part of the matrix
+    !!  contains the upper triangular matrix R, and elements N-L+1 to N of the
+    !!  first M rows of A, with the array @p tau, represent the orthogonal
+    !!  matrix Z as a product of M elementary reflectors.
+    !! @param[out] tau
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Further Details
+    !! @verbatim
+    !!  The factorization is obtained by Householder's method.  The kth
+    !!  transformation matrix, Z( k ), which is used to introduce zeros into
+    !!  the ( m - k + 1 )th row of A, is given in the form
+    !!
+    !!     Z( k ) = ( I     0   ),
+    !!              ( 0  T( k ) )
+    !!
+    !!  where
+    !!
+    !!     T( k ) = I - tau*u( k )*u( k )**T,   u( k ) = (   1    ),
+    !!                                                   (   0    )
+    !!                                                   ( z( k ) )
+    !!
+    !!  tau is a scalar and z( k ) is an l element vector. tau and z( k )
+    !!  are chosen to annihilate the elements of the kth row of A2.
+    !!
+    !!  The scalar tau is returned in the kth element of TAU and the vector
+    !!  u( k ) in the kth row of A2, such that the elements of z( k ) are
+    !!  in  a( k, l + 1 ), ..., a( k, n ). The elements of R are returned in
+    !!  the upper triangular part of A1.
+    !!
+    !!  Z is given by
+    !!
+    !!     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
+    !! @endverbatim
+    !!
+    !! @par Notes
+    !! This routine is based upon the LAPACK routine DTZRZF.
+    !!
+    !! @par See Also
+    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node44.html)
+    subroutine rz_factor(a, tau, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(out), dimension(:) :: tau
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: m, n, lwork, flag, istat
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(tau) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("rz_factor", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DTZRZF(m, n, a, m, tau, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(work(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("rz_factor", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("rz_factor", &
+                        "Incorrectly sized input array WORK, argument 3.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(work(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("rz_factor", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DTZRZF
+        call DTZRZF(m, n, a, m, tau, wptr, lwork, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
+    !! RZ factorization such that: C = op(Z) * C, or C = C * op(Z).
+    !!
+    !! @param[in] lside Set to true to apply Z or Z**T from the left; else, set
+    !!  to false to apply Z or Z**T from the right.
+    !! @param[in] trans Set to true to apply Z**T; else, set to false.
+    !! @param[in] l The number of columns in matrix @p a containing the
+    !!  meaningful part of the Householder vectors.  If @p lside is true,
+    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
+    !! @param[in,out] a On input the K-by-LTA matrix C, where LTA = M if
+    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
+    !!  contain the Householder vector in the last k rows. Notice, the contents
+    !!  of this matrix are restored on exit.
+    !! @param[in] tau A K-element array containing the scalar factors of the
+    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
+    !!  N >= K >= 0 if @p lside is false.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+    !!  of the orthogonal matrix Z and the original matrix C.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DORMRZ.
+    subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: lside, trans
+        integer(i32), intent(in) :: l
+        real(dp), intent(inout), dimension(:,:) :: a, c
+        real(dp), intent(in), dimension(:) :: tau
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(i32) :: m, n, k, lwork, flag, istat, lda
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(tau)
+        lda = size(a, 1)
+        if (lside) then
+            side = 'L'
+        else
+            side = 'R'
+        end if
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (lside) then
+            if (l > m .or. l < 0) then
+               flag = 3
+            else if (k > m) then
+                flag = 5
+            else if (size(a, 1) < k .or. size(a, 2) /= m) then
+                flag = 4
+            end if
+        else
+            if (l > n .or. l < 0) then
+                flag = 3
+            else if (k > n) then
+                flag = 5
+            else if (size(a, 1) < k .or. size(a, 2) /= n) then
+                flag = 4
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_rz_mtx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(work(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("mult_rz_mtx", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("mult_rz_mtx", &
+                        "Incorrectly sized input array WORK, argument 7.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(work(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_rz_mtx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DORMRZ
+        call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a vector by the orthogonal matrix Z from an
+    !! RZ factorization such that: C = op(Z) * C.
+    !!
+    !! @param[in] trans Set to true to apply Z**T; else, set to false.
+    !! @param[in] l The number of columns in matrix @p a containing the
+    !!  meaningful part of the Householder vectors.  If @p lside is true,
+    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
+    !! @param[in,out] a On input the K-by-LTA matrix C, where LTA = M if
+    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
+    !!  contain the Householder vector in the last k rows. Notice, the contents
+    !!  of this matrix are restored on exit.
+    !! @param[in] tau A K-element array containing the scalar factors of the
+    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
+    !!  N >= K >= 0 if @p lside is false.
+    !! @param[in,out] c On input, the M-element array C.  On output, the product
+    !!  of the orthogonal matrix Z and the original array C.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DORMRZ.
+    subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        integer(i32), intent(in) :: l
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(in), dimension(:) :: tau
+        real(dp), intent(inout), dimension(:) :: c
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(i32) :: m, k, lwork, flag, istat, lda
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c)
+        k = size(tau)
+        lda = size(a, 1)
+        side = 'L'
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (l > m .or. l < 0) then
+            flag = 2
+        else if (k > m) then
+            flag = 4
+        else if (size(a, 1) < k .or. size(a, 2) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_rz_vec", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(work(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("mult_rz_vec", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("mult_rz_vec", &
+                        "Incorrectly sized input array WORK, argument 6.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(work(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_rz_vec", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DORMRZ
+        call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+    end subroutine
+
 end module

@@ -33,6 +33,7 @@
 
 # Directories
 bin/
+lib/
 build/
 
 # CMake Stuff

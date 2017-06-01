@@ -4,6 +4,7 @@
 program main
     ! Imported Modules
     use test_qr
+    use test_svd_ops
 
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
@@ -23,4 +24,9 @@ program main
     call test_qr_solve_pivot()
     call test_qr_solve_pivot_ud()
     call test_qr_update_1()
+
+    ! SVD Tests
+    call test_svd()
+    call test_svd_od()
+    call test_svd_ud()
 end program

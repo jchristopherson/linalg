@@ -19,6 +19,7 @@ module linalg_factor
     public :: cholesky_rank1_update
     public :: rz_factor
     public :: mult_rz
+    public :: svd
 
 ! ******************************************************************************
 ! INTERFACES

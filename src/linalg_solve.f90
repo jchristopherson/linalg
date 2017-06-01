@@ -73,6 +73,18 @@ module linalg_solve
         module procedure :: solve_cholesky_vec
     end interface
 
+! ******************************************************************************
+! LAPACK FUNCTION INTERFACES
+! ------------------------------------------------------------------------------
+    interface
+        function DLAMCH(cmach) result(x)
+            use linalg_constants, only : dp
+            character, intent(in) :: cmach
+            real(dp) :: x
+        end function
+    end interface
+
+
 
 contains
 ! ******************************************************************************
@@ -1237,7 +1249,7 @@ contains
         real(dp), pointer, dimension(:,:) :: u, vt
         real(dp), allocatable, target, dimension(:) :: wrk
         real(dp), dimension(1) :: temp
-        real(dp) :: t, tref
+        real(dp) :: t, tref, tolcheck
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1252,6 +1264,7 @@ contains
         i3a = i2b + 1
         i3b = i3a + mn - 1
         i4 = i3b + 1
+        tolcheck = dlamch('s')
         if (present(err)) then
             errmgr => err
         else
@@ -1335,7 +1348,8 @@ contains
         else
             t = tref
         end if
-        if (t < safe_denom(t)) then
+        !if (t < safe_denom(t)) then
+        if (t < tolcheck) then
             ! The supplied tolerance is too small, simply fall back to the
             ! default, but issue a warning to the user
             t = tref
@@ -1353,7 +1367,7 @@ contains
             if (s(i) < t) then
                 vt(i,:) = zero
             else
-                call recip_mult(s(i), vt(i,:))
+                call DRSCL(n, s(i), vt(i,1:n), 1)
             end if
         end do
 
@@ -1361,90 +1375,6 @@ contains
         call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
     end subroutine
 
-
-
-! ******************************************************************************
-! PRIVATE HELPER ROUTINES
-! ------------------------------------------------------------------------------
-    !> @brief Computes the smallest number X such that 1 / X does not overflow.
-    !!
-    !! @param[in] arg A dummy parameter used to determine type.
-    !!
-    !! @return The value X such that 1 / X does not overflow.
-    pure function safe_denom(arg) result(sfmin)
-        ! Arguments
-        real(dp), intent(in) :: arg
-        real(dp) :: sfmin
-
-        ! Process
-        real(dp), parameter :: one = 1.0d0
-        real(dp) :: small
-        sfmin = tiny(arg)
-        small = one / huge(small)
-        if (small >= sfmin) then
-            sfmin = small * (one + epsilon(sfmin))
-        end if
-    end function
-
-! ------------------------------------------------------------------------------
-    !> @brief Multiplies a vector by the reciprocal of a real scalar.
-    !!
-    !! @param[in] a The scalar which is used to divide each component of @p X.
-    !!  The value must be >= 0, or the subroutine will divide by zero.
-    !! @param[in,out] x The vector.
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine DRSCL.
-    subroutine recip_mult(a, x)
-        ! Arguments
-        real(dp), intent(in) :: a
-        real(dp), intent(inout), dimension(:) :: x
-
-        ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
-        real(dp), parameter :: twotho = 2.0d3
-
-        ! Local Variables
-        logical :: done
-        real(dp) :: bignum, cden, cden1, cnum, cnum1, mul, smlnum
-
-        ! Initialization
-        smlnum = safe_denom(smlnum)
-        bignum = one / smlnum
-        if (log10(bignum) > twotho) then
-            smlnum = sqrt(smlnum)
-            bignum = sqrt(bignum)
-        end if
-
-        ! Initialize the denominator to A, and the numerator to ONE
-        cden = a
-        cnum = one
-
-        ! Process
-        do
-            cden1 = cden * smlnum
-            cnum1 = cnum / bignum
-            if (abs(cden1) > abs(cnum) .and. cnum /= zero) then
-                mul = smlnum
-                done = .false.
-                cden = cden1
-            else if (abs(cnum1) > abs(cden)) then
-                mul = bignum
-                done = .false.
-                cnum = cnum1
-            else
-                mul = cnum / cden
-                done = .true.
-            end if
-
-            ! Scale the vector X by MUL
-            x = mul * x
-
-            ! Exit if done
-            if (done) exit
-        end do
-    end subroutine
 
 
 end module

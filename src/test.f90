@@ -5,6 +5,7 @@ program main
     ! Imported Modules
     use test_qr
     use test_svd_ops
+    use test_mtx_inverse
 
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
@@ -29,4 +30,10 @@ program main
     call test_svd()
     call test_svd_od()
     call test_svd_ud()
+
+    ! Matrix Inverse Tests
+    call test_pinv()
+    call test_pinv_od()
+    call test_inv()
+
 end program

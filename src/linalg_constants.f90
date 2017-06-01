@@ -31,4 +31,6 @@ module linalg_constants
     integer, parameter :: LA_MATRIX_FORMAT_ERROR = 104
     !> An error flag denoting that there is insufficient memory available.
     integer, parameter :: LA_OUT_OF_MEMORY_ERROR = 105
+    !> An error flag denoting a convergence failure.
+    integer, parameter :: LA_CONVERGENCE_ERROR = 106
 end module

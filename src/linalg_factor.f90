@@ -1985,4 +1985,206 @@ contains
         call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
     end subroutine
 
+! ******************************************************************************
+! SVD ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Computes the singular value decomposition of a matrix A.  The
+    !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+    !!  matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+    !!  overwritten on output.
+    !! @param[out] s A MIN(M, N)-element array containing the singular values
+    !!  of @p a sorted in descending order.
+    !! @param[out] u An optional argument, that if supplied, is used to contain
+    !!  the orthogonal matrix U from the decomposition.  The matrix U contains
+    !!  the left singular vectors, and can be either M-by-M (all left singular
+    !!  vectors are computed), or M-by-MIN(M,N) (only the first MIN(M, N) left
+    !!  singular vectors are computed).
+    !! @param[out] vt An optional argument, that if supplied, is used to contain
+    !!  the transpose of the N-by-N orthogonal matrix V.  The matrix V contains
+    !!  the right singular vectors.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par Usage
+    !! @code{.f90}
+    !! ! Decompose matrix the M-by-N matrix A such that A = U * S * V**T with
+    !! ! M >= N.
+    !!
+    !! ! Variables
+    !! real(dp), dimension(m, n) :: a
+    !! real(dp), dimension(m, m) :: u
+    !! real(dp), dimension(n, n) :: vt
+    !! real(dp), dimension(n) :: s
+    !!
+    !! ! Initialize A...
+    !!
+    !! ! Compute the SVD of A. On output, S contains the MIN(M,N) singular
+    !! ! values of A in descending order, U contains the left singular vectors
+    !! ! (one per column), and VT contains the right singular vectors (one per
+    !! ! row).
+    !! call svd(a, s, u, vt)
+    !!
+    !! ! Note: If M > N, then we can make U M-by-N, and compute the N
+    !! ! left singular vectors of A, as there are at most N singular values
+    !! ! of A.  Also, if M < N, then there are at most M singular values of A,
+    !! ! and as such, the length of the array S should be M.
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGESVD.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
+    subroutine svd(a, s, u, vt, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(out), dimension(:) :: s
+        real(dp), intent(out), optional, dimension(:,:) :: u, vt
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: jobu, jobvt
+        integer(i32) :: m, n, mn, istat, lwork, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        if (present(u)) then
+            if (size(u, 2) == m) then
+                jobu = 'A'
+            else if (size(u, 2) == mn) then
+                jobu = 'S'
+            end if
+        else
+            jobu = 'N'
+        end if
+        if (present(vt)) then
+            jobvt = 'A'
+        else
+            jobvt = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(s) /= mn) then
+            flag = 2
+        else if (present(u)) then
+            if (size(u, 1) /= m) flag = 3
+            if (size(u, 2) /= m .and. size(u, 2) /= mn) flag = 3
+        else if (present(vt)) then
+            if (size(vt, 1) /= n .or. size(vt, 2) /= n) flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("svd", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, temp, -1, &
+            flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("svd", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("svd", &
+                        "Incorrectly sized input array WORK, argument 5.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DGESVD
+        if (present(u) .and. present(vt)) then
+            call DGESVD(jobu, jobvt, m, n, a, m, s, u, m, vt, n, wptr, lwork, &
+                flag)
+        else if (present(u) .and. .not.present(vt)) then
+            call DGESVD(jobu, jobvt, m, n, a, m, s, u, m, temp, n, wptr, &
+                lwork, flag)
+        else if (.not.present(u) .and. present(vt)) then
+            call DGESVD(jobu, jobvt, m, n, a, m, s, temp, m, vt, n, wptr, &
+                lwork, flag)
+        else
+            call DGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, wptr, &
+                lwork, flag)
+        end if
+
+        ! Check for convergence
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("svd", errmsg, LA_CONVERGENCE_ERROR)
+        end if
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
+
 end module

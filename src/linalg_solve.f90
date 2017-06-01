@@ -8,12 +8,14 @@ module linalg_solve
     use ferror, only : errors
     use linalg_constants
     use linalg_factor, only : rz_factor, mult_rz, mult_qr
-    use linalg_core, only : solve_triangular_system
+    use linalg_core, only : solve_triangular_system, mtx_mult
     implicit none
     private
     public :: solve_lu
     public :: solve_qr
     public :: solve_cholesky
+    public :: mtx_inverse
+    public :: mtx_pinverse
 
 ! ******************************************************************************
 ! INTERFACES
@@ -975,5 +977,474 @@ contains
         ! Process
         call DPOTRS(uplo, n, 1, a, n, b, n, flag)
     end subroutine
+
+! ******************************************************************************
+! MATRIX INVERSION ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Computes the inverse of a square matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
+    !!  inverted matrix.
+    !! @param[out] iwork An optional N-element integer workspace array.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.  Will also occur if
+    !!      incorrectly sized workspace arrays are provided.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+    !!
+    !! @par Usage
+    !! @code {.f90}
+    !! ! The following example illustrates how to solve a system of linear
+    !! ! equations by matrix inversion.  Notice, this is not a preferred
+    !! ! solution technique (use LU factorization instead), but is merely a
+    !! ! means of illustrating how to compute the inverse of a square matrix.
+    !!
+    !! ! Variables
+    !! real(dp), dimension(n, n) :: a
+    !! real(dp), dimension(n, nrhs) :: b, x
+    !!
+    !! ! Initialize A and B...
+    !!
+    !! ! Compute the inverse of A.  The inverse will overwrite the original
+    !! ! matrix.
+    !! call mtx_inverse(a)
+    !!
+    !! ! Solve A*X = B as X = inv(A) * B.
+    !! x = matmul(a, b)
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routines DGETRF to perform an LU
+    !! factorization of the matrix, and DGETRI to invert the LU factored
+    !! matrix.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/Invertible_matrix)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixInverse.html)
+    subroutine mtx_inverse(a, iwork, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        integer(i32), intent(out), pointer, optional, dimension(:) :: iwork
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: n, liwork, lwork, istat, flag
+        integer(i32), pointer, dimension(:) :: iptr
+        integer(i32), allocatable, target, dimension(:) :: iwrk
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(a, 1)
+        liwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            call errmgr%report_error("mtx_inverse", &
+                "The matrix must be squre to invert.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGETRI(n, a, n, istat, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Workspace Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("mtx_inverse", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("svd", &
+                        "Incorrectly sized input array WORK, argument 3.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_inverse", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Integer Workspace Allocation
+        if (present(iwork)) then
+            if (.not.associated(iwork)) then
+                allocate(iwrk(liwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("mtx_inverse", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                iptr => iwrk
+            else
+                if (size(iwork) < liwork) then
+                    ! ERROR: IWORK not sized correctly
+                    call errmgr%report_error("svd", &
+                        "Incorrectly sized input array IWORK, argument 2.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                iptr => iwork(1:liwork)
+            end if
+        else
+            allocate(iwrk(liwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_inverse", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+        end if
+
+        ! Compute the LU factorization of A
+        call DGETRF(n, n, a, n, iptr, flag)
+
+        ! Compute the inverse of the LU factored matrix
+        call DGETRI(n, a, n, iptr, wptr, lwork, flag)
+
+        ! Check for a singular matrix
+        if (flag > 0) then
+            call errmgr%report_error("mtx_inverse", &
+                "The matrix is singular; therefore, the inverse could " // &
+                "not be computed.", LA_SINGULAR_MATRIX_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
+    !! using the singular value decomposition of the matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
+    !!  overwritten on output.
+    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
+    !!  will be written.
+    !! @param[in] tol An optional input, that if supplied, overrides the default
+    !!  tolerance on singular values such that singular values less than this
+    !!  tolerance are forced to have a reciprocal of zero, as opposed to 1/S(I).
+    !!  The default tolerance is: MAX(M, N) * EPS * MAX(S).  If the supplied
+    !!  value is less than a value that causes an overflow, the tolerance
+    !!  reverts back to its default value, and the operation continues;
+    !!  however, a warning message is issued.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par Usage
+    !! @code{.f90}
+    !! ! Use the pseudo-inverse to obtain a least-squares solution to the
+    !! ! overdetermined problem A*X = B, where A is an M-by-N matrix (M >= N),
+    !! ! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.
+    !!
+    !! ! Variables
+    !! real(dp), dimension(m, n) :: a
+    !! real(dp), dimension(n, m) :: ainv
+    !! real(dp), dimension(m, nrhs) :: b
+    !! real(dp), dimension(n, nrhs) :: x
+    !!
+    !! ! Initialize A, and B...
+    !!
+    !! ! Compute the pseudo-inverse of A.  Let the subroutine allocate its
+    !! ! own workspace array.
+    !! call mtx_pinverse(a, ainv)
+    !!
+    !! ! Compute X = AINV * B to obtain the solution.
+    !! x = matmul(ainv, b)
+    !! @endcode
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/Moore-PenroseMatrixInverse.html)
+    !! - [MathWorks](http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle)
+    subroutine mtx_pinverse(a, ainv, tol, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(out), dimension(:,:) :: ainv
+        real(dp), intent(in), optional :: tol
+        real(dp), intent(out), pointer, dimension(:), optional :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+
+        ! Local Variables
+        integer(i32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
+            i3b, i4
+        real(dp), pointer, dimension(:) :: s, wptr, w
+        real(dp), pointer, dimension(:,:) :: u, vt
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        real(dp) :: t, tref
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        i1 = m * mn
+        i2a = i1 + 1
+        i2b = i2a + n * n - 1
+        i3a = i2b + 1
+        i3b = i3a + mn - 1
+        i4 = i3b + 1
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
+            write(errmsg, '(AI0AI0A)') &
+                "The output matrix AINV is not sized appropriately.  " // &
+                "It is expected to be ", n, "-by-", m, "."
+            call errmgr%report_error("mtx_pinverse", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        lwork = lwork + m * mn + n * n + mn
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("mtx_pinverse", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("mtx_pinverse", &
+                        "Incorrectly sized input array WORK, argument 4.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_pinverse", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+        u(1:m,1:mn) => wptr(1:i1)
+        vt(1:n,1:n) => wptr(i2a:i2b)
+        s => wptr(i3a:i3b)
+        w => wptr(i4:lwork)
+
+        ! Compute the SVD of A
+        call DGESVD('S', 'A', m, n, a, m, s, u, m, vt, n, w, size(w), flag)
+
+        ! Check for convergence
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("mtx_pinverse", errmsg, &
+                LA_CONVERGENCE_ERROR)
+            return
+        end if
+
+        ! Determine the threshold tolerance for the singular values such that
+        ! singular values less than the threshold result in zero when inverted.
+        tref = max(m, n) * epsilon(t) * s(1)
+        if (present(tol)) then
+            t = tol
+        else
+            t = tref
+        end if
+        if (t < safe_denom(t)) then
+            ! The supplied tolerance is too small, simply fall back to the
+            ! default, but issue a warning to the user
+            t = tref
+            ! call errmgr%report_warning("pinverse_1", "The supplied tolerance was " // &
+            !     "smaller than a value that would result in an overflow " // &
+            !     "condition, or is negative; therefore, the tolerance has " // &
+            !     "been reset to its default value.")
+        end if
+
+        ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**T by
+        ! first computing V * inv(S) (result is N-by-M), and store in the first
+        ! MN rows of VT in a transposed manner.
+        do i = 1, mn
+            ! Apply 1 / S(I) to VT(I,:)
+            if (s(i) < t) then
+                vt(i,:) = zero
+            else
+                call recip_mult(s(i), vt(i,:))
+            end if
+        end do
+
+        ! Compute (VT**T * inv(S)) * U**T
+        call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
+    end subroutine
+
+
+
+! ******************************************************************************
+! PRIVATE HELPER ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Computes the smallest number X such that 1 / X does not overflow.
+    !!
+    !! @param[in] arg A dummy parameter used to determine type.
+    !!
+    !! @return The value X such that 1 / X does not overflow.
+    pure function safe_denom(arg) result(sfmin)
+        ! Arguments
+        real(dp), intent(in) :: arg
+        real(dp) :: sfmin
+
+        ! Process
+        real(dp), parameter :: one = 1.0d0
+        real(dp) :: small
+        sfmin = tiny(arg)
+        small = one / huge(small)
+        if (small >= sfmin) then
+            sfmin = small * (one + epsilon(sfmin))
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a vector by the reciprocal of a real scalar.
+    !!
+    !! @param[in] a The scalar which is used to divide each component of @p X.
+    !!  The value must be >= 0, or the subroutine will divide by zero.
+    !! @param[in,out] x The vector.
+    !!
+    !! @par Notes
+    !! This routine is based upon the LAPACK routine DRSCL.
+    subroutine recip_mult(a, x)
+        ! Arguments
+        real(dp), intent(in) :: a
+        real(dp), intent(inout), dimension(:) :: x
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+        real(dp), parameter :: twotho = 2.0d3
+
+        ! Local Variables
+        logical :: done
+        real(dp) :: bignum, cden, cden1, cnum, cnum1, mul, smlnum
+
+        ! Initialization
+        smlnum = safe_denom(smlnum)
+        bignum = one / smlnum
+        if (log10(bignum) > twotho) then
+            smlnum = sqrt(smlnum)
+            bignum = sqrt(bignum)
+        end if
+
+        ! Initialize the denominator to A, and the numerator to ONE
+        cden = a
+        cnum = one
+
+        ! Process
+        do
+            cden1 = cden * smlnum
+            cnum1 = cnum / bignum
+            if (abs(cden1) > abs(cnum) .and. cnum /= zero) then
+                mul = smlnum
+                done = .false.
+                cden = cden1
+            else if (abs(cnum1) > abs(cden)) then
+                mul = bignum
+                done = .false.
+                cnum = cnum1
+            else
+                mul = cnum / cden
+                done = .true.
+            end if
+
+            ! Scale the vector X by MUL
+            x = mul * x
+
+            ! Exit if done
+            if (done) exit
+        end do
+    end subroutine
+
 
 end module

@@ -2182,9 +2182,6 @@ contains
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("svd", errmsg, LA_CONVERGENCE_ERROR)
         end if
-
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
 

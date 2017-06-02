@@ -1477,7 +1477,7 @@ contains
             else
                 if (size(work) < lwork) then
                     ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mtx_pinverse", &
+                    call errmgr%report_error("least_squares_solve_mtx", &
                         "Incorrectly sized input array WORK, argument 3.", &
                         LA_ARRAY_SIZE_ERROR)
                     return
@@ -1527,44 +1527,49 @@ contains
     !! @param[out] olwork An optional output used to determine workspace size.
     !!  If supplied, the routine determines the optimal size for @p work, and
     !!  returns without performing any actual calculations.
-    !! @param[out] info An optional output that returns information regarding
-    !! any erroneous behavior that occurred during execution of the function.
-    !! If not used, and an error occurs, the error information will be provided
-    !! via printed output.  Possible error codes are as follows:
-    !! - NO_ERROR: No error encountered.
-    !! - INVALID_INPUT_ERROR: Occurs if any of the arrays are not sized
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
+    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELS.
-    subroutine least_squares_solve_vec(a, b, work, olwork, info)
+    subroutine least_squares_solve_vec(a, b, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
         real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork, info
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(i32) :: m, n, maxmn, lwork, istat, flag
         real(dp), pointer, dimension(:) :: wptr
         real(dp), allocatable, target, dimension(:) :: wrk
         real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
 
         ! Initialization
         m = size(a, 1)
         n = size(a, 2)
         maxmn = max(m, n)
-        if (present(info)) info = NO_ERROR
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
 
         ! Input Check
         if (size(b) /= maxmn) then
-            if (present(info)) then
-                info = INVALID_INPUT_ERROR
-            else
-                call report_invalid_input_error("least_squares_solve_vec", 2)
-            end if
+            call errmgr%report_error("least_squares_solve_vec", &
+                "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
             return
         end if
 
@@ -1581,24 +1586,19 @@ contains
             if (.not.associated(work)) then
                 allocate(wrk(lwork), stat = istat)
                 if (istat /= 0) then
-                    if (present(info)) then
-                        info = OUT_OF_MEMORY_ERROR
-                    else
-                        call report_error("least_squares_solve_vec", &
-                            "Insufficient memory available.", &
-                            OUT_OF_MEMORY_ERROR)
-                    end if
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("least_squares_solve_vec", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
                     return
                 end if
                 wptr => wrk
             else
                 if (size(work) < lwork) then
-                    if (present(info)) then
-                        info = INVALID_INPUT_ERROR
-                    else
-                        call report_invalid_input_error( &
-                            "least_squares_solve_vec", 3)
-                    end if
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("least_squares_solve_vec", &
+                        "Incorrectly sized input array WORK, argument 3.", &
+                        LA_ARRAY_SIZE_ERROR)
                     return
                 end if
                 wptr => work(1:lwork)
@@ -1606,13 +1606,10 @@ contains
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
-                if (present(info)) then
-                    info = OUT_OF_MEMORY_ERROR
-                else
-                    call report_error("least_squares_solve_vec", &
-                        "Insufficient memory available.", &
-                        OUT_OF_MEMORY_ERROR)
-                end if
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_vec", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
                 return
             end if
             wptr => wrk
@@ -1621,18 +1618,12 @@ contains
         ! Process
         call DGELS('N', m, n, 1, a, m, b, maxmn, wptr, lwork, flag)
         if (flag > 0) then
-            if (present(info)) then
-                info = INVALID_OPERATION_ERROR
-            else
-                call report_error("least_squares_solve_vec", &
-                    "The supplied matrix is not of full rank; therefore, " // &
-                    "the least-squares solution could not be computed via " // &
-                    "this method.", INVALID_OPERATION_ERROR)
-            end if
+            call errmgr%report_error("least_squares_solve_mtx", &
+                "The supplied matrix is not of full rank; therefore, " // &
+                "the solution could not be computed via this routine.  " // &
+                "Try a routine that utilizes column pivoting.", &
+                LA_INVALID_OPERATION_ERROR)
         end if
-
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1654,32 +1645,43 @@ contains
     !! @param[out] olwork An optional output used to determine workspace size.
     !!  If supplied, the routine determines the optimal size for @p work, and
     !!  returns without performing any actual calculations.
-    !! @param[out] info An optional output that returns information regarding
-    !! any erroneous behavior that occurred during execution of the function.
-    !! If not used, and an error occurs, the error information will be provided
-    !! via printed output.  Possible error codes are as follows:
-    !! - NO_ERROR: No error encountered.
-    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    !! - INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELS.
-    subroutine least_squares_solve_mtx_1(a, b, x, work, olwork, info)
+    subroutine least_squares_solve_mtx_1(a, b, x, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         real(dp), intent(out), dimension(:,:) :: x
         real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork, info
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(i32) :: m, n
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
 
         ! Workspace Query
         if (present(olwork)) then
-            call least_squares_solve(a, b, work, olwork, info)
+            call least_squares_solve(a, b, work, olwork)
             return
         end if
 
@@ -1687,19 +1689,27 @@ contains
         m = size(a, 1)
         n = size(a, 2)
         if (size(b, 2) /= size(x, 2) .or. size(x, 1) /= n) then
-            if (present(info)) then
-                info = INVALID_INPUT_ERROR
+            if (size(b, 2) /= size(x, 2)) then
+                write(errmsg, '(AI0AI0A)') &
+                    "The number of columns in matrices B and X must " // &
+                    "match.  B has ", size(b, 2), " columns, and X has ", &
+                    size(x, 2), " columns."
             else
-                call report_invalid_input_error("least_squares_solve_mtx_1", 3)
+                write(errmsg, '(AI0AI0A)') &
+                    "The matrix X was expected to have ", n, &
+                    " rows, but was found to have ", size(x, 1), " rows."
             end if
+
+            call errmgr%report_error("least_squares_solve_mtx_1", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
         if (m >= n) then
-            call least_squares_solve(a, b, work, info = info)
+            call least_squares_solve(a, b, work, err = errmgr)
             x = b(1:n,:)
         else
             x(1:m,:) = b
-            call least_squares_solve(a, x, work, info = info)
+            call least_squares_solve(a, x, work, err = errmgr)
         end if
     end subroutine
 
@@ -1727,25 +1737,26 @@ contains
     !! @param[out] olwork An optional output used to determine workspace size.
     !!  If supplied, the routine determines the optimal size for @p work, and
     !!  returns without performing any actual calculations.
-    !! @param[out] info An optional output that returns information regarding
-    !! any erroneous behavior that occurred during execution of the function.
-    !! If not used, and an error occurs, the error information will be provided
-    !! via printed output.  Possible error codes are as follows:
-    !! - NO_ERROR: No error encountered.
-    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine least_squares_solve_mtx_pvt(a, b, ipvt, arnk, work, olwork, info)
+    subroutine least_squares_solve_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         integer(i32), intent(inout), dimension(:) :: ipvt
         integer(i32), intent(out), optional :: arnk
         real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork, info
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
@@ -1753,6 +1764,9 @@ contains
         real(dp), allocatable, target, dimension(:) :: wrk
         real(dp), dimension(1) :: temp
         real(dp) :: rc
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1761,7 +1775,11 @@ contains
         nrhs = size(b, 2)
         rc = epsilon(rc)
         if (present(arnk)) arnk = 0
-        if (present(info)) info = NO_ERROR
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
 
         ! Input Check
         flag = 0
@@ -1771,12 +1789,10 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            if (present(info)) then
-                info = INVALID_INPUT_ERROR
-            else
-                call report_invalid_input_error("least_squares_solve_mtx_pvt", &
-                    flag)
-            end if
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
 
@@ -1793,24 +1809,19 @@ contains
             if (.not.associated(work)) then
                 allocate(wrk(lwork), stat = istat)
                 if (istat /= 0) then
-                    if (present(info)) then
-                        info = OUT_OF_MEMORY_ERROR
-                    else
-                        call report_error("least_squares_solve_mtx_pvt", &
-                            "Insufficient memory available.", &
-                            OUT_OF_MEMORY_ERROR)
-                    end if
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
                     return
                 end if
                 wptr => wrk
             else
                 if (size(work) < lwork) then
-                    if (present(info)) then
-                        info = INVALID_INPUT_ERROR
-                    else
-                        call report_invalid_input_error( &
-                            "least_squares_solve_mtx_pvt", 5)
-                    end if
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                        "Incorrectly sized input array WORK, argument 5.", &
+                        LA_ARRAY_SIZE_ERROR)
                     return
                 end if
                 wptr => work(1:lwork)
@@ -1818,13 +1829,10 @@ contains
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
-                if (present(info)) then
-                    info = OUT_OF_MEMORY_ERROR
-                else
-                    call report_error("least_squares_solve_mtx_pvt", &
-                        "Insufficient memory available.", &
-                        OUT_OF_MEMORY_ERROR)
-                end if
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
                 return
             end if
             wptr => wrk
@@ -1834,9 +1842,6 @@ contains
         call DGELSY(m, n, nrhs, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, &
             flag)
         if (present(arnk)) arnk = rnk
-
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1863,26 +1868,27 @@ contains
     !! @param[out] olwork An optional output used to determine workspace size.
     !!  If supplied, the routine determines the optimal size for @p work, and
     !!  returns without performing any actual calculations.
-    !! @param[out] info An optional output that returns information regarding
-    !! any erroneous behavior that occurred during execution of the function.
-    !! If not used, and an error occurs, the error information will be provided
-    !! via printed output.  Possible error codes are as follows:
-    !! - NO_ERROR: No error encountered.
-    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine least_squares_solve_vec_pvt(a, b, ipvt, arnk, work, olwork, info)
+    subroutine least_squares_solve_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
         integer(i32), intent(inout), dimension(:) :: ipvt
         integer(i32), intent(out), optional :: arnk
         real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork, info
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(i32) :: m, n, maxmn, lwork, istat, flag, rnk
@@ -1890,6 +1896,9 @@ contains
         real(dp), allocatable, target, dimension(:) :: wrk
         real(dp), dimension(1) :: temp
         real(dp) :: rc
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1897,7 +1906,11 @@ contains
         maxmn = max(m, n)
         rc = epsilon(rc)
         if (present(arnk)) arnk = 0
-        if (present(info)) info = NO_ERROR
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
 
         ! Input Check
         flag = 0
@@ -1907,12 +1920,10 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            if (present(info)) then
-                info = INVALID_INPUT_ERROR
-            else
-                call report_invalid_input_error("least_squares_solve_vec_pvt", &
-                    flag)
-            end if
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("least_squares_solve_vec_pvt", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
 
@@ -1929,24 +1940,19 @@ contains
             if (.not.associated(work)) then
                 allocate(wrk(lwork), stat = istat)
                 if (istat /= 0) then
-                    if (present(info)) then
-                        info = OUT_OF_MEMORY_ERROR
-                    else
-                        call report_error("least_squares_solve_vec_pvt", &
-                            "Insufficient memory available.", &
-                            OUT_OF_MEMORY_ERROR)
-                    end if
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("least_squares_solve_vec_pvt", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
                     return
                 end if
                 wptr => wrk
             else
                 if (size(work) < lwork) then
-                    if (present(info)) then
-                        info = INVALID_INPUT_ERROR
-                    else
-                        call report_invalid_input_error( &
-                            "least_squares_solve_vec_pvt", 5)
-                    end if
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("least_squares_solve_vec_pvt", &
+                        "Incorrectly sized input array WORK, argument 5.", &
+                        LA_ARRAY_SIZE_ERROR)
                     return
                 end if
                 wptr => work(1:lwork)
@@ -1954,13 +1960,10 @@ contains
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
-                if (present(info)) then
-                    info = OUT_OF_MEMORY_ERROR
-                else
-                    call report_error("least_squares_solve_vec_pvt", &
-                        "Insufficient memory available.", &
-                        OUT_OF_MEMORY_ERROR)
-                end if
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_vec_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
                 return
             end if
             wptr => wrk
@@ -1969,9 +1972,6 @@ contains
         ! Process
         call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, flag)
         if (present(arnk)) arnk = rnk
-
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
 

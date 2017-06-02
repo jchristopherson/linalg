@@ -423,7 +423,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(out), dimension(:) :: tau
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -464,26 +464,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("qr_factor_no_pivot", &
-                        "Incorrectly sized input array WORK, argument 3.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            else
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("qr_factor_no_pivot", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("qr_factor_no_pivot", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -590,7 +578,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(out), dimension(:) :: tau
         integer(i32), intent(inout), dimension(:) :: jpvt
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -639,26 +627,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("qr_factor_pivot", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
-            else
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("qr_factor_pivot", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("qr_factor_pivot", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -717,7 +693,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: r
         real(dp), intent(in), dimension(:) :: tau
         real(dp), intent(out), dimension(:,:) :: q
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -772,26 +748,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("form_qr_no_pivot", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("form_qr_no_pivot", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("form_qr_no_pivot", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -861,7 +825,7 @@ contains
         real(dp), intent(in), dimension(:) :: tau
         integer(i32), intent(in), dimension(:) :: pvt
         real(dp), intent(out), dimension(:,:) :: q, p
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -962,7 +926,7 @@ contains
         logical, intent(in) :: lside, trans
         real(dp), intent(in), dimension(:) :: tau
         real(dp), intent(inout), dimension(:,:) :: a, c
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1029,26 +993,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mult_qr_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mult_qr_mtx", &
-                        "Incorrectly sized input array WORK, argument 6.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_qr_mtx", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1102,7 +1054,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(in), dimension(:) :: tau
         real(dp), intent(inout), dimension(:) :: c
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1157,26 +1109,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mult_qr_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mult_qr_vec", &
-                        "Incorrectly sized input array WORK, argument 6.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_qr_vec", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1238,7 +1178,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: q, r
         real(dp), intent(inout), dimension(:) :: u, v
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
@@ -1286,26 +1226,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("qr_rank1_update", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("qr_rank1_update", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("qr_rank1_update", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1470,7 +1398,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: r
         real(dp), intent(inout), dimension(:) :: u
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
@@ -1507,24 +1435,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    call errmgr%report_error("cholesky_rank1_update", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    call errmgr%report_error("cholesky_rank1_update", &
-                        "The workspace array is too short.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: Workspace array is not sized correctly
+                call errmgr%report_error("cholesky_rank1_update", &
+                    "The workspace array is too short.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1611,7 +1529,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(out), dimension(:) :: tau
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1657,28 +1575,16 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(work(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("rz_factor", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("rz_factor", &
-                        "Incorrectly sized input array WORK, argument 3.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("rz_factor", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
-            allocate(work(lwork), stat = istat)
+            allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
                 call errmgr%report_error("rz_factor", &
@@ -1737,7 +1643,7 @@ contains
         integer(i32), intent(in) :: l
         real(dp), intent(inout), dimension(:,:) :: a, c
         real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1810,28 +1716,16 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(work(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mult_rz_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mult_rz_mtx", &
-                        "Incorrectly sized input array WORK, argument 7.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_rz_mtx", &
+                    "Incorrectly sized input array WORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
-            allocate(work(lwork), stat = istat)
+            allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
                 call errmgr%report_error("mult_rz_mtx", &
@@ -1892,7 +1786,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(in), dimension(:) :: tau
         real(dp), intent(inout), dimension(:) :: c
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1950,28 +1844,16 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(work(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mult_rz_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mult_rz_vec", &
-                        "Incorrectly sized input array WORK, argument 6.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_rz_vec", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
-            allocate(work(lwork), stat = istat)
+            allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
                 call errmgr%report_error("mult_rz_vec", &
@@ -2061,7 +1943,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(out), dimension(:) :: s
         real(dp), intent(out), optional, dimension(:,:) :: u, vt
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -2129,26 +2011,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("svd", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("svd", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("svd", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then

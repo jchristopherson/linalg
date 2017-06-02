@@ -33,4 +33,6 @@ module linalg_constants
     integer, parameter :: LA_OUT_OF_MEMORY_ERROR = 105
     !> An error flag denoting a convergence failure.
     integer, parameter :: LA_CONVERGENCE_ERROR = 106
+    !> An error resulting from an invalid operation.
+    integer, parameter :: LA_INVALID_OPERATION_ERROR = 107
 end module

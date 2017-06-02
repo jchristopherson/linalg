@@ -73,6 +73,17 @@ module linalg_solve
         module procedure :: solve_cholesky_vec
     end interface
 
+! ------------------------------------------------------------------------------
+!> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+!! M equations of N unknowns.
+interface least_squares_solve
+    module procedure :: least_squares_solve_mtx
+    module procedure :: least_squares_solve_vec
+    module procedure :: least_squares_solve_mtx_1
+    module procedure :: least_squares_solve_mtx_pvt
+    module procedure :: least_squares_solve_vec_pvt
+end interface
+
 ! ******************************************************************************
 ! LAPACK FUNCTION INTERFACES
 ! ------------------------------------------------------------------------------
@@ -1375,6 +1386,593 @@ contains
         call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
     end subroutine
 
+! ******************************************************************************
+! LEAST SQUARES SOLUTION ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
+    !! Notice, it is assumed that matrix A has full rank.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
+    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  if M < N, the LQ factorization of A in the form as output by
+    !!  @ref lq_factor.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELS.
+    subroutine least_squares_solve_mtx(a, b, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a, b
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        nrhs = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(b, 1) /= maxmn) then
+            call errmgr%report_error("least_squares_solve_mtx", &
+                "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGELS('N', m, n, nrhs, a, m, b, maxmn, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    ! ERROR: Out of memory
+                    call errmgr%report_error("least_squares_solve_mtx", &
+                        "Insufficient memory available.", &
+                        LA_OUT_OF_MEMORY_ERROR)
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    ! ERROR: WORK not sized correctly
+                    call errmgr%report_error("mtx_pinverse", &
+                        "Incorrectly sized input array WORK, argument 3.", &
+                        LA_ARRAY_SIZE_ERROR)
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_mtx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELS('N', m, n, nrhs, a, m, b, maxmn, wptr, lwork, flag)
+        if (flag > 0) then
+            call errmgr%report_error("least_squares_solve_mtx", &
+                "The supplied matrix is not of full rank; therefore, " // &
+                "the solution could not be computed via this routine.  " // &
+                "Try a routine that utilizes column pivoting.", &
+                LA_INVALID_OPERATION_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
+    !! Notice, it is assumed that matrix A has full rank.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
+    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  if M < N, the LQ factorization of A in the form as output by
+    !!  @ref lq_factor.
+    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
+    !!  N elements contain the N-element solution array X.  If M < N, an
+    !!  N-element array with the first M elements containing the array B.  On
+    !!  output, the N-element solution array X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] info An optional output that returns information regarding
+    !! any erroneous behavior that occurred during execution of the function.
+    !! If not used, and an error occurs, the error information will be provided
+    !! via printed output.  Possible error codes are as follows:
+    !! - NO_ERROR: No error encountered.
+    !! - INVALID_INPUT_ERROR: Occurs if any of the arrays are not sized
+    !!      appropriately.
+    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELS.
+    subroutine least_squares_solve_vec(a, b, work, olwork, info)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(inout), dimension(:) :: b
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork, info
+
+        ! Local Variables
+        integer(i32) :: m, n, maxmn, lwork, istat, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        if (present(info)) info = NO_ERROR
+
+        ! Input Check
+        if (size(b) /= maxmn) then
+            if (present(info)) then
+                info = INVALID_INPUT_ERROR
+            else
+                call report_invalid_input_error("least_squares_solve_vec", 2)
+            end if
+            return
+        end if
+
+        ! Workspace Query
+        call DGELS('N', m, n, 1, a, m, b, maxmn, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    if (present(info)) then
+                        info = OUT_OF_MEMORY_ERROR
+                    else
+                        call report_error("least_squares_solve_vec", &
+                            "Insufficient memory available.", &
+                            OUT_OF_MEMORY_ERROR)
+                    end if
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    if (present(info)) then
+                        info = INVALID_INPUT_ERROR
+                    else
+                        call report_invalid_input_error( &
+                            "least_squares_solve_vec", 3)
+                    end if
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                if (present(info)) then
+                    info = OUT_OF_MEMORY_ERROR
+                else
+                    call report_error("least_squares_solve_vec", &
+                        "Insufficient memory available.", &
+                        OUT_OF_MEMORY_ERROR)
+                end if
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELS('N', m, n, 1, a, m, b, maxmn, wptr, lwork, flag)
+        if (flag > 0) then
+            if (present(info)) then
+                info = INVALID_OPERATION_ERROR
+            else
+                call report_error("least_squares_solve_vec", &
+                    "The supplied matrix is not of full rank; therefore, " // &
+                    "the least-squares solution could not be computed via " // &
+                    "this method.", INVALID_OPERATION_ERROR)
+            end if
+        end if
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
+    !! Notice, it is assumed that matrix A has full rank.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
+    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  if M < N, the LQ factorization of A in the form as output by
+    !!  @ref lq_factor.
+    !! @param[in,out] b On input, the M-by-NRHS matrix B.  On output the
+    !!  contents are overwritten.
+    !! @param[out] x The N-by-NRHS solution matrix X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] info An optional output that returns information regarding
+    !! any erroneous behavior that occurred during execution of the function.
+    !! If not used, and an error occurs, the error information will be provided
+    !! via printed output.  Possible error codes are as follows:
+    !! - NO_ERROR: No error encountered.
+    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !!      appropriately.
+    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !! - INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELS.
+    subroutine least_squares_solve_mtx_1(a, b, x, work, olwork, info)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a, b
+        real(dp), intent(out), dimension(:,:) :: x
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork, info
+
+        ! Local Variables
+        integer(i32) :: m, n
+
+        ! Workspace Query
+        if (present(olwork)) then
+            call least_squares_solve(a, b, work, olwork, info)
+            return
+        end if
+
+        ! Process
+        m = size(a, 1)
+        n = size(a, 2)
+        if (size(b, 2) /= size(x, 2) .or. size(x, 1) /= n) then
+            if (present(info)) then
+                info = INVALID_INPUT_ERROR
+            else
+                call report_invalid_input_error("least_squares_solve_mtx_1", 3)
+            end if
+            return
+        end if
+        if (m >= n) then
+            call least_squares_solve(a, b, work, info = info)
+            x = b(1:n,:)
+        else
+            x(1:m,:) = b
+            call least_squares_solve(a, x, work, info = info)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a complete orthogonal factorization of
+    !! matrix A.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
+    !!  is overwritten by the details of its complete orthogonal factorization.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[out] ipvt On input, an N-element array that if IPVT(I) .ne. 0,
+    !!  the I-th column of A is permuted to the front of A * P; if IPVT(I) = 0,
+    !!  the I-th column of A is a free column.  On output, if IPVT(I) = K, then
+    !!  the I-th column of A * P was the K-th column of A.
+    !! @param[out] arnk An optional output, that if provided, will return the
+    !!  rank of @p a.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] info An optional output that returns information regarding
+    !! any erroneous behavior that occurred during execution of the function.
+    !! If not used, and an error occurs, the error information will be provided
+    !! via printed output.  Possible error codes are as follows:
+    !! - NO_ERROR: No error encountered.
+    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !!      appropriately.
+    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELSY.
+    subroutine least_squares_solve_mtx_pvt(a, b, ipvt, arnk, work, olwork, info)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a, b
+        integer(i32), intent(inout), dimension(:) :: ipvt
+        integer(i32), intent(out), optional :: arnk
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork, info
+
+        ! Local Variables
+        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        real(dp) :: rc
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        nrhs = size(b, 2)
+        rc = epsilon(rc)
+        if (present(arnk)) arnk = 0
+        if (present(info)) info = NO_ERROR
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        else if (size(ipvt) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            if (present(info)) then
+                info = INVALID_INPUT_ERROR
+            else
+                call report_invalid_input_error("least_squares_solve_mtx_pvt", &
+                    flag)
+            end if
+            return
+        end if
+
+        ! Workspace Query
+        call DGELSY(m, n, nrhs, a, m, b, maxmn, ipvt, rc, rnk, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    if (present(info)) then
+                        info = OUT_OF_MEMORY_ERROR
+                    else
+                        call report_error("least_squares_solve_mtx_pvt", &
+                            "Insufficient memory available.", &
+                            OUT_OF_MEMORY_ERROR)
+                    end if
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    if (present(info)) then
+                        info = INVALID_INPUT_ERROR
+                    else
+                        call report_invalid_input_error( &
+                            "least_squares_solve_mtx_pvt", 5)
+                    end if
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                if (present(info)) then
+                    info = OUT_OF_MEMORY_ERROR
+                else
+                    call report_error("least_squares_solve_mtx_pvt", &
+                        "Insufficient memory available.", &
+                        OUT_OF_MEMORY_ERROR)
+                end if
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELSY(m, n, nrhs, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, &
+            flag)
+        if (present(arnk)) arnk = rnk
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a complete orthogonal factorization of
+    !! matrix A.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
+    !!  is overwritten by the details of its complete orthogonal factorization.
+    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
+    !!  N elements contain the N-element solution array X.  If M < N, an
+    !!  N-element array with the first M elements containing the array B.  On
+    !!  output, the N-element solution array X.
+    !! @param[out] ipvt On input, an N-element array that if IPVT(I) .ne. 0,
+    !!  the I-th column of A is permuted to the front of A * P; if IPVT(I) = 0,
+    !!  the I-th column of A is a free column.  On output, if IPVT(I) = K, then
+    !!  the I-th column of A * P was the K-th column of A.
+    !! @param[out] arnk An optional output, that if provided, will return the
+    !!  rank of @p a.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] info An optional output that returns information regarding
+    !! any erroneous behavior that occurred during execution of the function.
+    !! If not used, and an error occurs, the error information will be provided
+    !! via printed output.  Possible error codes are as follows:
+    !! - NO_ERROR: No error encountered.
+    !! - INVALID_INPUT_ERROR: Occurs if any of the matrices are not sized
+    !!      appropriately.
+    !! - OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELSY.
+    subroutine least_squares_solve_vec_pvt(a, b, ipvt, arnk, work, olwork, info)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(inout), dimension(:) :: b
+        integer(i32), intent(inout), dimension(:) :: ipvt
+        integer(i32), intent(out), optional :: arnk
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork, info
+
+        ! Local Variables
+        integer(i32) :: m, n, maxmn, lwork, istat, flag, rnk
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        real(dp) :: rc
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        rc = epsilon(rc)
+        if (present(arnk)) arnk = 0
+        if (present(info)) info = NO_ERROR
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        else if (size(ipvt) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            if (present(info)) then
+                info = INVALID_INPUT_ERROR
+            else
+                call report_invalid_input_error("least_squares_solve_vec_pvt", &
+                    flag)
+            end if
+            return
+        end if
+
+        ! Workspace Query
+        call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (.not.associated(work)) then
+                allocate(wrk(lwork), stat = istat)
+                if (istat /= 0) then
+                    if (present(info)) then
+                        info = OUT_OF_MEMORY_ERROR
+                    else
+                        call report_error("least_squares_solve_vec_pvt", &
+                            "Insufficient memory available.", &
+                            OUT_OF_MEMORY_ERROR)
+                    end if
+                    return
+                end if
+                wptr => wrk
+            else
+                if (size(work) < lwork) then
+                    if (present(info)) then
+                        info = INVALID_INPUT_ERROR
+                    else
+                        call report_invalid_input_error( &
+                            "least_squares_solve_vec_pvt", 5)
+                    end if
+                    return
+                end if
+                wptr => work(1:lwork)
+            end if
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                if (present(info)) then
+                    info = OUT_OF_MEMORY_ERROR
+                else
+                    call report_error("least_squares_solve_vec_pvt", &
+                        "Insufficient memory available.", &
+                        OUT_OF_MEMORY_ERROR)
+                end if
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, flag)
+        if (present(arnk)) arnk = rnk
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
 
 
 end module

@@ -16,6 +16,8 @@ module linalg_solve
     public :: solve_cholesky
     public :: mtx_inverse
     public :: mtx_pinverse
+    public :: least_squares_solve
+    public :: least_square_solve_full
 
 ! ******************************************************************************
 ! INTERFACES
@@ -74,15 +76,22 @@ module linalg_solve
     end interface
 
 ! ------------------------------------------------------------------------------
-!> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-!! M equations of N unknowns.
-interface least_squares_solve
-    module procedure :: least_squares_solve_mtx
-    module procedure :: least_squares_solve_vec
-    module procedure :: least_squares_solve_mtx_1
-    module procedure :: least_squares_solve_mtx_pvt
-    module procedure :: least_squares_solve_vec_pvt
-end interface
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns.
+    interface least_squares_solve
+        module procedure :: least_squares_solve_mtx
+        module procedure :: least_squares_solve_vec
+        module procedure :: least_squares_solve_mtx_1
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns, but uses a full orthogonal factorization of
+    !! the system.
+    interface least_square_solve_full
+        module procedure :: least_squares_solve_mtx_pvt
+        module procedure :: least_squares_solve_vec_pvt
+    end interface
 
 ! ******************************************************************************
 ! LAPACK FUNCTION INTERFACES
@@ -257,7 +266,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -310,26 +319,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -385,7 +382,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(in), dimension(:) :: tau
         real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -434,26 +431,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_no_pivot_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_vec", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_vec", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -512,7 +497,7 @@ contains
         real(dp), intent(in), dimension(:) :: tau
         integer(i32), intent(in), dimension(:) :: jpvt
         real(dp), intent(inout), dimension(:,:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -578,26 +563,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_pivot_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -712,7 +685,7 @@ contains
         real(dp), intent(in), dimension(:) :: tau
         integer(i32), intent(in), dimension(:) :: jpvt
         real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -775,26 +748,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("solve_qr_pivot_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("solve_qr_no_pivot_mtx", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1059,8 +1020,8 @@ contains
     subroutine mtx_inverse(a, iwork, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
-        integer(i32), intent(out), pointer, optional, dimension(:) :: iwork
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), target, optional, dimension(:) :: iwork
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1100,26 +1061,14 @@ contains
 
         ! Workspace Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mtx_inverse", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("svd", &
-                        "Incorrectly sized input array WORK, argument 3.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("svd", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1134,26 +1083,14 @@ contains
 
         ! Integer Workspace Allocation
         if (present(iwork)) then
-            if (.not.associated(iwork)) then
-                allocate(iwrk(liwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mtx_inverse", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                iptr => iwrk
-            else
-                if (size(iwork) < liwork) then
-                    ! ERROR: IWORK not sized correctly
-                    call errmgr%report_error("svd", &
-                        "Incorrectly sized input array IWORK, argument 2.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                iptr => iwork(1:liwork)
+            if (size(iwork) < liwork) then
+                ! ERROR: IWORK not sized correctly
+                call errmgr%report_error("svd", &
+                    "Incorrectly sized input array IWORK, argument 2.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            iptr => iwork(1:liwork)
         else
             allocate(iwrk(liwork), stat = istat)
             if (istat /= 0) then
@@ -1245,7 +1182,7 @@ contains
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(out), dimension(:,:) :: ainv
         real(dp), intent(in), optional :: tol
-        real(dp), intent(out), pointer, dimension(:), optional :: work
+        real(dp), intent(out), target, dimension(:), optional :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1303,26 +1240,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("mtx_pinverse", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("mtx_pinverse", &
-                        "Incorrectly sized input array WORK, argument 4.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_pinverse", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1424,7 +1349,7 @@ contains
     subroutine least_squares_solve_mtx(a, b, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1464,26 +1389,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("least_squares_solve_mtx", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("least_squares_solve_mtx", &
-                        "Incorrectly sized input array WORK, argument 3.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_mtx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1544,7 +1457,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1583,26 +1496,14 @@ contains
 
         ! Local Memory Allocation
         if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("least_squares_solve_vec", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("least_squares_solve_vec", &
-                        "Incorrectly sized input array WORK, argument 3.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_vec", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1662,7 +1563,7 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         real(dp), intent(out), dimension(:,:) :: x
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1724,10 +1625,12 @@ contains
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
     !!  output, the N-by-NRHS solution matrix X.
+
     !! @param[out] ipvt On input, an N-element array that if IPVT(I) .ne. 0,
     !!  the I-th column of A is permuted to the front of A * P; if IPVT(I) = 0,
     !!  the I-th column of A is a free column.  On output, if IPVT(I) = K, then
     !!  the I-th column of A * P was the K-th column of A.
+
     !! @param[out] arnk An optional output, that if provided, will return the
     !!  rank of @p a.
     !! @param[out] work An optional input, that if provided, prevents any local
@@ -1752,9 +1655,9 @@ contains
     subroutine least_squares_solve_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
-        integer(i32), intent(inout), dimension(:) :: ipvt
+        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
         integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1762,7 +1665,10 @@ contains
         integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
         real(dp), pointer, dimension(:) :: wptr
         real(dp), allocatable, target, dimension(:) :: wrk
+        integer(i32), allocatable, target, dimension(:) :: iwrk
+        integer(i32), pointer, dimension(:) :: iptr
         real(dp), dimension(1) :: temp
+        integer(i32), dimension(1) :: itemp
         real(dp) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
@@ -1797,7 +1703,7 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSY(m, n, nrhs, a, m, b, maxmn, ipvt, rc, rnk, temp, -1, flag)
+        call DGELSY(m, n, nrhs, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
         lwork = int(temp(1), i32)
         if (present(olwork)) then
             olwork = lwork
@@ -1805,27 +1711,37 @@ contains
         end if
 
         ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("least_squares_solve_mtx_pvt", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("least_squares_solve_mtx_pvt", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+        if (present(ipvt)) then
+            if (size(ipvt) < n) then
+                ! ERROR: IPVT is not big enough
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Incorrectly sized pivot array, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            iptr => ipvt(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+            iptr = 0
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
@@ -1839,7 +1755,7 @@ contains
         end if
 
         ! Process
-        call DGELSY(m, n, nrhs, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, &
+        call DGELSY(m, n, nrhs, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
             flag)
         if (present(arnk)) arnk = rnk
     end subroutine
@@ -1884,9 +1800,9 @@ contains
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
-        integer(i32), intent(inout), dimension(:) :: ipvt
+        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
         integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        real(dp), intent(out), target, optional, dimension(:) :: work
         integer(i32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
@@ -1894,7 +1810,10 @@ contains
         integer(i32) :: m, n, maxmn, lwork, istat, flag, rnk
         real(dp), pointer, dimension(:) :: wptr
         real(dp), allocatable, target, dimension(:) :: wrk
+        integer(i32), allocatable, target, dimension(:) :: iwrk
+        integer(i32), pointer, dimension(:) :: iptr
         real(dp), dimension(1) :: temp
+        integer(i32), dimension(1) :: itemp
         real(dp) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
@@ -1928,7 +1847,7 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, temp, -1, flag)
+        call DGELSY(m, n, 1, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
         lwork = int(temp(1), i32)
         if (present(olwork)) then
             olwork = lwork
@@ -1936,27 +1855,37 @@ contains
         end if
 
         ! Local Memory Allocation
-        if (present(work)) then
-            if (.not.associated(work)) then
-                allocate(wrk(lwork), stat = istat)
-                if (istat /= 0) then
-                    ! ERROR: Out of memory
-                    call errmgr%report_error("least_squares_solve_vec_pvt", &
-                        "Insufficient memory available.", &
-                        LA_OUT_OF_MEMORY_ERROR)
-                    return
-                end if
-                wptr => wrk
-            else
-                if (size(work) < lwork) then
-                    ! ERROR: WORK not sized correctly
-                    call errmgr%report_error("least_squares_solve_vec_pvt", &
-                        "Incorrectly sized input array WORK, argument 5.", &
-                        LA_ARRAY_SIZE_ERROR)
-                    return
-                end if
-                wptr => work(1:lwork)
+        if (present(ipvt)) then
+            if (size(ipvt) < n) then
+                ! ERROR: IPVT is not big enough
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Incorrectly sized pivot array, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
             end if
+            iptr => ipvt(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+            iptr = 0
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_vec_pvt", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
         else
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then

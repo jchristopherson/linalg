@@ -6,6 +6,7 @@
 !! Provides a set of routines for solving systems of linear equations.
 module linalg_solve
     use ferror, only : errors
+    use lapack
     use linalg_constants
     use linalg_factor, only : rz_factor, mult_rz, mult_qr
     use linalg_core, only : solve_triangular_system, mtx_mult
@@ -102,18 +103,6 @@ module linalg_solve
         module procedure :: least_squares_solve_mtx_svd
         module procedure :: least_squares_solve_vec_svd
     end interface
-
-! ******************************************************************************
-! LAPACK FUNCTION INTERFACES
-! ------------------------------------------------------------------------------
-    interface
-        function DLAMCH(cmach) result(x)
-            use linalg_constants, only : dp
-            character, intent(in) :: cmach
-            real(dp) :: x
-        end function
-    end interface
-
 
 
 contains

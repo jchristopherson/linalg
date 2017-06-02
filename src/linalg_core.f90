@@ -6,6 +6,7 @@
 !! Provides common "core" linear algebra routines.
 module linalg_core
     use ferror, only : errors
+    use lapack
     use linalg_constants
     implicit none
     private
@@ -13,6 +14,9 @@ module linalg_core
     public :: mtx_mult
     public :: rank1_update
     public :: diag_mtx_mult
+    public :: trace
+    public :: mtx_rank
+    public :: det
 
 ! ******************************************************************************
 ! INTERFACES
@@ -1100,7 +1104,281 @@ contains
         end if
     end subroutine
 
+! ******************************************************************************
+! BASIC OPERATION ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Computes the trace of a matrix (the sum of the main diagonal
+    !! elements).
+    !!
+    !! @param[in] x The matrix on which to operate.
+    !!
+    !! @return The trace of @p x.
+    pure function trace(x) result(y)
+        ! Arguments
+        real(dp), intent(in), dimension(:,:) :: x
+        real(dp) :: y
 
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
 
+        ! Local Variables
+        integer(i32) :: i, m, n, mn
+
+        ! Initialization
+        y = zero
+        m = size(x, 1)
+        n = size(x, 2)
+        mn = min(m, n)
+
+        ! Process
+        do i = 1, mn
+            y = y + x(i,i)
+        end do
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank of a matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
+    !!  contents of the matrix are overwritten.
+    !! @param[in] tol An optional input, that if supplied, overrides the default
+    !!  tolerance on singular values such that singular values less than this
+    !!  tolerance are treated as zero.  The default tolerance is:
+    !!  MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
+    !!  smallest value that causes an overflow if inverted, the tolerance
+    !!  reverts back to its default value, and the operation continues; however,
+    !!  a warning message is issued.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par See Also
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
+    function mtx_rank(a, tol, work, olwork, err) result(rnk)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(in), optional :: tol
+        real(dp), intent(out), pointer, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+        integer(i32) :: rnk
+
+        ! Local Variables
+        integer(i32) :: i, m, n, mn, istat, lwork, flag
+        real(dp), pointer, dimension(:) :: wptr, s, w
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp) :: t, tref, smlnum
+        real(dp), dimension(1) :: dummy, temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        smlnum = DLAMCH('s')
+        rnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Workspace Query
+        !call svd(a, a(1:mn,1), olwork = lwork)
+        call DGESVD('N', 'N', m, n, a, m, dummy, dummy, m, dummy, n, temp, &
+            lwork, flag)
+        lwork = lwork + mn
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_rank", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_rank", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+        s => wptr(1:mn)
+        w => wptr(mn+1:lwork)
+
+        ! Compute the singular values of A
+        call DGESVD('N', 'N', m, n, a, m, s, dummy, m, dummy, n, w, &
+            lwork - mn, flag)
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("mtx_rank", errmsg, LA_CONVERGENCE_ERROR)
+        end if
+
+        ! Determine the threshold tolerance for the singular values such that
+        ! singular values less than the threshold result in zero when inverted.
+        tref = max(m, n) * epsilon(t) * s(1)
+        if (present(tol)) then
+            t = tol
+        else
+            t = tref
+        end if
+        if (t < smlnum) then
+            ! ! The supplied tolerance is too small, simply fall back to the
+            ! ! default, but issue a warning to the user
+            ! t = tref
+            ! call report_warning("mtx_rank", "The supplied tolerance was " // &
+            !     "smaller than a value that would result in an overflow " // &
+            !     "condition, or is negative; therefore, the tolerance has " // &
+            !     "been reset to its default value.")
+        end if
+
+        ! Count the singular values that are larger than the tolerance value
+        do i = 1, mn
+            if (s(i) < t) exit
+            rnk = rnk + 1
+        end do
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the determinant of a square matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !! output the contents are overwritten by the LU factorization of the
+    !! original matrix.  See @ref lu_factor for more information.
+    !! @param[out] iwork An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  N-elements.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @return The determinant of @p a.
+    function det(a, iwork, err) result(x)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        integer(i32), intent(out), pointer, optional, dimension(:) :: iwork
+        class(errors), intent(inout), optional, target :: err
+        real(dp) :: x
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+        real(dp), parameter :: ten = 1.0d1
+        real(dp), parameter :: p1 = 1.0d-1
+
+        ! Local Variables
+        integer(i32) :: i, ep, n, istat, flag
+        integer(i32), pointer, dimension(:) :: ipvt
+        integer(i32), allocatable, target, dimension(:) :: iwrk
+        real(dp) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(a, 1)
+        x = zero
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            call errmgr%report_error("det", &
+                "The supplied matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(iwork)) then
+            if (size(iwork) < n) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("det", &
+                    "Incorrectly sized input array IWORK, argument 2.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            ipvt => iwork(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("det", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            ipvt => iwrk
+        end if
+
+        ! Compute the LU factorization of A
+        call DGETRF(n, n, a, n, ipvt, flag)
+        if (flag > 0) then
+            ! A singular matrix has a determinant of zero
+            x = zero
+            return
+        end if
+
+        ! Compute the product of the diagonal of A
+        temp = one
+        ep = 0
+        do i = 1, n
+            if (ipvt(i) /= i) temp = -temp
+
+            temp = a(i,i) * temp
+            if (temp == zero) then
+                x = zero
+                exit
+            end if
+
+            do while (abs(temp) < one)
+                temp = ten * temp
+                ep = ep - 1
+            end do
+
+            do while (abs(temp) > ten)
+                temp = p1 * temp
+                ep = ep + 1
+            end do
+        end do
+        x = temp * ten**ep
+    end function
 
 end module

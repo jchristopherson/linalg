@@ -17,7 +17,8 @@ module linalg_solve
     public :: mtx_inverse
     public :: mtx_pinverse
     public :: least_squares_solve
-    public :: least_square_solve_full
+    public :: least_squares_solve_full
+    public :: least_squares_solve_svd
 
 ! ******************************************************************************
 ! INTERFACES
@@ -88,9 +89,18 @@ module linalg_solve
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns, but uses a full orthogonal factorization of
     !! the system.
-    interface least_square_solve_full
+    interface least_squares_solve_full
         module procedure :: least_squares_solve_mtx_pvt
         module procedure :: least_squares_solve_vec_pvt
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a singular value decomposition of
+    !! matrix A.
+    interface least_squares_solve_svd
+        module procedure :: least_squares_solve_mtx_svd
+        module procedure :: least_squares_solve_vec_svd
     end interface
 
 ! ******************************************************************************
@@ -1901,6 +1911,261 @@ contains
         ! Process
         call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, flag)
         if (present(arnk)) arnk = rnk
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a singular value decomposition of
+    !! matrix A.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
+    !!  is overwritten by the details of its complete orthogonal factorization.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[out] arnk An optional output, that if provided, will return the
+    !!  rank of @p a.
+    !! @param[out] s A MIN(M, N)-element array that on output contains the
+    !!  singular values of @p a in descending order.  Notice, the condition
+    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELSS.
+    subroutine least_squares_solve_mtx_svd(a, b, arnk, s, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a, b
+        real(dp), intent(out), dimension(:) :: s
+        integer(i32), intent(out), optional :: arnk
+        real(dp), intent(out), target, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        real(dp) :: rcond
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        nrhs = size(b, 2)
+        mn = min(m, n)
+        maxmn = max(m, n)
+        rcond = epsilon(rcond)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        else if (size(s) /= mn) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("least_squares_solve_mtx_svd", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_mtx_svd", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_mtx_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, &
+            flag)
+        if (present(arnk)) arnk = rnk
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("least_squares_solve_mtx_svd", errmsg, &
+                LA_CONVERGENCE_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a singular value decomposition of
+    !! matrix A.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
+    !!  is overwritten by the details of its complete orthogonal factorization.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[out] arnk An optional output, that if provided, will return the
+    !!  rank of @p a.
+    !! @param[out] s A MIN(M, N)-element array that on output contains the
+    !!  singular values of @p a in descending order.  Notice, the condition
+    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGELSS.
+    subroutine least_squares_solve_vec_svd(a, b, arnk, s, work, olwork, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: a
+        real(dp), intent(inout), dimension(:) :: b
+        real(dp), intent(out), dimension(:) :: s
+        integer(i32), intent(out), optional :: arnk
+        real(dp), intent(out), target, optional, dimension(:) :: work
+        integer(i32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        real(dp), dimension(1) :: temp
+        real(dp) :: rcond
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        maxmn = max(m, n)
+        rcond = epsilon(rcond)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b) /= maxmn) then
+            flag = 2
+        else if (size(s) /= mn) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("least_squares_solve_vec_svd", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
+        lwork = int(temp(1), i32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("least_squares_solve_vec_svd", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("least_squares_solve_vec_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, flag)
+        if (present(arnk)) arnk = rnk
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("least_squares_solve_vec_svd", errmsg, &
+                LA_CONVERGENCE_ERROR)
+        end if
     end subroutine
 
 

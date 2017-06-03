@@ -1,5 +1,5 @@
 # linalg
-A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.
+A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
 
 ## Example 1
@@ -60,7 +60,7 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     real(dp), dimension(20, 20) :: m, k
     real(dp), dimension(20) :: natFreq
     complex(dp), dimension(20, 20) :: modeShapes
-    complex(dp), dimension(n) :: eigVals
+    complex(dp), dimension(20) :: eigVals
 
     ! Initialize the mass matrix (M) and stiffness matrix (K) ...
     

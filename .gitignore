@@ -35,6 +35,8 @@
 bin/
 lib/
 build/
+html/
+latex/
 
 # CMake Stuff
 *.json
@@ -46,3 +48,6 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
+
+# Documentation
+!index.html

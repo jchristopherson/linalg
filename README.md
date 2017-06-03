@@ -17,9 +17,8 @@ This example solves a normally defined system of N equations of N unknowns.
     ! Initialize A and B ...
 
     ! Solve the problem: A * X = B by first computing the LU factorization of matrix A
-    call lu_factor(a, ipvt)
-
     ! Notice, the factored form of A overwrites the original matrix A
+    call lu_factor(a, ipvt)
 
     ! Now, solve for X as follows (X overwrites B)
     call solve_lu(a, ipvt, b)
@@ -69,9 +68,10 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     call eigen(k, m, vals, vecs = modeShapes)
 
     ! The eigenvalues represent the square of the system natural frequencies (Hz).
+    ! Note: It is assumed that the system was a normally constrained system 
+    ! such that all eigenvalues are positive and real-valued.
     natFreq = sqrt(real(eigVals)) / (2.0d0 * pi)
 
-    ! Note: It was assumed that the system was a normally constrained system 
-    ! such that all eigenvalues are positive and real-valued.
+    
 
 ```

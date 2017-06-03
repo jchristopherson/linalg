@@ -1273,7 +1273,7 @@ contains
     !!
     !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
     !! output the contents are overwritten by the LU factorization of the
-    !! original matrix.  See @ref lu_factor for more information.
+    !! original matrix.
     !! @param[out] iwork An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least

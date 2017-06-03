@@ -8,9 +8,15 @@ program main
     use test_mtx_inverse
     use test_cholesky
     use test_eigen
+    use test_misc
 
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
+
+    ! Misc. Item Tests
+    call test_diagonal_mtx_mult()
+    call test_rank1_update()
+    call test_rank()
 
     ! QR Factorization Tests
     call test_qr_factor()

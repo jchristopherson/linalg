@@ -1203,8 +1203,8 @@ contains
         ! Workspace Query
         !call svd(a, a(1:mn,1), olwork = lwork)
         call DGESVD('N', 'N', m, n, a, m, dummy, dummy, m, dummy, n, temp, &
-            lwork, flag)
-        lwork = lwork + mn
+            -1, flag)
+        lwork = int(temp(1), i32) + mn
         if (present(olwork)) then
             olwork = lwork
             return

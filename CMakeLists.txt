@@ -100,7 +100,7 @@ endif()
 # Remove testing items from the library build
 set(testing_sources ${sources})
 list(REMOVE_ITEM sources src/test.f90 src/test_core.f90 src/test_qr.f90 
-    src/test_svd.f90)
+    src/test_svd.f90 src/test_cholesky.f90 src/test_eigen.f90)
 
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.

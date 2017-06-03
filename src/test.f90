@@ -6,6 +6,8 @@ program main
     use test_qr
     use test_svd_ops
     use test_mtx_inverse
+    use test_cholesky
+    use test_eigen
 
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
@@ -35,5 +37,14 @@ program main
     call test_pinv()
     call test_pinv_od()
     call test_inv()
+
+    ! Cholesky Factorization Tests
+    call test_cholesky_factor()
+    call test_cholesky_rank1_update()
+
+    ! Eigenvalue/Eigenvector Tests
+    call test_eigen_symm()
+    call test_eigen_asymm()
+    call test_eigen_gen()
 
 end program

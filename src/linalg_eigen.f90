@@ -9,6 +9,7 @@ module linalg_eigen
     use linalg_constants
     implicit none
     private
+    public :: eigen
 
 ! ******************************************************************************
 ! INTERFACES

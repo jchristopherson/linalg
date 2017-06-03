@@ -21,6 +21,7 @@ program main
 
     ! LU Factorization Tests
     call test_lu_factor()
+    call test_lu_solve()
 
     ! QR Factorization Tests
     call test_qr_factor()

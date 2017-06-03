@@ -72,6 +72,11 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     ! such that all eigenvalues are positive and real-valued.
     natFreq = sqrt(real(eigVals)) / (2.0d0 * pi)
 
-    
-
 ```
+
+## TO DO
+Additional items to accomplish:
+- Add additional test cases.
+- Add a sparse matrix class (also include associated operators allowing multiplication, addition, etc.)
+- Add sparse matrix solution routines.
+- Add sparse matrix eigenvalue/eigenvector routines.

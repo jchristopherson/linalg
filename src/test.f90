@@ -9,6 +9,7 @@ program main
     use test_cholesky
     use test_eigen
     use test_misc
+    use test_lu
 
     ! Introduce the testing application
     print '(A)', "Hello from the LINALG test application."
@@ -17,6 +18,9 @@ program main
     call test_diagonal_mtx_mult()
     call test_rank1_update()
     call test_rank()
+
+    ! LU Factorization Tests
+    call test_lu_factor()
 
     ! QR Factorization Tests
     call test_qr_factor()

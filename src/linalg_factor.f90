@@ -251,13 +251,13 @@ contains
         end if
 
         ! Ensure P starts off as an identity matrix
-        call dlaset('A', n, n, zero, one, p, n)
+        call DLASET('A', n, n, zero, one, p, n)
 
         ! Process
         do j = 1, n
             ! Define the pivot matrix
             jp = ipvt(j)
-            if (j /= jp) call DSWAP(n, p(j,1:n), n, p(jp,1:n), n)
+            if (j /= jp) call DSWAP(n, p(j,1:n), 1, p(jp,1:n), 1)
 
             ! Build L and U
             u(1:j,j) = lu(1:j,j)

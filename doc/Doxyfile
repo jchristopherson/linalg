@@ -863,13 +863,13 @@ RECURSIVE              = NO
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = test.f90 \
-                         test_cholesky.f90 \
-                         test_core.f90 \
-                         test_eigen.f90 \
-                         test_mtx_inverse.f90 \
-                         test_qr.f90 \
-                         test_svd.f90
+EXCLUDE                = ../src/test_cholesky.f90 \
+                         ../src/test_core.f90 \
+                         ../src/test_eigen.f90 \
+                         ../src/test_mtx_inverse.f90 \
+                         ../src/test_qr.f90 \
+                         ../src/test_svd.f90 \
+                         ../src/test.f90
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

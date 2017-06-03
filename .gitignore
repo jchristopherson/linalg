@@ -38,6 +38,7 @@ build/
 html/
 latex/
 
+
 # CMake Stuff
 *.json
 CMakeCache.txt
@@ -48,6 +49,3 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
-
-# Documentation
-!index.html

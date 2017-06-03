@@ -71,4 +71,6 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     ! The eigenvalues represent the square of the system natural frequencies (Hz).
     natFreq = sqrt(real(eigVals)) / (2.0d0 * pi)
 
+    ! Note: It was assumed that the system was a normally constrained system such that all eigenvalues are positive and real-valued.
+
 ```

@@ -7,6 +7,7 @@
 module linalg_factor
     use ferror, only : errors
     use linalg_constants
+    use linalg_core, only : swap
     implicit none
     private
     public :: lu_factor
@@ -257,7 +258,7 @@ contains
         do j = 1, n
             ! Define the pivot matrix
             jp = ipvt(j)
-            if (j /= jp) call DSWAP(n, p(j,1:n), 1, p(jp,1:n), 1)
+            if (j /= jp) call swap(p(j,1:n), p(jp,1:n))
 
             ! Build L and U
             u(1:j,j) = lu(1:j,j)

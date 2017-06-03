@@ -17,6 +17,8 @@ module linalg_core
     public :: trace
     public :: mtx_rank
     public :: det
+    public :: swap
+    public :: recip_mult_array
 
 ! ******************************************************************************
 ! INTERFACES
@@ -1380,5 +1382,116 @@ contains
         end do
         x = temp * ten**ep
     end function
+
+! ******************************************************************************
+! ARRAY SWAPPING ROUTINE
+! ------------------------------------------------------------------------------
+    !> @brief Swaps the contents of two arrays.
+    !!
+    !! @param[in,out] x One of the N-element arrays.
+    !! @param[in,out] y The other N-element array.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
+    subroutine swap(x, y, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:) :: x, y
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: i, n
+        real(dp) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(x)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(y) /= n) then
+            call errmgr%report_error("swap", &
+                "The input arrays are not the same size.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do i = 1, n
+            temp = x(i)
+            x(i) = y(i)
+            y(i) = temp
+        end do
+    end subroutine
+
+! ******************************************************************************
+! ARRAY MULTIPLICIATION ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a vector by the reciprocal of a real scalar.
+    !!
+    !! @param[in] a The scalar which is used to divide each component of @p X.
+    !!  The value must be >= 0, or the subroutine will divide by zero.
+    !! @param[in,out] x The vector.
+    !!
+    !! @par Notes
+    !! This routine is based upon the LAPACK routine DRSCL.
+    subroutine recip_mult_array(a, x)
+        ! Arguments
+        real(dp), intent(in) :: a
+        real(dp), intent(inout), dimension(:) :: x
+
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+        real(dp), parameter :: twotho = 2.0d3
+
+        ! Local Variables
+        logical :: done
+        real(dp) :: bignum, cden, cden1, cnum, cnum1, mul, smlnum
+
+        ! Initialization
+        smlnum = DLAMCH('s')
+        bignum = one / smlnum
+        if (log10(bignum) > twotho) then
+            smlnum = sqrt(smlnum)
+            bignum = sqrt(bignum)
+        end if
+
+        ! Initialize the denominator to A, and the numerator to ONE
+        cden = a
+        cnum = one
+
+        ! Process
+        do
+            cden1 = cden * smlnum
+            cnum1 = cnum / bignum
+            if (abs(cden1) > abs(cnum) .and. cnum /= zero) then
+                mul = smlnum
+                done = .false.
+                cden = cden1
+            else if (abs(cnum1) > abs(cden)) then
+                mul = bignum
+                done = .false.
+                cnum = cnum1
+            else
+                mul = cnum / cden
+                done = .true.
+            end if
+
+            ! Scale the vector X by MUL
+            x = mul * x
+
+            ! Exit if done
+            if (done) exit
+        end do
+    end subroutine
+
 
 end module

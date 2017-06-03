@@ -9,7 +9,7 @@ module linalg_solve
     use lapack
     use linalg_constants
     use linalg_factor, only : rz_factor, mult_rz, mult_qr
-    use linalg_core, only : solve_triangular_system, mtx_mult
+    use linalg_core, only : solve_triangular_system, mtx_mult, recip_mult_array
     implicit none
     private
     public :: solve_lu
@@ -1302,7 +1302,7 @@ contains
             if (s(i) < t) then
                 vt(i,:) = zero
             else
-                call DRSCL(n, s(i), vt(i,1:n), 1)
+                call recip_mult_array(s(i), vt(i,1:n))
             end if
         end do
 

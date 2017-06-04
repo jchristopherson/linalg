@@ -1,5 +1,16 @@
 ! linalg_core.f90
 
+
+!> @mainpage
+!!
+!! @section intro_sec Introduction
+!! LINALG is a linear algebra library that provides a user-friendly interface 
+!! to several BLAS and LAPACK routines.
+!!
+!! @author Jason Christopherson
+!! @version 1.0
+
+
 !> @brief \b linalg_core
 !!
 !! @par Purpose

@@ -463,7 +463,6 @@ contains
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
     !!  @ref qr_factor.  On output, the contents of this matrix are altered.
-    !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by @ref qr_factor.
     !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
@@ -651,7 +650,6 @@ contains
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
     !!  @ref qr_factor.  On output, the contents of this matrix are altered.
-    !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by @ref qr_factor.
     !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to

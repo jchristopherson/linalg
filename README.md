@@ -73,6 +73,8 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     natFreq = sqrt(real(eigVals)) / (2.0d0 * pi)
 
 ```
+## Documentation
+Documentation can be found [here](doc/refman.pdf)
 
 ## TO DO
 Additional items to accomplish:
@@ -80,3 +82,4 @@ Additional items to accomplish:
 - Add a sparse matrix class (also include associated operators allowing multiplication, addition, etc.)
 - Add sparse matrix solution routines.
 - Add sparse matrix eigenvalue/eigenvector routines.
+- Define a C interface.

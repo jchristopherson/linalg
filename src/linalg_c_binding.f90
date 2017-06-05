@@ -46,14 +46,13 @@ contains
     ! end subroutine
 
 ! ------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------
     !> @brief Computes the trace of a matrix (the sum of the main diagonal
     !! elements).
     !!
     !! @param[in] x The matrix on which to operate.
     !!
     !! @return The trace of @p x.
-    pure function trace(m, n, x) result(y) bind(c, name = "trace")
+    pure function trace_c(m, n, x) result(y) bind(c, name = "trace")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(in) :: x(m,n)

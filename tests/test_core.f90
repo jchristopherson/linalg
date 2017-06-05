@@ -16,7 +16,6 @@ module test_core
         module procedure :: is_vec_equal_i32
         module procedure :: is_mtx_equal_complex
         module procedure :: is_vec_equal_complex
-        module procedure :: is_vec_equal_i64
     end interface
 
 contains
@@ -87,32 +86,6 @@ function is_vec_equal_i32(x, y) result(check)
 
     ! Local Variables
     integer(i32) :: i, n
-
-    ! Initialization
-    n = size(x)
-    check = .true.
-
-    ! Process
-    if (size(y) /= n) then
-        check = .false.
-        return
-    end if
-    do i = 1, n
-        if (x(i) /= y(i)) then
-            check = .false.
-            return
-        end if
-    end do
-end function
-
-! ------------------------------------------------------------------------------
-function is_vec_equal_i64(x, y) result(check)
-    ! Arguments
-    integer(i64), intent(in), dimension(:) :: x, y
-    logical :: check
-
-    ! Local Variables
-    integer(i64) :: i, n
 
     ! Initialization
     n = size(x)

@@ -20,6 +20,10 @@ contains
     !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
     !! X is an M-element array, and N is an N-element array.
     !!
+    !! @param[in] m The number of elements in @p x, and the number of rows in
+    !!  matrix @p a.
+    !! @param[in] n The number of elements in @p y, and the number of columns in
+    !!  matrix @p a.
     !! @param[in] alpha The scalar multiplier.
     !! @param[in] x An M-element array.
     !! @param[in] y An N-element array.
@@ -28,7 +32,7 @@ contains
     !!
     !! @par Notes
     !! This routine is based upon the BLAS routine DGER.
-    subroutine rank1_update_c(alpha, m, n, x, y, a) &
+    subroutine rank1_update_c(m, n, alpha, x, y, a) &
             bind(c, name = "rank1_update")
         ! Arguments
         real(dp), intent(in), value :: alpha
@@ -49,6 +53,8 @@ contains
     !> @brief Computes the trace of a matrix (the sum of the main diagonal
     !! elements).
     !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
     !! @param[in] x The matrix on which to operate.
     !!
     !! @return The trace of @p x.

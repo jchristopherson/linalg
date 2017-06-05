@@ -83,3 +83,4 @@ Additional items to accomplish:
 - Add sparse matrix solution routines.
 - Add sparse matrix eigenvalue/eigenvector routines.
 - Define a C interface.
+- As part of the C interface, a C-friendly way of dealing with the error and warning message handler needs to be developed.

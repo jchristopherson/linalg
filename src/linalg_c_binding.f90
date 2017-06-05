@@ -40,4 +40,34 @@ contains
         call rank1_update(alpha, x, y, a)
     end subroutine
 
+! ------------------------------------------------------------------------------
+    !
+    ! subroutine diag_mtx_mult_c(lside, trans, alpha, a, b, beta, c)
+    ! end subroutine
+
+! ------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------
+    !> @brief Computes the trace of a matrix (the sum of the main diagonal
+    !! elements).
+    !!
+    !! @param[in] x The matrix on which to operate.
+    !!
+    !! @return The trace of @p x.
+    pure function trace(m, n, x) result(y) bind(c, name = "trace")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n
+        real(dp), intent(in) :: x(m,n)
+        real(dp) :: y
+
+        ! Process
+        y = trace(x)
+    end function
+
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
 end module

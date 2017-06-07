@@ -9,7 +9,7 @@ module linalg_solve
     use lapack
     use linalg_constants
     use linalg_factor, only : rz_factor, mult_rz, mult_qr
-    use linalg_core, only : solve_triangular_system, mtx_mult, recip_mult_array
+    use linalg_core, only : mtx_mult, recip_mult_array
     implicit none
     private
     public :: solve_triangular_system

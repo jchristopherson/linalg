@@ -665,7 +665,7 @@ contains
     !!  matrix R.  On output, the elements below the diagonal are zeroed such
     !!  that the remaining matrix is simply the M-by-N matrix R.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p h.
+    !!  each elementary reflector defined in @p r.
     !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
     !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
     !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
@@ -793,7 +793,7 @@ contains
     !!  matrix R.  On output, the elements below the diagonal are zeroed such
     !!  that the remaining matrix is simply the M-by-N matrix R.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p h.
+    !!  each elementary reflector defined in @p r.
     !! @param[in] pvt An N-element column pivot array as returned by the QR
     !!  factorization.
     !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
@@ -1467,7 +1467,7 @@ contains
 ! ------------------------------------------------------------------------------
     !> @brief Factors an upper trapezoidal matrix by means of orthogonal
     !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
-    !! matrix of dimension (M+L)-by-(M+L), and R is an M-by-M upper triangular
+    !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
     !! matrix.
     !!
     !! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
@@ -1475,7 +1475,8 @@ contains
     !!  contains the upper triangular matrix R, and elements N-L+1 to N of the
     !!  first M rows of A, with the array @p tau, represent the orthogonal
     !!  matrix Z as a product of M elementary reflectors.
-    !! @param[out] tau
+    !! @param[out] tau An M-element array used to store the scalar
+    !!  factors of the elementary reflectors.
     !! @param[out] work An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least

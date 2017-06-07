@@ -90,18 +90,10 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             rnk = mtx_rank(a, err = eptr)
         else
             rnk = mtx_rank(a)
@@ -131,18 +123,10 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             x = det(a, err = eptr)
         else
             x = det(a)
@@ -191,23 +175,15 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: m, n, ni
         real(dp), intent(inout) :: a(m,n)
-        integer(i32), intent(out) :: ipvt(ipvt)
+        integer(i32), intent(out) :: ipvt(ni)
         type(c_ptr), intent(in), value :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             call lu_factor(a, ipvt, eptr)
         else
             call lu_factor(a, ipvt)
@@ -284,18 +260,10 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             call qr_factor(a, tau, err = eptr)
         else
             call qr_factor(a, tau)
@@ -340,18 +308,10 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             call qr_factor(a, tau, jpvt, err = eptr)
         else
             call qr_factor(a, tau, jpvt)
@@ -372,7 +332,7 @@ contains
     !! @param[in] nt The number of elements in the scalar factor array @p tau.
     !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p h.
+    !!  each elementary reflector defined in @p r.
     !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
     !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
     !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
@@ -395,18 +355,10 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
             call form_qr(r, tau, q, err = eptr)
         else
             call form_qr(r, tau, q)
@@ -427,7 +379,7 @@ contains
     !! @param[in] nt The number of elements in the scalar factor array @p tau.
     !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p h.
+    !!  each elementary reflector defined in @p r.
     !! @param[in] pvt An N-element column pivot array as returned by the QR
     !!  factorization.
     !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
@@ -455,23 +407,214 @@ contains
 
         ! Local Variables
         type(errors), pointer :: eptr
-        logical :: useError
-
-        ! Set up error handling
-        if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
-            useError = .true.
-        else
-            useError = .false.
-        end if
 
         ! Process
-        if (useError) then
-            call form_qr(r, tau, pvt, q, err = eptr)
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call form_qr(r, tau, pvt, q, p, err = eptr)
         else
-            call form_qr(r, tau, pvt, q)
+            call form_qr(r, tau, pvt, q, p)
         end if
     end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
+    !! factorization such that: C = op(Q) * C.
+    !!
+    !! @param[in] trans Set to true to apply Q**T; else, set to false.
+    !! @param[in] m The number of rows in the matrix @p c.
+    !! @param[in] n The number of columns in the matrix @p c.
+    !! @param[in] q On input, an M-by-M matrix containing the elementary
+    !!  reflectors output from the QR factorization.    Notice, the contents of 
+    !!  this matrix are restored on exit.
+    !! @param[in] tau A MIN(M,N)-element array containing the scalar factors of 
+    !!  each elementary reflector defined in @p a.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+    !!  of the orthogonal matrix Q and the original matrix C.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine mult_qr_c(trans, m, n, q, nt, tau, c, err) &
+            bind(C, name = "mult_qr")
+        ! Arguments
+        logical(c_bool), intent(in), value :: trans
+        integer(i32), intent(in), value :: m, n, nt
+        real(dp), intent(inout) :: q(m,m), c(m,n)
+        real(dp), intent(in) :: tau(nt)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call mult_qr(.true., logical(trans), q, tau, c, err = eptr)
+        else
+            call mult_qr(.true., logical(trans), q, tau, c)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
+    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+    !!
+    !! @param[in] m The number of rows in the original matrix.
+    !! @param[in] n The number of columns in the original matrix.
+    !! @param[in,out] q On input, the original M-by-M orthogonal matrix Q.  On
+    !!  output, the updated matrix Q1.
+    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+    !!  matrix R1.
+    !! @param[in,out] u On input, the M-element U update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in,out] v On input, the N-element V update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine qr_rank1_update_c(m, n, q, r, u, v, err) &
+            bind(C, name = "qr_rank1_update")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n
+        real(dp), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call qr_rank1_update(q, r, u, v, err = eptr)
+        else
+            call qr_rank1_update(q, r, u, v)
+        endif
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Cholesky factorization of a symmetric, positive
+    !! definite matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+    !!  factored matrix is returned in either the upper or lower triangular
+    !!  portion of the matrix, dependent upon the value of @p upper.
+    !! @param[in] upper An optional input that, if specified, provides control
+    !!  over whether the factorization is computed as A = U**T * U (set to
+    !!  true), or as A = L * L**T (set to false).  The default value is true
+    !!  such that A = U**T * U.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+    subroutine cholesky_factor_c(n, a, upper, err) &
+            bind(C, name = "cholesky_factor")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: a(n,n)
+        logical(c_bool), intent(in), value :: upper
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call cholesky_factor(a, logical(upper), eptr)
+        else
+            call cholesky_factor(a, logical(upper))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine cholesky_rank1_update_c(n, r, u, err) &
+            bind(C, name = "cholesky_rank1_update")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: r(n,n), u(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call cholesky_rank1_update(r, u, err = eptr)
+        else
+            call cholesky_rank1_update(r, u)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Factors an upper trapezoidal matrix by means of orthogonal
+    !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
+    !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
+    !! matrix.
+    !!
+    !! @param[in] m The number of rows in the original matrix.
+    !! @param[in] n The number of columns in the original matrix.
+    !! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
+    !!  On output, the leading M-by-M upper triangular part of the matrix
+    !!  contains the upper triangular matrix R, and elements N-L+1 to N of the
+    !!  first M rows of A, with the array @p tau, represent the orthogonal
+    !!  matrix Z as a product of M elementary reflectors.
+    !! @param[out] tau An M-element array used to store the scalar
+    !!  factors of the elementary reflectors.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine rz_factor_c(m, n, a, tau, err) bind(C, name = "rz_factor")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n
+        real(dp), intent(inout) :: a(m,n)
+        real(dp), intent(out) :: tau(m)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call rz_factor(a, tau, err = eptr)
+        else
+            call rz_factor(a, tau)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@ module linalg_c_binding
     use linalg_constants
     use linalg_core
     use linalg_factor
+    use linalg_solve
     use ferror, only : errors
 contains
 ! ******************************************************************************
@@ -704,18 +705,240 @@ contains
 ! ******************************************************************************
 ! LINALG_SOLVE ROUTINES
 ! ------------------------------------------------------------------------------
+    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
+    !! A is a triangular matrix.
+    !!
+    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
+    !!  set to false if A is a lower triangular matrix.
+    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
+    !!  op(A) = A.
+    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
+    !!  every diagonal element); else, set to false if A is a unit-diagonal
+    !!  matrix.
+    !! @param[in] n The dimension of the triangular matrix @p a.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in] alpha The scalar multiplier to B.
+    !! @param[in] a N-by-N triangular matrix on which to operate.
+    !! @param[in,out] b On input, the N-by-NRHS right-hand-side.  On output, the
+    !!  N-by-NRHS solution.
+    subroutine solve_tri_mtx_c(upper, trans, nounit, n, nrhs, alpha, a, b) &
+            bind(C, name = "solve_tri_mtx")
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper, trans, nounit
+        integer(i32), intent(in), value :: n, nrhs
+        real(dp), intent(in), value :: alpha
+        real(dp), intent(in) :: a(n,n)
+        real(dp), intent(inout) :: b(n,nrhs)
+
+        ! Process
+        call solve_triangular_system(.true., logical(upper), logical(trans), &
+            logical(nounit), alpha, a, b)
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of LU-factored equations.
+    !!
+    !! @param[in] n The dimension of the original matrix @p a.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in] a The N-by-N LU factored matrix as output by @ref lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by @ref lu_factor.
+    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
+    !!  output, the N-by-NRHS solution matrix.
+    subroutine solve_lu_c(n, nrhs, a, ipvt, b) bind(C, name = "solve_lu")
+        ! Arguments
+        integer(i32), intent(in), value :: n, nrhs
+        real(dp), intent(in) :: a(n,n)
+        integer(i32), intent(in) :: ipvt(n)
+        real(dp), intent(inout) :: b(n,nrhs)
+
+        ! Process
+        call solve_lu(a, ipvt, b)
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns where
+    !! M >= N.
+    !!
+    !! @param[in] m The number of rows in the original coefficient matrix A.
+    !! @param[in] n The number of columns in the original coefficient matrix A.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
+    !!  Notice, M must be greater than or equal to N.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by @ref qr_factor.
+    !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
+    !!  the first N columns are overwritten by the solution matrix X.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
+            bind(C, name = "solve_qr")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, nrhs
+        real(dp), intent(inout) :: a(m,n), b(m,nrhs)
+        real(dp), intent(in) :: tau(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call solve_qr(a, tau, b, err = eptr)
+        else
+            call solve_qr(a, tau, b)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns where the
+    !! QR factorization made use of column pivoting.
+    !!
+    !! @param[in] m The number of rows in the original coefficient matrix A.
+    !! @param[in] n The number of columns in the original coefficient matrix A.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
+    !! @param[in] nt The number of elements in the scalar factor array @p tau.
+    !!  This value must be equal to MIN(M, N).
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by @ref qr_factor.
+    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
+    !!  track the column pivots.
+    !! @param[in] mb The number of rows in the matrix @p b.  This value must be
+    !!  equal to MAX(M, N).
+    !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
+    !!  rows contain the right-hand-side matrix B.  On output, the first N rows
+    !!  are overwritten by the solution matrix X.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized 
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine solve_qr_pivot_c(m, n, nrhs, a, nt, tau, jpvt, mb, b, err) &
+            bind(C, name = "solve_qr_pivot")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, nrhs, nt, mb
+        real(dp), intent(inout) :: a(m,n), b(mb,nrhs)
+        real(dp), intent(in) :: tau(nt)
+        integer(i32), intent(in) :: jpvt(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call solve_qr(a, tau, jpvt, b, err = eptr)
+        else
+            call solve_qr(a, tau, jpvt, b)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of Cholesky factored equations.
+    !!
+    !! @param[in] upper Set to true if the original matrix A was factored such
+    !!  that A = U**T * U; else, set to false if the factorization of A was
+    !!  A = L**T * L.
+    !! @param[in] n The dimension of the original matrix @p a.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in] a The N-by-N Cholesky factored matrix.
+    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix B.  On
+    !!  output, the solution matrix X.
+    subroutine solve_cholesky_c(upper, n, nrhs, a, b) &
+            bind(C, name = "solve_cholesky")
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(i32), intent(in), value :: n, nrhs
+        real(dp), intent(in) :: a(n,n)
+        real(dp), intent(inout) :: b(n,nrhs)
+
+        ! Process
+        call solve_cholesky(logical(upper), a, b)
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the inverse of a square matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
+    !!  inverted matrix.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+    subroutine mtx_inverse_c(n, a, err) bind(C, name = "mtx_inverse")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: a(n,n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call mtx_inverse(a, err = eptr)
+        else
+            call mtx_inverse(a)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
+    !! using the singular value decomposition of the matrix.
+    !!
+    !! @param[in] m The number of rows in the matrix to invert.
+    !! @param[in] n The number of columns in the matrix to invert.
+    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
+    !!  overwritten on output.
+    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
+    !!  will be written.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    subroutine mtx_pinverse_c(m, n, a, ainv, err) bind(C, name = "mtx_pinverse")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n
+        real(dp), intent(inout) :: a(m,n)
+        real(dp), intent(out) :: ainv(n,m)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call mtx_pinverse(a, ainv, err = eptr)
+        else
+            call mtx_pinverse(a, ainv)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
 

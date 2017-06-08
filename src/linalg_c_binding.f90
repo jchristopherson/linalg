@@ -427,6 +427,9 @@ contains
     !! @param[in] q On input, an M-by-M matrix containing the elementary
     !!  reflectors output from the QR factorization.    Notice, the contents of 
     !!  this matrix are restored on exit.
+    !!  that the remaining matrix is simply the M-by-N matrix R.
+    !! @param[in] nt The number of elements in the scalar factor array @p tau.
+    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M,N)-element array containing the scalar factors of 
     !!  each elementary reflector defined in @p a.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
@@ -609,6 +612,108 @@ contains
             call rz_factor(a, tau)
         end if
     end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
+    !! RZ factorization such that: C = op(Z) * C.
+    !!
+    !! @param[in] trans Set to true to apply Z**T; else, set to false.
+    !! @param[in] m The number of rows in the matrix @p c.
+    !! @param[in] n The number of columns in the matrix @p c.
+    !! @param[in,out] a On input, the M-by-M matrix Z as output by @p rz_factor.
+    !!  The matrix is used as in-place storage during execution; however, the
+    !!  contents of the matrix are restored on exit.
+    !! @param[in] tau An M-element array containing the scalar factors of the
+    !!  elementary reflectors found in @p a.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+    !!  of the orthogonal matrix Z and the original matrix C.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine mult_rz_c(trans, m, n, a, tau, c, err) bind(C, name = "mult_rz")
+        ! Arguments
+        logical(c_bool), intent(in), value :: trans
+        integer(i32), intent(in), value :: m, n
+        real(dp), intent(inout) :: a(m,m), c(m,n)
+        real(dp), intent(in) :: tau(m)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call mult_rz(.true., logical(trans), m, a, tau, c, err = eptr)
+        else
+            call mult_rz(.true., logical(trans), m, a, tau, c)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the singular value decomposition of a matrix A.  The
+    !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+    !!  matrix.
+    !!
+    !! @param[in] m The number of rows in the original matrix.
+    !! @param[in] n The number of columns in the original matrix.
+    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+    !!  overwritten on output.
+    !!  that the remaining matrix is simply the M-by-N matrix R.
+    !! @param[in] ns The number of elements in the singular value array @p s.
+    !!  This value must be equal to MIN(M, N).
+    !! @param[out] s A MIN(M, N)-element array containing the singular values
+    !!  of @p a sorted in descending order.
+    !! @param[out] u An M-by-M matrix that on output contains the left singular
+    !!  vectors (matrix U in the decomposition: A = U * S * V**T)
+    !! @param[out] vt An N-by-N matrix that on output contains the right
+    !!  singular vectors (matrix V**T in the decomposition: A = U * S * V**T).
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized 
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    subroutine svd_c(m, n, a, ns, s, u, vt, err)
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, ns
+        real(dp), intent(inout) :: a(m,n)
+        real(dp), intent(out) :: s(ns), u(m,m), vt(n,n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call svd(a, s, u, vt, err = eptr)
+        else
+            call svd(a, s, u, vt)
+        end if
+    end subroutine
+
+! ******************************************************************************
+! LINALG_SOLVE ROUTINES
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

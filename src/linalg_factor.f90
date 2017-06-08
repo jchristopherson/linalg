@@ -1611,7 +1611,7 @@ contains
     !! @param[in] l The number of columns in matrix @p a containing the
     !!  meaningful part of the Householder vectors.  If @p lside is true,
     !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix C, where LTA = M if
+    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
     !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
     !!  contain the Householder vector in the last k rows. Notice, the contents
     !!  of this matrix are restored on exit.
@@ -1753,7 +1753,7 @@ contains
     !! @param[in] l The number of columns in matrix @p a containing the
     !!  meaningful part of the Householder vectors.  If @p lside is true,
     !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix C, where LTA = M if
+    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
     !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
     !!  contain the Householder vector in the last k rows. Notice, the contents
     !!  of this matrix are restored on exit.

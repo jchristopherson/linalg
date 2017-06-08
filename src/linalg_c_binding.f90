@@ -10,10 +10,35 @@ module linalg_c_binding
     use linalg_core
     use linalg_factor
     use linalg_solve
+    use linalg_eigen
     use ferror, only : errors
 contains
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Performs the matrix operation: C = alpha * A * B + beta * C.
+    !!
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of columns in matrix A, and the number of rows
+    !!  in the matrix B.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b The K-by-N matrix B.
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine mtx_mult_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "mtx_mult")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, k
+        real(dp), intent(in), value :: alpha, beta
+        real(dp), intent(in) :: a(m,k), b(k,n)
+        real(dp), intent(inout) :: c(m,n)
+
+        ! Process
+        call mtx_mult(.false., .false., alpha, a, b, beta, c)
+    end subroutine
+
 ! ------------------------------------------------------------------------------
     !> @brief Performs the rank-1 update to matrix A such that:
     !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
@@ -941,9 +966,176 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a complete orthogonal factorization of
+    !! matrix A.
+    !!
+    !! @param[in] m The number of rows in the original coefficient matrix A.
+    !! @param[in] n The number of columns in the original coefficient matrix A.
+    !! @param[in] nrhs The number of right-hand-side vectors (number of columns
+    !!  in matrix @p b).
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
+    !!  is overwritten by the details of its complete orthogonal factorization.
+    !! @param[in] mb The number of rows in the matrix @p b.  This value must be
+    !!  equal to MAX(M, N).
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    subroutine least_squares_solve_c(m, n, nrhs, a, mb, b, err) &
+            bind(C, name = "least_squares_solve")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, nrhs, mb
+        real(dp), intent(inout) :: a(m, n), b(mb, nrhs)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call least_squares_solve_full(a, b, err = eptr)
+        else
+            call least_squares_solve_full(a, b)
+        end if
+    end subroutine
+
+! ******************************************************************************
+! LINALG_EIGEN ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and optionally the eigenvectors of a
+    !! real, symmetric matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
+    !!  eigenvalues; else, set to false to just compute the eigenvalues.
+    !! @param[in,out] a On input, the N-by-N symmetric matrix on which to
+    !!  operate.  On output, and if @p vecs is set to true, the matrix will
+    !!  contain the eigenvectors (one per column) corresponding to each
+    !!  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
+    !!  portion of the matrix is overwritten.
+    !! @param[out] vals An N-element array that will contain the eigenvalues
+    !!  sorted into ascending order.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    subroutine eigen_symm_c(n, vecs, a, vals, err) bind(C, name = "eigen_symm")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        logical(c_bool), intent(in), value :: vecs
+        real(dp), intent(inout) :: a(n,n)
+        real(dp), intent(out) :: vals(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call eigen(logical(vecs), a, vals, err = eptr)
+        else
+            call eigen(logical(vecs), a, vals)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and the right eigenvectors of a square 
+    !!  matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !!  output, the contents of this matrix are overwritten.
+    !! @param[out] vals An N-element array containing the eigenvalues of the
+    !!  matrix on output.  The eigenvalues are not sorted.
+    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
+    !!  (one per column) on output.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    subroutine eigen_asymm_c(n, a, vals, vecs, err) &
+            bind(C, name = "eigen_asymm")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: a(n,n)
+        complex(dp), intent(out) :: vals(n), vecs(n,n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call eigen(a, vals, vecs, err = eptr)
+        else
+            call eigen(a, vals, vecs)
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+     !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !! a square matrix assuming the structure of the eigenvalue problem is
+    !! A*X = lambda*B*X.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
+    !!  of this matrix are overwritten.
+    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
+    !!  of this matrix are overwritten.
+    !! @param[out] alpha An N-element array that, on output, contains the 
+    !!  numerator of the eigenvalue ration ALPHA / BETA.  Computation of this
+    !!  ratio isn't necessarily as trivial as it seems as it is entirely 
+    !!  possible, and likely, that ALPHA / BETA can overflow or underflow.  With
+    !!  that said, the values in ALPHA will always be less than and usually 
+    !!  comparable with the NORM(A).
+    !! @param[out] beta An N-element array that, on output, contains the
+    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  The 
+    !!  values in this array will always be less than and usually comparable
+    !!  with the NORM(B).
+    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
+    !!  (one per column) on output.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    subroutine eigen_gen_c(n, a, b, alpha, beta, vecs, err) &
+            bind(C, name = "eigen_gen")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: a(n, n), b(n, n)
+        complex(dp), intent(out) :: alpha(n), vecs(n,n)
+        real(dp), intent(out) :: beta(n)
+        type(c_ptr), intent(in), value :: err
 
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call eigen(a, b, alpha, beta = beta, vecs = vecs, err = eptr)
+        else
+            call eigen(a, b, alpha, beta = beta, vecs = vecs)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
 end module

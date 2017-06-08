@@ -1540,8 +1540,7 @@ contains
     !!
     !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
     !!  the QR factorization of A in the form as output by @ref qr_factor; else,
-    !!  if M < N, the LQ factorization of A in the form as output by
-    !!  @ref lq_factor.
+    !!  if M < N, the LQ factorization of A.
     !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
@@ -1647,8 +1646,7 @@ contains
     !!
     !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
     !!  the QR factorization of A in the form as output by @ref qr_factor; else,
-    !!  if M < N, the LQ factorization of A in the form as output by
-    !!  @ref lq_factor.
+    !!  if M < N, the LQ factorization of A.
     !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
     !!  N elements contain the N-element solution array X.  If M < N, an
     !!  N-element array with the first M elements containing the array B.  On
@@ -1752,10 +1750,9 @@ contains
     !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
     !! Notice, it is assumed that matrix A has full rank.
     !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
-    !!  if M < N, the LQ factorization of A in the form as output by
-    !!  @ref lq_factor.
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the 
+    !!  QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  if M < N, the LQ factorization of A.
     !! @param[in,out] b On input, the M-by-NRHS matrix B.  On output the
     !!  contents are overwritten.
     !! @param[out] x The N-by-NRHS solution matrix X.
@@ -1845,12 +1842,12 @@ contains
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
     !!  output, the N-by-NRHS solution matrix X.
-
-    !! @param[out] ipvt On input, an N-element array that if IPVT(I) .ne. 0,
-    !!  the I-th column of A is permuted to the front of A * P; if IPVT(I) = 0,
-    !!  the I-th column of A is a free column.  On output, if IPVT(I) = K, then
-    !!  the I-th column of A * P was the K-th column of A.
-
+    !! @param[out] ipvt An optional input that on input, an N-element array 
+    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
+    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
+    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
+    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
+    !!  is set to all zeros such that all columns are treated as free.
     !! @param[out] arnk An optional output, that if provided, will return the
     !!  rank of @p a.
     !! @param[out] work An optional input, that if provided, prevents any local
@@ -1991,10 +1988,12 @@ contains
     !!  N elements contain the N-element solution array X.  If M < N, an
     !!  N-element array with the first M elements containing the array B.  On
     !!  output, the N-element solution array X.
-    !! @param[out] ipvt On input, an N-element array that if IPVT(I) .ne. 0,
-    !!  the I-th column of A is permuted to the front of A * P; if IPVT(I) = 0,
-    !!  the I-th column of A is a free column.  On output, if IPVT(I) = K, then
-    !!  the I-th column of A * P was the K-th column of A.
+    !! @param[out] ipvt An optional input that on input, an N-element array 
+    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
+    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
+    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
+    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
+    !!  is set to all zeros such that all columns are treated as free.
     !! @param[out] arnk An optional output, that if provided, will return the
     !!  rank of @p a.
     !! @param[out] work An optional input, that if provided, prevents any local

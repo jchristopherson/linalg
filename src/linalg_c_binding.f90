@@ -40,6 +40,92 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C.
+    !!
+    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
+    !!  op(B) == B.
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] na The length of @p a.
+    !! @param[in] a A MIN(M,P)-element array containing the diagonal elements 
+    !!  of matrix A.
+    !! @param[in] mb The number of rows in matrix B.
+    !! @param[in] nb The number of columns in matrix B.
+    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p trans == true: LDB = N, TDB = P
+    !!  - @p trans == false: LDB = P, TDB = N
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c THe M-by-N matrix C.
+    subroutine diag_mtx_mult_c(trans, m, n, alpha, na, a, mb, nb, b, beta, &
+            c, err) bind(C, name = "diag_mtx_mult")
+        ! Arguments
+        logical(c_bool), intent(in), value :: trans
+        integer(i32), intent(in), value :: m, n, na, mb, nb
+        real(dp), intent(in), value :: alpha, beta
+        real(dp), intent(in) :: a(na), b(mb, nb)
+        real(dp), intent(inout) :: c(m, n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
+                eptr)
+        else
+            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !!  where A and C are complex-valued.
+    !!
+    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
+    !!  op(B) == B.
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] na The length of @p a.
+    !! @param[in] a A MIN(M,P)-element array containing the diagonal elements 
+    !!  of matrix A.
+    !! @param[in] mb The number of rows in matrix B.
+    !! @param[in] nb The number of columns in matrix B.
+    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p trans == true: LDB = N, TDB = P
+    !!  - @p trans == false: LDB = P, TDB = N
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c THe M-by-N matrix C.
+    subroutine diag_mtx_mult_cmplx_c(trans, m, n, alpha, na, a, mb, nb, b, &
+            beta, c, err) bind(C, name = "diag_mtx_mult_cmplx")
+        ! Arguments
+        logical(c_bool), intent(in), value :: trans
+        integer(i32), intent(in), value :: m, n, na, mb, nb
+        real(dp), intent(in), value :: alpha, beta
+        complex(dp), intent(in) :: a(na)
+        real(dp), intent(in) :: b(mb, nb)
+        complex(dp), intent(inout) :: c(m, n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call c_f_pointer(err, eptr)
+            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
+                eptr)
+        else
+            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
     !> @brief Performs the rank-1 update to matrix A such that:
     !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
     !! X is an M-element array, and N is an N-element array.

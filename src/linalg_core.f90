@@ -304,13 +304,14 @@ contains
     !!  op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where MIN(M,P) >= K >= 0 if @p lside is true; else, if @p lside is
-    !!  false, MIN(N,P) >= K >= 0.
-    !! @param[in] b The LDB-by-TDB matrix B where:
-    !!  - @p lside == true & @p trans == true: LDA = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDA = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDA = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDA = M, TDB = P
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
+    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
+    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
+    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
+    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
     !! @param[in] beta A scalar multiplier.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
     !!  M-by-N matrix.
@@ -477,8 +478,8 @@ contains
     !!  to false to apply matrix A from the left.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where MIN(M,P) >= K >= 0 if @p lside is true; else, if @p lside is
-    !!  false, MIN(N,P) >= K >= 0.
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
     !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
     !!  M-by-N matrix.
     !! @param[out] err An optional errors-based object that if provided can be
@@ -553,13 +554,14 @@ contains
     !!  op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where MIN(M,P) >= K >= 0 if @p lside is true; else, if @p lside is
-    !!  false, MIN(N,P) >= K >= 0.
-    !! @param[in] b The LDB-by-TDB matrix B where:
-    !!  - @p lside == true & @p trans == true: LDA = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDA = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDA = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDA = M, TDB = P
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
+    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
+    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
+    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
+    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
     !! @param[in] beta A scalar multiplier.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
     !!  M-by-N matrix.
@@ -729,8 +731,8 @@ contains
     !!  op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where MIN(M,P) >= K >= 0 if @p lside is true; else, if @p lside is
-    !!  false, MIN(N,P) >= K >= 0.
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
     !! @param[in] b The LDB-by-TDB matrix B where:
     !!  - @p lside == true & @p trans == true: LDA = N, TDB = P
     !!  - @p lside == true & @p trans == false: LDA = P, TDB = N

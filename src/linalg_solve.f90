@@ -18,9 +18,9 @@ module linalg_solve
     public :: solve_cholesky
     public :: mtx_inverse
     public :: mtx_pinverse
-    public :: least_squares_solve
-    public :: least_squares_solve_full
-    public :: least_squares_solve_svd
+    public :: solve_least_squares
+    public :: solve_least_squares_full
+    public :: solve_least_squares_svd
 
 ! ******************************************************************************
 ! INTERFACES
@@ -88,28 +88,27 @@ module linalg_solve
 ! ------------------------------------------------------------------------------
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns.
-    interface least_squares_solve
-        module procedure :: least_squares_solve_mtx
-        module procedure :: least_squares_solve_vec
-        module procedure :: least_squares_solve_mtx_1
+    interface solve_least_squares
+        module procedure :: solve_least_squares_mtx
+        module procedure :: solve_least_squares_vec
     end interface
 
 ! ------------------------------------------------------------------------------
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns, but uses a full orthogonal factorization of
     !! the system.
-    interface least_squares_solve_full
-        module procedure :: least_squares_solve_mtx_pvt
-        module procedure :: least_squares_solve_vec_pvt
+    interface solve_least_squares_full
+        module procedure :: solve_least_squares_mtx_pvt
+        module procedure :: solve_least_squares_vec_pvt
     end interface
 
 ! ------------------------------------------------------------------------------
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns using a singular value decomposition of
     !! matrix A.
-    interface least_squares_solve_svd
-        module procedure :: least_squares_solve_mtx_svd
-        module procedure :: least_squares_solve_vec_svd
+    interface solve_least_squares_svd
+        module procedure :: solve_least_squares_mtx_svd
+        module procedure :: solve_least_squares_vec_svd
     end interface
 
 
@@ -1565,7 +1564,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELS.
-    subroutine least_squares_solve_mtx(a, b, work, olwork, err)
+    subroutine solve_least_squares_mtx(a, b, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         real(dp), intent(out), target, optional, dimension(:) :: work
@@ -1593,7 +1592,7 @@ contains
 
         ! Input Check
         if (size(b, 1) /= maxmn) then
-            call errmgr%report_error("least_squares_solve_mtx", &
+            call errmgr%report_error("solve_least_squares_mtx", &
                 "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -1610,7 +1609,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_mtx", &
+                call errmgr%report_error("solve_least_squares_mtx", &
                     "Incorrectly sized input array WORK, argument 3.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1620,7 +1619,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_mtx", &
+                call errmgr%report_error("solve_least_squares_mtx", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -1631,7 +1630,7 @@ contains
         ! Process
         call DGELS('N', m, n, nrhs, a, m, b, maxmn, wptr, lwork, flag)
         if (flag > 0) then
-            call errmgr%report_error("least_squares_solve_mtx", &
+            call errmgr%report_error("solve_least_squares_mtx", &
                 "The supplied matrix is not of full rank; therefore, " // &
                 "the solution could not be computed via this routine.  " // &
                 "Try a routine that utilizes column pivoting.", &
@@ -1671,7 +1670,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELS.
-    subroutine least_squares_solve_vec(a, b, work, olwork, err)
+    subroutine solve_least_squares_vec(a, b, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
@@ -1699,7 +1698,7 @@ contains
 
         ! Input Check
         if (size(b) /= maxmn) then
-            call errmgr%report_error("least_squares_solve_vec", &
+            call errmgr%report_error("solve_least_squares_vec", &
                 "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -1716,7 +1715,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_vec", &
+                call errmgr%report_error("solve_least_squares_vec", &
                     "Incorrectly sized input array WORK, argument 3.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1726,7 +1725,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_vec", &
+                call errmgr%report_error("solve_least_squares_vec", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -1737,97 +1736,11 @@ contains
         ! Process
         call DGELS('N', m, n, 1, a, m, b, maxmn, wptr, lwork, flag)
         if (flag > 0) then
-            call errmgr%report_error("least_squares_solve_mtx", &
+            call errmgr%report_error("solve_least_squares_mtx", &
                 "The supplied matrix is not of full rank; therefore, " // &
                 "the solution could not be computed via this routine.  " // &
                 "Try a routine that utilizes column pivoting.", &
                 LA_INVALID_OPERATION_ERROR)
-        end if
-    end subroutine
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
-    !! Notice, it is assumed that matrix A has full rank.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the 
-    !!  QR factorization of A in the form as output by @ref qr_factor; else,
-    !!  if M < N, the LQ factorization of A.
-    !! @param[in,out] b On input, the M-by-NRHS matrix B.  On output the
-    !!  contents are overwritten.
-    !! @param[out] x The N-by-NRHS solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELS.
-    subroutine least_squares_solve_mtx_1(a, b, x, work, olwork, err)
-        ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), dimension(:,:) :: x
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
-        class(errors), intent(inout), optional, target :: err
-
-        ! Local Variables
-        integer(i32) :: m, n
-        class(errors), pointer :: errmgr
-        type(errors), target :: deferr
-        character(len = 128) :: errmsg
-
-        ! Initialization
-        if (present(err)) then
-            errmgr => err
-        else
-            errmgr => deferr
-        end if
-
-        ! Workspace Query
-        if (present(olwork)) then
-            call least_squares_solve(a, b, work, olwork)
-            return
-        end if
-
-        ! Process
-        m = size(a, 1)
-        n = size(a, 2)
-        if (size(b, 2) /= size(x, 2) .or. size(x, 1) /= n) then
-            if (size(b, 2) /= size(x, 2)) then
-                write(errmsg, '(AI0AI0A)') &
-                    "The number of columns in matrices B and X must " // &
-                    "match.  B has ", size(b, 2), " columns, and X has ", &
-                    size(x, 2), " columns."
-            else
-                write(errmsg, '(AI0AI0A)') &
-                    "The matrix X was expected to have ", n, &
-                    " rows, but was found to have ", size(x, 1), " rows."
-            end if
-
-            call errmgr%report_error("least_squares_solve_mtx_1", &
-                trim(errmsg), LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-        if (m >= n) then
-            call least_squares_solve(a, b, work, err = errmgr)
-            x = b(1:n,:)
-        else
-            x(1:m,:) = b
-            call least_squares_solve(a, x, work, err = errmgr)
         end if
     end subroutine
 
@@ -1869,7 +1782,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine least_squares_solve_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
+    subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
@@ -1914,7 +1827,7 @@ contains
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &
                 " is not sized correctly."
-            call errmgr%report_error("least_squares_solve_mtx_pvt", &
+            call errmgr%report_error("solve_least_squares_mtx_pvt", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -1931,7 +1844,7 @@ contains
         if (present(ipvt)) then
             if (size(ipvt) < n) then
                 ! ERROR: IPVT is not big enough
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Incorrectly sized pivot array, argument 3.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1941,7 +1854,7 @@ contains
             allocate(iwrk(n), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -1953,7 +1866,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Incorrectly sized input array WORK, argument 5.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1963,7 +1876,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -2015,7 +1928,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine least_squares_solve_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
+    subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
@@ -2060,7 +1973,7 @@ contains
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &
                 " is not sized correctly."
-            call errmgr%report_error("least_squares_solve_vec_pvt", &
+            call errmgr%report_error("solve_least_squares_vec_pvt", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -2077,7 +1990,7 @@ contains
         if (present(ipvt)) then
             if (size(ipvt) < n) then
                 ! ERROR: IPVT is not big enough
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Incorrectly sized pivot array, argument 3.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -2087,7 +2000,7 @@ contains
             allocate(iwrk(n), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_mtx_pvt", &
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -2099,7 +2012,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_vec_pvt", &
+                call errmgr%report_error("solve_least_squares_vec_pvt", &
                     "Incorrectly sized input array WORK, argument 5.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -2109,7 +2022,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_vec_pvt", &
+                call errmgr%report_error("solve_least_squares_vec_pvt", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -2159,7 +2072,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine least_squares_solve_mtx_svd(a, b, arnk, s, work, olwork, err)
+    subroutine solve_least_squares_mtx_svd(a, b, arnk, s, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a, b
         real(dp), intent(out), dimension(:) :: s
@@ -2203,7 +2116,7 @@ contains
             ! ERROR: One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
                 " is not sized correctly."
-            call errmgr%report_error("least_squares_solve_mtx_svd", &
+            call errmgr%report_error("solve_least_squares_mtx_svd", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -2220,7 +2133,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_mtx_svd", &
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
                     "Incorrectly sized input array WORK, argument 5.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -2230,7 +2143,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_mtx_svd", &
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -2245,7 +2158,7 @@ contains
         if (flag > 0) then
             write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
-            call errmgr%report_warning("least_squares_solve_mtx_svd", errmsg, &
+            call errmgr%report_warning("solve_least_squares_mtx_svd", errmsg, &
                 LA_CONVERGENCE_ERROR)
         end if
     end subroutine
@@ -2287,7 +2200,7 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine least_squares_solve_vec_svd(a, b, arnk, s, work, olwork, err)
+    subroutine solve_least_squares_vec_svd(a, b, arnk, s, work, olwork, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         real(dp), intent(inout), dimension(:) :: b
@@ -2331,7 +2244,7 @@ contains
             ! ERROR: One of the input arrays is not sized correctly
             write(errmsg, '(AI0A)') "Input number ", flag, &
                 " is not sized correctly."
-            call errmgr%report_error("least_squares_solve_vec_svd", &
+            call errmgr%report_error("solve_least_squares_vec_svd", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -2348,7 +2261,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("least_squares_solve_vec_svd", &
+                call errmgr%report_error("solve_least_squares_vec_svd", &
                     "Incorrectly sized input array WORK, argument 5.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -2358,7 +2271,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("least_squares_solve_vec_svd", &
+                call errmgr%report_error("solve_least_squares_vec_svd", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -2372,7 +2285,7 @@ contains
         if (flag > 0) then
             write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
-            call errmgr%report_warning("least_squares_solve_vec_svd", errmsg, &
+            call errmgr%report_warning("solve_least_squares_vec_svd", errmsg, &
                 LA_CONVERGENCE_ERROR)
         end if
     end subroutine

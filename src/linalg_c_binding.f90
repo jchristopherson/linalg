@@ -44,19 +44,19 @@ contains
             bind(C, name = "mtx_mult")
         ! Arguments
         logical(c_bool), intent(in), value :: transa, transb
-        integer(i32), intent(in), value :: m, n, k, lda, ldb, ldc
+        integer(i32), intent(in), value :: m, n, k, lda, ldb
         real(dp), intent(in), value :: alpha, beta
         real(dp), intent(in) :: a(lda,*), b(ldb,*)
         real(dp), intent(inout) :: c(m,n)
 
         ! Process
         character :: ta, tb
-        if (transa)
+        if (transa) then
             ta = 'T'
         else
             ta = 'F'
         end if
-        if (transb)
+        if (transb) then
             tb = 'T'
         else
             tb = 'F'
@@ -1099,8 +1099,8 @@ contains
     !!  encountered are as follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine least_squares_solve_c(m, n, nrhs, a, mb, b, err) &
-            bind(C, name = "least_squares_solve")
+    subroutine solve_least_squares_c(m, n, nrhs, a, mb, b, err) &
+            bind(C, name = "solve_least_squares")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nrhs, mb
         real(dp), intent(inout) :: a(m, n), b(mb, nrhs)
@@ -1112,9 +1112,9 @@ contains
         ! Process
         if (c_associated(err)) then
             call c_f_pointer(err, eptr)
-            call least_squares_solve_full(a, b, err = eptr)
+            call solve_least_squares_full(a, b, err = eptr)
         else
-            call least_squares_solve_full(a, b)
+            call solve_least_squares_full(a, b)
         end if
     end subroutine
 

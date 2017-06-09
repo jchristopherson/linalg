@@ -653,7 +653,7 @@ void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void least_squares_solve(int m, int n, int nrhs, double *a, int mb, double *b,
+void solve_least_squares(int m, int n, int nrhs, double *a, int mb, double *b,
                          errorhandler err);
 
 /** @brief Computes the eigenvalues, and optionally the eigenvectors of a

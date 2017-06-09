@@ -41,7 +41,7 @@ This example solves an overdefined system of M equations of N uknowns.
     ! Initialize A and B ...
     
     ! Compute the solution using a least-squares approach
-    call least_squares_solve(a, b)
+    call solve_least_squares(a, b)
 
     ! Notice, X overwrites the first N elements in B, so if you'd prefer:
     x = b(1:n)
@@ -92,7 +92,7 @@ int main() {
     // Compute the solution using a least-squares approach.
     // Notice, the NULL parameter indicates no external error handling is 
     // provided.  All error handling is internal to the routine.
-    least_squares_solve(m, n, 1, a, m, b, NULL);
+    solve_least_squares(m, n, 1, a, m, b, NULL);
 
     // Notice, X overwrites the first N elements in B, so if you'd prefer:
     for (i = 0; i < n; ++i) x[i] = b[i];

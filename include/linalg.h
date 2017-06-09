@@ -44,6 +44,25 @@ void mult_rz(bool trans, int m, int n, double *a, const double *tau, double *c,
              errorhandler err);
 void svd(int m, int n, double *a, int ns, double *s, double *u, double *vt,
          errorhandler err);
+void solve_triangular_system(bool upper, bool trans, bool nounit, int n, 
+                             int nrhs, double alpha, const double *a, 
+                             double *b);
+void solve_lu(int n, int nrhs, const double *a, const int *ipvt, double *b);
+void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
+              errorhandler err);
+void solve_qr_pivot(int m, int n, int nrhs, double *a, int nt, 
+                    const double *tau, const int *jpvt, int mb, double *b,
+                    errorhandler err);
+void solve_cholesky(bool upper, int n, int nrhs, const double *a, double *b);
+void mtx_inverse(int n, double *a, errorhandler err);
+void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler err);
+void least_squares_solve(int m, int n, int nrhs, double *a, int mb, double *b,
+                         errorhandler err);
+void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler err);
+void eigen_asymm(int n, double *a, double complex *vals, double complex *vecs,
+                 errorhandler err);
+void eigen_gen(int n, double *a, double *b, double complex *alpha, double *beta,
+               double complex *vecs, errorhandler err);
 
 #ifdef __cplusplus
 }

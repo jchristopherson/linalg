@@ -834,7 +834,7 @@ contains
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side.  On output, the
     !!  N-by-NRHS solution.
     subroutine solve_tri_mtx_c(upper, trans, nounit, n, nrhs, alpha, a, b) &
-            bind(C, name = "solve_tri_mtx")
+            bind(C, name = "solve_triangular_system")
         ! Arguments
         logical(c_bool), intent(in), value :: upper, trans, nounit
         integer(i32), intent(in), value :: n, nrhs

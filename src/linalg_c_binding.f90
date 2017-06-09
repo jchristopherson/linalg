@@ -16,27 +16,52 @@ contains
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Performs the matrix operation: C = alpha * A * B + beta * C.
+    !> @brief Performs the matrix operation: 
+    !!  C = alpha * op(A) * op(B) + beta * C.
     !!
-    !! @param[in] m The number of rows in matrix C.
-    !! @param[in] n The number of columns in matrix C.
-    !! @param[in] k The number of columns in matrix A, and the number of rows
-    !!  in the matrix B.
+    !! @param[in] transa Set to true if op(A) == A**T; else, set to false if
+    !!  op(A) == A.
+    !! @param[in] transa Set to true if op(B) == B**T; else, set to false if
+    !!  op(B) == B.
+    !! @param[in] m The number of rows in matrix C, and the number of rows in
+    !!  matrix op(A).
+    !! @param[in] n The number of columns in matrix C, and the number of columns
+    !!  in matrix op(B).
+    !! @param[in] k The number of columns in matrix op(A), and the number of
+    !!  rows in the matrix op(B).
     !! @param[in] alpha The scalar multiplier to matrix A.
     !! @param[in] a The M-by-K matrix A.
+    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true, 
+    !!  this value must be at least MAX(1, K); else, if @p transa is false, this
+    !!  value must be at least MAX(1, M).
     !! @param[in] b The K-by-N matrix B.
+    !! @param[in] ldb The leading dimension of matrix B.  If @p transb is true,
+    !!  this value must be at least MAX(1, N); else, if @p transb is false, this
+    !!  value must be at least MAX(1, K).
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c The M-by-N matrix C.
-    subroutine mtx_mult_c(m, n, k, alpha, a, b, beta, c) &
+    subroutine mtx_mult_c(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c) &
             bind(C, name = "mtx_mult")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
+        logical(c_bool), intent(in), value :: transa, transb
+        integer(i32), intent(in), value :: m, n, k, lda, ldb, ldc
         real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(m,k), b(k,n)
+        real(dp), intent(in) :: a(lda,*), b(ldb,*)
         real(dp), intent(inout) :: c(m,n)
 
         ! Process
-        call mtx_mult(.false., .false., alpha, a, b, beta, c)
+        character :: ta, tb
+        if (transa)
+            ta = 'T'
+        else
+            ta = 'F'
+        end if
+        if (transb)
+            tb = 'T'
+        else
+            tb = 'F'
+        end if
+        call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -190,9 +215,6 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
     !!      could not converge to a zero value.
-    !!
-    !! @par See Also
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
     function mtx_rank_c(m, n, a, err) result(rnk) bind(C, name = "mtx_rank")
         ! Arguments
         integer(i32), intent(in), value :: m, n
@@ -732,6 +754,8 @@ contains
     !! @param[in] trans Set to true to apply Z**T; else, set to false.
     !! @param[in] m The number of rows in the matrix @p c.
     !! @param[in] n The number of columns in the matrix @p c.
+    !! @param[in] l The number of columns in matrix @p a containing the
+    !!  meaningful part of the Householder vectors (M >= L >= 0).
     !! @param[in,out] a On input, the M-by-M matrix Z as output by @p rz_factor.
     !!  The matrix is used as in-place storage during execution; however, the
     !!  contents of the matrix are restored on exit.
@@ -745,10 +769,11 @@ contains
     !!  encountered are as follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine mult_rz_c(trans, m, n, a, tau, c, err) bind(C, name = "mult_rz")
+    subroutine mult_rz_c(trans, m, n, l, a, tau, c, err) &
+            bind(C, name = "mult_rz")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n
+        integer(i32), intent(in), value :: m, n, l
         real(dp), intent(inout) :: a(m,m), c(m,n)
         real(dp), intent(in) :: tau(m)
         type(c_ptr), intent(in), value :: err
@@ -759,9 +784,9 @@ contains
         ! Process
         if (c_associated(err)) then
             call c_f_pointer(err, eptr)
-            call mult_rz(.true., logical(trans), m, a, tau, c, err = eptr)
+            call mult_rz(.true., logical(trans), l, a, tau, c, err = eptr)
         else
-            call mult_rz(.true., logical(trans), m, a, tau, c)
+            call mult_rz(.true., logical(trans), l, a, tau, c)
         end if
     end subroutine
 
@@ -1175,7 +1200,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-     !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
     !! a square matrix assuming the structure of the eigenvalue problem is
     !! A*X = lambda*B*X.
     !!

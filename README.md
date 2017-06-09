@@ -73,6 +73,33 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
     natFreq = sqrt(real(eigVals)) / (2.0d0 * pi)
 
 ```
+
+## C Example
+This example makes use of the C API to compute the solution to an overdetermined system of M equations of N unknowns.
+
+```c
+#include "linalg.h"
+
+int main() {
+    // NOTE: The matrices are expected to be in column-major format.
+
+    // M = 40, N = 30 (M * N = 1200)
+    int i, m = 40, n = 30;
+    double a[1200], b[40], x[30];
+
+    // Initialize A and B ...
+
+    // Compute the solution using a least-squares approach.
+    // Notice, the NULL parameter indicates no external error handling is 
+    // provided.  All error handling is internal to the routine.
+    least_squares_solve(m, n, 1, a, m, b, NULL);
+
+    // Notice, X overwrites the first N elements in B, so if you'd prefer:
+    for (i = 0; i < n; ++i) x[i] = b[i];
+}
+
+```
+
 ## Documentation
 Documentation can be found [here](doc/refman.pdf)
 

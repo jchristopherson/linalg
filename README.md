@@ -82,4 +82,3 @@ Additional items to accomplish:
 - Add a sparse matrix class (also include associated operators allowing multiplication, addition, etc.)
 - Add sparse matrix solution routines.
 - Add sparse matrix eigenvalue/eigenvector routines.
-- Define a C interface.

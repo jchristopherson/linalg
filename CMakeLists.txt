@@ -113,8 +113,6 @@ list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90
 # else, a static library will be built.
 add_library(linalg ${sources})
 
-# Build a test executable, only for debug builds
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-  add_executable(linalg_test ${testing_sources})
-endif()
+# Build a test executable
+add_executable(linalg_test ${testing_sources})
 

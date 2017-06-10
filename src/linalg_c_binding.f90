@@ -21,7 +21,7 @@ contains
     !!
     !! @param[in] transa Set to true if op(A) == A**T; else, set to false if
     !!  op(A) == A.
-    !! @param[in] transa Set to true if op(B) == B**T; else, set to false if
+    !! @param[in] transb Set to true if op(B) == B**T; else, set to false if
     !!  op(B) == B.
     !! @param[in] m The number of rows in matrix C, and the number of rows in
     !!  matrix op(A).
@@ -40,8 +40,8 @@ contains
     !!  value must be at least MAX(1, K).
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c The M-by-N matrix C.
-    subroutine mtx_mult_c(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c) &
-            bind(C, name = "mtx_mult")
+    subroutine mtx_mult_c(transa, transb, m, n, k, alpha, a, lda, b, ldb, &
+            beta, c) bind(C, name = "mtx_mult")
         ! Arguments
         logical(c_bool), intent(in), value :: transa, transb
         integer(i32), intent(in), value :: m, n, k, lda, ldb
@@ -83,6 +83,12 @@ contains
     !!  - @p trans == false: LDB = P, TDB = N
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c THe M-by-N matrix C.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
     subroutine diag_mtx_mult_c(trans, m, n, alpha, na, a, mb, nb, b, beta, &
             c, err) bind(C, name = "diag_mtx_mult")
         ! Arguments
@@ -126,6 +132,12 @@ contains
     !!  - @p trans == false: LDB = P, TDB = N
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c THe M-by-N matrix C.
+    !! @param[in] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
     subroutine diag_mtx_mult_cmplx_c(trans, m, n, alpha, na, a, mb, nb, b, &
             beta, c, err) bind(C, name = "diag_mtx_mult_cmplx")
         ! Arguments
@@ -326,13 +338,13 @@ contains
 
 ! ------------------------------------------------------------------------------
     !> @brief Extracts the L, U, and P matrices from the output of the
-    !! @ref lu_factor routine.
+    !! lu_factor routine.
     !!
     !! @param[in] n The dimension of the original matrix.
     !! @param[in,out] lu On input, the N-by-N matrix as output by
-    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !!  lu_factor.  On output, the N-by-N lower triangular matrix L.
     !! @param[in] ipvt The N-element pivot array as output by
-    !!  @ref lu_factor.
+    !!  lu_factor.
     !! @param[out] u An N-by-N matrix where the U matrix will be written.
     !! @param[out] p An N-by-N matrix where the row permutation matrix will be
     !!  written.
@@ -878,8 +890,8 @@ contains
     !! @param[in] n The dimension of the original matrix @p a.
     !! @param[in] nrhs The number of right-hand-side vectors (number of columns
     !!  in matrix @p b).
-    !! @param[in] a The N-by-N LU factored matrix as output by @ref lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by @ref lu_factor.
+    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
     !!  output, the N-by-NRHS solution matrix.
     subroutine solve_lu_c(n, nrhs, a, ipvt, b) bind(C, name = "solve_lu")
@@ -902,10 +914,10 @@ contains
     !! @param[in] nrhs The number of right-hand-side vectors (number of columns
     !!  in matrix @p b).
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
+    !!  qr_factor.  On output, the contents of this matrix are restored.
     !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
+    !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
     !!  the first N columns are overwritten by the solution matrix X.
     !! @param[in] err A pointer to the C error handler object.  If no error
@@ -943,12 +955,12 @@ contains
     !! @param[in] nrhs The number of right-hand-side vectors (number of columns
     !!  in matrix @p b).
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
+    !!  qr_factor.  On output, the contents of this matrix are altered.
     !! @param[in] nt The number of elements in the scalar factor array @p tau.
     !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
     !!  track the column pivots.
     !! @param[in] mb The number of rows in the matrix @p b.  This value must be
     !!  equal to MAX(M, N).
@@ -1204,6 +1216,7 @@ contains
     !! a square matrix assuming the structure of the eigenvalue problem is
     !! A*X = lambda*B*X.
     !!
+    !! @param[in] n The dimension of the matrix.
     !! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
     !!  of this matrix are overwritten.
     !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents

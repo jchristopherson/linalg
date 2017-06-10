@@ -333,8 +333,8 @@ contains
 ! ------------------------------------------------------------------------------
     !> @brief Solves a system of LU-factored equations.
     !!
-    !! @param[in] a The N-by-N LU factored matrix as output by @ref lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by @ref lu_factor.
+    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
     !!  output, the N-by-NRHS solution matrix.
     !! @param[out] err An optional errors-based object that if provided can be
@@ -394,8 +394,8 @@ contains
 ! ------------------------------------------------------------------------------
     !> @brief Solves a system of LU-factored equations.
     !!
-    !! @param[in] a The N-by-N LU factored matrix as output by @ref lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by @ref lu_factor.
+    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
     !! @param[in,out] b On input, the N-element right-hand-side array.  On
     !!  output, the N-element solution array.
     !! @param[out] err An optional errors-based object that if provided can be
@@ -458,10 +458,10 @@ contains
     !! M >= N.
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
+    !!  qr_factor.  On output, the contents of this matrix are restored.
     !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
+    !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
     !!  the first N columns are overwritten by the solution matrix X.
     !! @param[out] work An optional input, that if provided, prevents any local
@@ -573,10 +573,10 @@ contains
     !! M >= N.
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are restored.
+    !!  qr_factor.  On output, the contents of this matrix are restored.
     !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
+    !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-element right-hand-side vector.  On output,
     !!  the first N elements are overwritten by the solution vector X.
     !! @param[out] work An optional input, that if provided, prevents any local
@@ -684,10 +684,10 @@ contains
     !! QR factorization made use of column pivoting.
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
+    !!  qr_factor.  On output, the contents of this matrix are altered.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
     !!  track the column pivots.
     !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
     !!  rows contain the right-hand-side matrix B.  On output, the first N rows
@@ -871,10 +871,10 @@ contains
     !! QR factorization made use of column pivoting.
     !!
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  @ref qr_factor.  On output, the contents of this matrix are altered.
+    !!  qr_factor.  On output, the contents of this matrix are altered.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by @ref qr_factor.
-    !! @param[in] jpvt An N-element array, as output by @ref qr_factor, used to
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
     !!  track the column pivots.
     !! @param[in] b On input, the MAX(M, N)-element array where the first M
     !!  elements contain the right-hand-side vector B.  On output, the first N
@@ -1538,7 +1538,7 @@ contains
     !! Notice, it is assumed that matrix A has full rank.
     !!
     !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  the QR factorization of A in the form as output by qr_factor; else,
     !!  if M < N, the LQ factorization of A.
     !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
@@ -1644,7 +1644,7 @@ contains
     !! Notice, it is assumed that matrix A has full rank.
     !!
     !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by @ref qr_factor; else,
+    !!  the QR factorization of A in the form as output by qr_factor; else,
     !!  if M < N, the LQ factorization of A.
     !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
     !!  N elements contain the N-element solution array X.  If M < N, an

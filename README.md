@@ -96,6 +96,9 @@ int main() {
 
     // Notice, X overwrites the first N elements in B, so if you'd prefer:
     for (i = 0; i < n; ++i) x[i] = b[i];
+    
+    // End
+    return 0;
 }
 
 ```

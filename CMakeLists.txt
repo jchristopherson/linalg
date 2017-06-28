@@ -77,31 +77,10 @@ if (BUILD_SHARED_LIBS)
 else()
     # Include everything into the static library
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
+        LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
 endif()
 
-# Straighten out dependencies
-# if (BUILD_SHARED_LIBS)
-#   # See if the user wishes to use the reference BLAS
-#   option(use_ref_blas "Use reference BLAS?" ON)
-#   if (use_ref_blas)
-#     # Add the BLAS source files to the list
-#     file(GLOB_RECURSE blas_sources BLAS/src*f)
-#     list(APPEND sources ${blas_sources})
-#   else()
-#     # TO DO: Ask user where to find BLAS library
-#   endif()
-
-#   # See if the user wishes to use the supplied LAPACK
-#   option(use_lapack "Use supplied LAPACK?" ON)
-#   if (use_lapack)
-#     # Add the LAPACK source files to the list
-#     file(GLOB_RECURSE lapack_sources LAPACK/src/*f)
-#     list(APPEND sources ${lapack_sources})
-#   else()
-#     # TO DO: Ask user where to find LAPACK library
-#   endif()
-# endif()
+# Define how to build dependencies in the event of a shared library build
 if (BUILD_SHARED_LIBS)
   set(ExternalProjectCMakeArgs
       -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
@@ -113,9 +92,6 @@ if (BUILD_SHARED_LIBS)
       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
       -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-  # add_external(lapack "")
-  # add_dependencies(linalg lapack)
-  # add_dependencies(linalg_test lapack)
 endif ()
 
 # Define the testing files
@@ -123,6 +99,9 @@ set(testing_sources ${sources})
 list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
     tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
     tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
+
+# Define where to find LAPACK
+add_subdirectory(LAPACK)
 
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.

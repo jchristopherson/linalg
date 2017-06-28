@@ -1,5 +1,5 @@
 # Reference BLAS CMakeLists
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 enable_language(Fortran)
 project(blas)
 
@@ -26,7 +26,7 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   message ("No optimized Fortran compiler flags are known, we just try -O2...")
   set (CMAKE_Fortran_FLAGS_RELEASE "-O2")
   set (CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
-endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+endif ()
 
 # Specify source files
 file(GLOB_RECURSE sources src/*f)

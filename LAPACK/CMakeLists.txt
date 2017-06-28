@@ -36,7 +36,7 @@ if (USE_OPTIMIZED_BLAS)
     message(STATUS "Using user-supplied BLAS")
     find_package(blas)
 else ()
-    message(STATUS, "User supplied NETLIB BLAS implementation")
+    message(STATUS, "Using supplied NETLIB BLAS implementation")
     set(ExternalProjectCMakeArgs
         -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
@@ -47,10 +47,13 @@ else ()
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+    
+    # Define where to find BLAS
+    add_subdirectory(BLAS)
 endif ()
 
-# Define where to find BLAS
-add_subdirectory(BLAS)
+# # Define where to find BLAS
+# add_subdirectory(BLAS)
 
 # Specify source files
 file(GLOB_RECURSE sources src/*f)

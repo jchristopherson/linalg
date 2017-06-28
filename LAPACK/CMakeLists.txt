@@ -36,7 +36,7 @@ if (USE_OPTIMIZED_BLAS)
     message(STATUS "Using user-supplied BLAS")
     find_package(blas)
 else ()
-    message(STATUS, "Using supplied NETLIB BLAS implementation")
+    message(STATUS "Using supplied NETLIB BLAS implementation")
     set(ExternalProjectCMakeArgs
         -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}

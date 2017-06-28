@@ -1,13 +1,12 @@
-# Master CMAKE Build Script
+# Reference BLAS CMakeLists
 cmake_minimum_required(VERSION 2.6)
 enable_language(Fortran)
-project(linalg)
+project(blas)
 
 # Define version information
-set(linalg_VERSION_MAJOR 1)
-set(linalg_VERSION_MINOR 0)
+set(linalg_VERSION_MAJOR 3)
+set(linalg_VERSION_MINOR 6)
 set(linalg_VERSION_PATCH 0)
-set(linalg_VERSION_TWEAK 1)
 
 # Specify output directories
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -72,53 +71,7 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
 # Specify source files
-if (BUILD_SHARED_LIBS)
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f ferror/src/*f90)
-else()
-    # Include everything into the static library
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        BLAS/src/*f src/LAPACK/*f ferror/src/*f90)
-endif()
+file(GLOB_RECURSE blas_sources src/*f)
 
-# Straighten out dependencies
-if (BUILD_SHARED_LIBS)
-  # See if the user wishes to use the reference BLAS
-  option(use_ref_blas "Use reference BLAS?" ON)
-  if (use_ref_blas)
-    # Add the BLAS source files to the list
-    file(GLOB_RECURSE blas_sources BLAS/src*f)
-    list(APPEND sources ${blas_sources})
-  else()
-    # TO DO: Ask user where to find BLAS library
-  endif()
-
-  # See if the user wishes to use the supplied LAPACK
-  option(use_lapack "Use supplied LAPACK?" ON)
-  if (use_lapack)
-    # Add the LAPACK source files to the list
-    file(GLOB_RECURSE lapack_sources src/LAPACK/*f)
-    list(APPEND sources ${lapack_sources})
-  else()
-    # TO DO: Ask user where to find LAPACK library
-  endif()
-endif()
-
-# # Remove testing items from the library build
-# set(testing_sources ${sources})
-# list(REMOVE_ITEM sources src/test.f90 src/test_core.f90 src/test_qr.f90 
-#     src/test_svd.f90 src/test_cholesky.f90 src/test_eigen.f90 
-#     src/test_mtx_inverse.f90 src/test_misc.f90 src/test_lu.f90)
-
-# Define the testing files
-set(testing_sources ${sources})
-list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
-    tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
-    tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
-
-# If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
-# else, a static library will be built.
-add_library(linalg ${sources})
-
-# Build a test executable
-add_executable(linalg_test ${testing_sources})
-
+# Build the library
+add_library(blas ${blas_sources})

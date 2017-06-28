@@ -1,12 +1,12 @@
-# Reference BLAS CMakeLists
+# LAPACK CMakeLists
 cmake_minimum_required(VERSION 2.6)
 enable_language(Fortran)
-project(blas)
+project(lapack)
 
 # Define version information
-set(blas_VERSION_MAJOR 3)
-set(blas_VERSION_MINOR 6)
-set(blas_VERSION_PATCH 0)
+set(lapack_VERSION_MAJOR 3)
+set(lapack_VERSION_MINOR 4)
+set(lapack_VERSION_PATCH 0)
 
 # # Specify output directories
 # if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -70,8 +70,34 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   set (CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
 endif (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 
+# Use optimized BLAS?
+option(USE_OPTIMIZED_BLAS "Use an optimized BLAS library instead of the included NETLIB Reference BLAS" OFF)
+
+# Check the usage of the user provided BLAS
+if (USE_OPTIMIZED_BLAS)
+    message(STATUS "Using user-supplied BLAS")
+    find_package(blas)
+else ()
+    message(STATUS, "User supplied NETLIB BLAS implementation")
+    set(ExternalProjectCMakeArgs
+        -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        -CMAKE_Fortran_MODULE_DIRECTORY=${CMAKE_Fortran_MODULE_DIRECTORY}
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
+        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+    # add_external(blas "")
+endif ()
+
+# # Define dependencies
+# add_dependencies(lapack blas)
+
 # Specify source files
 file(GLOB_RECURSE sources src/*f)
 
 # Build the library
-add_library(blas ${sources})
+add_library(lapack ${sources})
+target_link_libraries(lapack blas)

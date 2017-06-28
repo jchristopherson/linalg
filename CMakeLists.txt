@@ -77,37 +77,46 @@ if (BUILD_SHARED_LIBS)
 else()
     # Include everything into the static library
     file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        BLAS/src/*f src/LAPACK/*f ferror/src/*f90)
+        BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
 endif()
 
 # Straighten out dependencies
+# if (BUILD_SHARED_LIBS)
+#   # See if the user wishes to use the reference BLAS
+#   option(use_ref_blas "Use reference BLAS?" ON)
+#   if (use_ref_blas)
+#     # Add the BLAS source files to the list
+#     file(GLOB_RECURSE blas_sources BLAS/src*f)
+#     list(APPEND sources ${blas_sources})
+#   else()
+#     # TO DO: Ask user where to find BLAS library
+#   endif()
+
+#   # See if the user wishes to use the supplied LAPACK
+#   option(use_lapack "Use supplied LAPACK?" ON)
+#   if (use_lapack)
+#     # Add the LAPACK source files to the list
+#     file(GLOB_RECURSE lapack_sources LAPACK/src/*f)
+#     list(APPEND sources ${lapack_sources})
+#   else()
+#     # TO DO: Ask user where to find LAPACK library
+#   endif()
+# endif()
 if (BUILD_SHARED_LIBS)
-  # See if the user wishes to use the reference BLAS
-  option(use_ref_blas "Use reference BLAS?" ON)
-  if (use_ref_blas)
-    # Add the BLAS source files to the list
-    file(GLOB_RECURSE blas_sources BLAS/src*f)
-    list(APPEND sources ${blas_sources})
-  else()
-    # TO DO: Ask user where to find BLAS library
-  endif()
-
-  # See if the user wishes to use the supplied LAPACK
-  option(use_lapack "Use supplied LAPACK?" ON)
-  if (use_lapack)
-    # Add the LAPACK source files to the list
-    file(GLOB_RECURSE lapack_sources src/LAPACK/*f)
-    list(APPEND sources ${lapack_sources})
-  else()
-    # TO DO: Ask user where to find LAPACK library
-  endif()
-endif()
-
-# # Remove testing items from the library build
-# set(testing_sources ${sources})
-# list(REMOVE_ITEM sources src/test.f90 src/test_core.f90 src/test_qr.f90 
-#     src/test_svd.f90 src/test_cholesky.f90 src/test_eigen.f90 
-#     src/test_mtx_inverse.f90 src/test_misc.f90 src/test_lu.f90)
+  set(ExternalProjectCMakeArgs
+      -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+      -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+      -CMAKE_Fortran_MODULE_DIRECTORY=${CMAKE_Fortran_MODULE_DIRECTORY}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
+      -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+  # add_external(lapack "")
+  # add_dependencies(linalg lapack)
+  # add_dependencies(linalg_test lapack)
+endif ()
 
 # Define the testing files
 set(testing_sources ${sources})
@@ -118,7 +127,9 @@ list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.
 add_library(linalg ${sources})
+target_link_libraries(linalg lapack)
 
 # Build a test executable
 add_executable(linalg_test ${testing_sources})
+target_link_libraries(linalg_test lapack)
 

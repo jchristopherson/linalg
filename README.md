@@ -106,6 +106,12 @@ int main() {
 ## Documentation
 Documentation can be found [here](doc/refman.pdf)
 
+## External Libraries
+Here is a list of external code libraries utilized by this library.
+- [BLAS](http://www.netlib.org/blas/)
+- [LAPACK](http://www.netlib.org/lapack/)
+- [QRUpdate](https://sourceforge.net/projects/qrupdate/)
+
 ## TO DO
 Additional items to accomplish:
 - Add additional test cases.

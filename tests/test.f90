@@ -52,6 +52,7 @@ program main
     ! Cholesky Factorization Tests
     call test_cholesky_factor()
     call test_cholesky_rank1_update()
+    call test_cholesky_rank1_downdate()
 
     ! Eigenvalue/Eigenvector Tests
     call test_eigen_symm()

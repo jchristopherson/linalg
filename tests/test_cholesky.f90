@@ -5,7 +5,8 @@ module test_cholesky
     use linalg_constants
     use test_core
     use linalg_core, only : rank1_update
-    use linalg_factor, only : cholesky_factor, cholesky_rank1_update
+    use linalg_factor, only : cholesky_factor, cholesky_rank1_update, &
+        cholesky_rank1_downdate
     use linalg_solve, only : solve_cholesky
     implicit none
 contains
@@ -96,6 +97,41 @@ contains
             print '(A)', "Test Failed: Cholesky Rank 1 Update Test 1"
         end if
         if (rst) print '(A)', "Test Passed: Cholesky Rank 1 Update"
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    subroutine test_cholesky_rank1_downdate()
+        ! Parameters
+        integer(i32), parameter :: n = 100
+        real(dp), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(dp), dimension(n, n) :: a, a1, r
+        real(dp), dimension(n) :: u
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a1)
+        call random_number(u)
+        a = matmul(a1, transpose(a1))
+        r = a
+
+        ! Compute the Cholesky factorization of the original matrix
+        call cholesky_factor(r)
+
+        ! Update the original matrix: A = A - u * u**T
+        call rank1_update(-1.0d0, u, u, a)
+
+        ! Update the factored matrix
+        call cholesky_rank1_downdate(r, u)
+
+        ! Test
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Cholesky Rank 1 Downdate Test 1"
+        end if
+        if (rst) print '(A)', "Test Passed: Cholesky Rank 1 Downdate"
     end subroutine
 
 end module

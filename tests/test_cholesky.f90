@@ -115,6 +115,9 @@ contains
         call random_number(a1)
         call random_number(u)
         a = matmul(a1, transpose(a1))
+
+        ! Start with a positive definite matrix, and then update it
+        call rank1_update(1.0d0, u, u, a)
         r = a
 
         ! Compute the Cholesky factorization of the original matrix

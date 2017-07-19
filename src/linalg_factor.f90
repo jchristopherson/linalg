@@ -1481,7 +1481,8 @@ contains
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p r is not positive definite.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+    !!      positive definite.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
     !!
     !! @par Notes
@@ -1554,7 +1555,7 @@ contains
         if (flag == 1) then
             ! ERROR: The matrix is not positive definite
             call errmgr%report_error("cholesky_rank1_downdate", &
-                "The input matrix is not positive definite.", &
+                "The downdated matrix is not positive definite.", &
                 LA_MATRIX_FORMAT_ERROR)
         else if (flag == 2) then
             ! ERROR: The matrix is singular

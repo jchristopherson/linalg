@@ -1335,7 +1335,7 @@ contains
                     do i = 1, j
                         temp = zero
                         do k = 1, j
-                            temp = temp + a(i,k)**2
+                            temp = temp + a(i,k) * a(k,j)
                         end do
                         temp = alpha * temp
                         b(i,j) = temp

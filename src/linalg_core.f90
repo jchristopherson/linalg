@@ -1357,6 +1357,31 @@ contains
             end if
         else
             ! Form: B = alpha * A * A**T + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = j, n
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        if (i /= j) b(j,i) = temp
+                    end do
+                end do
+            else
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = j, n
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
+            end if
         end if
     end subroutine
 

@@ -1291,12 +1291,25 @@ contains
     !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
     !! where A is a triangular matrix.
     !!
-    !! @param[in] upper
-    !! @param[in] alpha
-    !! @param[in] a
-    !! @param[in] beta
-    !! @param[in,out] b
-    !! @param[out] err
+    !! @param[in] upper Set to true if matrix A is upper triangular, and 
+    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+    !!  be computed.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
+    !!  only the upper triangular portion of this matrix is referenced; else,
+    !!  if @p upper is false, only the lower triangular portion of this matrix
+    !!  is referenced.
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
+    !!  solution matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
     subroutine tri_mtx_mult(upper, alpha, a, beta, b, err)
         ! Arguments
         logical, intent(in) :: upper
@@ -1307,24 +1320,42 @@ contains
 
         ! Parameters
         real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, j, k, n, flag
+        integer(i32) :: i, j, k, n, d1, d2, flag
         real(dp) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
 
         ! Initialization
         n = size(a, 1)
+        d1 = n
+        d2 = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
 
         ! Input Check
         flag = 0
         if (size(a, 2) /= n) then
             flag = 3
+            d2 = size(a, 2)
         else if (size(b, 1) /= n .or. size(b, 2) /= n) then
             flag = 5
+            d1 = size(b, 1)
+            d2 = size(b, 2)
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
+            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+                " was not sized appropriately.  A matrix of ", n, "-by-", n, &
+                "was expected, but a matrix of ", d1, "-by-", d2, " was found."
+            call errmgr%report_error("tri_mtx_mult", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
         end if
 
         ! Process

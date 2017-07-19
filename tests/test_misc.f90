@@ -171,4 +171,49 @@ contains
         if (check) &
             print '(A)', "Test Passed: Triangular Matrix Update - Test 1B"
     end subroutine
+
+! ------------------------------------------------------------------------------
+    subroutine test_tri_mtx_mult_2()
+        ! Parameters
+        integer(i32), parameter :: n = 100
+        real(dp), parameter :: alpha = 1.5d0
+        real(dp), parameter :: beta = -3.0d0
+        real(dp), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        logical :: check
+        integer(i32) :: j
+        real(dp) :: a(n,n), b(n,n), bans(n,n)
+
+        ! Initialization
+        check = .true.
+        call random_number(a)
+        do j = 2, n
+            a(1:j-1,j) = 0.0d0
+        end do
+
+        ! Test 1 (beta = 0)
+        call tri_mtx_mult(.false., alpha, a, 0.0d0, b)
+        bans = alpha * matmul(transpose(a), a)
+        if (.not.is_mtx_equal(b, bans, tol)) then
+            check = .false.
+            print '(A)', "Test Failed: Triangular Matrix Update - Test 2A"
+        end if
+
+        if (check) &
+            print '(A)', "Test Passed: Triangular Matrix Update - Test 2A"
+        
+        ! Test 2 (beta /= 0)
+        check = .true.
+        call tri_mtx_mult(.false., alpha, a, beta, b)
+        bans = alpha * matmul(transpose(a), a) + beta * bans
+        if (.not.is_mtx_equal(b, bans, tol)) then
+            check = .false.
+            print '(A)', "Test Failed: Triangular Matrix Update - Test 2B"
+        end if
+
+        if (check) &
+            print '(A)', "Test Passed: Triangular Matrix Update - Test 2B"
+    end subroutine
+
 end module

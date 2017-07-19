@@ -19,6 +19,7 @@ program main
     call test_rank1_update()
     call test_rank()
     call test_tri_mtx_mult_1()
+    call test_tri_mtx_mult_2()
 
     ! LU Factorization Tests
     call test_lu_factor()

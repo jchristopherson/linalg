@@ -1481,6 +1481,8 @@ contains
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p r is not positive definite.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
     !!
     !! @par Notes
     !! This routine utilizes the QRUPDATE routine DCH1DN.
@@ -1548,7 +1550,17 @@ contains
         end if
 
         ! Process
-        call DCH1DN(n, r, n, u, wptr)
+        call DCH1DN(n, r, n, u, wptr, flag)
+        if (flag == 1) then
+            ! ERROR: The matrix is not positive definite
+            call errmgr%report_error("cholesky_rank1_downdate", &
+                "The input matrix is not positive definite.", &
+                LA_MATRIX_FORMAT_ERROR)
+        else if (flag == 2) then
+            ! ERROR: The matrix is singular
+            call errmgr%report_error("cholesky_rank1_downdate", &
+                "The input matrix is singular.", LA_SINGULAR_MATRIX_ERROR)
+        end if
     end subroutine
 
 ! ******************************************************************************

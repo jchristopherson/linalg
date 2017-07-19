@@ -18,6 +18,7 @@ module linalg_factor
     public :: qr_rank1_update
     public :: cholesky_factor
     public :: cholesky_rank1_update
+    public :: cholesky_rank1_downdate
     public :: rz_factor
     public :: mult_rz
     public :: svd
@@ -1457,9 +1458,97 @@ contains
 
         ! Process
         call DCH1UP(n, r, n, u, wptr)
+    end subroutine
 
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least N
+    !!  elements.  Additionally, this workspace array is used to contain the
+    !!  rotation cosines used to transform R to R1.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine DCH1DN.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    subroutine cholesky_rank1_downdate(r, u, work, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:,:) :: r
+        real(dp), intent(inout), dimension(:) :: u
+        real(dp), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(i32) :: n, lwork, istat, flag
+        real(dp), pointer, dimension(:) :: wptr
+        real(dp), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(r, 1)
+        lwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(r, 2) /= n) then
+            flag = 1
+        else if (size(u) /= n) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("cholesky_rank1_downdate", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: Workspace array is not sized correctly
+                call errmgr%report_error("cholesky_rank1_downdate", &
+                    "The workspace array is too short.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                call errmgr%report_error("cholesky_rank1_downdate", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call DCH1DN(n, r, n, u, wptr)
     end subroutine
 
 ! ******************************************************************************

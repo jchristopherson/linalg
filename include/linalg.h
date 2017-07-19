@@ -157,6 +157,33 @@ double det(int n, double *a, errorhandler err);
  */
 void swap(int n, double *x, double *y);
 
+/** brief Computes the triangular matrix operation: 
+ * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+ * where A is a triangular matrix.
+ *
+ * @param upper Set to true if matrix A is upper triangular, and 
+ *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+ *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+ *  be computed.
+ * @param n The size of the matrix.
+ * @param alpha A scalar multiplier.
+ * @param a The N-by-N triangular matrix.  Notice, if @p upper is true
+ *  only the upper triangular portion of this matrix is referenced; else,
+ *  if @p upper is false, only the lower triangular portion of this matrix
+ *  is referenced.
+ * @param beta A scalar multiplier.
+ * @param b On input, the N-by-N matrix B.  On output, the N-by-N
+ *  solution matrix.
+ * @param err A pointer to the C error handler object.  If no error
+ *  handling is desired, simply pass NULL, and errors will be dealt with
+ *  by the default internal error handler.  Possible errors that may be
+ *  encountered are as follows.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
+ */
+void tri_mtx_mult(bool upper, int n, double alpha, const double *a, double beta,
+                  double *b, errorhandler err);
+
 /** @brief Computes the LU factorization of an M-by-N matrix.
  *
  * @param m The number of rows in the matrix.
@@ -409,6 +436,28 @@ void cholesky_factor(int n, double *a, bool upper, errorhandler err);
  *      there is insufficient memory available.
  */
 void cholesky_rank1_update(int n, double *r, double *u, errorhandler err);
+
+/** @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+ * triangular).
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ * @param err A pointer to the C error handler object.  If no error
+ *  handling is desired, simply pass NULL, and errors will be dealt with
+ *  by the default internal error handler.  Possible errors that may be
+ *  encountered are as follows.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+ *      incorrect.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+ *      positive definite.
+ *  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
+ */
+void cholesky_rank1_downdate(int n, double *r, double *u, errorhandler err);
 
 /** @brief Factors an upper trapezoidal matrix by means of orthogonal
  * transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal

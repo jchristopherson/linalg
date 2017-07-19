@@ -294,6 +294,52 @@ contains
         call swap(x, y)
     end subroutine
 
+! ------------------------------------------------------------------------------
+    !@ brief Computes the triangular matrix operation: 
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+    !! where A is a triangular matrix.
+    !!
+    !! @param[in] upper Set to true if matrix A is upper triangular, and 
+    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+    !!  be computed.
+    !! @param[in] n The size of the matrix.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
+    !!  only the upper triangular portion of this matrix is referenced; else,
+    !!  if @p upper is false, only the lower triangular portion of this matrix
+    !!  is referenced.
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
+    !!  solution matrix.
+    !! @param[out] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    subroutine tri_mtx_mult_c(upper, n, alpha, a, beta, b, err) &
+            bind(C, name = "tri_mtx_mult")
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(i32), intent(in), value :: n
+        real(dp), intent(in), value :: alpha, beta
+        real(dp), intent(in) :: a(n,n)
+        real(dp), intent(inout) :: b(n,n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call C_F_POINTER(err, eptr)
+            call tri_mtx_mult(logical(upper), alpha, a, beta, b, eptr)
+        else
+            call tri_mtx_mult(logical(upper), alpha, a, beta, b)
+        end if
+    end subroutine
+
 ! ******************************************************************************
 ! LINALG_FACTOR ROUTINES
 ! ------------------------------------------------------------------------------
@@ -716,6 +762,45 @@ contains
             call cholesky_rank1_update(r, u, err = eptr)
         else
             call cholesky_rank1_update(r, u)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[out] err A pointer to the C error handler object.  If no error
+    !!  handling is desired, simply pass NULL, and errors will be dealt with
+    !!  by the default internal error handler.  Possible errors that may be
+    !!  encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!      incorrect.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+    !!      positive definite.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
+    subroutine cholesky_rank1_downdate_c(n, r, u, err) &
+            bind(C, name = "cholesky_rank1_downdate")
+        ! Arguments
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: r(n,n), u(n)
+        type(c_ptr), intent(in), value :: err
+
+        ! Local Variables
+        type(errors), pointer :: eptr
+
+        ! Process
+        if (c_associated(err)) then
+            call C_F_POINTER(err, eptr)
+            call cholesky_rank1_downdate(r, u, err = eptr)
+        else
+            call cholesky_rank1_downdate(r, u)
         end if
     end subroutine
 

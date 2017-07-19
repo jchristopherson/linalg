@@ -29,6 +29,7 @@ module linalg_core
     public :: det
     public :: swap
     public :: recip_mult_array
+    public :: tri_mtx_mult
 
 ! ******************************************************************************
 ! INTERFACES
@@ -1283,5 +1284,72 @@ contains
         end do
     end subroutine
 
+! ******************************************************************************
+! TRIANGULAR MATRIX MULTIPLICATION ROUTINES
+! ------------------------------------------------------------------------------
+    !@ brief Computes the triangular matrix operation: 
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+    !! where A is a triangular matrix.
+    !!
+    !! @param[in] upper
+    !! @param[in] alpha
+    !! @param[in] a
+    !! @param[in] beta
+    !! @param[in,out] b
+    !! @param[out] err
+    subroutine tri_mtx_mult(upper, alpha, a, beta, b, err)
+        ! Arguments
+        logical, intent(in) :: upper
+        real(dp), intent(in) :: alpha, beta
+        real(dp), intent(in), dimension(:,:) :: a
+        real(dp), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
 
+        ! Parameters
+        real(dp), parameter :: zero = 0.0d0
+        real(dp), parameter :: one = 1.0d0
+
+        ! Local Variables
+        integer(i32) :: i, j, k, n, flag
+        real(dp) :: temp
+
+        ! Initialization
+        n = size(a, 1)
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 3
+        else if (size(b, 1) /= n .or. size(b, 2) /= n) then
+            flag = 5
+        end if
+        if (flag /= 0) then
+            ! ERROR: Incorrectly sized matrix
+        end if
+
+        ! Process
+        if (upper) then
+            ! Form: B = alpha * A**T * A + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(i,k)**2
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        b(j,i) = temp
+                    end do
+                end do
+            else
+            end if
+        else
+            ! Form: B = alpha * A * A**T + beta * B
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 end module

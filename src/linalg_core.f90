@@ -1361,7 +1361,7 @@ contains
                 do j = 1, n
                     do i = j, n
                         temp = zero
-                        do k = j, n
+                        do k = 1, j
                             temp = temp + a(i,k) * a(j,k)
                         end do
                         temp = alpha * temp
@@ -1373,7 +1373,7 @@ contains
                 do j = 1, n
                     do i = j, n
                         temp = zero
-                        do k = j, n
+                        do k = 1, j
                             temp = temp + a(i,k) * a(j,k)
                         end do
                         temp = alpha * temp

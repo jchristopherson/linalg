@@ -194,7 +194,7 @@ contains
 
         ! Test 1 (beta = 0)
         call tri_mtx_mult(.false., alpha, a, 0.0d0, b)
-        bans = alpha * matmul(transpose(a), a)
+        bans = alpha * matmul(a, transpose(a))
         if (.not.is_mtx_equal(b, bans, tol)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2A"
@@ -206,7 +206,7 @@ contains
         ! Test 2 (beta /= 0)
         check = .true.
         call tri_mtx_mult(.false., alpha, a, beta, b)
-        bans = alpha * matmul(transpose(a), a) + beta * bans
+        bans = alpha * matmul(a, transpose(a)) + beta * bans
         if (.not.is_mtx_equal(b, bans, tol)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2B"

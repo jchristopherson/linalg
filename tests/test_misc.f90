@@ -132,7 +132,7 @@ contains
     subroutine test_tri_mtx_mult_1()
         ! Parameters
         integer(i32), parameter :: n = 100
-        real(dp), parameter :: alpha = 1.0d0
+        real(dp), parameter :: alpha = 1.5d0
         real(dp), parameter :: beta = -3.0d0
         real(dp), parameter :: tol = 1.0d-8
 
@@ -148,7 +148,7 @@ contains
             a(j+1:n,j) = 0.0d0
         end do
 
-        ! Test1 (beta = 0)
+        ! Test 1 (beta = 0)
         call tri_mtx_mult(.true., alpha, a, 0.0d0, b)
         bans = alpha * matmul(transpose(a), a)
         if (.not.is_mtx_equal(b, bans, tol)) then
@@ -158,5 +158,17 @@ contains
 
         if (check) &
             print '(A)', "Test Passed: Triangular Matrix Update - Test 1A"
+        
+        ! Test 2 (beta /= 0)
+        check = .true.
+        call tri_mtx_mult(.true., alpha, a, beta, b)
+        bans = alpha * matmul(transpose(a), a) + beta * bans
+        if (.not.is_mtx_equal(b, bans, tol)) then
+            check = .false.
+            print '(A)', "Test Failed: Triangular Matrix Update - Test 1B"
+        end if
+
+        if (check) &
+            print '(A)', "Test Passed: Triangular Matrix Update - Test 1B"
     end subroutine
 end module

@@ -1335,14 +1335,25 @@ contains
                     do i = 1, j
                         temp = zero
                         do k = 1, j
-                            temp = temp + a(i,k) * a(k,j)
+                            temp = temp + a(k,i) * a(k,j)
                         end do
                         temp = alpha * temp
                         b(i,j) = temp
-                        b(j,i) = temp
+                        if (i /= j) b(j,i) = temp
                     end do
                 end do
             else
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(k,i) * a(k,j)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
             end if
         else
             ! Form: B = alpha * A * A**T + beta * B

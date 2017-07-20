@@ -1287,7 +1287,7 @@ contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
-    !@ brief Computes the triangular matrix operation: 
+    !> @brief Computes the triangular matrix operation: 
     !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
     !! where A is a triangular matrix.
     !!

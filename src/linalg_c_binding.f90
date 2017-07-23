@@ -12,6 +12,8 @@ module linalg_c_binding
     use linalg_solve
     use linalg_eigen
     use ferror, only : errors
+    use ferror_c_binding, only : errorhandler, get_errorhandler, &
+        update_errorhandler
 contains
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
@@ -83,10 +85,10 @@ contains
     !!  - @p trans == false: LDB = P, TDB = N
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c THe M-by-N matrix C.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine diag_mtx_mult_c(trans, m, n, alpha, na, a, mb, nb, b, beta, &
@@ -97,16 +99,17 @@ contains
         real(dp), intent(in), value :: alpha, beta
         real(dp), intent(in) :: a(na), b(mb, nb)
         real(dp), intent(inout) :: c(m, n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
                 eptr)
+            call update_errorhandler(eptr, err)
         else
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
         end if
@@ -132,10 +135,10 @@ contains
     !!  - @p trans == false: LDB = P, TDB = N
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c THe M-by-N matrix C.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine diag_mtx_mult_cmplx_c(trans, m, n, alpha, na, a, mb, nb, b, &
@@ -147,16 +150,17 @@ contains
         complex(dp), intent(in) :: a(na)
         real(dp), intent(in) :: b(mb, nb)
         complex(dp), intent(inout) :: c(m, n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
                 eptr)
+            call update_errorhandler(eptr, err)
         else
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
         end if
@@ -217,10 +221,10 @@ contains
     !! @param[in] n The number of columns in the matrix.
     !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
     !!  contents of the matrix are overwritten.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -231,16 +235,17 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
         integer(i32) :: rnk
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             rnk = mtx_rank(a, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             rnk = mtx_rank(a)
         end if
@@ -253,10 +258,10 @@ contains
     !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
     !! output the contents are overwritten by the LU factorization of the
     !! original matrix.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the input matrix is not square.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -264,16 +269,17 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
         real(dp) :: x
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             x = det(a, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             x = det(a)
         end if
@@ -312,10 +318,10 @@ contains
     !! @param[in] beta A scalar multiplier.
     !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
     !!  solution matrix.
-    !! @param[out] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine tri_mtx_mult_c(upper, n, alpha, a, beta, b, err) &
@@ -326,15 +332,16 @@ contains
         real(dp), intent(in), value :: alpha, beta
         real(dp), intent(in) :: a(n,n)
         real(dp), intent(inout) :: b(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call C_F_POINTER(err, eptr)
+            call get_errorhandler(err, eptr)
             call tri_mtx_mult(logical(upper), alpha, a, beta, b, eptr)
+            call update_errorhandler(eptr, err)
         else
             call tri_mtx_mult(logical(upper), alpha, a, beta, b)
         end if
@@ -355,10 +362,10 @@ contains
     !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
     !!  operations.  The array stored pivot information such that row I is
     !!  interchanged with row IPVT(I).
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized 
     !!      appropriately.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
@@ -368,15 +375,16 @@ contains
         integer(i32), intent(in), value :: m, n, ni
         real(dp), intent(inout) :: a(m,n)
         integer(i32), intent(out) :: ipvt(ni)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call lu_factor(a, ipvt, eptr)
+            call update_errorhandler(eptr, err)
         else
             call lu_factor(a, ipvt)
         end if
@@ -435,10 +443,10 @@ contains
     !!  This value must be equal to MIN(M, N).
     !! @param[out] tau A MIN(M, N)-element array used to store the scalar
     !!  factors of the elementary reflectors.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -448,15 +456,16 @@ contains
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: a(m,n)
         real(dp), intent(out) :: tau(nt)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call qr_factor(a, tau, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call qr_factor(a, tau)
         end if
@@ -481,10 +490,10 @@ contains
     !!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
     !!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
     !!  the I-th column of A * P was the K-th column of A.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -496,15 +505,16 @@ contains
         real(dp), intent(inout) :: a(m,n)
         real(dp), intent(out) :: tau(nt)
         integer(i32), intent(inout) :: jpvt(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call qr_factor(a, tau, jpvt, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call qr_factor(a, tau, jpvt)
         end if
@@ -529,10 +539,10 @@ contains
     !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
     !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
     !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -543,15 +553,16 @@ contains
         real(dp), intent(inout) :: r(m,n)
         real(dp), intent(in) :: tau(nt)
         real(dp), intent(out) :: q(m,m)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call form_qr(r, tau, q, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call form_qr(r, tau, q)
         end if
@@ -579,10 +590,10 @@ contains
     !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
     !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
     !! @param[out] p An N-by-N matrix where the pivot matrix will be written.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -595,15 +606,16 @@ contains
         real(dp), intent(in) :: tau(nt)
         integer(i32), intent(in) :: pvt(n)
         real(dp), intent(out) :: q(m,m), p(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call form_qr(r, tau, pvt, q, p, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call form_qr(r, tau, pvt, q, p)
         end if
@@ -626,10 +638,10 @@ contains
     !!  each elementary reflector defined in @p a.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
     !!  of the orthogonal matrix Q and the original matrix C.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -641,15 +653,16 @@ contains
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: q(m,m), c(m,n)
         real(dp), intent(in) :: tau(nt)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call mult_qr(.true., logical(trans), q, tau, c, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call mult_qr(.true., logical(trans), q, tau, c)
         end if
@@ -669,10 +682,10 @@ contains
     !!  the original content of the array is overwritten.
     !! @param[in,out] v On input, the N-element V update vector.  On output,
     !!  the original content of the array is overwritten.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine qr_rank1_update_c(m, n, q, r, u, v, err) &
@@ -680,15 +693,16 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call qr_rank1_update(q, r, u, v, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call qr_rank1_update(q, r, u, v)
         endif
@@ -706,10 +720,10 @@ contains
     !!  over whether the factorization is computed as A = U**T * U (set to
     !!  true), or as A = L * L**T (set to false).  The default value is true
     !!  such that A = U**T * U.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
     subroutine cholesky_factor_c(n, a, upper, err) &
             bind(C, name = "cholesky_factor")
@@ -717,15 +731,16 @@ contains
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
         logical(c_bool), intent(in), value :: upper
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call cholesky_factor(a, logical(upper), eptr)
+            call update_errorhandler(eptr, err)
         else
             call cholesky_factor(a, logical(upper))
         end if
@@ -740,10 +755,10 @@ contains
     !!  output, the updated matrix R1.
     !! @param[in,out] u On input, the N-element update vector U.  On output,
     !!  the rotation sines used to transform R to R1.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine cholesky_rank1_update_c(n, r, u, err) &
@@ -751,15 +766,16 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: r(n,n), u(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call cholesky_rank1_update(r, u, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call cholesky_rank1_update(r, u)
         end if
@@ -774,10 +790,10 @@ contains
     !!  output, the updated matrix R1.
     !! @param[in,out] u On input, the N-element update vector U.  On output,
     !!  the rotation sines used to transform R to R1.
-    !! @param[out] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -790,15 +806,16 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: r(n,n), u(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call C_F_POINTER(err, eptr)
+            call get_errorhandler(err, eptr)
             call cholesky_rank1_downdate(r, u, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call cholesky_rank1_downdate(r, u)
         end if
@@ -819,10 +836,10 @@ contains
     !!  matrix Z as a product of M elementary reflectors.
     !! @param[out] tau An M-element array used to store the scalar
     !!  factors of the elementary reflectors.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine rz_factor_c(m, n, a, tau, err) bind(C, name = "rz_factor")
@@ -830,15 +847,16 @@ contains
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
         real(dp), intent(out) :: tau(m)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call rz_factor(a, tau, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call rz_factor(a, tau)
         end if
@@ -860,10 +878,10 @@ contains
     !!  elementary reflectors found in @p a.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
     !!  of the orthogonal matrix Z and the original matrix C.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine mult_rz_c(trans, m, n, l, a, tau, c, err) &
@@ -873,15 +891,16 @@ contains
         integer(i32), intent(in), value :: m, n, l
         real(dp), intent(inout) :: a(m,m), c(m,n)
         real(dp), intent(in) :: tau(m)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call mult_rz(.true., logical(trans), l, a, tau, c, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call mult_rz(.true., logical(trans), l, a, tau, c)
         end if
@@ -906,10 +925,10 @@ contains
     !!  vectors (matrix U in the decomposition: A = U * S * V**T)
     !! @param[out] vt An N-by-N matrix that on output contains the right
     !!  singular vectors (matrix V**T in the decomposition: A = U * S * V**T).
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -921,15 +940,16 @@ contains
         integer(i32), intent(in), value :: m, n, ns
         real(dp), intent(inout) :: a(m,n)
         real(dp), intent(out) :: s(ns), u(m,m), vt(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call svd(a, s, u, vt, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call svd(a, s, u, vt)
         end if
@@ -1005,10 +1025,10 @@ contains
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
     !!  the first N columns are overwritten by the solution matrix X.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
@@ -1017,15 +1037,16 @@ contains
         integer(i32), intent(in), value :: m, n, nrhs
         real(dp), intent(inout) :: a(m,n), b(m,nrhs)
         real(dp), intent(in) :: tau(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call solve_qr(a, tau, b, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call solve_qr(a, tau, b)
         end if
@@ -1052,10 +1073,10 @@ contains
     !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
     !!  rows contain the right-hand-side matrix B.  On output, the first N rows
     !!  are overwritten by the solution matrix X.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized 
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -1067,15 +1088,16 @@ contains
         real(dp), intent(inout) :: a(m,n), b(mb,nrhs)
         real(dp), intent(in) :: tau(nt)
         integer(i32), intent(in) :: jpvt(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call solve_qr(a, tau, jpvt, b, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call solve_qr(a, tau, jpvt, b)
         end if
@@ -1111,10 +1133,10 @@ contains
     !! @param[in] n The dimension of the matrix.
     !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
     !!  inverted matrix.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
@@ -1122,15 +1144,16 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call mtx_inverse(a, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call mtx_inverse(a)
         end if
@@ -1146,10 +1169,10 @@ contains
     !!  overwritten on output.
     !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
     !!  will be written.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
@@ -1159,15 +1182,16 @@ contains
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
         real(dp), intent(out) :: ainv(n,m)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call mtx_pinverse(a, ainv, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call mtx_pinverse(a, ainv)
         end if
@@ -1190,10 +1214,10 @@ contains
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
     !!  output, the N-by-NRHS solution matrix X.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_least_squares_c(m, n, nrhs, a, mb, b, err) &
@@ -1201,15 +1225,16 @@ contains
         ! Arguments
         integer(i32), intent(in), value :: m, n, nrhs, mb
         real(dp), intent(inout) :: a(m, n), b(mb, nrhs)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call solve_least_squares_full(a, b, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call solve_least_squares_full(a, b)
         end if
@@ -1231,10 +1256,10 @@ contains
     !!  portion of the matrix is overwritten.
     !! @param[out] vals An N-element array that will contain the eigenvalues
     !!  sorted into ascending order.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
@@ -1244,15 +1269,16 @@ contains
         logical(c_bool), intent(in), value :: vecs
         real(dp), intent(inout) :: a(n,n)
         real(dp), intent(out) :: vals(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call eigen(logical(vecs), a, vals, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call eigen(logical(vecs), a, vals)
         end if
@@ -1269,10 +1295,10 @@ contains
     !!  matrix on output.  The eigenvalues are not sorted.
     !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
     !!  (one per column) on output.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
@@ -1282,15 +1308,16 @@ contains
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
         complex(dp), intent(out) :: vals(n), vecs(n,n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call eigen(a, vals, vecs, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call eigen(a, vals, vecs)
         end if
@@ -1318,10 +1345,10 @@ contains
     !!  with the NORM(B).
     !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
     !!  (one per column) on output.
-    !! @param[in] err A pointer to the C error handler object.  If no error
-    !!  handling is desired, simply pass NULL, and errors will be dealt with
-    !!  by the default internal error handler.  Possible errors that may be
-    !!  encountered are as follows.
+    !! @param[in,out] err The errorhandler object.  If no error handling is
+    !!  desired, simply pass NULL, and errors will be dealt with by the default
+    !!  internal error handler.  Possible errors that may be encountered are as
+    !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
@@ -1332,15 +1359,16 @@ contains
         real(dp), intent(inout) :: a(n, n), b(n, n)
         complex(dp), intent(out) :: alpha(n), vecs(n,n)
         real(dp), intent(out) :: beta(n)
-        type(c_ptr), intent(in), value :: err
+        type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        type(errors), pointer :: eptr
+        class(errors), allocatable :: eptr
 
         ! Process
         if (c_associated(err)) then
-            call c_f_pointer(err, eptr)
+            call get_errorhandler(err, eptr)
             call eigen(a, b, alpha, beta = beta, vecs = vecs, err = eptr)
+            call update_errorhandler(eptr, err)
         else
             call eigen(a, b, alpha, beta = beta, vecs = vecs)
         end if

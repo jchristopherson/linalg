@@ -4,7 +4,22 @@
 
 #include <stdbool.h>
 #include <complex.h>
-#include "ferror/include/ferror.h"
+#include "ferror.h"
+
+/** An error flag denoting an invalid input. */
+#define LA_INVALID_INPUT_ERROR  101
+/** An error flag denoting an improperly sized array. */
+#define LA_ARRAY_SIZE_ERROR  102
+/** An error flag denoting a singular matrix. */
+#define LA_SINGULAR_MATRIX_ERROR  103
+/** An error flag denoting an issue with the matrix format. */
+#define LA_MATRIX_FORMAT_ERROR  104
+/** An error flag denoting that there is insufficient memory available. */
+#define LA_OUT_OF_MEMORY_ERROR  105
+/** An error flag denoting a convergence failure. */
+#define LA_CONVERGENCE_ERROR  106
+/** An error resulting from an invalid operation. */
+#define LA_INVALID_OPERATION_ERROR  107
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,10 +72,16 @@ void mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
  *  - @p trans == false: LDB = P, TDB = N
  * @param beta The scalar multiplier to matrix C.
  * @param c THe M-by-N matrix C.
+ * @param[in,out] err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
  */
 void diag_mtx_mult(bool trans, int m, int n, double alpha, int na, 
                    const double *a, int mb, int nb, const double *b, 
-                   double beta, double *c);
+                   double beta, double *c, errorhandler *err);
 
 /** @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
  *  where A and C are complex-valued.
@@ -81,10 +102,17 @@ void diag_mtx_mult(bool trans, int m, int n, double alpha, int na,
  *  - @p trans == false: LDB = P, TDB = N
  * @param beta The scalar multiplier to matrix C.
  * @param c THe M-by-N matrix C.
+ * @param[in,out] err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
  */
 void diag_mtx_mult_cmplx(bool trans, int m, int n, double alpha, int na,
                          const double complex *a, int mb, int nb, 
-                         const double *b, double beta, double complex *c);
+                         const double *b, double beta, double complex *c,
+                         errorhandler *err);
 
 /** @brief Performs the rank-1 update to matrix A such that:
  * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
@@ -120,10 +148,10 @@ double trace(int m, int n, const double *x);
  * @param n The number of columns in the matrix.
  * @param a On input, the M-by-N matrix of interest.  On output, the
  *  contents of the matrix are overwritten.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -131,7 +159,7 @@ double trace(int m, int n, const double *x);
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-int mtx_rank(int m, int n, double *a, errorhandler err);
+int mtx_rank(int m, int n, double *a, errorhandler *err);
 
 /** @brief Computes the determinant of a square matrix.
  *
@@ -139,15 +167,15 @@ int mtx_rank(int m, int n, double *a, errorhandler err);
  * @param a On input, the N-by-N matrix on which to operate.  On
  * output the contents are overwritten by the LU factorization of the
  * original matrix.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the input matrix is not square.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-double det(int n, double *a, errorhandler err);
+double det(int n, double *a, errorhandler *err);
 
 /** @brief Swaps the contents of two arrays.
  *
@@ -174,15 +202,15 @@ void swap(int n, double *x, double *y);
  * @param beta A scalar multiplier.
  * @param b On input, the N-by-N matrix B.  On output, the N-by-N
  *  solution matrix.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
  *      appropriately.
  */
 void tri_mtx_mult(bool upper, int n, double alpha, const double *a, double beta,
-                  double *b, errorhandler err);
+                  double *b, errorhandler *err);
 
 /** @brief Computes the LU factorization of an M-by-N matrix.
  *
@@ -196,16 +224,16 @@ void tri_mtx_mult(bool upper, int n, double alpha, const double *a, double beta,
  * @param ipvt An MIN(M, N)-element array used to track row-pivot
  *  operations.  The array stored pivot information such that row I is
  *  interchanged with row IPVT(I).
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized 
  *      appropriately.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
  *      singular.
  */
-void lu_factor(int m, int n, double *a, int ni, int *ipvt, errorhandler err);
+void lu_factor(int m, int n, double *a, int ni, int *ipvt, errorhandler *err);
 
 /** @brief Extracts the L, U, and P matrices from the output of the
  * @ref lu_factor routine.
@@ -246,16 +274,16 @@ void form_lu(int n, double *lu, const int *ipvt, double *u, double *p);
  *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array used to store the scalar
  *  factors of the elementary reflectors.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor(int m, int n, double *a, int nt, double *tau, errorhandler err);
+void qr_factor(int m, int n, double *a, int nt, double *tau, errorhandler *err);
 
 /** @brief Computes the QR factorization of an M-by-N matrix with column
  * pivoting such that A * P = Q * R.
@@ -275,17 +303,17 @@ void qr_factor(int m, int n, double *a, int nt, double *tau, errorhandler err);
  *  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
  *  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
  *  the I-th column of A * P was the K-th column of A.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void qr_factor_pivot(int m, int n, double *a, int nt, double *tau, int *jpvt,
-                     errorhandler err);
+                     errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.
@@ -305,17 +333,17 @@ void qr_factor_pivot(int m, int n, double *a, int nt, double *tau, int *jpvt,
  *  written.  In the event that M > N, Q may be supplied as M-by-N, and
  *  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
  *  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void form_qr(int m, int n, double *r, int nt, const double *tau, double *q,
-             errorhandler err);
+             errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.
@@ -338,17 +366,17 @@ void form_qr(int m, int n, double *r, int nt, const double *tau, double *q,
  *  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
  *  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
  * @param p An N-by-N matrix where the pivot matrix will be written.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void form_qr_pivot(int m, int n, double *r, int nt, const double *tau,
-                   const int *pvt, double *q, double *p, errorhandler err);
+                   const int *pvt, double *q, double *p, errorhandler *err);
 
 /** @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
  * factorization such that: C = op(Q) * C.
@@ -366,17 +394,17 @@ void form_qr_pivot(int m, int n, double *r, int nt, const double *tau,
  *  each elementary reflector defined in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
  *  of the orthogonal matrix Q and the original matrix C.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void mult_qr(bool trans, int m, int n, double *q, int nt, const double *tau,
-             double *c, errorhandler err);
+             double *c, errorhandler *err);
 
 /** @brief Computes the rank 1 update to an M-by-N QR factored matrix A
  * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
@@ -391,15 +419,15 @@ void mult_qr(bool trans, int m, int n, double *q, int nt, const double *tau,
  *  the original content of the array is overwritten.
  * @param v On input, the N-element V update vector.  On output,
  *  the original content of the array is overwritten.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void qr_rank1_update(int m, int n, double *q, double *r, double *u, double *v, 
-                     errorhandler err);
+                     errorhandler *err);
 
 /** @brief Computes the Cholesky factorization of a symmetric, positive
  * definite matrix.
@@ -412,13 +440,13 @@ void qr_rank1_update(int m, int n, double *q, double *r, double *u, double *v,
  *  over whether the factorization is computed as A = U**T * U (set to
  *  true), or as A = L * L**T (set to false).  The default value is true
  *  such that A = U**T * U.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
  */
-void cholesky_factor(int n, double *a, bool upper, errorhandler err);
+void cholesky_factor(int n, double *a, bool upper, errorhandler *err);
 
 /** @brief Computes the rank 1 update to a Cholesky factored matrix (upper
  * triangular).
@@ -428,14 +456,14 @@ void cholesky_factor(int n, double *a, bool upper, errorhandler err);
  *  output, the updated matrix R1.
  * @param u On input, the N-element update vector U.  On output,
  *  the rotation sines used to transform R to R1.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void cholesky_rank1_update(int n, double *r, double *u, errorhandler err);
+void cholesky_rank1_update(int n, double *r, double *u, errorhandler *err);
 
 /** @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
  * triangular).
@@ -445,10 +473,10 @@ void cholesky_rank1_update(int n, double *r, double *u, errorhandler err);
  *  output, the updated matrix R1.
  * @param u On input, the N-element update vector U.  On output,
  *  the rotation sines used to transform R to R1.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
  *      incorrect.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -457,7 +485,7 @@ void cholesky_rank1_update(int n, double *r, double *u, errorhandler err);
  *      positive definite.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
  */
-void cholesky_rank1_downdate(int n, double *r, double *u, errorhandler err);
+void cholesky_rank1_downdate(int n, double *r, double *u, errorhandler *err);
 
 /** @brief Factors an upper trapezoidal matrix by means of orthogonal
  * transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
@@ -473,14 +501,14 @@ void cholesky_rank1_downdate(int n, double *r, double *u, errorhandler err);
  *  matrix Z as a product of M elementary reflectors.
  * @param tau An M-element array used to store the scalar
  *  factors of the elementary reflectors.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void rz_factor(int m, int n, double *a, double *tau, errorhandler err);
+void rz_factor(int m, int n, double *a, double *tau, errorhandler *err);
 
 /** @brief Multiplies a general matrix by the orthogonal matrix Z from an
  * RZ factorization such that: C = op(Z) * C.
@@ -497,15 +525,15 @@ void rz_factor(int m, int n, double *a, double *tau, errorhandler err);
  *  elementary reflectors found in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
  *  of the orthogonal matrix Z and the original matrix C.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau, 
-             double *c, errorhandler err);
+             double *c, errorhandler *err);
 
 /** @brief Computes the singular value decomposition of a matrix A.  The
  *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
@@ -525,10 +553,10 @@ void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau,
  *  vectors (matrix U in the decomposition: A = U * S * V**T)
  * @param vt An N-by-N matrix that on output contains the right
  *  singular vectors (matrix V**T in the decomposition: A = U * S * V**T).
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -537,7 +565,7 @@ void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau,
  *      could not converge to a zero value.
  */
 void svd(int m, int n, double *a, int ns, double *s, double *u, double *vt,
-         errorhandler err);
+         errorhandler *err);
 
 /** @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
  * A is a triangular matrix.
@@ -587,15 +615,15 @@ void solve_lu(int n, int nrhs, const double *a, const int *ipvt, double *b);
  *  the elementary reflectors as returned by @ref qr_factor.
  * @param b On input, the M-by-NRHS right-hand-side matrix.  On output,
  *  the first N columns are overwritten by the solution matrix X.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
-              errorhandler err);
+              errorhandler *err);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where the
  * QR factorization made use of column pivoting.
@@ -617,10 +645,10 @@ void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
  * @param b On input, the MAX(M, N)-by-NRHS matrix where the first M
  *  rows contain the right-hand-side matrix B.  On output, the first N rows
  *  are overwritten by the solution matrix X.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized 
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
@@ -628,7 +656,7 @@ void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
  */
 void solve_qr_pivot(int m, int n, int nrhs, double *a, int nt, 
                     const double *tau, const int *jpvt, int mb, double *b,
-                    errorhandler err);
+                    errorhandler *err);
 
 /** @brief Solves a system of Cholesky factored equations.
  *
@@ -649,15 +677,15 @@ void solve_cholesky(bool upper, int n, int nrhs, const double *a, double *b);
  * @param n The dimension of the matrix.
  * @param a On input, the N-by-N matrix to invert.  On output, the
  *  inverted matrix.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
  */
-void mtx_inverse(int n, double *a, errorhandler err);
+void mtx_inverse(int n, double *a, errorhandler *err);
 
 /** @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
  * using the singular value decomposition of the matrix.
@@ -668,16 +696,16 @@ void mtx_inverse(int n, double *a, errorhandler err);
  *  overwritten on output.
  * @param ainv The N-by-M matrix where the pseudo-inverse of @p a
  *  will be written.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler err);
+void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler *err);
 
 /** @brief Solves the overdetermined or underdetermined system (A*X = B) of
  * M equations of N unknowns using a complete orthogonal factorization of
@@ -695,15 +723,15 @@ void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler err);
  *  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
  *  N-by-NRHS matrix with the first M rows containing the matrix B.  On
  *  output, the N-by-NRHS solution matrix X.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
 void solve_least_squares(int m, int n, int nrhs, double *a, int mb, double *b,
-                         errorhandler err);
+                         errorhandler *err);
 
 /** @brief Computes the eigenvalues, and optionally the eigenvectors of a
  * real, symmetric matrix.
@@ -718,15 +746,15 @@ void solve_least_squares(int m, int n, int nrhs, double *a, int mb, double *b,
  *  portion of the matrix is overwritten.
  * @param vals An N-element array that will contain the eigenvalues
  *  sorted into ascending order.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
-void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler err);
+void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler *err);
 
 /** @brief Computes the eigenvalues, and the right eigenvectors of a square 
  *  matrix.
@@ -738,16 +766,16 @@ void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler err);
  *  matrix on output.  The eigenvalues are not sorted.
  * @param vecs An N-by-N matrix containing the right eigenvectors 
  *  (one per column) on output.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
 void eigen_asymm(int n, double *a, double complex *vals, double complex *vecs,
-                 errorhandler err);
+                 errorhandler *err);
 
 /** @brief Computes the eigenvalues, and optionally the right eigenvectors of
  * a square matrix assuming the structure of the eigenvalue problem is
@@ -769,16 +797,16 @@ void eigen_asymm(int n, double *a, double complex *vals, double complex *vecs,
  *  with the NORM(B).
  * @param vecs An N-by-N matrix containing the right eigenvectors 
  *  (one per column) on output.
- * @param err A pointer to the C error handler object.  If no error
- *  handling is desired, simply pass NULL, and errors will be dealt with
- *  by the default internal error handler.  Possible errors that may be
- *  encountered are as follows.
+ * @param err The errorhandler object.  If no error handling is
+ *  desired, simply pass NULL, and errors will be dealt with by the default
+ *  internal error handler.  Possible errors that may be encountered are as
+ *  follows.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
 void eigen_gen(int n, double *a, double *b, double complex *alpha, double *beta,
-               double complex *vecs, errorhandler err);
+               double complex *vecs, errorhandler *err);
 
 #ifdef __cplusplus
 }

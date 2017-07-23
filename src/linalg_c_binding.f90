@@ -105,8 +105,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
                 eptr)
             call update_errorhandler(eptr, err)
@@ -156,8 +156,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
                 eptr)
             call update_errorhandler(eptr, err)
@@ -242,8 +242,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             rnk = mtx_rank(a, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -276,8 +276,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             x = det(a, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -338,8 +338,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call tri_mtx_mult(logical(upper), alpha, a, beta, b, eptr)
             call update_errorhandler(eptr, err)
         else
@@ -381,8 +381,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call lu_factor(a, ipvt, eptr)
             call update_errorhandler(eptr, err)
         else
@@ -462,8 +462,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call qr_factor(a, tau, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -511,8 +511,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call qr_factor(a, tau, jpvt, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -559,8 +559,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call form_qr(r, tau, q, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -612,8 +612,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call form_qr(r, tau, pvt, q, p, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -659,8 +659,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call mult_qr(.true., logical(trans), q, tau, c, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -699,8 +699,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call qr_rank1_update(q, r, u, v, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -737,8 +737,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call cholesky_factor(a, logical(upper), eptr)
             call update_errorhandler(eptr, err)
         else
@@ -772,8 +772,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call cholesky_rank1_update(r, u, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -812,8 +812,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call cholesky_rank1_downdate(r, u, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -853,8 +853,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call rz_factor(a, tau, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -897,8 +897,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call mult_rz(.true., logical(trans), l, a, tau, c, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -946,8 +946,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call svd(a, s, u, vt, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1043,8 +1043,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call solve_qr(a, tau, b, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1094,8 +1094,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call solve_qr(a, tau, jpvt, b, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1150,8 +1150,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call mtx_inverse(a, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1188,8 +1188,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call mtx_pinverse(a, ainv, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1231,8 +1231,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call solve_least_squares_full(a, b, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1275,8 +1275,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call eigen(logical(vecs), a, vals, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1314,8 +1314,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call eigen(a, vals, vecs, err = eptr)
             call update_errorhandler(eptr, err)
         else
@@ -1365,8 +1365,8 @@ contains
         class(errors), allocatable :: eptr
 
         ! Process
-        if (c_associated(err)) then
-            call get_errorhandler(err, eptr)
+        call get_errorhandler(err, eptr)
+        if (allocated(eptr)) then
             call eigen(a, b, alpha, beta = beta, vecs = vecs, err = eptr)
             call update_errorhandler(eptr, err)
         else

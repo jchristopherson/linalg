@@ -26,6 +26,11 @@ program example
     !     | -3 |
     b = [-1.0d0, -2.0d0, -3.0d0]
 
+    ! The solution is:
+    !     |  1/3 |
+    ! x = | -2/3 |
+    !     |   0  |
+
     ! Compute the LU factorization
     call lu_factor(a, pvt)
 
@@ -33,5 +38,6 @@ program example
     call solve_lu(a, pvt, b)
 
     ! Display the results.
-    write(*, '(F8.4)') (b(i), i = 1, size(b))
+    print '(A)', "LU Solution: X = "
+    print '(F8.4)', (b(i), i = 1, size(b))
 end program

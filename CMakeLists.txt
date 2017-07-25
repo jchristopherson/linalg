@@ -103,11 +103,11 @@ else()
         LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
 endif()
 
-# Define the testing files
-set(testing_sources ${sources})
-list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
-    tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
-    tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
+# # Define the testing files
+# set(testing_sources ${sources})
+# list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
+#     tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
+#     tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
 
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.
@@ -116,9 +116,40 @@ if (BUILD_SHARED_LIBS)
   target_link_libraries(linalg lapack)
 endif()
 
-# Build a test executable
-add_executable(linalg_test ${testing_sources})
-if (BUILD_SHARED_LIBS)
-  target_link_libraries(linalg_test lapack)
+# ------------------------------------------------------------------------------
+# EXAMPLES
+# ------------------------------------------------------------------------------
+option(BUILD_EXAMPLES "Build examples?" OFF)
+if (BUILD_EXAMPLES)
+  # Inform the user we're building the examples
+  message(STATUS "Building LINALG examples.")
+
+  # LU Example
+  add_executable(lu_example examples/linalg_lu_example.f90)
+  target_link_libraries(lu_example linalg)
 endif()
+
+# ------------------------------------------------------------------------------
+# TESTS
+# ------------------------------------------------------------------------------
+set(linalg_test_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
+    tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
+    tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
+add_executable(linalg_test ${linalg_test_sources})
+target_link_libraries(linalg_test linalg)
+add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
+  COMMAND linalg_test)
+add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+
+
+
+
+
+
+
+# # Build a test executable
+# add_executable(linalg_test ${testing_sources})
+# if (BUILD_SHARED_LIBS)
+#   target_link_libraries(linalg_test lapack)
+# endif()
 

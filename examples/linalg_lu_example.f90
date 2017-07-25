@@ -5,7 +5,7 @@
 program example
     use linalg_constants, only : dp, i32
     use linalg_factor, only : lu_factor
-    use linalg_solve, only : lu_solve
+    use linalg_solve, only : solve_lu
     implicit none
 
     ! Local Variables

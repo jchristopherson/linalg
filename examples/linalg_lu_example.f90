@@ -10,7 +10,7 @@ program example
 
     ! Local Variables
     real(dp) :: a(3,3), b(3)
-    integer(i32) :: pvt(3)
+    integer(i32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -33,4 +33,5 @@ program example
     call solve_lu(a, pvt, b)
 
     ! Display the results.
+    write(*, '(F8.4)') (b(i), i = 1, size(b))
 end program

@@ -103,12 +103,6 @@ else()
         LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
 endif()
 
-# # Define the testing files
-# set(testing_sources ${sources})
-# list(APPEND testing_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
-#     tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
-#     tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
-
 # If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
 # else, a static library will be built.
 add_library(linalg ${sources})
@@ -140,16 +134,3 @@ target_link_libraries(linalg_test linalg)
 add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
   COMMAND linalg_test)
 add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
-
-
-
-
-
-
-
-# # Build a test executable
-# add_executable(linalg_test ${testing_sources})
-# if (BUILD_SHARED_LIBS)
-#   target_link_libraries(linalg_test lapack)
-# endif()
-

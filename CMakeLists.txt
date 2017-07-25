@@ -121,6 +121,12 @@ if (BUILD_EXAMPLES)
   # LU Example
   add_executable(lu_example examples/linalg_lu_example.f90)
   target_link_libraries(lu_example linalg)
+
+# --------------------
+  include_directories(${PROJECT_SOURCE_DIR}/include 
+    ${PROJECT_SOURCE_DIR}/ferror/include)
+  add_executable(lu_example_c examples/linalg_lu_c_example.c)
+  target_link_libraries(lu_example_c linalg)
 endif()
 
 # ------------------------------------------------------------------------------

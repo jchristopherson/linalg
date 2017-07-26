@@ -60,12 +60,6 @@ int main() {
         }
     }
 
-    for (i = 0; i < 3; ++i) {
-        for (j = 0; j < 3; ++j)
-            printf("%f + i%f\t", creal(modeShapes[INDEX(i,j,3)]), cimag(modeShapes[INDEX(i,j,3)]));
-        printf("\n");
-    }
-
     // End
     return 0;
 }

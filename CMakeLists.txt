@@ -130,6 +130,10 @@ if (BUILD_EXAMPLES)
   add_executable(od_example examples/linalg_od_example.f90)
   target_link_libraries(od_example linalg)
 
+  # Eigen Example
+  add_executable(eigen_example examples/linalg_eigen_example.f90)
+  target_link_libraries(eigen_example linalg)
+
 # --------------------
   include_directories(${PROJECT_SOURCE_DIR}/include 
     ${PROJECT_SOURCE_DIR}/ferror/include)
@@ -145,6 +149,10 @@ if (BUILD_EXAMPLES)
   # Overdetermined Example
   add_executable(od_example_c examples/linalg_od_c_example.c)
   target_link_libraries(od_example_c linalg)
+
+  # Eigen Example
+  add_executable(eigen_example_c examples/linalg_eigen_c_example.c)
+  target_link_libraries(eigen_example_c linalg)
 endif()
 
 # ------------------------------------------------------------------------------

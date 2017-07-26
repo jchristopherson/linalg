@@ -805,8 +805,8 @@ void eigen_asymm_(int n, double *a, double complex *vals, double complex *vecs,
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
-void eigen_gen_(int n, double *a, double *b, double complex *alpha, double *beta,
-                double complex *vecs, errorhandler *err);
+void eigen_gen_(int n, double *a, double *b, double complex *alpha,
+                double *beta, double complex *vecs, errorhandler *err);
 
 #ifdef __cplusplus
 }

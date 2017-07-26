@@ -708,8 +708,8 @@ void mtx_inverse_(int n, double *a, errorhandler *err);
 void mtx_pinverse_(int m, int n, double *a, double *ainv, errorhandler *err);
 
 /** @brief Solves the overdetermined or underdetermined system (A*X = B) of
- * M equations of N unknowns using a complete orthogonal factorization of
- * matrix A.
+ * M equations of N unknowns using a QR or LQ factorization of the matrix A.
+ * Notice, it is assumed that matrix A has full rank.
  *
  * @param m The number of rows in the original coefficient matrix A.
  * @param n The number of columns in the original coefficient matrix A.

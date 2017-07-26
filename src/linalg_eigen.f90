@@ -210,7 +210,11 @@ contains
 
         ! Initialization
         jobvl = 'N'
-        jobvr = 'N'
+        if (present(vecs)) then
+            jobvr = 'V'
+        else
+            jobvr = 'N'
+        end if
         n = size(a, 1)
         eps = two * epsilon(eps)
         if (present(err)) then
@@ -226,7 +230,6 @@ contains
         else if (size(vals) /= n) then
             flag = 2
         else if (present(vecs)) then
-            jobvr = 'V'
             if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
                 flag = 3
             end if
@@ -453,6 +456,11 @@ contains
         ! Initialization
         jobvl = 'N'
         jobvr = 'N'
+        if (present(vecs)) then
+            jobvr = 'V'
+        else
+            jobvr = 'N'
+        end if
         n = size(a, 1)
         eps = two * epsilon(eps)
         if (present(err)) then
@@ -472,7 +480,6 @@ contains
         else if (present(beta)) then
             if (size(beta) /= n) flag = 4
         else if (present(vecs)) then
-            jobvr = 'V'
             if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) flag = 5
         end if
         if (flag /= 0) then

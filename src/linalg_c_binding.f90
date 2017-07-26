@@ -1234,10 +1234,10 @@ contains
         ! Process
         call get_errorhandler(err, eptr)
         if (allocated(eptr)) then
-            call solve_least_squares_full(a, b, err = eptr)
+            call solve_least_squares(a, b, err = eptr)
             call update_errorhandler(eptr, err)
         else
-            call solve_least_squares_full(a, b)
+            call solve_least_squares(a, b)
         end if
     end subroutine
 

@@ -129,8 +129,14 @@ if (BUILD_EXAMPLES)
 # --------------------
   include_directories(${PROJECT_SOURCE_DIR}/include 
     ${PROJECT_SOURCE_DIR}/ferror/include)
+
+  # LU Example
   add_executable(lu_example_c examples/linalg_lu_c_example.c)
   target_link_libraries(lu_example_c linalg)
+
+  # QR Example
+  add_executable(qr_example_c examples/linalg_qr_c_example.c)
+  target_link_libraries(qr_example_c linalg)
 endif()
 
 # ------------------------------------------------------------------------------

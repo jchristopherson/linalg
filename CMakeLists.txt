@@ -122,6 +122,10 @@ if (BUILD_EXAMPLES)
   add_executable(lu_example examples/linalg_lu_example.f90)
   target_link_libraries(lu_example linalg)
 
+  # QR Example
+  add_executable(qr_example examples/linalg_qr_example.f90)
+  target_link_libraries(qr_example linalg)
+
 # --------------------
   include_directories(${PROJECT_SOURCE_DIR}/include 
     ${PROJECT_SOURCE_DIR}/ferror/include)

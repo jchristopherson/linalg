@@ -43,7 +43,7 @@ contains
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c The M-by-N matrix C.
     subroutine mtx_mult_c(transa, transb, m, n, k, alpha, a, lda, b, ldb, &
-            beta, c) bind(C, name = "mtx_mult")
+            beta, c) bind(C, name = "mtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: transa, transb
         integer(i32), intent(in), value :: m, n, k, lda, ldb
@@ -92,7 +92,7 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine diag_mtx_mult_c(trans, m, n, alpha, na, a, mb, nb, b, beta, &
-            c, err) bind(C, name = "diag_mtx_mult")
+            c, err) bind(C, name = "diag_mtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
         integer(i32), intent(in), value :: m, n, na, mb, nb
@@ -142,7 +142,7 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine diag_mtx_mult_cmplx_c(trans, m, n, alpha, na, a, mb, nb, b, &
-            beta, c, err) bind(C, name = "diag_mtx_mult_cmplx")
+            beta, c, err) bind(C, name = "diag_mtx_mult_cmplx_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
         integer(i32), intent(in), value :: m, n, na, mb, nb
@@ -184,7 +184,7 @@ contains
     !! @par Notes
     !! This routine is based upon the BLAS routine DGER.
     subroutine rank1_update_c(m, n, alpha, x, y, a) &
-            bind(C, name = "rank1_update")
+            bind(C, name = "rank1_update_")
         ! Arguments
         real(dp), intent(in), value :: alpha
         integer(i32), intent(in), value :: m, n
@@ -204,7 +204,7 @@ contains
     !! @param[in] x The matrix on which to operate.
     !!
     !! @return The trace of @p x.
-    pure function trace_c(m, n, x) result(y) bind(C, name = "trace")
+    pure function trace_c(m, n, x) result(y) bind(C, name = "trace_")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(in) :: x(m,n)
@@ -231,7 +231,7 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
     !!      could not converge to a zero value.
-    function mtx_rank_c(m, n, a, err) result(rnk) bind(C, name = "mtx_rank")
+    function mtx_rank_c(m, n, a, err) result(rnk) bind(C, name = "mtx_rank_")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
@@ -265,7 +265,7 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if the input matrix is not square.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    function det_c(n, a, err) result(x) bind(C, name = "det")
+    function det_c(n, a, err) result(x) bind(C, name = "det_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
@@ -291,7 +291,7 @@ contains
     !! @param[in] n The number of elements either array.
     !! @param[in,out] x One of the N-element arrays.
     !! @param[in,out] y The other N-element array.
-    subroutine swap_c(n, x, y) bind(C, name = "swap")
+    subroutine swap_c(n, x, y) bind(C, name = "swap_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: x(n), y(n)
@@ -325,7 +325,7 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     subroutine tri_mtx_mult_c(upper, n, alpha, a, beta, b, err) &
-            bind(C, name = "tri_mtx_mult")
+            bind(C, name = "tri_mtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper
         integer(i32), intent(in), value :: n
@@ -370,7 +370,7 @@ contains
     !!      appropriately.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
     !!      singular.
-    subroutine lu_factor_c(m, n, a, ni, ipvt, err) bind(C, name = "lu_factor")
+    subroutine lu_factor_c(m, n, a, ni, ipvt, err) bind(C, name = "lu_factor_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, ni
         real(dp), intent(inout) :: a(m,n)
@@ -417,7 +417,7 @@ contains
     !! @par See Also
     !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
-    subroutine form_lu_c(n, lu, ipvt, u, p) bind(C, name = "form_lu")
+    subroutine form_lu_c(n, lu, ipvt, u, p) bind(C, name = "form_lu_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: lu(n,n)
@@ -451,7 +451,7 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine qr_factor_c(m, n, a, nt, tau, err) bind(C, name = "qr_factor")
+    subroutine qr_factor_c(m, n, a, nt, tau, err) bind(C, name = "qr_factor_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: a(m,n)
@@ -499,7 +499,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine qr_factor_pivot_c(m, n, a, nt, tau, jpvt, err) &
-            bind(C, name = "qr_factor_pivot")
+            bind(C, name = "qr_factor_pivot_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: a(m,n)
@@ -547,7 +547,7 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine form_qr_c(m, n, r, nt, tau, q, err) bind(C, name = "form_qr")
+    subroutine form_qr_c(m, n, r, nt, tau, q, err) bind(C, name = "form_qr_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: r(m,n)
@@ -599,7 +599,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine form_qr_pivot_c(m, n, r, nt, tau, pvt, q, p, err) &
-            bind(C, name = "form_qr_pivot")
+            bind(C, name = "form_qr_pivot_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nt
         real(dp), intent(inout) :: r(m,n)
@@ -647,7 +647,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine mult_qr_c(trans, m, n, q, nt, tau, c, err) &
-            bind(C, name = "mult_qr")
+            bind(C, name = "mult_qr_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
         integer(i32), intent(in), value :: m, n, nt
@@ -689,7 +689,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine qr_rank1_update_c(m, n, q, r, u, v, err) &
-            bind(C, name = "qr_rank1_update")
+            bind(C, name = "qr_rank1_update_")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
@@ -726,7 +726,7 @@ contains
     !!  follows.
     !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
     subroutine cholesky_factor_c(n, a, upper, err) &
-            bind(C, name = "cholesky_factor")
+            bind(C, name = "cholesky_factor_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
@@ -762,7 +762,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine cholesky_rank1_update_c(n, r, u, err) &
-            bind(C, name = "cholesky_rank1_update")
+            bind(C, name = "cholesky_rank1_update_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: r(n,n), u(n)
@@ -802,7 +802,7 @@ contains
     !!      positive definite.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
     subroutine cholesky_rank1_downdate_c(n, r, u, err) &
-            bind(C, name = "cholesky_rank1_downdate")
+            bind(C, name = "cholesky_rank1_downdate_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: r(n,n), u(n)
@@ -842,7 +842,7 @@ contains
     !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine rz_factor_c(m, n, a, tau, err) bind(C, name = "rz_factor")
+    subroutine rz_factor_c(m, n, a, tau, err) bind(C, name = "rz_factor_")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
@@ -885,7 +885,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine mult_rz_c(trans, m, n, l, a, tau, c, err) &
-            bind(C, name = "mult_rz")
+            bind(C, name = "mult_rz_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
         integer(i32), intent(in), value :: m, n, l
@@ -935,7 +935,7 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
     !!      could not converge to a zero value.
-    subroutine svd_c(m, n, a, ns, s, u, vt, err)
+    subroutine svd_c(m, n, a, ns, s, u, vt, err) bind(C, name = "svd_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, ns
         real(dp), intent(inout) :: a(m,n)
@@ -976,7 +976,7 @@ contains
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side.  On output, the
     !!  N-by-NRHS solution.
     subroutine solve_tri_mtx_c(upper, trans, nounit, n, nrhs, alpha, a, b) &
-            bind(C, name = "solve_triangular_system")
+            bind(C, name = "solve_triangular_system_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper, trans, nounit
         integer(i32), intent(in), value :: n, nrhs
@@ -999,7 +999,7 @@ contains
     !! @param[in] ipvt The N-element pivot array as output by lu_factor.
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
     !!  output, the N-by-NRHS solution matrix.
-    subroutine solve_lu_c(n, nrhs, a, ipvt, b) bind(C, name = "solve_lu")
+    subroutine solve_lu_c(n, nrhs, a, ipvt, b) bind(C, name = "solve_lu_")
         ! Arguments
         integer(i32), intent(in), value :: n, nrhs
         real(dp), intent(in) :: a(n,n)
@@ -1032,7 +1032,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
-            bind(C, name = "solve_qr")
+            bind(C, name = "solve_qr_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nrhs
         real(dp), intent(inout) :: a(m,n), b(m,nrhs)
@@ -1082,7 +1082,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_qr_pivot_c(m, n, nrhs, a, nt, tau, jpvt, mb, b, err) &
-            bind(C, name = "solve_qr_pivot")
+            bind(C, name = "solve_qr_pivot_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nrhs, nt, mb
         real(dp), intent(inout) :: a(m,n), b(mb,nrhs)
@@ -1116,7 +1116,7 @@ contains
     !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix B.  On
     !!  output, the solution matrix X.
     subroutine solve_cholesky_c(upper, n, nrhs, a, b) &
-            bind(C, name = "solve_cholesky")
+            bind(C, name = "solve_cholesky_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper
         integer(i32), intent(in), value :: n, nrhs
@@ -1140,7 +1140,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
-    subroutine mtx_inverse_c(n, a, err) bind(C, name = "mtx_inverse")
+    subroutine mtx_inverse_c(n, a, err) bind(C, name = "mtx_inverse_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
@@ -1177,7 +1177,8 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
     !!      could not converge to a zero value.
-    subroutine mtx_pinverse_c(m, n, a, ainv, err) bind(C, name = "mtx_pinverse")
+    subroutine mtx_pinverse_c(m, n, a, ainv, err) &
+            bind(C, name = "mtx_pinverse_")
         ! Arguments
         integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
@@ -1221,7 +1222,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_least_squares_c(m, n, nrhs, a, mb, b, err) &
-            bind(C, name = "solve_least_squares")
+            bind(C, name = "solve_least_squares_")
         ! Arguments
         integer(i32), intent(in), value :: m, n, nrhs, mb
         real(dp), intent(inout) :: a(m, n), b(mb, nrhs)
@@ -1263,7 +1264,7 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    subroutine eigen_symm_c(n, vecs, a, vals, err) bind(C, name = "eigen_symm")
+    subroutine eigen_symm_c(n, vecs, a, vals, err) bind(C, name = "eigen_symm_")
         ! Arguments
         integer(i32), intent(in), value :: n
         logical(c_bool), intent(in), value :: vecs
@@ -1303,7 +1304,7 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
     subroutine eigen_asymm_c(n, a, vals, vecs, err) &
-            bind(C, name = "eigen_asymm")
+            bind(C, name = "eigen_asymm_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n,n)
@@ -1353,7 +1354,7 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
     subroutine eigen_gen_c(n, a, b, alpha, beta, vecs, err) &
-            bind(C, name = "eigen_gen")
+            bind(C, name = "eigen_gen_")
         ! Arguments
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: a(n, n), b(n, n)

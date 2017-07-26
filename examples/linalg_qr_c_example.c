@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include "linalg.h"
-#include "ferror.h"
 
 int main() {
     // Define local variables and populate the matrices (column-major format):

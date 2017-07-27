@@ -43,25 +43,25 @@ program main
     
 
     ! QR Factorization Tests
-    call test_qr_factor()
+    rst = test_qr_factor()
     if (.not.rst) overall = .false.
     
-    call test_qr_factor_od()
+    rst = test_qr_factor_od()
     if (.not.rst) overall = .false.
     
-    call test_qr_factor_ud()
+    rst = test_qr_factor_ud()
     if (.not.rst) overall = .false.
     
-    call test_qr_mult()
+    rst = test_qr_mult()
     if (.not.rst) overall = .false.
     
-    call test_qr_mult_od()
+    rst = test_qr_mult_od()
     if (.not.rst) overall = .false.
     
-    call test_qr_mult_ud()
+    rst = test_qr_mult_ud()
     if (.not.rst) overall = .false.
     
-    call test_qr_mult_right()
+    rst = test_qr_mult_right()
     if (.not.rst) overall = .false.
     
     call test_qr_mult_right_od()

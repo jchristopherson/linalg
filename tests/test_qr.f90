@@ -12,7 +12,7 @@ contains
 ! ******************************************************************************
 ! QR FACTORIZATION TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_factor()
+    function test_qr_factor() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -52,11 +52,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 2, Part C"
         end if
-        if (rst) print '(A)', "Test Passed: QR Factorization"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_factor_od()
+    function test_qr_factor_od() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 50
@@ -96,11 +95,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 2, Part C"
         end if
-        if (rst) print '(A)', "Test Passed: Overdetermined QR Factorization"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_factor_ud()
+    function test_qr_factor_ud() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 50
         integer(i32), parameter :: n = 60
@@ -140,14 +138,13 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 2, Part C"
         end if
-        if (rst) print '(A)', "Test Passed: Underdetermined QR Factorization"
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! QR MULTIPLICATION TEST
 ! ------------------------------------------------------------------------------
     ! LEFT SIDE
-    subroutine test_qr_mult()
+    function test_qr_mult() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -194,12 +191,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! OVERDETERMINED - LEFT
-    subroutine test_qr_mult_od()
+    function test_qr_mult_od() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 50
@@ -246,12 +242,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Overdetermined QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! UNDERDETERMINED - LEFT
-    subroutine test_qr_mult_ud()
+    function test_qr_mult_ud() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 50
         integer(i32), parameter :: n = 60
@@ -298,12 +293,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Underdetermined QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! RIGHT SIDE
-    subroutine test_qr_mult_right()
+    function test_qr_mult_right() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -351,8 +345,7 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Right QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Right QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! OVERDETERMINED - RIGHT SIDE

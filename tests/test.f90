@@ -11,54 +11,124 @@ program main
     use test_misc
     use test_lu
 
-    ! Introduce the testing application
-    print '(A)', "Hello from the LINALG test application."
+    ! Local Variables
+    logical :: rst, overall
+
+    ! Initialization
+    overall = .true.
 
     ! Misc. Item Tests
-    call test_diagonal_mtx_mult()
-    call test_rank1_update()
-    call test_rank()
-    call test_tri_mtx_mult_1()
-    call test_tri_mtx_mult_2()
+    rst = test_diagonal_mtx_mult()
+    if (.not.rst) overall = .false.
+
+    rst = test_rank1_update()
+    if (.not.rst) overall = .false.
+    
+    rst = test_rank()
+    if (.not.rst) overall = .false.
+    
+    rst = test_tri_mtx_mult_1()
+    if (.not.rst) overall = .false.
+    
+    rst = test_tri_mtx_mult_2()
+    if (.not.rst) overall = .false.
+    
 
     ! LU Factorization Tests
-    call test_lu_factor()
-    call test_lu_solve()
+    rst = test_lu_factor()
+    if (.not.rst) overall = .false.
+    
+    rst = test_lu_solve()
+    if (.not.rst) overall = .false.
+    
 
     ! QR Factorization Tests
     call test_qr_factor()
+    if (.not.rst) overall = .false.
+    
     call test_qr_factor_od()
+    if (.not.rst) overall = .false.
+    
     call test_qr_factor_ud()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_od()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_ud()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_right()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_right_od()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_right_ud()
+    if (.not.rst) overall = .false.
+    
     call test_qr_mult_vector()
+    if (.not.rst) overall = .false.
+    
     call test_qr_solve_no_pivot()
+    if (.not.rst) overall = .false.
+    
     call test_qr_solve_pivot()
+    if (.not.rst) overall = .false.
+    
     call test_qr_solve_pivot_ud()
+    if (.not.rst) overall = .false.
+    
     call test_qr_update_1()
-
+    if (.not.rst) overall = .false.
+    
     ! SVD Tests
     call test_svd()
+    if (.not.rst) overall = .false.
+    
     call test_svd_od()
+    if (.not.rst) overall = .false.
+    
     call test_svd_ud()
-
+    if (.not.rst) overall = .false.
+    
     ! Matrix Inverse Tests
     call test_pinv()
+    if (.not.rst) overall = .false.
+    
     call test_pinv_od()
+    if (.not.rst) overall = .false.
+    
     call test_inv()
-
+    if (.not.rst) overall = .false.
+    
     ! Cholesky Factorization Tests
     call test_cholesky_factor()
+    if (.not.rst) overall = .false.
+    
     call test_cholesky_rank1_update()
+    if (.not.rst) overall = .false.
+    
     call test_cholesky_rank1_downdate()
-
+    if (.not.rst) overall = .false.
+    
     ! Eigenvalue/Eigenvector Tests
     call test_eigen_symm()
+    if (.not.rst) overall = .false.
+    
     call test_eigen_asymm()
+    if (.not.rst) overall = .false.
+    
     call test_eigen_gen()
-
+    if (.not.rst) overall = .false.
+    
+    ! End
+    if (overall) then
+        print '(A)', "LINALG TEST STATUS: PASS"
+    else
+        print '(A)', "LINALG TEST STATUS: FAILED"
+    end if
 end program

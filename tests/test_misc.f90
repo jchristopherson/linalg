@@ -10,7 +10,7 @@ contains
 ! ******************************************************************************
 ! DIAGONAL MATRIX MULTIPLICATION TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_diagonal_mtx_mult()
+    function test_diagonal_mtx_mult() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 30
         integer(i32), parameter :: n = 30
@@ -66,13 +66,12 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 3"
         end if
-        if (rst) print '(A)', "Test Passed: Diagonal Matrix Multiply"
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! RANK 1 UPDATE TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_rank1_update()
+    function test_rank1_update() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 50
         integer(i32), parameter :: n = 20
@@ -83,6 +82,7 @@ contains
         real(dp), dimension(m, n) :: a, a1, b
         real(dp), dimension(m, 1) :: x
         real(dp), dimension(n, 1) :: y
+        logical :: rst
 
         ! Initialization
         call random_number(a)
@@ -99,18 +99,20 @@ contains
         ! Compare the results
         if (.not.is_mtx_equal(a1, b, tol)) then
             print '(A)', "Test Failed: Rank 1 Update"
+            rst = .false.
         else
-            print '(A)', "Test Passed: Rank 1 Update"
+            rst = .true.
         end if
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! MATRIX RANK TESTS
 ! ------------------------------------------------------------------------------
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
-    subroutine test_rank()
+    function test_rank() result(rst)
         ! Local Variables
         real(dp), dimension(8, 6) :: a
+        logical :: rst
 
         ! Initialization
         a = reshape([64, 9, 17, 40, 32, 41, 49, 8, 2, 55, 47, 26, 34, 23, 15, &
@@ -121,15 +123,16 @@ contains
         ! The rank of A should be 3
         if (mtx_rank(a) /= 3) then
             print '(A)', "Test Failed: Matrix Rank"
+            rst = .false.
         else
-            print '(A)', "Test Passed: Matrix Rank"
+            rst = .true.
         end if
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! TRIANGULAR MATRIX MULTIPLICATION TESTS
 ! ------------------------------------------------------------------------------
-    subroutine test_tri_mtx_mult_1()
+    function test_tri_mtx_mult_1() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: alpha = 1.5d0
@@ -137,7 +140,7 @@ contains
         real(dp), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        logical :: check
+        logical :: check, rst
         integer(i32) :: j
         real(dp) :: a(n,n), b(n,n), bans(n,n)
 
@@ -155,9 +158,7 @@ contains
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1A"
         end if
-
-        if (check) &
-            print '(A)', "Test Passed: Triangular Matrix Update - Test 1A"
+        rst = check
         
         ! Test 2 (beta /= 0)
         check = .true.
@@ -165,15 +166,13 @@ contains
         bans = alpha * matmul(transpose(a), a) + beta * bans
         if (.not.is_mtx_equal(b, bans, tol)) then
             check = .false.
+            rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1B"
         end if
-
-        if (check) &
-            print '(A)', "Test Passed: Triangular Matrix Update - Test 1B"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_tri_mtx_mult_2()
+    function test_tri_mtx_mult_2() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: alpha = 1.5d0
@@ -181,7 +180,7 @@ contains
         real(dp), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        logical :: check
+        logical :: check, rst
         integer(i32) :: j
         real(dp) :: a(n,n), b(n,n), bans(n,n)
 
@@ -199,9 +198,7 @@ contains
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2A"
         end if
-
-        if (check) &
-            print '(A)', "Test Passed: Triangular Matrix Update - Test 2A"
+        rst = check
         
         ! Test 2 (beta /= 0)
         check = .true.
@@ -209,11 +206,9 @@ contains
         bans = alpha * matmul(a, transpose(a)) + beta * bans
         if (.not.is_mtx_equal(b, bans, tol)) then
             check = .false.
+            rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2B"
         end if
-
-        if (check) &
-            print '(A)', "Test Passed: Triangular Matrix Update - Test 2B"
-    end subroutine
+    end function
 
 end module

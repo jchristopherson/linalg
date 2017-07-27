@@ -10,7 +10,7 @@ contains
 ! ******************************************************************************
 ! LU FACTORIZATION TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_lu_factor()
+    function test_lu_factor() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 75
         real(dp), parameter :: tol = 1.0d-8
@@ -35,11 +35,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Test"
         end if
-        if (rst) print '(A)', "Test Passed: LU Factorization Test"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_lu_solve()
+    function test_lu_solve() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 75
         integer(i32), parameter :: nrhs = 20
@@ -69,7 +68,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: LU Factorization & Solution Test"
         end if
-        if (rst) print '(A)', "Test Passed: LU Factorization & Solution Test"
-    end subroutine
+    end function
 
 end module

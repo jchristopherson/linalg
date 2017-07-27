@@ -13,7 +13,7 @@ contains
 ! ******************************************************************************
 ! CHOLESKY FACTORIZATION TESTS
 ! ------------------------------------------------------------------------------
-    subroutine test_cholesky_factor()
+    function test_cholesky_factor() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         integer(i32), parameter :: nrhs = 20
@@ -61,11 +61,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 4"
         end if
-        if (rst) print '(A)', "Test Passed: Cholesky Factorization"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_cholesky_rank1_update()
+    function test_cholesky_rank1_update() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
@@ -96,11 +95,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Update Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Cholesky Rank 1 Update"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_cholesky_rank1_downdate()
+    function test_cholesky_rank1_downdate() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
@@ -134,7 +132,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Downdate Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Cholesky Rank 1 Downdate"
-    end subroutine
+    end function
 
 end module

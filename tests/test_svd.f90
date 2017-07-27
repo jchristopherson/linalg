@@ -9,7 +9,7 @@ module test_svd_ops
     implicit none
 contains
 ! ------------------------------------------------------------------------------
-    subroutine test_svd()
+    function test_svd() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -39,11 +39,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Singular Value Decomposition"
         end if
-        if (rst) print '(A)', "Test Passed: Singular Value Decomposition"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_svd_od()
+    function test_svd_od() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 50
@@ -88,11 +87,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Overdetermined Singular Value Decomposition"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_svd_ud()
+    function test_svd_ud() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 50
         integer(i32), parameter :: n = 60
@@ -124,8 +122,7 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Singular Value Decomposition, Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Underdetermined Singular Value Decomposition"
-    end subroutine
+    end function
 
 
 end module

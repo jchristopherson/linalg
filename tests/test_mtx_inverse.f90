@@ -10,7 +10,7 @@ contains
 ! ******************************************************************************
 ! PSEUDO-INVERSE TESTS
 ! ------------------------------------------------------------------------------
-    subroutine test_pinv()
+    function test_pinv() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -41,12 +41,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Pseudo-Inverse Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Psuedo-Inverse"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
-    subroutine test_pinv_od()
+    function test_pinv_od() result(rst)
         ! Parameters
         real(dp), parameter :: tol = 1.0d-8
 
@@ -79,11 +78,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Pseudo-Inverse Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Overdetermined Pseudo-Inverse"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_inv()
+    function test_inv() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
@@ -108,8 +106,7 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Matrix Inverse Test 1"
         end if
-        if (rst) print '(A)', "Test Passed: Matrix Inverse"
-    end subroutine
+    end function
 
 
 end module

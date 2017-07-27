@@ -11,7 +11,7 @@ contains
 ! ******************************************************************************
 ! EIGEN ANALYSIS TESTS
 ! ------------------------------------------------------------------------------
-    subroutine test_eigen_symm()
+    function test_eigen_symm() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 3
         real(dp), parameter :: tol = 1.0d-8
@@ -19,8 +19,10 @@ contains
         ! Local Variables
         real(dp), dimension(n, n) :: a, vecs, x, y
         real(dp), dimension(n) :: vals
+        logical :: rst
 
         ! Initialization
+        rst = .true.
         call random_number(a)
         a = matmul(a, transpose(a))
 
@@ -34,15 +36,13 @@ contains
         ! Test
         y = matmul(a, vecs)
         if (.not.is_mtx_equal(x, y, tol)) then
+            rst = .false.
             print '(A)', "Test Failed: Symmetric Eigen Values"
-        else
-            print '(A)', "Test Passed: Symmetric Eigen Values"
         end if
-
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_eigen_asymm()
+    function test_eigen_asymm() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
@@ -82,11 +82,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Asymmetric Eigen Values"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_eigen_gen()
+    function test_eigen_gen() result(rst)
         ! Parameters
         integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
@@ -126,8 +125,7 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Generalized Eigen Values"
-    end subroutine
+    end function
 
 
 end module

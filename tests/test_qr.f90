@@ -349,7 +349,7 @@ contains
 
 ! ------------------------------------------------------------------------------
     ! OVERDETERMINED - RIGHT SIDE
-    subroutine test_qr_mult_right_od()
+    function test_qr_mult_right_od() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 50
@@ -397,12 +397,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Right Overdetermined QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Right Overdetermined QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! UNDERDETERMINED - RIGHT SIDE
-    subroutine test_qr_mult_right_ud()
+    function test_qr_mult_right_ud() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 50
         integer(i32), parameter :: n = 60
@@ -450,12 +449,11 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Right Underdetermined QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Right Underdetermined QR Multiplication"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     ! VECTOR
-    subroutine test_qr_mult_vector()
+    function test_qr_mult_vector() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -503,13 +501,12 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Vector QR Multiplication Test 2"
         end if
-        if (rst) print '(A)', "Test Passed: Vector QR Multiplication"
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! QR SOLUTION TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_solve_no_pivot()
+    function test_qr_solve_no_pivot() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -562,11 +559,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, No Pivoting"
         end if
-        if (rst) print '(A)', "Test Passed: QR Solution, No Pivoting"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_solve_pivot()
+    function test_qr_solve_pivot() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 60
@@ -621,11 +617,10 @@ contains
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
         end if
-        if (rst) print '(A)', "Test Passed: QR Solution, With Pivoting"
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_solve_pivot_ud()
+    function test_qr_solve_pivot_ud() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 5
         integer(i32), parameter :: n = 6
@@ -675,13 +670,12 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Solution Test 2, With Pivoting"
         end if
-        if (rst) print '(A)', "Test Passed: Underdetermined QR Solution, With Pivoting"
-    end subroutine
+    end function
 
 ! ******************************************************************************
 ! QR UPDATE TEST
 ! ------------------------------------------------------------------------------
-    subroutine test_qr_update_1()
+    function test_qr_update_1() result(rst)
         ! Parameters
         integer(i32), parameter :: m = 60
         integer(i32), parameter :: n = 50
@@ -719,7 +713,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Rank 1 QR Update"
         end if
-        if (rst) print '(A)', "Test Passed: Rank 1 QR Update"
-    end subroutine
+    end function
 
 end module

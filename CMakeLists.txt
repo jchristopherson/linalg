@@ -76,7 +76,7 @@ endif()
 # Specify source files
 if (BUILD_SHARED_LIBS)
     # Define where to find the source code
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f ferror/src/*f90)
+    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f)
 
     # Define where to find LAPACK & BLAS
     option(USE_EXISTING_LAPACK "Use an existing LAPACK library instead of the default supplied LAPACK" OFF)
@@ -107,7 +107,8 @@ endif()
 # else, a static library will be built.
 add_library(linalg ${sources})
 if (BUILD_SHARED_LIBS)
-  target_link_libraries(linalg lapack)
+  add_subdirectory(ferror)
+  target_link_libraries(linalg lapack ferror)
 endif()
 
 # ------------------------------------------------------------------------------

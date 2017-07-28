@@ -1,8 +1,7 @@
 ! linalg_eigen_example.f90
 
 ! This is an example illustrating the use of the eigenvalue and eigenvector 
-! routines to solve the problem a free vibration problem of 3 masses connected
-! by springs.
+! routines to solve a free vibration problem of 3 masses connected by springs.
 !
 !     k1           k2           k3           k4
 ! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|

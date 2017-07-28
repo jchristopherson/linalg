@@ -167,3 +167,12 @@ target_link_libraries(linalg_test linalg)
 add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
   COMMAND linalg_test)
 add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+
+# C Test
+include_directories(${PROJECT_SOURCE_DIR}/tests)
+set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c)
+add_executable(linalg_c_test ${c_linalg_test_sources})
+target_link_libraries(linalg_c_test linalg)
+add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
+  COMMAND linalg_c_test)
+add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)

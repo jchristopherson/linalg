@@ -17,5 +17,6 @@ bool is_dbl_mtx_equal(int m, int n, const double *x, const double *y,
 bool test_diagonal_mtx_mult();
 bool test_rank1_update();
 bool test_rank();
+bool test_tri_mtx_mult();
 
 #endif

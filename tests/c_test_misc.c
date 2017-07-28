@@ -86,7 +86,6 @@ bool test_rank1_update() {
 }
 
 
-
 bool test_rank() {
     // Local Variables
     const int m = 8;
@@ -108,3 +107,45 @@ bool test_rank() {
     return rst;
 }
 
+
+bool test_tri_mtx_mult() {
+    // Local Variables
+    const int n = 100;
+    const int nn = 10000;
+    const double alpha = 1.5;
+    const double beta = -3.0;
+    const double tol = 1.0e-12;
+
+    bool check, rst;
+    int i, j;
+    double a[nn], b[nn], bans[nn];
+
+    // Initialization
+    check = true;
+    make_rand_mtx(n, n, a);
+    for (j = 0; j < n; ++j)
+        for (i = j + 1; i < n; ++i)
+            a[INDEX(i,j,n)] = 0.0;
+    
+    // Test 1 (beta = 0)
+    mtx_mult_(true, false, n, n, n, alpha, a, n, a, n, 0.0, bans);
+    tri_mtx_mult_(true, n, alpha, a, 0.0, b, NULL);
+    if (!is_dbl_mtx_equal(n, n, b, bans, tol)) {
+        check = false;
+        printf("Test Failed: Triangular Matrix Update - Test 1A\n");
+    }
+    rst = check;
+
+    // Test 2 (beta /= 0)
+    check = true;
+    mtx_mult_(true, false, n, n, n,alpha, a, n, a, n, beta, bans);
+    tri_mtx_mult_(true, n, alpha, a, beta, b, NULL);
+    if (!is_dbl_mtx_equal(n, n, b, bans, tol)) {
+        check = false;
+        rst = false;
+        printf("Test Failed: Triangular Matrix Update - Test 1B\n");
+    }
+
+    // End
+    return rst;
+}

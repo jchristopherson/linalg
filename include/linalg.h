@@ -51,7 +51,7 @@ extern "C" {
  * @param c The M-by-N matrix C.
  */
 void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha, 
-               const double *a, int lda, const double *b, double beta, int ldb,
+               const double *a, int lda, const double *b, int ldb, double beta,
                double *c);
 
 /** @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C.

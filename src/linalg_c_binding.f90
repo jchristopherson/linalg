@@ -56,12 +56,12 @@ contains
         if (transa) then
             ta = 'T'
         else
-            ta = 'F'
+            ta = 'N'
         end if
         if (transb) then
             tb = 'T'
         else
-            tb = 'F'
+            tb = 'N'
         end if
         call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
     end subroutine

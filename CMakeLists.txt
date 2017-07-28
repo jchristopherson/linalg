@@ -171,7 +171,8 @@ add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
 
 # C Test
 include_directories(${PROJECT_SOURCE_DIR}/tests)
-set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c)
+set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
+  tests/c_test_misc.c)
 add_executable(linalg_c_test ${c_linalg_test_sources})
 target_link_libraries(linalg_c_test linalg)
 add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}

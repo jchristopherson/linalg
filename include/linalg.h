@@ -209,8 +209,8 @@ void swap_(int n, double *x, double *y);
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
  *      appropriately.
  */
-void tri_mtx_mult_(bool upper, int n, double alpha, const double *a, double beta,
-                   double *b, errorhandler *err);
+void tri_mtx_mult_(bool upper, int n, double alpha, const double *a,
+                   double beta, double *b, errorhandler *err);
 
 /** @brief Computes the LU factorization of an M-by-N matrix.
  *

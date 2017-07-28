@@ -20,6 +20,21 @@ int main() {
     rst = test_tri_mtx_mult();
     if (!rst) overall = false;
 
+    rst = test_lu_factor();
+    if (!rst) overall = false;
+
+    rst = test_lu_solve();
+    if (!rst) overall = false;
+
+    rst = test_qr_factor();
+    if (!rst) overall = false;
+
+    rst = test_qr_factor_od();
+    if (!rst) overall = false;
+
+    rst = test_qr_factor_ud();
+    if (!rst) overall = false;
+
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");
     else printf("C API LINALG TEST STATUS: FAIL\n");

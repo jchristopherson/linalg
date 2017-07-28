@@ -1,4 +1,4 @@
-! test.f90
+! linalg_test.f90
 
 ! A testing application.
 program main

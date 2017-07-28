@@ -159,9 +159,10 @@ endif()
 # ------------------------------------------------------------------------------
 # TESTS
 # ------------------------------------------------------------------------------
-set(linalg_test_sources tests/test.f90 tests/test_core.f90 tests/test_qr.f90 
-    tests/test_svd.f90 tests/test_cholesky.f90 tests/test_eigen.f90 
-    tests/test_mtx_inverse.f90 tests/test_misc.f90 tests/test_lu.f90)
+set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
+    tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
+    tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
+    tests/test_lu.f90)
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
 add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}

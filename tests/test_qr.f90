@@ -564,7 +564,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
+        integer(i32), parameter :: m = 100
         integer(i32), parameter :: n = 60
         integer(i32), parameter :: nrhs = 20
         real(dp), parameter :: tol = 1.0d-8

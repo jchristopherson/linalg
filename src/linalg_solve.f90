@@ -773,7 +773,7 @@ contains
         ! Workspace Query
         call rz_factor(a(1:mn,:), a(1:mn,1), olwork = lwork1)
         call mult_qr(.true., .true., a, tau, b(1:m,:), olwork = lwork2)
-        call mult_rz(.true., .true., n, a(1:mn,:), a(1:mn,1), b, &
+        call mult_rz(.true., .true., n, a(1:mn,:), a(1:mn,1), b(1:n,:), &
             olwork = lwork3)
         lwork = max(lwork1, lwork2, lwork3, 2 * mn + 1) + mn
         if (present(olwork)) then
@@ -810,7 +810,7 @@ contains
         smin = smax
         if (abs(a(1,1)) == zero) then
             rnk = 0
-            b(maxmn,nrhs) = zero
+            b(1:maxmn,:) = zero
             return
         else
             rnk = 1
@@ -854,7 +854,7 @@ contains
 
         ! Compute B(1:n,1:nrhs) = Y**T * B(1:n,1:nrhs)
         if (rnk < n) then
-            call mult_rz(.true., .true., n - rnk, a(1:rnk,:), tau2, b, w)
+            call mult_rz(.true., .true., n - rnk, a(1:rnk,:), tau2, b(1:n,:), w)
         end if
 
         ! Apply the pivoting: B(1:N,1:NRHS) = P * B(1:N,1:NRHS)

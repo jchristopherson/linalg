@@ -78,6 +78,9 @@ program main
     
     rst = test_qr_solve_pivot()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_pivot_od()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_solve_pivot_ud()
     if (.not.rst) overall = .false.

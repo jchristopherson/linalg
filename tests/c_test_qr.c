@@ -359,12 +359,12 @@ bool test_qr_solve_no_pivot() {
 bool test_qr_solve_pivot() {
     // Local Variables
     const int m = 100;
-    const int n = 80;
+    const int n = 100;
     const int nrhs = 20;
     const double tol = 1.0e-8;
 
     double a[m*n], a1[m*n], b[m*nrhs], b1[m*nrhs], ans1[m*nrhs], x1[n*nrhs],
-        tau[MIN(m,n)], b2a[m], b2[m], ans2[m], x2[n];
+        tau[MIN(m,n)];
     int i, j, mn, pvt[n];
     bool rst;
 
@@ -373,10 +373,8 @@ bool test_qr_solve_pivot() {
     mn = MIN(m, n);
     make_rand_mtx(m, n, a);
     make_rand_mtx(m, nrhs, b);
-    make_rand_mtx(m, 1, b2a);
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
     for (i = 0; i < m * nrhs; ++i) b1[i] = b[i];
-    for (i = 0; i < m; ++i) b2[i] = b2a[i];
     for (i = 0; i < n; ++i) pvt[i] = 0;
 
     // Compute the QR factorization of A
@@ -395,15 +393,49 @@ bool test_qr_solve_pivot() {
         printf("Test Failed: QR Solution Test 1, With Pivoting\n");
     }
 
-    // Solve the system of equations
-    solve_qr_pivot_(m, n, 1, a1, mn, tau, pvt, m, b2, NULL);
-    for (i = 0; i < n; ++i) x2[i] = b2[i];
+    // End
+    return rst;
+}
 
-    // Test 2
-    mtx_mult_(false, false, m, 1, n, 1.0, a, m, x2, n, 0.0, ans2);
-    if (!is_dbl_mtx_equal(m, 1, ans2, b2a, tol)) {
+
+
+bool test_qr_solve_pivot_ud() {
+    // Local Variables
+    const int m = 100;
+    const int n = 200;
+    const int nrhs = 20;
+    const double tol = 1.0e-8;
+
+    double a[m*n], a1[m*n], b[m*nrhs], b1[n*nrhs], ans1[m*nrhs], x1[n*nrhs],
+        tau[MIN(m,n)];
+    int i, j, mn, pvt[n];
+    bool rst;
+
+    // Initialization
+    rst = true;
+    mn = MIN(m, n);
+    make_rand_mtx(m, n, a);
+    make_rand_mtx(m, nrhs, b);
+    for (i = 0; i < m * n; ++i) a1[i] = a[i];
+    for (j = 0; j < nrhs; ++j)
+        for (i = 0; i < m; ++i)
+            b1[INDEX(i,j,n)] = b[INDEX(i,j,m)];
+    for (i = 0; i < n; ++i) pvt[i] = 0;
+
+    // Compute the QR factorization of A
+    qr_factor_pivot_(m, n, a1, mn, tau, pvt, NULL);
+
+    // Solve the system of equations
+    solve_qr_pivot_(m, n, nrhs, a, mn, tau, pvt, n, b1, NULL);
+    for (j = 0; j < nrhs; ++j)
+        for (i = 0; i < n; ++i)
+            x1[INDEX(i,j,n)] = b1[INDEX(i,j,n)];
+    
+    // Test
+    mtx_mult_(false, false, m, nrhs, n, 1.0, a, m, x1, n, 0.0, ans1);
+    if (!is_dbl_mtx_equal(m, nrhs, ans1, b, tol)) {
         rst = false;
-        printf("Test Failed: QR Solution Test 2, With Pivoting\n");
+        printf("Test Failed: Underdetermined QR Solution Test 1, With Pivoting\n");
     }
 
     // End

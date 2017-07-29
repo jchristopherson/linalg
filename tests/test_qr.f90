@@ -564,8 +564,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 80
-        integer(i32), parameter :: n = 60
+        integer(i32), parameter :: m = 100
+        integer(i32), parameter :: n = 100
         integer(i32), parameter :: nrhs = 20
         real(dp), parameter :: tol = 1.0d-8
 
@@ -617,6 +617,51 @@ contains
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
         end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_qr_solve_pivot_od() result(rst)
+        ! Parameters
+        integer(i32), parameter :: m = 200
+        integer(i32), parameter :: n = 100
+        integer(i32), parameter :: nrhs = 20
+        real(dp), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(dp), dimension(m, n) :: a1, a2
+        real(dp), dimension(m, nrhs) :: b1, b2
+        real(dp), dimension(n) :: tau
+        real(dp), allocatable, dimension(:) :: work
+        real(dp) :: temp(1), rcond
+        integer(i32), dimension(n) :: pvt
+        integer(i32) :: lwork, info, rnk
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        pvt = 0
+        call random_number(a1)
+        call random_number(b1)
+        a2 = a1
+        b2 = b1
+
+         ! Compute the solution via DGELSY
+         rcond = epsilon(rcond)
+         call dgelsy(m, n, nrhs, a1, m, b1, m, pvt, rcond, rnk, temp, -1, info)
+         lwork = int(temp(1))
+         allocate(work(lwork))
+         call dgelsy(m, n, nrhs, a1, m, b1, m, pvt, rcond, rnk, work, lwork, &
+            info)
+        
+         ! Compute the solution via QR factorization
+         call qr_factor(a2, tau, pvt)
+         call solve_qr(a2, tau, pvt, b2)
+
+         ! Test
+         if (.not.is_mtx_equal(b1(1:n,:), b2(1:n,:), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Overdetermined QR Solution Test, With Pivoting"
+         end if
     end function
 
 ! ------------------------------------------------------------------------------

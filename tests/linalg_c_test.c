@@ -35,6 +35,15 @@ int main() {
     rst = test_qr_factor_ud();
     if (!rst) overall = false;
 
+    rst = test_qr_mult();
+    if (!rst) overall = false;
+
+    rst = test_qr_mult_od();
+    if (!rst) overall = false;
+
+    rst = test_qr_mult_ud();
+    if (!rst) overall = false;
+
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");
     else printf("C API LINALG TEST STATUS: FAIL\n");

@@ -8,15 +8,12 @@ bool test_diagonal_mtx_mult() {
     const int m = 30;
     const int n = 30;
     const int k = 30;
-    const int mn = 900;
-    const int kn = 900;
-    const int mk = 900;
     const double tol = 1e-12;
     const double alpha = 0.5;
     const double beta = 0.25;
 
     int i, j;
-    double c1[mn], ans1[mn], b1[kn], d1[mk], d1v[k];
+    double c1[m*n], ans1[m*n], b1[k*n], d1[m*k], d1v[k];
     bool rst;
 
     // Initialization
@@ -25,11 +22,11 @@ bool test_diagonal_mtx_mult() {
     make_rand_mtx(k, n, b1);
     make_rand_mtx(k, 1, d1v);
 
-    for (j = 0; j < mk; ++j) d1[j] = 0.0;
+    for (j = 0; j < m*k; ++j) d1[j] = 0.0;
     for (j = 0; j < k; ++j) d1[INDEX(j,j,m)] = d1v[k];
 
     // Compute C1 = D1 * B1 + C1
-    for (i = 0; i < mn; ++i) ans1[i] = c1[i];
+    for (i = 0; i < m*n; ++i) ans1[i] = c1[i];
     diag_mtx_mult_(false, m, n, alpha, k, d1v, k, m, b1, beta, c1, NULL);
     mtx_mult_(false, false, m, n, k, alpha, d1, m, b1, k, beta, ans1);
     if (!is_dbl_mtx_equal(m, n, ans1, c1, tol)) {
@@ -38,7 +35,7 @@ bool test_diagonal_mtx_mult() {
     }
 
     // Compute C1 = D1 * B1**T + C1
-    for (i = 0; i < mn; ++i) ans1[i] = c1[i];
+    for (i = 0; i < m*n; ++i) ans1[i] = c1[i];
     diag_mtx_mult_(true, m, n, alpha, k, d1v, k, m, b1, beta, c1, NULL);
     mtx_mult_(false, true, m, n, k, alpha, d1, m, b1, k, beta, ans1);
     if (!is_dbl_mtx_equal(m, n, ans1, c1, tol)) {
@@ -55,11 +52,10 @@ bool test_rank1_update() {
     // Local Variables
     const int m = 50;
     const int n = 20;
-    const int mn = 1000;
     const double alpha = 0.5;
     const double tol = 1e-12;
 
-    double a[mn], b[mn], x[m], y[n];
+    double a[m*n], b[m*n], x[m], y[n];
     bool rst = true;
     int i, j;
 
@@ -111,14 +107,13 @@ bool test_rank() {
 bool test_tri_mtx_mult() {
     // Local Variables
     const int n = 100;
-    const int nn = 10000;
     const double alpha = 1.5;
     const double beta = -3.0;
     const double tol = 1.0e-12;
 
     bool check, rst;
     int i, j;
-    double a[nn], b[nn], bans[nn];
+    double a[n*n], b[n*n], bans[n*n];
 
     // Initialization
     check = true;

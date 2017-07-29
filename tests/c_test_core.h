@@ -28,5 +28,8 @@ bool test_lu_solve();
 bool test_qr_factor();
 bool test_qr_factor_od();
 bool test_qr_factor_ud();
+bool test_qr_mult();
+bool test_qr_mult_od();
+bool test_qr_mult_ud();
 
 #endif

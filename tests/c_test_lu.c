@@ -5,23 +5,22 @@
 bool test_lu_factor() {
     // Local Variables
     const int n = 100;
-    const int nn = 10000;
     const double tol = 1.0e-8;
 
-    double a[nn], a1[nn], l[nn], u[nn], p[nn], b[nn];
+    double a[n*n], a1[n*n], l[n*n], u[n*n], p[n*n], b[n*n];
     int i, ipvt[n];
     bool rst;
 
     // Initialization
     rst = true;
     make_rand_mtx(n, n, a);
-    for (i = 0; i < nn; ++i) a1[i] = a[i];
+    for (i = 0; i < n*n; ++i) a1[i] = a[i];
 
     // Compute the factorization
     lu_factor_(n, n, a1, n, ipvt, NULL);
 
     // Extract L, U, and P to determine if P * A = L * U
-    for (i = 0; i < nn; ++i) l[i] = a1[i];
+    for (i = 0; i < n*n; ++i) l[i] = a1[i];
     form_lu_(n, l, ipvt, u, p);
 
     // Compute A1 = P * A
@@ -45,11 +44,9 @@ bool test_lu_solve() {
     // Local Variables
     const int n = 100;
     const int nrhs = 20;
-    const int nn = 10000;
-    const int nnrhs = 2000;
     const double tol = 1.0e-8;
 
-    double a[nn], a1[nn], b[nnrhs], x[nnrhs], b1[nnrhs];
+    double a[n*n], a1[n*n], b[n*nrhs], x[n*nrhs], b1[n*nrhs];
     int i, ipvt[n];
     bool rst;
 
@@ -57,8 +54,8 @@ bool test_lu_solve() {
     rst = true;
     make_rand_mtx(n, n, a);
     make_rand_mtx(n, nrhs, b);
-    for (i = 0; i < nn; ++i) a1[i] = a[i];
-    for (i = 0; i < nnrhs; ++i) x[i] = b[i];
+    for (i = 0; i < n*n; ++i) a1[i] = a[i];
+    for (i = 0; i < n*nrhs; ++i) x[i] = b[i];
 
     // Compute the factorization
     lu_factor_(n, n, a1, n, ipvt, NULL);

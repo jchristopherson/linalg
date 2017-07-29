@@ -8,23 +8,14 @@ bool test_qr_factor() {
     const int n = 100;
     const double tol = 1.0e-8;
 
-    double *a, *r1, *r2, *q1, *q2, *p2, *tau1, *tau2, *a1, *a2;
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+        a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, mn, pvt2[n];
     bool rst;
 
     // Initialization
     rst = true;
     mn = MIN(m, n);
-    a = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r2 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    q1 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    q2 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    p2 = (double*)malloc((size_t)(n * n * sizeof(double)));
-    tau1 = (double*)malloc((size_t)(mn * sizeof(double)));
-    tau2 = (double*)malloc((size_t)(mn * sizeof(double)));
-    a1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    a2 = (double*)malloc((size_t)(m * n * sizeof(double)));
     make_rand_mtx(m, n, a);
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
@@ -53,16 +44,6 @@ bool test_qr_factor() {
     }
 
     // End
-    free(a);
-    free(r1);
-    free(r2);
-    free(q1);
-    free(q2);
-    free(p2);
-    free(tau1);
-    free(tau2);
-    free(a1);
-    free(a2);
     return rst;
 }
 
@@ -73,23 +54,14 @@ bool test_qr_factor_od() {
     const int n = 100;
     const double tol = 1.0e-8;
 
-    double *a, *r1, *r2, *q1, *q2, *p2, *tau1, *tau2, *a1, *a2;
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+        a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, mn, pvt2[n];
     bool rst;
 
     // Initialization
     rst = true;
     mn = MIN(m, n);
-    a = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r2 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    q1 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    q2 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    p2 = (double*)malloc((size_t)(n * n * sizeof(double)));
-    tau1 = (double*)malloc((size_t)(mn * sizeof(double)));
-    tau2 = (double*)malloc((size_t)(mn * sizeof(double)));
-    a1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    a2 = (double*)malloc((size_t)(m * n * sizeof(double)));
     make_rand_mtx(m, n, a);
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
@@ -118,16 +90,6 @@ bool test_qr_factor_od() {
     }
 
     // End
-    free(a);
-    free(r1);
-    free(r2);
-    free(q1);
-    free(q2);
-    free(p2);
-    free(tau1);
-    free(tau2);
-    free(a1);
-    free(a2);
     return rst;
 }
 
@@ -139,23 +101,14 @@ bool test_qr_factor_ud() {
     const int n = 200;
     const double tol = 1.0e-8;
 
-    double *a, *r1, *r2, *q1, *q2, *p2, *tau1, *tau2, *a1, *a2;
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+        a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, mn, pvt2[n];
     bool rst;
 
     // Initialization
     rst = true;
     mn = MIN(m, n);
-    a = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    r2 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    q1 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    q2 = (double*)malloc((size_t)(m * m * sizeof(double)));
-    p2 = (double*)malloc((size_t)(n * n * sizeof(double)));
-    tau1 = (double*)malloc((size_t)(mn * sizeof(double)));
-    tau2 = (double*)malloc((size_t)(mn * sizeof(double)));
-    a1 = (double*)malloc((size_t)(m * n * sizeof(double)));
-    a2 = (double*)malloc((size_t)(m * n * sizeof(double)));
     make_rand_mtx(m, n, a);
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
@@ -184,15 +137,165 @@ bool test_qr_factor_ud() {
     }
 
     // End
-    free(a);
-    free(r1);
-    free(r2);
-    free(q1);
-    free(q2);
-    free(p2);
-    free(tau1);
-    free(tau2);
-    free(a1);
-    free(a2);
     return rst;
 }
+
+
+
+bool test_qr_mult() {
+    // Local Variables
+    const int m = 100;
+    const int n = 100;
+    const double tol = 1e-8;
+
+    double a[m*n], r[m*n], c1[m*n], c2[m*n], ans[m*n], q[m*m], tau[MIN(m,n)];
+    bool rst;
+    int i, mn;
+
+    // Initialization
+    rst = true;
+    mn = MIN(m, n);
+    make_rand_mtx(m, n, a);
+    make_rand_mtx(m, n, c1);
+    for (i = 0; i < m * n; ++i) c2[i] = c1[i];
+
+    // Generate the QR factorization of A
+    qr_factor_(m, n, a, mn, tau, NULL);
+    for (i = 0; i < m * n; ++i) r[i] = a[i];
+    form_qr_(m, n, a, mn, tau, q, NULL);
+
+    // Compute C = Q * C
+    mult_qr_(false, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q * C
+    mtx_mult_(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: QR Multiplication Test 1\n");
+    }
+
+    // Compute C = Q**T * C
+    for (i = 0; i < m * n; ++i) c1[i] = c2[i];
+    mult_qr_(true, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q**T * C
+    mtx_mult_(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: QR Multiplication Test 2\n");
+    }
+
+    // End
+    return rst;
+}
+
+
+
+bool test_qr_mult_od() {
+    // Local Variables
+    const int m = 200;
+    const int n = 100;
+    const double tol = 1e-8;
+
+    double a[m*n], r[m*n], c1[m*n], c2[m*n], ans[m*n], q[m*m], tau[MIN(m,n)];
+    bool rst;
+    int i, mn;
+
+    // Initialization
+    rst = true;
+    mn = MIN(m, n);
+    make_rand_mtx(m, n, a);
+    make_rand_mtx(m, n, c1);
+    for (i = 0; i < m * n; ++i) c2[i] = c1[i];
+
+    // Generate the QR factorization of A
+    qr_factor_(m, n, a, mn, tau, NULL);
+    for (i = 0; i < m * n; ++i) r[i] = a[i];
+    form_qr_(m, n, a, mn, tau, q, NULL);
+
+    // Compute C = Q * C
+    mult_qr_(false, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q * C
+    mtx_mult_(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: Overdetermined QR Multiplication Test 1\n");
+    }
+
+    // Compute C = Q**T * C
+    for (i = 0; i < m * n; ++i) c1[i] = c2[i];
+    mult_qr_(true, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q**T * C
+    mtx_mult_(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: Overdetermined QR Multiplication Test 2\n");
+    }
+
+    // End
+    return rst;
+}
+
+
+
+bool test_qr_mult_ud() {
+    // Local Variables
+    const int m = 100;
+    const int n = 200;
+    const double tol = 1e-8;
+
+    double a[m*n], r[m*n], c1[m*n], c2[m*n], ans[m*n], q[m*m], tau[MIN(m,n)];
+    bool rst;
+    int i, mn;
+
+    // Initialization
+    rst = true;
+    mn = MIN(m, n);
+    make_rand_mtx(m, n, a);
+    make_rand_mtx(m, n, c1);
+    for (i = 0; i < m * n; ++i) c2[i] = c1[i];
+
+    // Generate the QR factorization of A
+    qr_factor_(m, n, a, mn, tau, NULL);
+    for (i = 0; i < m * n; ++i) r[i] = a[i];
+    form_qr_(m, n, a, mn, tau, q, NULL);
+
+    // Compute C = Q * C
+    mult_qr_(false, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q * C
+    mtx_mult_(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: Underdetermined QR Multiplication Test 1\n");
+    }
+
+    // Compute C = Q**T * C
+    for (i = 0; i < m * n; ++i) c1[i] = c2[i];
+    mult_qr_(true, m, n, r, mn, tau, c1, NULL);
+
+    // Compute ANS = Q**T * C
+    mtx_mult_(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
+
+    // Test
+    if (!is_dbl_mtx_equal(m, n, c1, ans, tol)) {
+        rst = false;
+        printf("Test Failed: Underdetermined QR Multiplication Test 2\n");
+    }
+
+    // End
+    return rst;
+}
+

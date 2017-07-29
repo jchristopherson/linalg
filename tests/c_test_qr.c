@@ -441,3 +441,44 @@ bool test_qr_solve_pivot_ud() {
     // End
     return rst;
 }
+
+
+bool test_qr_update() {
+    // Local Variables
+    const int m = 200;
+    const int n = 100;
+    const double tol = 1.0e-8;
+
+    double a[m*n], a1[m*n], r[m*n], q[m*m], u[m], v[n], tau[n];
+    bool rst;
+    int i;
+
+    // Initialization
+    rst = true;
+    make_rand_mtx(m, n, a);
+    make_rand_mtx(m, 1, u);
+    make_rand_mtx(n, 1, v);
+    for (i = 0; i < m * n; ++i) r[i] = a1[i] = a[i];
+
+    // Compute the QR factorization of A
+    qr_factor_(m, n, r, n, tau, NULL);
+
+    // Form Q & R
+    form_qr_(m, n, r, n, tau, q, NULL);
+
+    // Compute the rank 1 update A1 = A + u * v**T
+    rank1_update_(m, n, 1.0, u, v, a1);
+
+    // Use the QR update to update the original R & Q
+    qr_rank1_update_(m, n, q, r, u, v, NULL);
+
+    // Test that A1 = Q * R
+    mtx_mult_(false, false, m, n, m, 1.0, q, m, r, m, 0.0, a);
+    if (!is_dbl_mtx_equal(m, n, a, a1, tol)) {
+        rst = false;
+        printf("Test Failed: Rank 1 QR Update\n");
+    }
+
+    // End
+    return rst;
+}

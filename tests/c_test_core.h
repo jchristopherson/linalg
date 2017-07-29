@@ -34,5 +34,6 @@ bool test_qr_mult_ud();
 bool test_qr_solve_no_pivot();
 bool test_qr_solve_pivot();
 bool test_qr_solve_pivot_ud();
+bool test_qr_update();
 
 #endif

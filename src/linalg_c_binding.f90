@@ -1021,6 +1021,8 @@ contains
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
     !!  qr_factor.  On output, the contents of this matrix are restored.
     !!  Notice, M must be greater than or equal to N.
+    !! @param[in] nt The number of elements in the scalar factor array @p tau.
+    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
@@ -1031,12 +1033,12 @@ contains
     !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
+    subroutine solve_qr_c(m, n, nrhs, a, nt, tau, b, err) &
             bind(C, name = "solve_qr_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs
+        integer(i32), intent(in), value :: m, n, nrhs, nt
         real(dp), intent(inout) :: a(m,n), b(m,nrhs)
-        real(dp), intent(in) :: tau(n)
+        real(dp), intent(in) :: tau(nt)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables

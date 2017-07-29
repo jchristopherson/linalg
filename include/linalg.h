@@ -611,6 +611,8 @@ void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
  * @param a On input, the M-by-N QR factored matrix as returned by
  *  @ref qr_factor.  On output, the contents of this matrix are restored.
  *  Notice, M must be greater than or equal to N.
+ * @param[in] nt The number of elements in the scalar factor array @p tau.
+ *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  the elementary reflectors as returned by @ref qr_factor.
  * @param b On input, the M-by-NRHS right-hand-side matrix.  On output,
@@ -622,8 +624,8 @@ void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_(int m, int n, int nrhs, double *a, const double *tau, double *b,
-               errorhandler *err);
+void solve_qr_(int m, int n, int nrhs, double *a, int nt, const double *tau, 
+               double *b, errorhandler *err);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where the
  * QR factorization made use of column pivoting.

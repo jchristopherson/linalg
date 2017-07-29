@@ -44,6 +44,12 @@ int main() {
     rst = test_qr_mult_ud();
     if (!rst) overall = false;
 
+    rst = test_qr_solve_no_pivot();
+    if (!rst) overall = false;
+
+    rst = test_qr_solve_pivot();
+    if (!rst) overall = false;
+
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");
     else printf("C API LINALG TEST STATUS: FAIL\n");

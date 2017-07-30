@@ -54,65 +54,71 @@ void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
                const double *a, int lda, const double *b, int ldb, double beta,
                double *c);
 
-/** @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C.
- *
- * @param trans Set to true if op(B) == B**T; else, set to false if
- *  op(B) == B.
- * @param m The number of rows in matrix C.
- * @param n The number of columns in matrix C.
- * @param alpha The scalar multiplier to matrix A.
- * @param na The length of @p a.
- * @param a A MIN(M,P)-element array containing the diagonal elements 
- *  of matrix A.
- * @param mb The number of rows in matrix B.
- * @param nb The number of columns in matrix B.
- * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
- *  and TDB = trailing dimension of B):
- *  - @p trans == true: LDB = N, TDB = P
- *  - @p trans == false: LDB = P, TDB = N
- * @param beta The scalar multiplier to matrix C.
- * @param c The M-by-N matrix C.
- * @param[in,out] err The errorhandler object.  If no error handling is
- *  desired, simply pass NULL, and errors will be dealt with by the default
- *  internal error handler.  Possible errors that may be encountered are as
- *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
- *      appropriately.
+/** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+!! A is a diagonal amtrix.
+!!
+!! @param[in] m The number of rows in matrix C.
+!! @param[in] n The number of columns in matrix C.
+!! @param[in] k The number of rows in matrix B.
+!! @param[in] alpha The scalar multiplier to matrix A.
+!! @param[in] a A MIN(M,K)-element array containing the diagonal elements
+!!  of matrix A.
+!! @param[in] b The K-by-N matrix B.
+!! @param[in] beta The scalar multiplier to matrix C.
+!! @param[in,out] c The M-by-N matrix C.
  */
-void diag_mtx_mult_(bool trans, int m, int n, double alpha, int na, 
-                    const double *a, int mb, int nb, const double *b, 
-                    double beta, double *c, errorhandler *err);
+void diag_mtx_mult_(int m, int n, int k, double alpha, const double *a,
+                    const double *b, double beta, double *c);
 
-/** @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- *  where A and C are complex-valued.
- *
- * @param trans Set to true if op(B) == B**T; else, set to false if
- *  op(B) == B.
- * @param m The number of rows in matrix C.
- * @param n The number of columns in matrix C.
- * @param alpha The scalar multiplier to matrix A.
- * @param na The length of @p a.
- * @param a A MIN(M,P)-element array containing the diagonal elements 
- *  of matrix A.
- * @param mb The number of rows in matrix B.
- * @param nb The number of columns in matrix B.
- * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
- *  and TDB = trailing dimension of B):
- *  - @p trans == true: LDB = N, TDB = P
- *  - @p trans == false: LDB = P, TDB = N
- * @param beta The scalar multiplier to matrix C.
- * @param c THe M-by-N matrix C.
- * @param[in,out] err The errorhandler object.  If no error handling is
- *  desired, simply pass NULL, and errors will be dealt with by the default
- *  internal error handler.  Possible errors that may be encountered are as
- *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
- *      appropriately.
+/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+!! B is a diagonal matrix.
+!!
+!! @param[in] m The number of rows in matrix C.
+!! @param[in] n The number of columns in matrix C.
+!! @param[in] k The number of columns in matrix A.
+!! @param[in] alpha The scalar multiplier to matrix A.
+!! @param[in] a The M-by-K matrix A.
+!! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
+!!  matrix B.
+!! @param[in] beta The scalar multiplier to matrix C.
+!! @param[in,out] c The M-by-N matrix C.
  */
-void diag_mtx_mult_cmplx_(bool trans, int m, int n, double alpha, int na,
-                          const double complex *a, int mb, int nb, 
-                          const double *b, double beta, double complex *c,
-                          errorhandler *err);
+void diag_mtx_rmult_(int m, int n, int k, double alpha, const double *a,
+                     const double *b, double beta, double *c);
+
+/** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+!! A is a diagonal amtrix.
+!!
+!! @param[in] m The number of rows in matrix C.
+!! @param[in] n The number of columns in matrix C.
+!! @param[in] k The number of rows in matrix B.
+!! @param[in] alpha The scalar multiplier to matrix A.
+!! @param[in] a A MIN(M,K)-element array containing the diagonal elements
+!!  of matrix A.
+!! @param[in] b The K-by-N matrix B.
+!! @param[in] beta The scalar multiplier to matrix C.
+!! @param[in,out] c The M-by-N matrix C.
+ */
+void diag_mtx_mult_cmplx_(int m, int n, int k, double alpha,
+                          const double complex *a, const double *b, double beta,
+                          double complex *c);
+
+/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+!! B is a diagonal matrix.
+!!
+!! @param[in] m The number of rows in matrix C.
+!! @param[in] n The number of columns in matrix C.
+!! @param[in] k The number of columns in matrix A.
+!! @param[in] alpha The scalar multiplier to matrix A.
+!! @param[in] a The M-by-K matrix A.
+!! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
+!!  matrix B.
+!! @param[in] beta The scalar multiplier to matrix C.
+!! @param[in,out] c The M-by-N matrix C.
+ */
+void diag_mtx_rmult_cmplx_(int m, int n, int k, double alpha, const double *a,
+                           const double complex *b, double beta, 
+                           double complex *c);
 
 /** @brief Performs the rank-1 update to matrix A such that:
  * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,

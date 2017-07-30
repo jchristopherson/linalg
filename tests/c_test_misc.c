@@ -27,20 +27,11 @@ bool test_diagonal_mtx_mult() {
 
     // Compute C1 = D1 * B1 + C1
     for (i = 0; i < m*n; ++i) ans1[i] = c1[i];
-    diag_mtx_mult_(false, m, n, alpha, k, d1v, k, m, b1, beta, c1, NULL);
+    diag_mtx_mult_(m, n, k, alpha, d1v, b1, beta, c1);
     mtx_mult_(false, false, m, n, k, alpha, d1, m, b1, k, beta, ans1);
     if (!is_dbl_mtx_equal(m, n, ans1, c1, tol)) {
         rst = false;
         printf("Test Failed: Diagonal Matrix Multiply Test 1\n");
-    }
-
-    // Compute C1 = D1 * B1**T + C1
-    for (i = 0; i < m*n; ++i) ans1[i] = c1[i];
-    diag_mtx_mult_(true, m, n, alpha, k, d1v, k, m, b1, beta, c1, NULL);
-    mtx_mult_(false, true, m, n, k, alpha, d1, m, b1, k, beta, ans1);
-    if (!is_dbl_mtx_equal(m, n, ans1, c1, tol)) {
-        rst = false;
-        printf("Test Failed: Diagonal Matrix Multiply Test 2\n");
     }
 
     // End

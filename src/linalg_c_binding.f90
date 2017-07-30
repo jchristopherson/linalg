@@ -67,103 +67,105 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C.
+    !> @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+    !! A is a diagonal amtrix.
     !!
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
     !! @param[in] m The number of rows in matrix C.
     !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of rows in matrix B.
     !! @param[in] alpha The scalar multiplier to matrix A.
-    !! @param[in] na The length of @p a.
-    !! @param[in] a A MIN(M,P)-element array containing the diagonal elements 
+    !! @param[in] a A MIN(M,K)-element array containing the diagonal elements
     !!  of matrix A.
-    !! @param[in] mb The number of rows in matrix B.
-    !! @param[in] nb The number of columns in matrix B.
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p trans == true: LDB = N, TDB = P
-    !!  - @p trans == false: LDB = P, TDB = N
+    !! @param[in] b The K-by-N matrix B.
     !! @param[in] beta The scalar multiplier to matrix C.
     !! @param[in,out] c The M-by-N matrix C.
-    !! @param[in,out] err The errorhandler object.  If no error handling is
-    !!  desired, simply pass NULL, and errors will be dealt with by the default
-    !!  internal error handler.  Possible errors that may be encountered are as
-    !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    subroutine diag_mtx_mult_c(trans, m, n, alpha, na, a, mb, nb, b, beta, &
-            c, err) bind(C, name = "diag_mtx_mult_")
+    subroutine diag_mtx_mult_left_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_mtx_mult_")
         ! Arguments
-        logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n, na, mb, nb
+        integer(i32), intent(in), value :: m, n, k
         real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(na), b(mb, nb)
-        real(dp), intent(inout) :: c(m, n)
-        type(errorhandler), intent(inout) :: err
-
-        ! Local Variables
-        class(errors), allocatable :: eptr
+        real(dp), intent(in) :: a(min(m,k)), b(k,n)
+        real(dp), intent(inout) :: c(m,n)
 
         ! Process
-        call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
-            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
-                eptr)
-            call update_errorhandler(eptr, err)
-        else
-            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
-        end if
+        call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !!  where A and C are complex-valued.
+    !> @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+    !! B is a diagonal matrix.
     !!
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
     !! @param[in] m The number of rows in matrix C.
     !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of columns in matrix A.
     !! @param[in] alpha The scalar multiplier to matrix A.
-    !! @param[in] na The length of @p a.
-    !! @param[in] a A MIN(M,P)-element array containing the diagonal elements 
-    !!  of matrix A.
-    !! @param[in] mb The number of rows in matrix B.
-    !! @param[in] nb The number of columns in matrix B.
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p trans == true: LDB = N, TDB = P
-    !!  - @p trans == false: LDB = P, TDB = N
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
+    !!  matrix B.
     !! @param[in] beta The scalar multiplier to matrix C.
-    !! @param[in,out] c THe M-by-N matrix C.
-    !! @param[in,out] err The errorhandler object.  If no error handling is
-    !!  desired, simply pass NULL, and errors will be dealt with by the default
-    !!  internal error handler.  Possible errors that may be encountered are as
-    !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    subroutine diag_mtx_mult_cmplx_c(trans, m, n, alpha, na, a, mb, nb, b, &
-            beta, c, err) bind(C, name = "diag_mtx_mult_cmplx_")
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine disg_mtx_mult_right_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_mtx_rmult_")
         ! Arguments
-        logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n, na, mb, nb
+        integer(i32), intent(in), value :: m, n, k
         real(dp), intent(in), value :: alpha, beta
-        complex(dp), intent(in) :: a(na)
-        real(dp), intent(in) :: b(mb, nb)
-        complex(dp), intent(inout) :: c(m, n)
-        type(errorhandler), intent(inout) :: err
-
-        ! Local Variables
-        class(errors), allocatable :: eptr
+        real(dp), intent(in) :: a(m, k), b(min(k, n))
+        real(dp), intent(inout) :: c(m, n)
 
         ! Process
-        call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
-            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c, &
-                eptr)
-            call update_errorhandler(eptr, err)
-        else
-            call diag_mtx_mult(.true., logical(trans), alpha, a, b, beta, c)
-        end if
+        call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+    !! A is a diagonal amtrix.
+    !!
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of rows in matrix B.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a A MIN(M,K)-element array containing the diagonal elements
+    !!  of matrix A.
+    !! @param[in] b The K-by-N matrix B.
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine diag_mtx_mult_cmplx_left_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_mtx_mult_cmplx_")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, k
+        real(dp), intent(in), value :: alpha, beta
+        complex(dp), intent(in) :: a(min(m, k))
+        real(dp), intent(in) :: b(k, n)
+        complex(dp), intent(inout) :: c(m, n)
+
+        ! Process
+        call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+    !! B is a diagonal matrix.
+    !!
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of columns in matrix A.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
+    !!  matrix B.
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine diag_mtx_mult_cmplx_right_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_mtx_rmult_cmplx_")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, k
+        real(dp), intent(in), value :: alpha, beta
+        real(dp), intent(in) :: a(m, k)
+        complex(dp), intent(in) :: b(min(k, n))
+        complex(dp), intent(inout) :: c(m, n)
+
+        ! Process
+        call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
     end subroutine
 
 ! ------------------------------------------------------------------------------

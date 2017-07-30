@@ -22,7 +22,7 @@ bool test_svd() {
     svd_(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(false, m, n, 1.0, mn, s1, n, n, vt1, 0.0, svt, NULL);
+    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
     mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test
@@ -57,7 +57,7 @@ bool test_svd_od() {
     svd_(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(false, m, n, 1.0, mn, s1, n, n, vt1, 0.0, svt, NULL);
+    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
     mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test
@@ -92,7 +92,7 @@ bool test_svd_ud() {
     svd_(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(false, m, n, 1.0, mn, s1, n, n, vt1, 0.0, svt, NULL);
+    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
     mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test

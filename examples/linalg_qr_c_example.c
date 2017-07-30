@@ -24,10 +24,10 @@ int main() {
     //     |   0  |
 
     // Compute the QR factorization
-    qr_factor_pivot_(3, 3, a, 3, tau, pvt, NULL);
+    qr_factor_pivot_(3, 3, a, tau, pvt, NULL);
 
     // Compute the solution.  The results overwrite b.
-    solve_qr_pivot_(3, 3, 1, a, 3, tau, pvt, 3, b, NULL);
+    solve_qr_pivot_(3, 3, 1, a, tau, pvt, b, NULL);
 
     // Display the results
     printf("QR Solution: X =\n%f\n%f\n%f\n", b[0], b[1], b[2]);

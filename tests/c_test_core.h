@@ -36,4 +36,9 @@ bool test_qr_solve_pivot();
 bool test_qr_solve_pivot_ud();
 bool test_qr_update();
 
+// SVD Routines
+bool test_svd();
+bool test_svd_od();
+bool test_svd_ud();
+
 #endif

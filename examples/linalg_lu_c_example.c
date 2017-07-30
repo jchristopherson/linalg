@@ -23,7 +23,7 @@ int main() {
     //     |   0  |
 
     // Compute the LU factorization
-    lu_factor_(3, 3, a, 3, pvt, NULL);
+    lu_factor_(3, 3, a, pvt, NULL);
 
     // Compute the solution.  The results overwrite b.
     solve_lu_(3, 1, a, pvt, b);

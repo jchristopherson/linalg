@@ -17,7 +17,7 @@ bool test_lu_factor() {
     for (i = 0; i < n*n; ++i) a1[i] = a[i];
 
     // Compute the factorization
-    lu_factor_(n, n, a1, n, ipvt, NULL);
+    lu_factor_(n, n, a1, ipvt, NULL);
 
     // Extract L, U, and P to determine if P * A = L * U
     for (i = 0; i < n*n; ++i) l[i] = a1[i];
@@ -58,7 +58,7 @@ bool test_lu_solve() {
     for (i = 0; i < n*nrhs; ++i) x[i] = b[i];
 
     // Compute the factorization
-    lu_factor_(n, n, a1, n, ipvt, NULL);
+    lu_factor_(n, n, a1, ipvt, NULL);
 
     // Solve for X
     solve_lu_(n, nrhs, a1, ipvt, x);

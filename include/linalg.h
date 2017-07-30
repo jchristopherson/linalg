@@ -219,8 +219,6 @@ void tri_mtx_mult_(bool upper, int n, double alpha, const double *a,
  * @param a On input, the M-by-N matrix on which to operate.  On
  * output, the LU factored matrix in the form [L\\U] where the unit diagonal
  * elements of L are not stored.
- * @param ni The number of elements in the pivot array @p ipvt.  This
- *  value must be equal to MIN(M, N).
  * @param ipvt An MIN(M, N)-element array used to track row-pivot
  *  operations.  The array stored pivot information such that row I is
  *  interchanged with row IPVT(I).
@@ -233,7 +231,7 @@ void tri_mtx_mult_(bool upper, int n, double alpha, const double *a,
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
  *      singular.
  */
-void lu_factor_(int m, int n, double *a, int ni, int *ipvt, errorhandler *err);
+void lu_factor_(int m, int n, double *a, int *ipvt, errorhandler *err);
 
 /** @brief Extracts the L, U, and P matrices from the output of the
  * @ref lu_factor routine.
@@ -270,8 +268,6 @@ void form_lu_(int n, double *lu, const int *ipvt, double *u, double *p);
  *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
  *  below the diagonal, along with the array @p tau, represent the
  *  orthogonal matrix Q as a product of elementary reflectors.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array used to store the scalar
  *  factors of the elementary reflectors.
  * @param err The errorhandler object.  If no error handling is
@@ -283,7 +279,7 @@ void form_lu_(int n, double *lu, const int *ipvt, double *u, double *p);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor_(int m, int n, double *a, int nt, double *tau, errorhandler *err);
+void qr_factor_(int m, int n, double *a, double *tau, errorhandler *err);
 
 /** @brief Computes the QR factorization of an M-by-N matrix with column
  * pivoting such that A * P = Q * R.
@@ -295,8 +291,6 @@ void qr_factor_(int m, int n, double *a, int nt, double *tau, errorhandler *err)
  *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
  *  below the diagonal, along with the array @p tau, represent the
  *  orthogonal matrix Q as a product of elementary reflectors.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array used to store the scalar
  *  factors of the elementary reflectors.
  * @param jpvt On input, an N-element array that if JPVT(I) .ne. 0,
@@ -312,7 +306,7 @@ void qr_factor_(int m, int n, double *a, int nt, double *tau, errorhandler *err)
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor_pivot_(int m, int n, double *a, int nt, double *tau, int *jpvt,
+void qr_factor_pivot_(int m, int n, double *a, double *tau, int *jpvt,
                       errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
@@ -325,8 +319,6 @@ void qr_factor_pivot_(int m, int n, double *a, int nt, double *tau, int *jpvt,
  *  factorization.  On and above the diagonal, the matrix contains the
  *  matrix R.  On output, the elements below the diagonal are zeroed such
  *  that the remaining matrix is simply the M-by-N matrix R.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  each elementary reflector defined in @p r.
  * @param q An M-by-M matrix where the full orthogonal matrix Q will be
@@ -342,7 +334,7 @@ void qr_factor_pivot_(int m, int n, double *a, int nt, double *tau, int *jpvt,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void form_qr_(int m, int n, double *r, int nt, const double *tau, double *q,
+void form_qr_(int m, int n, double *r, const double *tau, double *q,
               errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
@@ -355,8 +347,6 @@ void form_qr_(int m, int n, double *r, int nt, const double *tau, double *q,
  *  factorization.  On and above the diagonal, the matrix contains the
  *  matrix R.  On output, the elements below the diagonal are zeroed such
  *  that the remaining matrix is simply the M-by-N matrix R.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  each elementary reflector defined in @p r.
  * @param pvt An N-element column pivot array as returned by the QR
@@ -375,7 +365,7 @@ void form_qr_(int m, int n, double *r, int nt, const double *tau, double *q,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void form_qr_pivot_(int m, int n, double *r, int nt, const double *tau,
+void form_qr_pivot_(int m, int n, double *r, const double *tau,
                     const int *pvt, double *q, double *p, errorhandler *err);
 
 /** @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
@@ -388,8 +378,6 @@ void form_qr_pivot_(int m, int n, double *r, int nt, const double *tau,
  *  reflectors output from the QR factorization.    Notice, the contents of 
  *  this matrix are restored on exit.
  *  that the remaining matrix is simply the M-by-N matrix R.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M,N)-element array containing the scalar factors of 
  *  each elementary reflector defined in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
@@ -403,7 +391,7 @@ void form_qr_pivot_(int m, int n, double *r, int nt, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void mult_qr_(bool trans, int m, int n, double *q, int nt, const double *tau,
+void mult_qr_(bool trans, int m, int n, double *q, const double *tau,
               double *c, errorhandler *err);
 
 /** @brief Computes the rank 1 update to an M-by-N QR factored matrix A
@@ -545,8 +533,6 @@ void mult_rz_(bool trans, int m, int n, int l, double *a, const double *tau,
  * @param a On input, the M-by-N matrix to factor.  The matrix is
  *  overwritten on output.
  *  that the remaining matrix is simply the M-by-N matrix R.
- * @param ns The number of elements in the singular value array @p s.
- *  This value must be equal to MIN(M, N).
  * @param s A MIN(M, N)-element array containing the singular values
  *  of @p a sorted in descending order.
  * @param u An M-by-M matrix that on output contains the left singular
@@ -564,7 +550,7 @@ void mult_rz_(bool trans, int m, int n, int l, double *a, const double *tau,
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-void svd_(int m, int n, double *a, int ns, double *s, double *u, double *vt,
+void svd_(int m, int n, double *a, double *s, double *u, double *vt,
           errorhandler *err);
 
 /** @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
@@ -611,8 +597,6 @@ void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
  * @param a On input, the M-by-N QR factored matrix as returned by
  *  @ref qr_factor.  On output, the contents of this matrix are restored.
  *  Notice, M must be greater than or equal to N.
- * @param[in] nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  the elementary reflectors as returned by @ref qr_factor.
  * @param b On input, the M-by-NRHS right-hand-side matrix.  On output,
@@ -624,8 +608,8 @@ void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_(int m, int n, int nrhs, double *a, int nt, const double *tau, 
-               double *b, errorhandler *err);
+void solve_qr_(int m, int n, int nrhs, double *a, const double *tau, double *b,
+               errorhandler *err);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where the
  * QR factorization made use of column pivoting.
@@ -636,14 +620,10 @@ void solve_qr_(int m, int n, int nrhs, double *a, int nt, const double *tau,
  *  in matrix @p b).
  * @param a On input, the M-by-N QR factored matrix as returned by
  *  @ref qr_factor.  On output, the contents of this matrix are altered.
- * @param nt The number of elements in the scalar factor array @p tau.
- *  This value must be equal to MIN(M, N).
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  the elementary reflectors as returned by @ref qr_factor.
  * @param jpvt An N-element array, as output by @ref qr_factor, used to
  *  track the column pivots.
- * @param mb The number of rows in the matrix @p b.  This value must be
- *  equal to MAX(M, N).
  * @param b On input, the MAX(M, N)-by-NRHS matrix where the first M
  *  rows contain the right-hand-side matrix B.  On output, the first N rows
  *  are overwritten by the solution matrix X.
@@ -656,9 +636,8 @@ void solve_qr_(int m, int n, int nrhs, double *a, int nt, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_pivot_(int m, int n, int nrhs, double *a, int nt, 
-                     const double *tau, const int *jpvt, int mb, double *b,
-                     errorhandler *err);
+void solve_qr_pivot_(int m, int n, int nrhs, double *a, const double *tau, 
+                     const int *jpvt, double *b, errorhandler *err);
 
 /** @brief Solves a system of Cholesky factored equations.
  *
@@ -719,8 +698,6 @@ void mtx_pinverse_(int m, int n, double *a, double *ainv, errorhandler *err);
  *  in matrix @p b).
  * @param a On input, the M-by-N matrix A.  On output, the matrix
  *  is overwritten by the details of its complete orthogonal factorization.
- * @param mb The number of rows in the matrix @p b.  This value must be
- *  equal to MAX(M, N).
  * @param b If M >= N, the M-by-NRHS matrix B.  On output, the first
  *  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
  *  N-by-NRHS matrix with the first M rows containing the matrix B.  On
@@ -732,7 +709,7 @@ void mtx_pinverse_(int m, int n, double *a, double *ainv, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_least_squares_(int m, int n, int nrhs, double *a, int mb, double *b,
+void solve_least_squares_(int m, int n, int nrhs, double *a, double *b,
                           errorhandler *err);
 
 /** @brief Computes the eigenvalues, and optionally the eigenvectors of a

@@ -357,8 +357,6 @@ contains
     !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
     !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
     !! elements of L are not stored.
-    !! @param[in] ni The number of elements in the pivot array @p ipvt.  This
-    !!  value must be equal to MIN(M, N).
     !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
     !!  operations.  The array stored pivot information such that row I is
     !!  interchanged with row IPVT(I).
@@ -370,11 +368,11 @@ contains
     !!      appropriately.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
     !!      singular.
-    subroutine lu_factor_c(m, n, a, ni, ipvt, err) bind(C, name = "lu_factor_")
+    subroutine lu_factor_c(m, n, a, ipvt, err) bind(C, name = "lu_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, ni
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
-        integer(i32), intent(out) :: ipvt(ni)
+        integer(i32), intent(out) :: ipvt(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -439,8 +437,6 @@ contains
     !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
     !!  below the diagonal, along with the array @p tau, represent the
     !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[out] tau A MIN(M, N)-element array used to store the scalar
     !!  factors of the elementary reflectors.
     !! @param[in,out] err The errorhandler object.  If no error handling is
@@ -451,11 +447,11 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine qr_factor_c(m, n, a, nt, tau, err) bind(C, name = "qr_factor_")
+    subroutine qr_factor_c(m, n, a, tau, err) bind(C, name = "qr_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nt
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: tau(nt)
+        real(dp), intent(out) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -482,8 +478,6 @@ contains
     !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
     !!  below the diagonal, along with the array @p tau, represent the
     !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[out] tau A MIN(M, N)-element array used to store the scalar
     !!  factors of the elementary reflectors.
     !! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
@@ -498,12 +492,12 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine qr_factor_pivot_c(m, n, a, nt, tau, jpvt, err) &
+    subroutine qr_factor_pivot_c(m, n, a, tau, jpvt, err) &
             bind(C, name = "qr_factor_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nt
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: tau(nt)
+        real(dp), intent(out) :: tau(min(m,n))
         integer(i32), intent(inout) :: jpvt(n)
         type(errorhandler), intent(inout) :: err
 
@@ -531,8 +525,6 @@ contains
     !!  factorization.  On and above the diagonal, the matrix contains the
     !!  matrix R.  On output, the elements below the diagonal are zeroed such
     !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  each elementary reflector defined in @p r.
     !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
@@ -547,11 +539,11 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine form_qr_c(m, n, r, nt, tau, q, err) bind(C, name = "form_qr_")
+    subroutine form_qr_c(m, n, r, tau, q, err) bind(C, name = "form_qr_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nt
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: r(m,n)
-        real(dp), intent(in) :: tau(nt)
+        real(dp), intent(in) :: tau(min(m,n))
         real(dp), intent(out) :: q(m,m)
         type(errorhandler), intent(inout) :: err
 
@@ -579,8 +571,6 @@ contains
     !!  factorization.  On and above the diagonal, the matrix contains the
     !!  matrix R.  On output, the elements below the diagonal are zeroed such
     !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  each elementary reflector defined in @p r.
     !! @param[in] pvt An N-element column pivot array as returned by the QR
@@ -598,12 +588,12 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine form_qr_pivot_c(m, n, r, nt, tau, pvt, q, p, err) &
+    subroutine form_qr_pivot_c(m, n, r, tau, pvt, q, p, err) &
             bind(C, name = "form_qr_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nt
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: r(m,n)
-        real(dp), intent(in) :: tau(nt)
+        real(dp), intent(in) :: tau(min(m,n))
         integer(i32), intent(in) :: pvt(n)
         real(dp), intent(out) :: q(m,m), p(n,n)
         type(errorhandler), intent(inout) :: err
@@ -632,8 +622,6 @@ contains
     !!  reflectors output from the QR factorization.    Notice, the contents of 
     !!  this matrix are restored on exit.
     !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M,N)-element array containing the scalar factors of 
     !!  each elementary reflector defined in @p a.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
@@ -646,13 +634,13 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine mult_qr_c(trans, m, n, q, nt, tau, c, err) &
+    subroutine mult_qr_c(trans, m, n, q, tau, c, err) &
             bind(C, name = "mult_qr_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n, nt
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: q(m,m), c(m,n)
-        real(dp), intent(in) :: tau(nt)
+        real(dp), intent(in) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -917,8 +905,6 @@ contains
     !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
     !!  overwritten on output.
     !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] ns The number of elements in the singular value array @p s.
-    !!  This value must be equal to MIN(M, N).
     !! @param[out] s A MIN(M, N)-element array containing the singular values
     !!  of @p a sorted in descending order.
     !! @param[out] u An M-by-M matrix that on output contains the left singular
@@ -935,11 +921,11 @@ contains
     !!      there is insufficient memory available.
     !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
     !!      could not converge to a zero value.
-    subroutine svd_c(m, n, a, ns, s, u, vt, err) bind(C, name = "svd_")
+    subroutine svd_c(m, n, a, s, u, vt, err) bind(C, name = "svd_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, ns
+        integer(i32), intent(in), value :: m, n
         real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: s(ns), u(m,m), vt(n,n)
+        real(dp), intent(out) :: s(min(m,n)), u(m,m), vt(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1021,8 +1007,6 @@ contains
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
     !!  qr_factor.  On output, the contents of this matrix are restored.
     !!  Notice, M must be greater than or equal to N.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
@@ -1033,12 +1017,12 @@ contains
     !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine solve_qr_c(m, n, nrhs, a, nt, tau, b, err) &
+    subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
             bind(C, name = "solve_qr_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs, nt
+        integer(i32), intent(in), value :: m, n, nrhs
         real(dp), intent(inout) :: a(m,n), b(m,nrhs)
-        real(dp), intent(in) :: tau(nt)
+        real(dp), intent(in) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1064,14 +1048,10 @@ contains
     !!  in matrix @p b).
     !! @param[in] a On input, the M-by-N QR factored matrix as returned by
     !!  qr_factor.  On output, the contents of this matrix are altered.
-    !! @param[in] nt The number of elements in the scalar factor array @p tau.
-    !!  This value must be equal to MIN(M, N).
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] jpvt An N-element array, as output by qr_factor, used to
     !!  track the column pivots.
-    !! @param[in] mb The number of rows in the matrix @p b.  This value must be
-    !!  equal to MAX(M, N).
     !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
     !!  rows contain the right-hand-side matrix B.  On output, the first N rows
     !!  are overwritten by the solution matrix X.
@@ -1083,12 +1063,12 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine solve_qr_pivot_c(m, n, nrhs, a, nt, tau, jpvt, mb, b, err) &
+    subroutine solve_qr_pivot_c(m, n, nrhs, a, tau, jpvt, b, err) &
             bind(C, name = "solve_qr_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs, nt, mb
-        real(dp), intent(inout) :: a(m,n), b(mb,nrhs)
-        real(dp), intent(in) :: tau(nt)
+        integer(i32), intent(in), value :: m, n, nrhs
+        real(dp), intent(inout) :: a(m,n), b(max(m,n),nrhs)
+        real(dp), intent(in) :: tau(min(m,n))
         integer(i32), intent(in) :: jpvt(n)
         type(errorhandler), intent(inout) :: err
 
@@ -1211,8 +1191,6 @@ contains
     !!  in matrix @p b).
     !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
     !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in] mb The number of rows in the matrix @p b.  This value must be
-    !!  equal to MAX(M, N).
     !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
@@ -1223,11 +1201,11 @@ contains
     !!  follows.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine solve_least_squares_c(m, n, nrhs, a, mb, b, err) &
+    subroutine solve_least_squares_c(m, n, nrhs, a, b, err) &
             bind(C, name = "solve_least_squares_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs, mb
-        real(dp), intent(inout) :: a(m, n), b(mb, nrhs)
+        integer(i32), intent(in), value :: m, n, nrhs
+        real(dp), intent(inout) :: a(m, n), b(max(m,n), nrhs)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables

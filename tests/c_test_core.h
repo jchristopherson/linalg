@@ -48,5 +48,6 @@ bool test_inv();
 
 // Eigen Routines
 bool test_eigen_symm();
+bool test_eigen_asymm();
 
 #endif

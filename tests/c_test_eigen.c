@@ -34,3 +34,32 @@ bool test_eigen_symm() {
     // End
     return rst;
 }
+
+
+
+bool test_eigen_asymm() {
+    // Local Variables
+    const int n = 100;
+    const double tol = 1.0e-8;
+
+    double a[n*n], a1[n*n];
+    double complex vecs[n*n], x[n*n], y[n*n], vals[n];
+    bool rst;
+    int i;
+
+    // Initialization
+    rst = true;
+    make_rand_mtx(n, n, a);
+    for (i = 0; i < n * n; ++i) a1[i] = a[i];
+
+    // Compute the eigenvalues and vectors
+    eigen_asymm_(n, a, vals, vecs, NULL);
+
+    // Compute VECS * VALS, where VALS is a diagonal matrix
+    diag_cmtx_rmult_(n, n, n, 1.0, vecs, vals, 0.0, x);
+
+    // Compute A * VECS, and then test
+
+    // End
+    return rst;
+}

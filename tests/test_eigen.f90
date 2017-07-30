@@ -13,7 +13,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_symm() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 3
+        integer(i32), parameter :: n = 100
         real(dp), parameter :: tol = 1.0d-8
 
         ! Local Variables

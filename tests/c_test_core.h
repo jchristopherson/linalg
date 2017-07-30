@@ -46,4 +46,7 @@ bool test_pinv();
 bool test_pinv_od();
 bool test_inv();
 
+// Eigen Routines
+bool test_eigen_symm();
+
 #endif

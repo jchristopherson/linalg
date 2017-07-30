@@ -67,6 +67,60 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Performs the matrix operation: 
+    !!  C = alpha * op(A) * op(B) + beta * C.
+    !!
+    !! @param[in] transa Set to true if op(A) == A**T; else, set to false if
+    !!  op(A) == A.
+    !! @param[in] transb Set to true if op(B) == B**T; else, set to false if
+    !!  op(B) == B.
+    !! @param[in] m The number of rows in matrix C, and the number of rows in
+    !!  matrix op(A).
+    !! @param[in] n The number of columns in matrix C, and the number of columns
+    !!  in matrix op(B).
+    !! @param[in] k The number of columns in matrix op(A), and the number of
+    !!  rows in the matrix op(B).
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true, 
+    !!  this value must be at least MAX(1, K); else, if @p transa is false, this
+    !!  value must be at least MAX(1, M).
+    !! @param[in] b The K-by-N matrix B.
+    !! @param[in] ldb The leading dimension of matrix B.  If @p transb is true,
+    !!  this value must be at least MAX(1, N); else, if @p transb is false, this
+    !!  value must be at least MAX(1, K).
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine cmtx_mult_c(transa, transb, m, n, k, alpha, a, lda, b, ldb, &
+            beta, c) bind(C, name = "cmtx_mult_")
+        ! Arguments
+        logical(c_bool), intent(in), value :: transa, transb
+        integer(i32), intent(in), value :: m, n, k, lda, ldb
+        real(dp), intent(in), value :: alpha, beta
+        complex(dp), intent(in) :: a(lda,*), b(ldb,*)
+        complex(dp), intent(inout) :: c(m,n)
+
+        ! Local Variables
+        complex(dp) :: calpha, cbeta
+
+        ! Process
+        character :: ta, tb
+        if (transa) then
+            ta = 'T'
+        else
+            ta = 'N'
+        end if
+        if (transb) then
+            tb = 'T'
+        else
+            tb = 'N'
+        end if
+        calpha = cmplx(alpha, 0.0d0)
+        cbeta = cmplx(beta, 0.0d0)
+        call ZGEMM(ta, tb, m, n, k, calpha, a, lda, b, ldb, cbeta, c, m)
+    end subroutine
+
+! ------------------------------------------------------------------------------
     !> @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
     !! A is a diagonal amtrix.
     !!

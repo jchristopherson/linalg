@@ -54,6 +54,35 @@ void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
                const double *a, int lda, const double *b, int ldb, double beta,
                double *c);
 
+/** @brief Performs the matrix operation: 
+ *  C = alpha * op(A) * op(B) + beta * C.
+ *
+ * @param transa Set to true if op(A) == A**T; else, set to false if
+ *  op(A) == A.
+ * @param transa Set to true if op(B) == B**T; else, set to false if
+ *  op(B) == B.
+ * @param m The number of rows in matrix C, and the number of rows in
+ *  matrix op(A).
+ * @param n The number of columns in matrix C, and the number of columns
+ *  in matrix op(B).
+ * @param k The number of columns in matrix op(A), and the number of
+ *  rows in the matrix op(B).
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param lda The leading dimension of matrix A.  If @p transa is true, 
+ *  this value must be at least MAX(1, K); else, if @p transa is false, this
+ *  value must be at least MAX(1, M).
+ * @param b The K-by-N matrix B.
+ * @param ldb The leading dimension of matrix B.  If @p transb is true,
+ *  this value must be at least MAX(1, N); else, if @p transb is false, this
+ *  value must be at least MAX(1, K).
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
+ */
+void cmtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
+                const double complex *a, int lda, const double complex *b,
+                int ldb, double beta, double complex *c);
+
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
  * A is a diagonal amtrix.
  *

@@ -59,11 +59,11 @@ int main() {
     rst = test_svd();
     if (!rst) overall = false;
 
-    // rst = test_svd_od();
-    // if (!rst) overall = false;
+    rst = test_svd_od();
+    if (!rst) overall = false;
 
-    // rst = test_svd_ud();
-    // if (!rst) overall = false;
+    rst = test_svd_ud();
+    if (!rst) overall = false;
 
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");

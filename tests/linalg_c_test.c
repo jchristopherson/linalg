@@ -65,6 +65,15 @@ int main() {
     rst = test_svd_ud();
     if (!rst) overall = false;
 
+    rst = test_pinv();
+    if (!rst) overall = false;
+
+    rst = test_pinv_od();
+    if (!rst) overall = false;
+
+    rst = test_inv();
+    if (!rst) overall = false;
+
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");
     else printf("C API LINALG TEST STATUS: FAIL\n");

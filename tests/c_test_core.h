@@ -41,4 +41,9 @@ bool test_svd();
 bool test_svd_od();
 bool test_svd_ud();
 
+// Inversion Routines
+bool test_pinv();
+bool test_pinv_od();
+bool test_inv();
+
 #endif

@@ -84,7 +84,7 @@ contains
     !!  - @p trans == true: LDB = N, TDB = P
     !!  - @p trans == false: LDB = P, TDB = N
     !! @param[in] beta The scalar multiplier to matrix C.
-    !! @param[in,out] c THe M-by-N matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
     !! @param[in,out] err The errorhandler object.  If no error handling is
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as

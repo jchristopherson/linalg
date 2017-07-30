@@ -71,7 +71,7 @@ void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
  *  - @p trans == true: LDB = N, TDB = P
  *  - @p trans == false: LDB = P, TDB = N
  * @param beta The scalar multiplier to matrix C.
- * @param c THe M-by-N matrix C.
+ * @param c The M-by-N matrix C.
  * @param[in,out] err The errorhandler object.  If no error handling is
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as

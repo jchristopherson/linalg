@@ -55,70 +55,103 @@ void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
                double *c);
 
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
-!! A is a diagonal amtrix.
-!!
-!! @param[in] m The number of rows in matrix C.
-!! @param[in] n The number of columns in matrix C.
-!! @param[in] k The number of rows in matrix B.
-!! @param[in] alpha The scalar multiplier to matrix A.
-!! @param[in] a A MIN(M,K)-element array containing the diagonal elements
-!!  of matrix A.
-!! @param[in] b The K-by-N matrix B.
-!! @param[in] beta The scalar multiplier to matrix C.
-!! @param[in,out] c The M-by-N matrix C.
+ * A is a diagonal amtrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of rows in matrix B.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a A MIN(M,K)-element array containing the diagonal elements
+ *  of matrix A.
+ * @param b The K-by-N matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
  */
 void diag_mtx_mult_(int m, int n, int k, double alpha, const double *a,
                     const double *b, double beta, double *c);
 
 /** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
-!! B is a diagonal matrix.
-!!
-!! @param[in] m The number of rows in matrix C.
-!! @param[in] n The number of columns in matrix C.
-!! @param[in] k The number of columns in matrix A.
-!! @param[in] alpha The scalar multiplier to matrix A.
-!! @param[in] a The M-by-K matrix A.
-!! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
-!!  matrix B.
-!! @param[in] beta The scalar multiplier to matrix C.
-!! @param[in,out] c The M-by-N matrix C.
+ * B is a diagonal matrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of columns in matrix A.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param b A MIN(K,N)-element array containing the diagonal elements of
+ *  matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
  */
 void diag_mtx_rmult_(int m, int n, int k, double alpha, const double *a,
                      const double *b, double beta, double *c);
 
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
-!! A is a diagonal amtrix.
-!!
-!! @param[in] m The number of rows in matrix C.
-!! @param[in] n The number of columns in matrix C.
-!! @param[in] k The number of rows in matrix B.
-!! @param[in] alpha The scalar multiplier to matrix A.
-!! @param[in] a A MIN(M,K)-element array containing the diagonal elements
-!!  of matrix A.
-!! @param[in] b The K-by-N matrix B.
-!! @param[in] beta The scalar multiplier to matrix C.
-!! @param[in,out] c The M-by-N matrix C.
+ * A is a diagonal amtrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of rows in matrix B.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a A MIN(M,K)-element array containing the diagonal elements
+ *  of matrix A.
+ * @param b The K-by-N matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
  */
 void diag_mtx_mult_cmplx_(int m, int n, int k, double alpha,
                           const double complex *a, const double *b, double beta,
                           double complex *c);
 
 /** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
-!! B is a diagonal matrix.
-!!
-!! @param[in] m The number of rows in matrix C.
-!! @param[in] n The number of columns in matrix C.
-!! @param[in] k The number of columns in matrix A.
-!! @param[in] alpha The scalar multiplier to matrix A.
-!! @param[in] a The M-by-K matrix A.
-!! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
-!!  matrix B.
-!! @param[in] beta The scalar multiplier to matrix C.
-!! @param[in,out] c The M-by-N matrix C.
+ * B is a diagonal matrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of columns in matrix A.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param b A MIN(K,N)-element array containing the diagonal elements of
+ *  matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
  */
 void diag_mtx_rmult_cmplx_(int m, int n, int k, double alpha, const double *a,
                            const double complex *b, double beta, 
                            double complex *c);
+
+/** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+ * A is a diagonal amtrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of rows in matrix B.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a A MIN(M,K)-element array containing the diagonal elements
+ *  of matrix A.
+ * @param b The K-by-N matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
+ */
+void diag_cmtx_mult_(int m, int n, int k, double alpha, const double complex *a,
+                     const double complex *b, double beta, double complex *c);
+
+/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+ * B is a diagonal matrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of columns in matrix A.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param b A MIN(K,N)-element array containing the diagonal elements of
+ *  matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
+ */
+void diag_cmtx_rmult_(int m, int n, int k, double alpha, 
+                      const double complex *a, const double complex *b, 
+                      double beta, double complex *c);
 
 /** @brief Performs the rank-1 update to matrix A such that:
  * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,

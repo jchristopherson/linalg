@@ -169,6 +169,56 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
+    !! A is a diagonal amtrix.
+    !!
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of rows in matrix B.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a A MIN(M,K)-element array containing the diagonal elements
+    !!  of matrix A.
+    !! @param[in] b The K-by-N matrix B.
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine diag_cmtx_mult_left_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_cmtx_mult_")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, k
+        real(dp), intent(in), value :: alpha, beta
+        complex(dp), intent(in) :: a(min(m, k)), b(k, n)
+        complex(dp), intent(inout) :: c(m, n)
+
+        ! Process
+        call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+    !! B is a diagonal matrix.
+    !!
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of columns in matrix A.
+    !! @param[in] alpha The scalar multiplier to matrix A.
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b A MIN(K,N)-element array containing the diagonal elements of
+    !!  matrix B.
+    !! @param[in] beta The scalar multiplier to matrix C.
+    !! @param[in,out] c The M-by-N matrix C.
+    subroutine diag_cmtx_mult_right_c(m, n, k, alpha, a, b, beta, c) &
+            bind(C, name = "diag_cmtx_rmult_")
+        ! Arguments
+        integer(i32), intent(in), value :: m, n, k
+        real(dp), intent(in), value :: alpha, beta
+        complex(dp), intent(in) :: a(m, k), b(min(k, n))
+        complex(dp), intent(inout) :: c(m, n)
+
+        ! Process
+        call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
+    end subroutine
+
+! ------------------------------------------------------------------------------
     !> @brief Performs the rank-1 update to matrix A such that:
     !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
     !! X is an M-element array, and N is an N-element array.

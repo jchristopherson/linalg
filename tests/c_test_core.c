@@ -34,3 +34,15 @@ bool is_dbl_mtx_equal(int m, int n, const double *x, const double *y,
     }
     return true;
 }
+
+bool is_cmplx_mtx_equal(int m, int n, const double complex *x, 
+                        const double complex *y, double tol)
+{
+    int i, j;
+    for (j = 0; j < n; ++j) {
+        for (i = 0; i < m; ++i) {
+            if (cabs(x[INDEX(i,j,m)] - y[INDEX(i,j,m)]) > tol) return false;
+        }
+    }
+    return true;
+}

@@ -13,6 +13,8 @@
 void make_rand_mtx(int m, int n, double *x);
 bool is_dbl_mtx_equal(int m, int n, const double *x, const double *y, 
                       double tol);
+bool is_cmplx_mtx_equal(int m, int n, const double complex *x, 
+                        const double complex *y, double tol);
 
 // Misc. Routines
 bool test_diagonal_mtx_mult();
@@ -49,5 +51,6 @@ bool test_inv();
 // Eigen Routines
 bool test_eigen_symm();
 bool test_eigen_asymm();
+bool test_eigen_gen();
 
 #endif

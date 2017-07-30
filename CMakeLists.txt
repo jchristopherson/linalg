@@ -55,22 +55,21 @@ endif()
 
 # FFLAGS depend on the compiler
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   # gfortran
   # Options: https://gcc.gnu.org/onlinedocs/gfortran/Option-Summary.html
-  set (CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
-  set (CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
+  set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall")
 elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
   # ifort (untested)
-  set (CMAKE_Fortran_FLAGS_RELEASE "-f77rtl -O3")
-  set (CMAKE_Fortran_FLAGS_DEBUG   "-f77rtl -O0 -g")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-f77rtl -O3")
+  set(CMAKE_Fortran_FLAGS_DEBUG   "-f77rtl -O0 -g")
 else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   message ("CMAKE_Fortran_COMPILER full path: " ${CMAKE_Fortran_COMPILER})
   message ("Fortran compiler: " ${Fortran_COMPILER_NAME})
   message ("No optimized Fortran compiler flags are known, we just try -O2...")
-  set (CMAKE_Fortran_FLAGS_RELEASE "-O2")
-  set (CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
+  set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
 endif()
 
 # Specify source files
@@ -153,7 +152,7 @@ if (BUILD_EXAMPLES)
 
   # Eigen Example
   add_executable(eigen_example_c examples/linalg_eigen_c_example.c)
-  target_link_libraries(eigen_example_c linalg)
+  target_link_libraries(eigen_example_c linalg m)
 endif()
 
 # ------------------------------------------------------------------------------

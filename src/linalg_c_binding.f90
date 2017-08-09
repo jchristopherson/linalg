@@ -12,8 +12,7 @@ module linalg_c_binding
     use linalg_solve
     use linalg_eigen
     use ferror, only : errors
-    use ferror_c_binding, only : errorhandler, get_errorhandler, &
-        update_errorhandler
+    use ferror_c_binding, only : errorhandler, get_errorhandler
 contains
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
@@ -345,13 +344,12 @@ contains
         integer(i32) :: rnk
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             rnk = mtx_rank(a, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             rnk = mtx_rank(a)
         end if
@@ -379,13 +377,12 @@ contains
         real(dp) :: x
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             x = det(a, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             x = det(a)
         end if
@@ -441,13 +438,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call tri_mtx_mult(logical(upper), alpha, a, beta, b, eptr)
-            call update_errorhandler(eptr, err)
         else
             call tri_mtx_mult(logical(upper), alpha, a, beta, b)
         end if
@@ -482,13 +478,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call lu_factor(a, ipvt, eptr)
-            call update_errorhandler(eptr, err)
         else
             call lu_factor(a, ipvt)
         end if
@@ -561,13 +556,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call qr_factor(a, tau, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call qr_factor(a, tau)
         end if
@@ -608,13 +602,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call qr_factor(a, tau, jpvt, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call qr_factor(a, tau, jpvt)
         end if
@@ -654,13 +647,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call form_qr(r, tau, q, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call form_qr(r, tau, q)
         end if
@@ -705,13 +697,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call form_qr(r, tau, pvt, q, p, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call form_qr(r, tau, pvt, q, p)
         end if
@@ -750,13 +741,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call mult_qr(.true., logical(trans), q, tau, c, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call mult_qr(.true., logical(trans), q, tau, c)
         end if
@@ -790,13 +780,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call qr_rank1_update(q, r, u, v, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call qr_rank1_update(q, r, u, v)
         endif
@@ -828,13 +817,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call cholesky_factor(a, logical(upper), eptr)
-            call update_errorhandler(eptr, err)
         else
             call cholesky_factor(a, logical(upper))
         end if
@@ -863,13 +851,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call cholesky_rank1_update(r, u, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call cholesky_rank1_update(r, u)
         end if
@@ -903,13 +890,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call cholesky_rank1_downdate(r, u, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call cholesky_rank1_downdate(r, u)
         end if
@@ -944,13 +930,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call rz_factor(a, tau, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call rz_factor(a, tau)
         end if
@@ -988,13 +973,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call mult_rz(.true., logical(trans), l, a, tau, c, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call mult_rz(.true., logical(trans), l, a, tau, c)
         end if
@@ -1035,13 +1019,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call svd(a, s, u, vt, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call svd(a, s, u, vt)
         end if
@@ -1132,13 +1115,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call solve_qr(a, tau, b, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call solve_qr(a, tau, b)
         end if
@@ -1179,13 +1161,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call solve_qr(a, tau, jpvt, b, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call solve_qr(a, tau, jpvt, b)
         end if
@@ -1235,13 +1216,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call mtx_inverse(a, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call mtx_inverse(a)
         end if
@@ -1274,13 +1254,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call mtx_pinverse(a, ainv, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call mtx_pinverse(a, ainv)
         end if
@@ -1315,13 +1294,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call solve_least_squares(a, b, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call solve_least_squares(a, b)
         end if
@@ -1359,13 +1337,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call eigen(logical(vecs), a, vals, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call eigen(logical(vecs), a, vals)
         end if
@@ -1398,13 +1375,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call eigen(a, vals, vecs, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call eigen(a, vals, vecs)
         end if
@@ -1449,13 +1425,12 @@ contains
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
-        class(errors), allocatable :: eptr
+        type(errors), pointer :: eptr
 
         ! Process
         call get_errorhandler(err, eptr)
-        if (allocated(eptr)) then
+        if (associated(eptr)) then
             call eigen(a, b, alpha, beta = beta, vecs = vecs, err = eptr)
-            call update_errorhandler(eptr, err)
         else
             call eigen(a, b, alpha, beta = beta, vecs = vecs)
         end if

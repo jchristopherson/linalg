@@ -114,8 +114,8 @@ contains
         else
             tb = 'N'
         end if
-        calpha = cmplx(alpha, 0.0d0)
-        cbeta = cmplx(beta, 0.0d0)
+        calpha = cmplx(alpha, 0.0d0, dp)
+        cbeta = cmplx(beta, 0.0d0, dp)
         call ZGEMM(ta, tb, m, n, k, calpha, a, lda, b, ldb, cbeta, c, m)
     end subroutine
 

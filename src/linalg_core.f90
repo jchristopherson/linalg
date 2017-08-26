@@ -42,13 +42,15 @@ module linalg_core
     end interface
 
 ! ------------------------------------------------------------------------------
-!> @brief Multiplies a diagonal matrix with another matrix or array.
-interface diag_mtx_mult
-    module procedure :: diag_mtx_mult_mtx
-    module procedure :: diag_mtx_mult_mtx2
-    module procedure :: diag_mtx_mult_mtx3
-    module procedure :: diag_mtx_mult_mtx4
-end interface
+    !> @brief Multiplies a diagonal matrix with another matrix or array.
+    interface diag_mtx_mult
+        module procedure :: diag_mtx_mult_mtx
+        module procedure :: diag_mtx_mult_mtx2
+        module procedure :: diag_mtx_mult_mtx3
+        module procedure :: diag_mtx_mult_mtx4
+    end interface
+
+
 
 contains
 ! ******************************************************************************
@@ -1415,8 +1417,6 @@ contains
             end if
         end if
     end subroutine
-
-! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 end module

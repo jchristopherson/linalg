@@ -10,6 +10,7 @@ program main
     use test_eigen
     use test_misc
     use test_lu
+    use test_sort
 
     ! Local Variables
     logical :: rst, overall
@@ -126,6 +127,10 @@ program main
     if (.not.rst) overall = .false.
     
     rst = test_eigen_gen()
+    if (.not.rst) overall = .false.
+
+    ! Sorting Tests
+    rst = test_dbl_ascend_sort()
     if (.not.rst) overall = .false.
     
     ! End

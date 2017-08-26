@@ -9,6 +9,7 @@ module linalg_sorting
     use linalg_constants
     implicit none
     private
+    public :: sort
 
 ! ******************************************************************************
 ! INTERFACES
@@ -87,6 +88,8 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
     !!
     !! @par Remarks
+    !! This routine utilizes a quick sort algorithm explained at 
+    !! http://www.fortran.com/qsort_c.f95.
     subroutine sort_dbl_array_ind(x, ind, ascend, err)
         ! Arguments
         real(dp), intent(inout), dimension(:) :: x

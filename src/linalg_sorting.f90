@@ -18,6 +18,8 @@ module linalg_sorting
     interface sort
         module procedure :: sort_dbl_array
         module procedure :: sort_dbl_array_ind
+        module procedure :: sort_cmplx_array
+        module procedure :: sort_cmplx_array_ind
     end interface
 
 
@@ -136,15 +138,134 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Sorts an array.
+    !!
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in] ascend An optional input that, if specified, controls if the
+    !!  the array is sorted in an ascending order (default), or a descending
+    !!  order.
+    !!
+    !! @par Remarks
+    !! This routine utilizes a quick sort algorithm.  As this routine operates 
+    !! on complex valued items, the complex values are sorted based upon the 
+    !! real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    subroutine sort_cmplx_array(x, ascend)
+        ! Arguments
+        complex(dp), intent(inout), dimension(:) :: x
+        logical, intent(in), optional :: ascend
+
+        ! Local Variables
+        logical :: dir
+
+        ! Initialization
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true.
+        end if
+
+        ! Process
+        call qsort_cmplx(dir, x)
+    end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Sorts an array.
+    !!
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, an integer array.  On output, the contents
+    !!  of this array are shifted in the same order as that of @p x as a means
+    !!  of tracking the sorting operation.  It is often useful to set this
+    !!  array to an ascending group of values (1, 2, ... n) such that this
+    !!  array tracks the original positions of the sorted array.  Such an array
+    !!  can then be used to align other arrays.  This array must be the same
+    !!  size as @p x.
+    !! @param[in] ascend An optional input that, if specified, controls if the
+    !!  the array is sorted in an ascending order (default), or a descending
+    !!  order.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
+    !!
+    !! @par Remarks
+    !! This routine utilizes a quick sort algorithm.  As this routine operates 
+    !! on complex valued items, the complex values are sorted based upon the 
+    !! real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    subroutine sort_cmplx_array_ind(x, ind, ascend, err)
+        ! Arguments
+        complex(dp), intent(inout), dimension(:) :: x
+        integer(i32), intent(inout), dimension(:) :: ind
+        logical, intent(in), optional :: ascend
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        integer(i32), parameter :: select = 20
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+        integer(i32) :: n
+        logical :: dir
+
+        ! Initialization
+        n = size(x)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true. ! Ascend == true
+        end if
+
+        ! Input Check
+        if (size(ind) /= n) then
+            write(errmsg, "(AI0AI0A)") &
+                "Expected the tracking array to be of size ", n, &
+                ", but found an array of size ", size(ind), "."
+            call errmgr%report_error("sort_cmplx_array_ind", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+        if (n <= 1) return
+
+        ! Process
+        call qsort_cmplx_ind(dir, x, ind)
+    end subroutine
 
 ! ------------------------------------------------------------------------------
 
 ! ******************************************************************************
 ! PRIVATE HELPER ROUTINES
 ! ------------------------------------------------------------------------------
-    ! REF: http://www.fortran.com/qsort_c.f95
+    !> @brief A recursive quick sort algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
     recursive subroutine qsort_dbl_ind(ascend, x, ind)
         ! Arguments
         logical, intent(in) :: ascend
@@ -163,7 +284,21 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !
+    !> @brief A routine to perform the partioning necessary for the quick sort
+    !! algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !! @param[out] marker The partioning marker.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95
     subroutine dbl_partition_ind(ascend, x, ind, marker)
         ! Arguments
         logical, intent(in) :: ascend
@@ -243,6 +378,256 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief A recursive quick sort algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !!
+    !! @par Remarks
+    !! As this routine operates on complex valued items, the complex values are
+    !! sorted based upon the real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95
+    recursive subroutine qsort_cmplx(ascend, x)
+        ! Arguments
+        logical, intent(in) :: ascend
+        complex(dp), intent(inout), dimension(:) :: x
+
+        ! Local Variables
+        integer(i32) :: iq
+
+        ! Process
+        if (size(x) > 1) then
+            call cmplx_partition(ascend, x, iq)
+            call qsort_cmplx(ascend, x(:iq-1))
+            call qsort_cmplx(ascend, x(iq:))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A routine to perform the partioning necessary for the quick sort
+    !! algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[out] marker The partioning marker.
+    !!
+    !! @par Remarks
+    !! As this routine operates on complex valued items, the complex values are
+    !! sorted based upon the real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    subroutine cmplx_partition(ascend, x, marker)
+        ! Arguments
+        logical, intent(in) :: ascend
+        complex(dp), intent(inout), dimension(:) :: x
+        integer(i32), intent(out) :: marker
+
+        ! Local Variables
+        integer(i32) :: i, j
+        complex(dp) :: temp
+        real(dp) :: pivot
+
+        ! Process
+        pivot = real(x(1), dp)
+        i = 0
+        j = size(x) + 1
+        if (ascend) then
+            ! Ascending Sort
+            do
+                j = j - 1
+                do
+                    if (real(x(j), dp) <= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (real(x(i), dp) >= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        else
+            ! Descending Sort
+            do
+                j = j - 1
+                do
+                    if (real(x(j), dp) >= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (real(x(i), dp) <= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A recursive quick sort algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !!
+    !! @par Remarks
+    !! As this routine operates on complex valued items, the complex values are
+    !! sorted based upon the real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95
+    recursive subroutine qsort_cmplx_ind(ascend, x, ind)
+        ! Arguments
+        logical, intent(in) :: ascend
+        complex(dp), intent(inout), dimension(:) :: x
+        integer(i32), intent(inout), dimension(:) :: ind
+
+        ! Local Variables
+        integer(i32) :: iq
+
+        ! Process
+        if (size(x) > 1) then
+            call cmplx_partition_ind(ascend, x, ind, iq)
+            call qsort_cmplx_ind(ascend, x(:iq-1), ind(:iq-1))
+            call qsort_cmplx_ind(ascend, x(iq:), ind(iq:))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A routine to perform the partioning necessary for the quick sort
+    !! algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !! @param[out] marker The partioning marker.
+    !!
+    !! @par Remarks
+    !! As this routine operates on complex valued items, the complex values are
+    !! sorted based upon the real component of the number.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    subroutine cmplx_partition_ind(ascend, x, ind, marker)
+        ! Arguments
+        logical, intent(in) :: ascend
+        complex(dp), intent(inout), dimension(:) :: x
+        integer(i32), intent(inout), dimension(:) :: ind
+        integer(i32), intent(out) :: marker
+
+        ! Local Variables
+        integer(i32) :: i, j, itemp
+        complex(dp) :: temp
+        real(dp) :: pivot
+
+        ! Process
+        pivot = real(x(1), dp)
+        i = 0
+        j = size(x) + 1
+        if (ascend) then
+            ! Ascending Sort
+            do
+                j = j - 1
+                do
+                    if (real(x(j), dp) <= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (real(x(i), dp) >= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+
+                    itemp = ind(i)
+                    ind(i) = ind(j)
+                    ind(j) = itemp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        else
+            ! Descending Sort
+            do
+                j = j - 1
+                do
+                    if (real(x(j), dp) >= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (real(x(i), dp) <= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+
+                    itemp = ind(i)
+                    ind(i) = ind(j)
+                    ind(j) = itemp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        end if
+    end subroutine
 
 ! ------------------------------------------------------------------------------
 end module

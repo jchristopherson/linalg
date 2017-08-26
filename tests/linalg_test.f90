@@ -132,6 +132,9 @@ program main
     ! Sorting Tests
     rst = test_dbl_ascend_sort()
     if (.not.rst) overall = .false.
+
+    rst = test_dbl_descend_sort()
+    if (.not.rst) overall = .false.
     
     ! End
     if (overall) then

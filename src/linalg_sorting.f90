@@ -27,6 +27,8 @@ module linalg_sorting
     !> @brief Sorts eigenvalues and eigenvectors using a quick-sort approach.
     interface sort_eigen
         module procedure :: sort_eigen_cmplx
+        module procedure :: sort_eigen_dbl
+        module procedure :: sort_eigen_dc
     end interface
 
 contains
@@ -253,7 +255,7 @@ contains
     !!
     !! @param[in,out] vals On input, an N-element array containing the 
     !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an optional N-by-N matrix containing the 
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
     !!  eigenvectors associated with @p vals (one vector per column).  On 
     !!  output, the sorted eigenvector matrix.
     !! @param[in] ascend An optional input that, if specified, controls if the
@@ -270,7 +272,7 @@ contains
     subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         ! Arguments
         complex(dp), intent(inout), dimension(:) :: vals
-        complex(dp), intent(inout), dimension(:,:), optional :: vecs
+        complex(dp), intent(inout), dimension(:,:) :: vecs
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -294,41 +296,189 @@ contains
             dir = .true. ! Ascend == true
         end if
 
-        ! Process
-        if (present(vecs)) then
-            ! Ensure the eigenvector matrix is sized appropriately
-            n = size(vals)
-            if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
-                ! ARRAY SIZE ERROR
-                write(errmsg, '(AI0AI0AI0AI0A)') &
-                    "Expected the eigenvector matrix to be of size ", n, &
-                    "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
-                    "-by-", size(vecs, 2), "."
-                call errmgr%report_error("sort_eigen_cmplx", trim(errmsg), &
-                    LA_ARRAY_SIZE_ERROR)
-            end if
-
-            ! Allocate memory for the tracking array
-            allocate(ind(n), stat = flag)
-            if (flag /= 0) then
-                call errmgr%report_error("sort_eigen_cmplx", &
-                    "Insufficient memory available.", LA_OUT_OF_MEMORY_ERROR)
-                return
-            end if
-            do i = 1, n
-                ind(i) = i
-            end do
-
-            ! Sort
-            call qsort_cmplx_ind(dir, vals, ind)
-
-            ! Shift the eigenvectors around to keep them associated with the
-            ! appropriate eigenvalue
-            vecs = vecs(:,ind)
-        else
-            ! Only an eigenvalue sort
-            call qsort_cmplx(dir, vals)
+        ! Ensure the eigenvector matrix is sized appropriately
+        n = size(vals)
+        if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
+            ! ARRAY SIZE ERROR
+            write(errmsg, '(AI0AI0AI0AI0A)') &
+                "Expected the eigenvector matrix to be of size ", n, &
+                "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
+                "-by-", size(vecs, 2), "."
+            call errmgr%report_error("sort_eigen_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
         end if
+
+        ! Allocate memory for the tracking array
+        allocate(ind(n), stat = flag)
+        if (flag /= 0) then
+            call errmgr%report_error("sort_eigen_cmplx", &
+                "Insufficient memory available.", LA_OUT_OF_MEMORY_ERROR)
+            return
+        end if
+        do i = 1, n
+            ind(i) = i
+        end do
+
+        ! Sort
+        call qsort_cmplx_ind(dir, vals, ind)
+
+        ! Shift the eigenvectors around to keep them associated with the
+        ! appropriate eigenvalue
+        vecs = vecs(:,ind)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Sorts eigenvalues and eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
+    !! @param[in] ascend An optional input that, if specified, controls if the
+    !!  the array is sorted in an ascending order (default), or a descending
+    !!  order.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available to comoplete this operation.
+    subroutine sort_eigen_dbl(vals, vecs, ascend, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:) :: vals
+        real(dp), intent(inout), dimension(:,:) :: vecs
+        logical, intent(in), optional :: ascend
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+        integer(i32) :: i, n, flag
+        logical :: dir
+        integer(i32), allocatable, dimension(:) :: ind
+
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true. ! Ascend == true
+        end if
+
+        ! Ensure the eigenvector matrix is sized appropriately
+        n = size(vals)
+        if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
+            ! ARRAY SIZE ERROR
+            write(errmsg, '(AI0AI0AI0AI0A)') &
+                "Expected the eigenvector matrix to be of size ", n, &
+                "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
+                "-by-", size(vecs, 2), "."
+            call errmgr%report_error("sort_eigen_dbl", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+        end if
+
+        ! Allocate memory for the tracking array
+        allocate(ind(n), stat = flag)
+        if (flag /= 0) then
+            call errmgr%report_error("sort_eigen_dbl", &
+                "Insufficient memory available.", LA_OUT_OF_MEMORY_ERROR)
+            return
+        end if
+        do i = 1, n
+            ind(i) = i
+        end do
+
+        ! Sort
+        call qsort_dbl_ind(dir, vals, ind)
+
+        ! Shift the eigenvectors around to keep them associated with the
+        ! appropriate eigenvalue
+        vecs = vecs(:,ind)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Sorts eigenvalues and eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
+    !! @param[in] ascend An optional input that, if specified, controls if the
+    !!  the array is sorted in an ascending order (default), or a descending
+    !!  order.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available to comoplete this operation.
+    subroutine sort_eigen_dc(vals, vecs, ascend, err)
+        ! Arguments
+        real(dp), intent(inout), dimension(:) :: vals
+        complex(dp), intent(inout), dimension(:,:) :: vecs
+        logical, intent(in), optional :: ascend
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+        integer(i32) :: i, n, flag
+        logical :: dir
+        integer(i32), allocatable, dimension(:) :: ind
+
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true. ! Ascend == true
+        end if
+
+        ! Ensure the eigenvector matrix is sized appropriately
+        n = size(vals)
+        if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
+            ! ARRAY SIZE ERROR
+            write(errmsg, '(AI0AI0AI0AI0A)') &
+                "Expected the eigenvector matrix to be of size ", n, &
+                "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
+                "-by-", size(vecs, 2), "."
+            call errmgr%report_error("sort_eigen_dc", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+        end if
+
+        ! Allocate memory for the tracking array
+        allocate(ind(n), stat = flag)
+        if (flag /= 0) then
+            call errmgr%report_error("sort_eigen_dc", &
+                "Insufficient memory available.", LA_OUT_OF_MEMORY_ERROR)
+            return
+        end if
+        do i = 1, n
+            ind(i) = i
+        end do
+
+        ! Sort
+        call qsort_dbl_ind(dir, vals, ind)
+
+        ! Shift the eigenvectors around to keep them associated with the
+        ! appropriate eigenvalue
+        vecs = vecs(:,ind)
     end subroutine
 
 ! ******************************************************************************

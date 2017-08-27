@@ -18,7 +18,7 @@
 program example
     use linalg_constants, only : dp, i32
     use linalg_eigen
-    use linalg_sorting, only : sort_eigen
+    use linalg_sorting
     implicit none
 
     ! Define the model parameters
@@ -51,7 +51,7 @@ program example
     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
 
     ! Sort the eigenvalues/eigenvectors into ascending order
-    call sort_eigen(natFreq, modeShapes)
+    call sort(natFreq, modeShapes)
 
     ! Display the natural frequency and mode shape values.
     print '(A)', "Modal Information:"

@@ -855,6 +855,44 @@ void eigen_asymm_(int n, double *a, double complex *vals, double complex *vecs,
 void eigen_gen_(int n, double *a, double *b, double complex *alpha,
                 double *beta, double complex *vecs, errorhandler *err);
 
+
+/** @brief Sorts an array of double-precision values.
+!!
+!! @param[in] ascend Set to true to sort in ascending order; else, false to
+!!  sort in descending order.
+!! @param[in] n The number of elements in the array.
+!! @param[in,out] x On input, the N-element array to sort.  On output, the 
+!!  sorted array.
+!! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
+!!  this argument is ignored, and @p x is sorted as expected.  However, if 
+!!  used, on output, the contents of this array are shifted in the same 
+!!  order as that of @p x as a means of tracking the sorting operation.  It 
+!!  is often useful to set this array to an ascending group of values 
+!!  (1, 2, ... n) such that this array tracks the original positions of the 
+!!  sorted array.  Such an array can then be used to align other arrays.  
+!!  This array must be the same size as @p x.
+ */
+void sort_dbl(bool ascend, int n, double *x, int *ind);
+
+/** @brief Sorts an array of complex values according to their real 
+!! components.
+!!
+!! @param[in] ascend Set to true to sort in ascending order; else, false to
+!!  sort in descending order.
+!! @param[in] n The number of elements in the array.
+!! @param[in,out] x On input, the N-element array to sort.  On output, the 
+!!  sorted array.
+!! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
+!!  this argument is ignored, and @p x is sorted as expected.  However, if 
+!!  used, on output, the contents of this array are shifted in the same 
+!!  order as that of @p x as a means of tracking the sorting operation.  It 
+!!  is often useful to set this array to an ascending group of values 
+!!  (1, 2, ... n) such that this array tracks the original positions of the 
+!!  sorted array.  Such an array can then be used to align other arrays.  
+!!  This array must be the same size as @p x.
+ */
+void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
+
 #ifdef __cplusplus
 }
 #endif

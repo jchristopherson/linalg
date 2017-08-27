@@ -10,7 +10,6 @@ module linalg_sorting
     implicit none
     private
     public :: sort
-    public :: sort_eigen
 
 ! ******************************************************************************
 ! INTERFACES
@@ -21,11 +20,6 @@ module linalg_sorting
         module procedure :: sort_dbl_array_ind
         module procedure :: sort_cmplx_array
         module procedure :: sort_cmplx_array_ind
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Sorts eigenvalues and eigenvectors using a quick-sort approach.
-    interface sort_eigen
         module procedure :: sort_eigen_cmplx
         module procedure :: sort_eigen_dbl
         module procedure :: sort_eigen_dc

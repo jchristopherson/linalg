@@ -54,7 +54,7 @@ program example
     call sort_eigen(natFreq, modeShapes)
 
     ! Display the natural frequency and mode shape values.
-    print '(A)', "Modal Information (Not Sorted):"
+    print '(A)', "Modal Information:"
     do i = 1, size(natFreq)
         print '(AI0AF8.4A)', "Mode ", i, ": (", natFreq(i), " Hz)"
         print '(F10.3)', (real(modeShapes(j,i)), j = 1, size(natFreq))

@@ -11,6 +11,7 @@ module linalg_c_binding
     use linalg_factor
     use linalg_solve
     use linalg_eigen
+    use linalg_sorting
     use ferror, only : errors
     use ferror_c_binding, only : errorhandler, get_errorhandler
 contains
@@ -1435,6 +1436,45 @@ contains
             call eigen(a, b, alpha, beta = beta, vecs = vecs)
         end if
     end subroutine
+
+! ******************************************************************************
+! SORTING ROUTINES
+! ------------------------------------------------------------------------------
+    !
+    subroutine sort_dbl_c(ascend, n, x) bind(C, name = "sort_dbl")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: x(n)
+        
+        ! Process
+        call sort(x, ascend)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !
+    subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl_ind")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: x(n)
+        integer(i32), intent(inout) :: ind(n)
+        
+        ! Process
+        call sort(x, ind, ascend)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 end module

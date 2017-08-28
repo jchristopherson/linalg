@@ -1511,13 +1511,17 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts eigenvalues and eigenvectors using a quick-sort approach.
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
     !!
     !! @param[in] ascend Set to true to sort in ascending order; else, false to
     !!  sort in descending order.
     !! @param[in] n The number of eigenvalues.
-    !! @param[in,out] vals
-    !! @param[in,out] vecs
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_cmplx_c(ascend, n, vals, vecs) &
             bind(C, name = "sort_eigen_cmplx")
         ! Arguments
@@ -1530,27 +1534,23 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false to
+    !!  sort in descending order.
+    !! @param[in] n The number of eigenvalues.
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_dbl_c(ascend, n, vals, vecs) &
             bind(C, name = "sort_eigen_dbl")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
         integer(i32), intent(in), value :: n
         real(dp), intent(inout) :: vals(n), vecs(n,n)
-
-        ! Process
-        call sort(vals, vecs, logical(ascend))
-    end subroutine
-
-! ------------------------------------------------------------------------------
-    !
-    subroutine sort_eigen_dbl_c(ascend, n, vals, vecs) &
-            bind(C, name = "sort_eigen_dbl_cmplx")
-        ! Arguments
-        logical(c_bool), intent(in), value :: ascend
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: vals(n)
-        complex(dp), intent(inout) :: vecs(n,n)
 
         ! Process
         call sort(vals, vecs, logical(ascend))

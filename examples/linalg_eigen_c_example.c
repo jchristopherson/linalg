@@ -46,12 +46,11 @@ int main() {
     eigen_gen_(3, k, m, vals, beta, modeShapes, NULL);
 
     // Sort the eigenvalues and eigenvectors
+    for (i = 0; i < 3; ++i) vals[i] /= beta[i]; // Compute the full eigenvalue
     sort_eigen_cmplx_(true, 3, vals, modeShapes);
 
     // Compute the natural frequency values (units = Hz)
-    for (i = 0; i < 3; ++i) {
-        natFreq[i] = sqrt(creal(vals[i] / beta[i])) / (2.0 * pi);
-    }
+    for (i = 0; i < 3; ++i) natFreq[i] = sqrt(creal(vals[i])) / (2.0 * pi);
 
     // Print the results
     printf("Modal Information:\n");

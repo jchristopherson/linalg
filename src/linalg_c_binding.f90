@@ -11,6 +11,7 @@ module linalg_c_binding
     use linalg_factor
     use linalg_solve
     use linalg_eigen
+    use linalg_sorting
     use ferror, only : errors
     use ferror_c_binding, only : errorhandler, get_errorhandler
 contains
@@ -1434,6 +1435,125 @@ contains
         else
             call eigen(a, b, alpha, beta = beta, vecs = vecs)
         end if
+    end subroutine
+
+! ******************************************************************************
+! SORTING ROUTINES
+! ------------------------------------------------------------------------------
+    !> @brief Sorts an array of double-precision values.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false to
+    !!  sort in descending order.
+    !! @param[in] n The number of elements in the array.
+    !! @param[in,out] x On input, the N-element array to sort.  On output, the 
+    !!  sorted array.
+    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
+    !!  this argument is ignored, and @p x is sorted as expected.  However, if 
+    !!  used, on output, the contents of this array are shifted in the same 
+    !!  order as that of @p x as a means of tracking the sorting operation.  It 
+    !!  is often useful to set this array to an ascending group of values 
+    !!  (1, 2, ... n) such that this array tracks the original positions of the 
+    !!  sorted array.  Such an array can then be used to align other arrays.  
+    !!  This array must be the same size as @p x.
+    subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl_")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: x(n)
+        type(c_ptr), intent(in), value :: ind
+
+        ! Local Variables
+        integer(i32), pointer, dimension(:) :: ptr
+        
+        ! Process
+        if (c_associated(ind)) then
+            call c_f_pointer(ind, ptr, [n])
+            call sort(x, ptr, logical(ascend))
+        else
+            call sort(x, logical(ascend))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief Sorts an array of complex values according to their real 
+    !! components.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false to
+    !!  sort in descending order.
+    !! @param[in] n The number of elements in the array.
+    !! @param[in,out] x On input, the N-element array to sort.  On output, the 
+    !!  sorted array.
+    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
+    !!  this argument is ignored, and @p x is sorted as expected.  However, if 
+    !!  used, on output, the contents of this array are shifted in the same 
+    !!  order as that of @p x as a means of tracking the sorting operation.  It 
+    !!  is often useful to set this array to an ascending group of values 
+    !!  (1, 2, ... n) such that this array tracks the original positions of the 
+    !!  sorted array.  Such an array can then be used to align other arrays.  
+    !!  This array must be the same size as @p x.
+    subroutine sort_cmplx_ind_c(ascend, n, x, ind) bind(C, name = "sort_cmplx_")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        complex(dp), intent(inout) :: x(n)
+        type(c_ptr), intent(in), value :: ind
+
+        ! Local Variables
+        integer(i32), pointer, dimension(:) :: ptr
+        
+        ! Process
+        if (c_associated(ind)) then
+            call c_f_pointer(ind, ptr, [n])
+            call sort(x, ptr, logical(ascend))
+        else
+            call sort(x, logical(ascend))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false to
+    !!  sort in descending order.
+    !! @param[in] n The number of eigenvalues.
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
+    subroutine sort_eigen_cmplx_c(ascend, n, vals, vecs) &
+            bind(C, name = "sort_eigen_cmplx_")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        complex(dp), intent(inout) :: vals(n), vecs(n,n)
+
+        ! Process
+        call sort(vals, vecs, logical(ascend))
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false to
+    !!  sort in descending order.
+    !! @param[in] n The number of eigenvalues.
+    !! @param[in,out] vals On input, an N-element array containing the 
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
+    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !!  output, the sorted eigenvector matrix.
+    subroutine sort_eigen_dbl_c(ascend, n, vals, vecs) &
+            bind(C, name = "sort_eigen_dbl_")
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(i32), intent(in), value :: n
+        real(dp), intent(inout) :: vals(n), vecs(n,n)
+
+        ! Process
+        call sort(vals, vecs, logical(ascend))
     end subroutine
 
 ! ------------------------------------------------------------------------------

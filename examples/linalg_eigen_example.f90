@@ -18,6 +18,7 @@
 program example
     use linalg_constants, only : dp, i32
     use linalg_eigen
+    use linalg_sorting
     implicit none
 
     ! Define the model parameters
@@ -45,13 +46,15 @@ program example
     ! Compute the eigenvalues and eigenvectors.
     call eigen(k, m, vals, vecs = modeShapes)
 
+    ! Sort the eigenvalues and eigenvectors
+    call sort(vals, modeShapes)
+
     ! Compute the natural frequency values, and return them with units of Hz.  
     ! Notice, all eigenvalues and eigenvectors are real for this example.
     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
 
-    ! Display the natural frequency and mode shape values.  Notice, the eigen
-    ! routine does not necessarily sort the values.
-    print '(A)', "Modal Information (Not Sorted):"
+    ! Display the natural frequency and mode shape values.
+    print '(A)', "Modal Information:"
     do i = 1, size(natFreq)
         print '(AI0AF8.4A)', "Mode ", i, ": (", natFreq(i), " Hz)"
         print '(F10.3)', (real(modeShapes(j,i)), j = 1, size(natFreq))

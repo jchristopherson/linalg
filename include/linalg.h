@@ -855,6 +855,74 @@ void eigen_asymm_(int n, double *a, double complex *vals, double complex *vecs,
 void eigen_gen_(int n, double *a, double *b, double complex *alpha,
                 double *beta, double complex *vecs, errorhandler *err);
 
+
+/** @brief Sorts an array of double-precision values.
+ *
+ * @param ascend Set to true to sort in ascending order; else, false to
+ *  sort in descending order.
+ * @param n The number of elements in the array.
+ * @param x On input, the N-element array to sort.  On output, the 
+ *  sorted array.
+ * @param ind On input, a pointer to an integer array.  If NULL, 
+ *  this argument is ignored, and @p x is sorted as expected.  However, if 
+ *  used, on output, the contents of this array are shifted in the same 
+ *  order as that of @p x as a means of tracking the sorting operation.  It 
+ *  is often useful to set this array to an ascending group of values 
+ *  (1, 2, ... n) such that this array tracks the original positions of the 
+ *  sorted array.  Such an array can then be used to align other arrays.  
+ *  This array must be the same size as @p x.
+ */
+void sort_dbl_(bool ascend, int n, double *x, int *ind);
+
+/** @brief Sorts an array of complex values according to their real 
+ * components.
+ *
+ * @param ascend Set to true to sort in ascending order; else, false to
+ *  sort in descending order.
+ * @param n The number of elements in the array.
+ * @param x On input, the N-element array to sort.  On output, the 
+ *  sorted array.
+ * @param ind On input, a pointer to an integer array.  If NULL, 
+ *  this argument is ignored, and @p x is sorted as expected.  However, if 
+ *  used, on output, the contents of this array are shifted in the same 
+ *  order as that of @p x as a means of tracking the sorting operation.  It 
+ *  is often useful to set this array to an ascending group of values 
+ *  (1, 2, ... n) such that this array tracks the original positions of the 
+ *  sorted array.  Such an array can then be used to align other arrays.  
+ *  This array must be the same size as @p x.
+ */
+void sort_cmplx_(bool ascend, int n, double complex *x, int *ind);
+
+/** @brief A sorting routine specifically tailored for sorting of eigenvalues
+ * and their associated eigenvectors using a quick-sort approach.
+ *
+ * @param ascend Set to true to sort in ascending order; else, false to
+ *  sort in descending order.
+ * @param n The number of eigenvalues.
+ * @param vals On input, an N-element array containing the 
+ *  eigenvalues.  On output, the sorted eigenvalues.
+ * @param vecs On input, an N-by-N matrix containing the 
+ *  eigenvectors associated with @p vals (one vector per column).  On 
+ *  output, the sorted eigenvector matrix.
+ */
+void sort_eigen_cmplx_(bool ascend, int n, double complex *vals, 
+                       double complex *vecs);
+
+/** @brief A sorting routine specifically tailored for sorting of eigenvalues
+ * and their associated eigenvectors using a quick-sort approach.
+ *
+ * @param ascend Set to true to sort in ascending order; else, false to
+ *  sort in descending order.
+ * @param n The number of eigenvalues.
+ * @param vals On input, an N-element array containing the 
+ *  eigenvalues.  On output, the sorted eigenvalues.
+ * @param vecs On input, an N-by-N matrix containing the 
+ *  eigenvectors associated with @p vals (one vector per column).  On 
+ *  output, the sorted eigenvector matrix.
+ */
+void sort_eigen_dbl_(bool ascend, int n, double *vals, double *vecs);
+
+
 #ifdef __cplusplus
 }
 #endif

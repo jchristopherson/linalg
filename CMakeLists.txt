@@ -161,7 +161,7 @@ endif()
 set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
     tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
     tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
-    tests/test_lu.f90)
+    tests/test_lu.f90 tests/test_sort.f90)
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
 add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
@@ -172,7 +172,7 @@ add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
 include_directories(${PROJECT_SOURCE_DIR}/tests)
 set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
   tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
-  tests/c_test_inv.c tests/c_test_eigen.c)
+  tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
 add_executable(linalg_c_test ${c_linalg_test_sources})
 target_link_libraries(linalg_c_test linalg m)
 add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}

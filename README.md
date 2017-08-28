@@ -120,6 +120,7 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
 program example
     use linalg_constants, only : dp, i32
     use linalg_eigen
+    use linalg_sorting
     implicit none
 
     ! Define the model parameters
@@ -147,13 +148,15 @@ program example
     ! Compute the eigenvalues and eigenvectors.
     call eigen(k, m, vals, vecs = modeShapes)
 
+    ! Sort the eigenvalues and eigenvectors
+    call sort(vals, modeShapes)
+
     ! Compute the natural frequency values, and return them with units of Hz.  
     ! Notice, all eigenvalues and eigenvectors are real for this example.
     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
 
-    ! Display the natural frequency and mode shape values.  Notice, the eigen
-    ! routine does not necessarily sort the values.
-    print '(A)', "Modal Information (Not Sorted):"
+    ! Display the natural frequency and mode shape values.
+    print '(A)', "Modal Information:"
     do i = 1, size(natFreq)
         print '(AI0AF8.4A)', "Mode ", i, ": (", natFreq(i), " Hz)"
         print '(F10.3)', (real(modeShapes(j,i)), j = 1, size(natFreq))
@@ -162,19 +165,19 @@ end program
 ```
 The above program produces the following output.
 ```text
-Modal Information (Not Sorted):
+Modal Information:
 Mode 1: (232.9225 Hz)
     -0.718
     -1.000
     -0.747
-Mode 2: (923.5669 Hz)
-     1.000
-    -0.184
-     0.179
-Mode 3: (749.6189 Hz)
+Mode 2: (749.6189 Hz)
     -0.419
     -0.164
      1.000
+Mode 3: (923.5669 Hz)
+     1.000
+    -0.184
+     0.179
 ```
 
 ## C Example

@@ -54,7 +54,7 @@ int main() {
     }
 
     // Print the results
-    printf("Modal Information (Not Sorted):\n");
+    printf("Modal Information:\n");
     for (i = 0; i < 3; ++i) {
         printf("Mode %i: (%f Hz)\n", i + 1, natFreq[i]);
         for (j = 0; j < 3; ++j) {

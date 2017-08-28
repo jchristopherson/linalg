@@ -46,7 +46,7 @@ int main() {
     eigen_gen_(3, k, m, vals, beta, modeShapes, NULL);
 
     // Sort the eigenvalues and eigenvectors
-    sort_eigen_cmplx(true, 3, vals, modeShapes);
+    sort_eigen_cmplx_(true, 3, vals, modeShapes);
 
     // Compute the natural frequency values (units = Hz)
     for (i = 0; i < 3; ++i) {

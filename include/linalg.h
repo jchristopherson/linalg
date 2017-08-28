@@ -872,7 +872,7 @@ void eigen_gen_(int n, double *a, double *b, double complex *alpha,
  *  sorted array.  Such an array can then be used to align other arrays.  
  *  This array must be the same size as @p x.
  */
-void sort_dbl(bool ascend, int n, double *x, int *ind);
+void sort_dbl_(bool ascend, int n, double *x, int *ind);
 
 /** @brief Sorts an array of complex values according to their real 
  * components.
@@ -891,7 +891,7 @@ void sort_dbl(bool ascend, int n, double *x, int *ind);
  *  sorted array.  Such an array can then be used to align other arrays.  
  *  This array must be the same size as @p x.
  */
-void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
+void sort_cmplx_(bool ascend, int n, double complex *x, int *ind);
 
 /** @brief A sorting routine specifically tailored for sorting of eigenvalues
  * and their associated eigenvectors using a quick-sort approach.
@@ -905,8 +905,8 @@ void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
  *  eigenvectors associated with @p vals (one vector per column).  On 
  *  output, the sorted eigenvector matrix.
  */
-void sort_eigen_cmplx(bool ascend, int n, double complex *vals, 
-                      double complex *vecs);
+void sort_eigen_cmplx_(bool ascend, int n, double complex *vals, 
+                       double complex *vecs);
 
 /** @brief A sorting routine specifically tailored for sorting of eigenvalues
  * and their associated eigenvectors using a quick-sort approach.
@@ -920,7 +920,7 @@ void sort_eigen_cmplx(bool ascend, int n, double complex *vals,
  *  eigenvectors associated with @p vals (one vector per column).  On 
  *  output, the sorted eigenvector matrix.
  */
-void sort_eigen_dbl(bool ascend, int n, double *vals, double *vecs);
+void sort_eigen_dbl_(bool ascend, int n, double *vals, double *vecs);
 
 
 #ifdef __cplusplus

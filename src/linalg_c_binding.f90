@@ -1455,7 +1455,7 @@ contains
     !!  (1, 2, ... n) such that this array tracks the original positions of the 
     !!  sorted array.  Such an array can then be used to align other arrays.  
     !!  This array must be the same size as @p x.
-    subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl")
+    subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
         integer(i32), intent(in), value :: n
@@ -1491,7 +1491,7 @@ contains
     !!  (1, 2, ... n) such that this array tracks the original positions of the 
     !!  sorted array.  Such an array can then be used to align other arrays.  
     !!  This array must be the same size as @p x.
-    subroutine sort_cmplx_ind_c(ascend, n, x, ind) bind(C, name = "sort_cmplx")
+    subroutine sort_cmplx_ind_c(ascend, n, x, ind) bind(C, name = "sort_cmplx_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
         integer(i32), intent(in), value :: n
@@ -1523,7 +1523,7 @@ contains
     !!  eigenvectors associated with @p vals (one vector per column).  On 
     !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_cmplx_c(ascend, n, vals, vecs) &
-            bind(C, name = "sort_eigen_cmplx")
+            bind(C, name = "sort_eigen_cmplx_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
         integer(i32), intent(in), value :: n
@@ -1546,7 +1546,7 @@ contains
     !!  eigenvectors associated with @p vals (one vector per column).  On 
     !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_dbl_c(ascend, n, vals, vecs) &
-            bind(C, name = "sort_eigen_dbl")
+            bind(C, name = "sort_eigen_dbl_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
         integer(i32), intent(in), value :: n

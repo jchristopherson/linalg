@@ -5,7 +5,7 @@ project(linalg)
 
 # Define version information
 set(linalg_VERSION_MAJOR 1)
-set(linalg_VERSION_MINOR 2)
+set(linalg_VERSION_MINOR 3)
 set(linalg_VERSION_PATCH 3)
 
 # Define output directories, if undefined

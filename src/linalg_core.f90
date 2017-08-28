@@ -8,7 +8,7 @@
 !! to several BLAS and LAPACK routines.
 !!
 !! @author Jason Christopherson
-!! @version 1.2.3
+!! @version 1.3.3
 
 
 !> @brief \b linalg_core

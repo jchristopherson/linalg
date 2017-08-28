@@ -45,6 +45,9 @@ int main() {
     // Compute the eigenvalues and eigenvectors
     eigen_gen_(3, k, m, vals, beta, modeShapes, NULL);
 
+    // Sort the eigenvalues and eigenvectors
+    sort_eigen_cmplx(true, 3, vals, modeShapes);
+
     // Compute the natural frequency values (units = Hz)
     for (i = 0; i < 3; ++i) {
         natFreq[i] = sqrt(creal(vals[i] / beta[i])) / (2.0 * pi);

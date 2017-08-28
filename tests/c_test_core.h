@@ -53,4 +53,8 @@ bool test_eigen_symm();
 bool test_eigen_asymm();
 bool test_eigen_gen();
 
+// Sorting Routines
+bool test_ascending_sort();
+bool test_descending_sort();
+
 #endif

@@ -83,6 +83,12 @@ int main() {
     rst = test_eigen_gen();
     if (!rst) overall = false;
 
+    rst = test_ascending_sort();
+    if (!rst) overall = false;
+
+    rst = test_descending_sort();
+    if (!rst) overall = false;
+
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");
     else printf("C API LINALG TEST STATUS: FAIL\n");

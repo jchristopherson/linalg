@@ -43,6 +43,15 @@ function test_dbl_ascend_sort() result(rst)
         print '(A)', "Test Failed: Ascending sort of a double-precision array."
     end if
 
+    ! Ensure the array is in ascending order
+    do i = 2, n
+        if (x1(i) < x1(i-1)) then
+            rst = .false.
+            print '(A)', "Test Failed: Sorted array is not in ascending order."
+            exit
+        end if
+    end do
+
     ! End
 end function
 
@@ -78,6 +87,15 @@ function test_dbl_descend_sort() result(rst)
         rst = .false.
         print '(A)', "Test Failed: Descending sort of a double-precision array."
     end if
+
+    ! Ensure the array is in descending order
+    do i = 2, n
+        if (x1(i) > x1(i-1)) then
+            rst = .false.
+            print '(A)', "Test Failed: Sorted array is not in descending order."
+            exit
+        end if
+    end do
 
     ! End
 end function

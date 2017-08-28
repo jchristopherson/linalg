@@ -46,12 +46,12 @@ program example
     ! Compute the eigenvalues and eigenvectors.
     call eigen(k, m, vals, vecs = modeShapes)
 
+    ! Sort the eigenvalues and eigenvectors
+    call sort(vals, modeShapes)
+
     ! Compute the natural frequency values, and return them with units of Hz.  
     ! Notice, all eigenvalues and eigenvectors are real for this example.
     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
-
-    ! Sort the eigenvalues/eigenvectors into ascending order
-    call sort(natFreq, modeShapes)
 
     ! Display the natural frequency and mode shape values.
     print '(A)', "Modal Information:"

@@ -6,7 +6,7 @@ project(linalg)
 # Define version information
 set(linalg_VERSION_MAJOR 1)
 set(linalg_VERSION_MINOR 3)
-set(linalg_VERSION_PATCH 0)
+set(linalg_VERSION_PATCH 1)
 
 # Define output directories, if undefined
 if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
@@ -164,9 +164,11 @@ set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90
     tests/test_lu.f90 tests/test_sort.f90)
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
-add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
-  COMMAND linalg_test)
-add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
+    COMMAND linalg_test)
+  add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+endif()
 
 # C Test
 include_directories(${PROJECT_SOURCE_DIR}/tests)
@@ -175,6 +177,8 @@ set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
   tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
 add_executable(linalg_c_test ${c_linalg_test_sources})
 target_link_libraries(linalg_c_test linalg m)
-add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
-  COMMAND linalg_c_test)
-add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
+    COMMAND linalg_c_test)
+  add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
+endif()

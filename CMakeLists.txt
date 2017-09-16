@@ -6,7 +6,7 @@ project(linalg)
 # Define version information
 set(linalg_VERSION_MAJOR 1)
 set(linalg_VERSION_MINOR 3)
-set(linalg_VERSION_PATCH 1)
+set(linalg_VERSION_PATCH 2)
 
 # Define output directories, if undefined
 if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)

@@ -58,7 +58,13 @@ get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
   # gfortran
   # Options: https://gcc.gnu.org/onlinedocs/gfortran/Option-Summary.html
-  set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
+  if (WIN32 AND NOT BUILD_SHARED_LIBS)
+    # For some reason higher than -O1 results in a segmentation fault on
+    # Windows 7 and on Windows 10 (64-bit versions)
+    set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O1")
+  else()
+    set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
+  endif()
   set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall -Wno-c-binding-type")
 elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
   # ifort (untested)

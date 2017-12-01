@@ -221,7 +221,7 @@ Least Squares Solution: X =
 ```
 
 ## Building LINALG
-This library can be built just as any other library relying on CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
 
 ## Documentation
 Documentation can be found [here](doc/refman.pdf)

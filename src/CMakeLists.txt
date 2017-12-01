@@ -15,4 +15,49 @@ list(APPEND linalg_sources ${qrupdate_sources})
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg ferror lapack)
+if (WIN32)
+    if (BUILD_SHARED_LIBS)
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/bin/liblapack.dll"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/bin/libblas.dll"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/lib/liblapack.dll.a"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/lib/libblas.dll.a"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        target_link_libraries(linalg ferror lapack blas)
+    else()
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/lib/liblapack.a"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        add_custom_command(
+            TARGET linalg
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${PROJECT_SOURCE_DIR}/build/src/external/lapack/lib/libblas.a"
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        target_link_libraries(linalg ferror lapack)
+    endif()
+else()
+    target_link_libraries(linalg ferror lapack)
+endif()

@@ -24,14 +24,15 @@ addons:
       - gfortran-6
       - cmake
 
-# before_script:  
-#     - mkdir build
-#     - cd build
-#     - cmake ..
+before_script:  
+    - mkdir build
+    - cd build
+    - cmake ..
 
 script:
   - ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
   - ln -s /usr/bin/gfortran-6 /usr/local/bin/gfortran
   - gcc -v && gfortran -v && camke --version
+
 
 script: make

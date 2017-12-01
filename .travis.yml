@@ -13,18 +13,25 @@ language: c
 
 
 compiler: gcc
-sudo: false
+sudo: require
+dist: trusty
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-5
-      - gfortran-5
+      - gcc-6
+      - gfortran-6
+      - cmake
 
-before_script:  
-    - mkdir build
-    - cd build
-    - cmake ..
+# before_script:  
+#     - mkdir build
+#     - cd build
+#     - cmake ..
+
+script:
+  - ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
+  - ln -s /usr/bin/gfortran-6 /usr/local/bin/gfortran
+  - gcc -v && gfortran -v && camke --version
 
 script: make

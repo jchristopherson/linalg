@@ -143,13 +143,17 @@ add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
   COMMAND linalg_test)
 add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
 
-# C Test
-include_directories(${PROJECT_SOURCE_DIR}/tests)
-set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
-  tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
-  tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
-add_executable(linalg_c_test ${c_linalg_test_sources})
-target_link_libraries(linalg_c_test linalg m)
-add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
-  COMMAND linalg_c_test)
-add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
+# C Tests
+option(BUILD_C_TESTS "Build C API Tests" OFF)
+if (BUILD_C_TESTS)
+  message(STATUS "Building C API Tests")
+  include_directories(${PROJECT_SOURCE_DIR}/tests)
+  set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
+      tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
+      tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
+  add_executable(linalg_c_test ${c_linalg_test_sources})
+  target_link_libraries(linalg_c_test linalg m)
+  add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
+      COMMAND linalg_c_test)
+  add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
+endif()

@@ -1,12 +1,11 @@
 # Master CMAKE Build Script
 cmake_minimum_required(VERSION 3.0)
-enable_language(Fortran)
-project(linalg)
+project(linalg C CXX Fortran)
 
 # Define version information
 set(linalg_VERSION_MAJOR 1)
-set(linalg_VERSION_MINOR 3)
-set(linalg_VERSION_PATCH 2)
+set(linalg_VERSION_MINOR 4)
+set(linalg_VERSION_PATCH 0)
 
 # Define output directories, if undefined
 if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
@@ -56,65 +55,35 @@ endif()
 # FFLAGS depend on the compiler
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-  # gfortran
-  # Options: https://gcc.gnu.org/onlinedocs/gfortran/Option-Summary.html
-  if (WIN32 AND NOT BUILD_SHARED_LIBS)
-    # For some reason higher than -O1 results in a segmentation fault on
-    # Windows 7 and on Windows 10 (64-bit versions)
-    set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O1")
-  else()
+    # gfortran
     set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
-  endif()
-  set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall -Wno-c-binding-type")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall -Wno-c-binding-type")
 elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
-  # ifort (untested)
-  set(CMAKE_Fortran_FLAGS_RELEASE "-f77rtl -O3")
-  set(CMAKE_Fortran_FLAGS_DEBUG   "-f77rtl -O0 -g")
+    # ifort (untested)
+    set(CMAKE_Fortran_FLAGS_RELEASE "-f77rtl -O3")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-f77rtl -O0 -g")
 else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-  message ("CMAKE_Fortran_COMPILER full path: " ${CMAKE_Fortran_COMPILER})
-  message ("Fortran compiler: " ${Fortran_COMPILER_NAME})
-  message ("No optimized Fortran compiler flags are known, we just try -O2...")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
-  set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
+    message ("CMAKE_Fortran_COMPILER full path: " ${CMAKE_Fortran_COMPILER})
+    message ("Fortran compiler: " ${Fortran_COMPILER_NAME})
+    message ("No optimized Fortran compiler flags are known, we just try -O2...")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
 endif()
 
-# Specify source files
-if (BUILD_SHARED_LIBS)
-    # Define where to find the source code
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f)
+# Define the output directories
+set(ExternalProjectCMakeArgs
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  -CMAKE_Fortran_MODULE_DIRECTORY=${CMAKE_Fortran_MODULE_DIRECTORY}
+  -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
+  -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
+  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
-    # Define where to find LAPACK & BLAS
-    option(USE_EXISTING_LAPACK "Use an existing LAPACK library instead of the default supplied LAPACK" OFF)
-    if (USE_EXISTING_LAPACK)
-      message(STATUS "Using an existing LAPACK")
-      find_package(lapack)
-    else()
-      message(STATUS "Using the default LAPACK")
-      set(ExternalProjectCMakeArgs
-        -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        -CMAKE_Fortran_MODULE_DIRECTORY=${CMAKE_Fortran_MODULE_DIRECTORY}
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
-        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
-        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-      add_subdirectory(LAPACK)
-    endif()
-else()
-    # Include everything into the static library
-    file(GLOB_RECURSE sources src/*.f90 src/*f src/QRUPDATE/*f 
-        LAPACK/BLAS/src/*f LAPACK/src/*f ferror/src/*f90)
-endif()
-
-# If BUILD_SHARED_LIBS is defined, then a shared library (DLL) will be built;
-# else, a static library will be built.
-add_library(linalg ${sources})
-if (BUILD_SHARED_LIBS)
-  add_subdirectory(ferror)
-  target_link_libraries(linalg lapack ferror)
-endif()
+# Locate the files
+add_subdirectory(src)
 
 # ------------------------------------------------------------------------------
 # EXAMPLES
@@ -142,7 +111,7 @@ if (BUILD_EXAMPLES)
 
 # --------------------
   include_directories(${PROJECT_SOURCE_DIR}/include 
-    ${PROJECT_SOURCE_DIR}/ferror/include)
+    ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
 
   # LU Example
   add_executable(lu_example_c examples/linalg_lu_c_example.c)

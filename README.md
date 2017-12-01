@@ -1,6 +1,8 @@
 # linalg
 A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
+## Status
+![Build Status](https://travis-ci.org/jchristopherson/linalg.svg?branch=master)
 
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.

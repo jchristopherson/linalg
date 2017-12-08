@@ -40,7 +40,7 @@ latex/
 
 
 # CMake Stuff
-*.json
+.cmaketools.json
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
@@ -49,3 +49,7 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
+
+# VS Code Stuff
+launch.json
+settings.json

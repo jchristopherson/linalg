@@ -5,11 +5,11 @@ project(linalg C CXX Fortran)
 # Define version information
 set(linalg_VERSION_MAJOR 1)
 set(linalg_VERSION_MINOR 4)
-set(linalg_VERSION_PATCH 0)
+set(linalg_VERSION_PATCH 2)
 
 # Define output directories, if undefined
 if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  message(STATUS "Library output directories undefined.  Using default directories.")
+  message(STATUS "LINALG output directories undefined.  Using default directories.")
   if (CMAKE_BUILD_TYPE MATCHES Debug)
     # Debug Build
     if (BUILD_SHARED_LIBS)
@@ -88,8 +88,8 @@ add_subdirectory(src)
 # ------------------------------------------------------------------------------
 # EXAMPLES
 # ------------------------------------------------------------------------------
-option(BUILD_EXAMPLES "Build examples?" OFF)
-if (BUILD_EXAMPLES)
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
+if (BUILD_LINALG_EXAMPLES)
   # Inform the user we're building the examples
   message(STATUS "Building LINALG examples.")
 
@@ -133,21 +133,25 @@ endif()
 # ------------------------------------------------------------------------------
 # TESTS
 # ------------------------------------------------------------------------------
-set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
-    tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
-    tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
-    tests/test_lu.f90 tests/test_sort.f90)
-add_executable(linalg_test ${linalg_test_sources})
-target_link_libraries(linalg_test linalg)
-add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
-  COMMAND linalg_test)
-add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+option(BUILD_LINALG_TESTS "Build LINALG tests?" ON)
+if (BUILD_LINALG_TESTS)
+  set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
+      tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
+      tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
+      tests/test_lu.f90 tests/test_sort.f90)
+  add_executable(linalg_test ${linalg_test_sources})
+  target_link_libraries(linalg_test linalg)
+  add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
+    COMMAND linalg_test)
+  add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+endif()
 
 # C Tests
-option(BUILD_C_TESTS "Build C API Tests" OFF)
-if (BUILD_C_TESTS)
-  message(STATUS "Building C API Tests")
-  include_directories(${PROJECT_SOURCE_DIR}/tests)
+option(BUILD_LINALG_C_TESTS "Build LINALG C API tests?" ON)
+if (BUILD_LINALG_C_TESTS)
+  message(STATUS "Building LINALG C API tests.")
+  include_directories(${PROJECT_SOURCE_DIR}/tests ${PROJECT_SOURCE_DIR}/include 
+    ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
   set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
       tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
       tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)

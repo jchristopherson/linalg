@@ -6,6 +6,30 @@ project(linalg C CXX Fortran)
 set(linalg_VERSION_MAJOR 1)
 set(linalg_VERSION_MINOR 4)
 set(linalg_VERSION_PATCH 2)
+set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERSION_PATCH})
+
+# Locate Dependencies
+find_package(ferror 1.3.0)
+
+# If FERROR is not installed on the system, build the default implementation
+if (NOT ${ferror_FOUND})
+    message(STATUS "FERROR not found.  The default implementation will be used.")
+    add_subdirectory(src/external/ferror)
+    include_directories(src/external/ferror/include)
+    set(FERROR_LIBRARIES ferror)
+    set(ferror_LibLocation ${ferror_BINARY_DIR})
+else()
+    message(STATUS "An acceptable version of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
+    include_directories(${ferror_INCLUDE_DIRS})
+    set(FERROR_LIBRARIES ferror)
+    get_target_property(ferror_LibLocation ferror LOCATION)
+endif()
+
+# Export all symbols on Windows when building shared libraries
+SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+# Locate the module files
+set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/include)
 
 # Define output directories, if undefined
 if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
@@ -16,12 +40,10 @@ if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug/mod)
     else()
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug/mod)
     endif ()
   elseif (CMAKE_BUILD_TYPE MATCHES Release)
     # Release Build
@@ -29,12 +51,10 @@ if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Release/mod)
     else()
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Release/mod)
     endif ()
   else ()
     # Default Condition
@@ -42,12 +62,10 @@ if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/Debug/mod)
     else()
       set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
       set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
       set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug)
-      set(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/Debug/mod)
     endif ()
   endif ()
 endif()
@@ -70,94 +88,82 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
 endif()
 
-# Define the output directories
-set(ExternalProjectCMakeArgs
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-  -DCMAKE_Fortran_MODULE_DIRECTORY=${CMAKE_Fortran_MODULE_DIRECTORY}
-  -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
-  -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
-  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-
 # Locate the files
 add_subdirectory(src)
 
 # ------------------------------------------------------------------------------
 # EXAMPLES
 # ------------------------------------------------------------------------------
-option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
-if (BUILD_LINALG_EXAMPLES)
-  # Inform the user we're building the examples
-  message(STATUS "Building LINALG examples.")
+# option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
+# if (BUILD_LINALG_EXAMPLES)
+#   # Inform the user we're building the examples
+#   message(STATUS "Building LINALG examples.")
 
-  # LU Example
-  add_executable(lu_example examples/linalg_lu_example.f90)
-  target_link_libraries(lu_example linalg)
+#   # LU Example
+#   add_executable(lu_example examples/linalg_lu_example.f90)
+#   target_link_libraries(lu_example linalg)
 
-  # QR Example
-  add_executable(qr_example examples/linalg_qr_example.f90)
-  target_link_libraries(qr_example linalg)
+#   # QR Example
+#   add_executable(qr_example examples/linalg_qr_example.f90)
+#   target_link_libraries(qr_example linalg)
 
-  # Overdetermined Example
-  add_executable(od_example examples/linalg_od_example.f90)
-  target_link_libraries(od_example linalg)
+#   # Overdetermined Example
+#   add_executable(od_example examples/linalg_od_example.f90)
+#   target_link_libraries(od_example linalg)
 
-  # Eigen Example
-  add_executable(eigen_example examples/linalg_eigen_example.f90)
-  target_link_libraries(eigen_example linalg)
+#   # Eigen Example
+#   add_executable(eigen_example examples/linalg_eigen_example.f90)
+#   target_link_libraries(eigen_example linalg)
 
-# --------------------
-  include_directories(${PROJECT_SOURCE_DIR}/include 
-    ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
+# # --------------------
+#   include_directories(${PROJECT_SOURCE_DIR}/include 
+#     ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
 
-  # LU Example
-  add_executable(lu_example_c examples/linalg_lu_c_example.c)
-  target_link_libraries(lu_example_c linalg)
+#   # LU Example
+#   add_executable(lu_example_c examples/linalg_lu_c_example.c)
+#   target_link_libraries(lu_example_c linalg)
 
-  # QR Example
-  add_executable(qr_example_c examples/linalg_qr_c_example.c)
-  target_link_libraries(qr_example_c linalg)
+#   # QR Example
+#   add_executable(qr_example_c examples/linalg_qr_c_example.c)
+#   target_link_libraries(qr_example_c linalg)
 
-  # Overdetermined Example
-  add_executable(od_example_c examples/linalg_od_c_example.c)
-  target_link_libraries(od_example_c linalg)
+#   # Overdetermined Example
+#   add_executable(od_example_c examples/linalg_od_c_example.c)
+#   target_link_libraries(od_example_c linalg)
 
-  # Eigen Example
-  add_executable(eigen_example_c examples/linalg_eigen_c_example.c)
-  target_link_libraries(eigen_example_c linalg m)
-endif()
+#   # Eigen Example
+#   add_executable(eigen_example_c examples/linalg_eigen_c_example.c)
+#   target_link_libraries(eigen_example_c linalg m)
+# endif()
 
-# ------------------------------------------------------------------------------
-# TESTS
-# ------------------------------------------------------------------------------
-option(BUILD_LINALG_TESTS "Build LINALG tests?" ON)
-if (BUILD_LINALG_TESTS)
-  set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
-      tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
-      tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
-      tests/test_lu.f90 tests/test_sort.f90)
-  add_executable(linalg_test ${linalg_test_sources})
-  target_link_libraries(linalg_test linalg)
-  add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
-    COMMAND linalg_test)
-  add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
-endif()
+# # ------------------------------------------------------------------------------
+# # TESTS
+# # ------------------------------------------------------------------------------
+# option(BUILD_LINALG_TESTS "Build LINALG tests?" ON)
+# if (BUILD_LINALG_TESTS)
+#   set(linalg_test_sources tests/linalg_test.f90 tests/test_core.f90 
+#       tests/test_qr.f90 tests/test_svd.f90 tests/test_cholesky.f90 
+#       tests/test_eigen.f90 tests/test_mtx_inverse.f90 tests/test_misc.f90 
+#       tests/test_lu.f90 tests/test_sort.f90)
+#   add_executable(linalg_test ${linalg_test_sources})
+#   target_link_libraries(linalg_test linalg)
+#   add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
+#     COMMAND linalg_test)
+#   add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+# endif()
 
-# C Tests
-option(BUILD_LINALG_C_TESTS "Build LINALG C API tests?" ON)
-if (BUILD_LINALG_C_TESTS)
-  message(STATUS "Building LINALG C API tests.")
-  include_directories(${PROJECT_SOURCE_DIR}/tests ${PROJECT_SOURCE_DIR}/include 
-    ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
-  set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
-      tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
-      tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
-  add_executable(linalg_c_test ${c_linalg_test_sources})
-  target_link_libraries(linalg_c_test linalg m)
-  add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
-      COMMAND linalg_c_test)
-  add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
-endif()
+# # C Tests
+# option(BUILD_LINALG_C_TESTS "Build LINALG C API tests?" ON)
+# if (BUILD_LINALG_C_TESTS)
+#   message(STATUS "Building LINALG C API tests.")
+#   include_directories(${PROJECT_SOURCE_DIR}/tests ${PROJECT_SOURCE_DIR}/include 
+#     ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
+#   set(c_linalg_test_sources tests/linalg_c_test.c tests/c_test_core.c
+#       tests/c_test_misc.c tests/c_test_lu.c tests/c_test_qr.c tests/c_test_svd.c
+#       tests/c_test_inv.c tests/c_test_eigen.c tests/c_test_sort.c)
+#   add_executable(linalg_c_test ${c_linalg_test_sources})
+#   target_link_libraries(linalg_c_test linalg m)
+#   add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
+#       COMMAND linalg_c_test)
+#   add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
+# endif()

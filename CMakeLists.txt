@@ -105,47 +105,11 @@ add_subdirectory(src)
 # ------------------------------------------------------------------------------
 # EXAMPLES
 # ------------------------------------------------------------------------------
-# option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
-# if (BUILD_LINALG_EXAMPLES)
-#   # Inform the user we're building the examples
-#   message(STATUS "Building LINALG examples.")
-
-#   # LU Example
-#   add_executable(lu_example examples/linalg_lu_example.f90)
-#   target_link_libraries(lu_example linalg)
-
-#   # QR Example
-#   add_executable(qr_example examples/linalg_qr_example.f90)
-#   target_link_libraries(qr_example linalg)
-
-#   # Overdetermined Example
-#   add_executable(od_example examples/linalg_od_example.f90)
-#   target_link_libraries(od_example linalg)
-
-#   # Eigen Example
-#   add_executable(eigen_example examples/linalg_eigen_example.f90)
-#   target_link_libraries(eigen_example linalg)
-
-# # --------------------
-#   include_directories(${PROJECT_SOURCE_DIR}/include 
-#     ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
-
-#   # LU Example
-#   add_executable(lu_example_c examples/linalg_lu_c_example.c)
-#   target_link_libraries(lu_example_c linalg)
-
-#   # QR Example
-#   add_executable(qr_example_c examples/linalg_qr_c_example.c)
-#   target_link_libraries(qr_example_c linalg)
-
-#   # Overdetermined Example
-#   add_executable(od_example_c examples/linalg_od_c_example.c)
-#   target_link_libraries(od_example_c linalg)
-
-#   # Eigen Example
-#   add_executable(eigen_example_c examples/linalg_eigen_c_example.c)
-#   target_link_libraries(eigen_example_c linalg m)
-# endif()
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
+if (BUILD_LINALG_EXAMPLES)
+  message(STATUS "Building LINALG examples.")
+  add_subdirectory(examples)
+endif()
 
 # ------------------------------------------------------------------------------
 # TESTS

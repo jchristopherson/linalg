@@ -8,11 +8,14 @@ set(linalg_VERSION_MINOR 4)
 set(linalg_VERSION_PATCH 2)
 set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERSION_PATCH})
 
+# Get compiler info
+get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+
 # Locate Dependencies
 find_package(ferror 1.3.0)
 
 # If FERROR is not installed on the system, build the default implementation
-if (NOT ${ferror_FOUND})
+if (NOT ${ferror_FOUND} OR (Fortran_COMPILER_NAME MATCHES "gfortran.*" AND WIN32))
     message(STATUS "FERROR not found.  The default implementation will be used.")
     add_subdirectory(src/external/ferror)
     include_directories(src/external/ferror/include)
@@ -71,7 +74,6 @@ if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
 endif()
 
 # FFLAGS depend on the compiler
-get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
     # gfortran
     set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")

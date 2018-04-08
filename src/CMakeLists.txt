@@ -210,3 +210,68 @@ list(APPEND linalg_sources ${lapack_sources})
 # Build the library
 add_library(linalg ${linalg_sources})
 target_link_libraries(linalg blas ${FERROR_LIBRARIES})
+
+# ------------------------------------------------------------------------------
+# INSTALLATION INSTRUCTIONS
+# ------------------------------------------------------------------------------
+# Define target information
+set_property(TARGET linalg PROPERTY VERSION ${linalg_VERSION})
+set_property(TARGET linalg PROPERTY SOVERSION ${linalg_VERSION_PATCH})
+set_property(TARGET linalg PROPERTY INTERFACE_linalg_MAJOR_VERSION ${linalg_VERSION_MINOR})
+set_property(TARGET linalg APPEND PROPERTY COMPATIBLE_INTERFACE_STRING linalg_VERSION_MAJOR)
+
+# Locate the "include" directories
+set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
+
+# Define the installation instructions
+install(TARGETS linalg EXPORT linalgTargets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    CONFIGURATIONS Release
+    INCLUDES DESTINATION include
+)
+install(
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include 
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    COMPONENT Devel
+)
+
+# Include the documentation
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/html DESTINATION doc)
+install(FILES ${PROJECT_SOURCE_DIR}/doc/refman.pdf DESTINATION doc)
+
+# Define the version file
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_BINARY_DIR}/linalgConfigVersion.cmake"
+    VERSION ${linalg_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+export(EXPORT linalgTargets
+    FILE "${CMAKE_BINARY_DIR}/linalgTargets.cmake"
+)
+
+# Define the configuration file
+configure_file(
+    "${PROJECT_SOURCE_DIR}/linalgConfig.cmake.in"
+    "${CMAKE_BINARY_DIR}/linalgConfig.cmake"
+    COPYONLY
+)
+
+set(ConfigPackageLocation lib/cmake/linalg)
+install(
+    EXPORT linalgTargets
+    FILE linalgTargets.cmake
+    DESTINATION ${ConfigPackageLocation}
+)
+install(
+    FILES
+        "${CMAKE_BINARY_DIR}/linalgConfig.cmake"
+        "${CMAKE_BINARY_DIR}/linalgConfigVersion.cmake"
+    DESTINATION
+        ${ConfigPackageLocation}
+    COMPONENT
+        Devel
+)

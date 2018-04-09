@@ -6,13 +6,13 @@
 ! This is a repeat of the LU factorization example, but using QR factorization
 ! instead.
 program example
-    use linalg_constants, only : dp, i32
+    use iso_fortran_env, only : real64, int32
     use linalg_factor, only : qr_factor
     use linalg_solve, only : solve_qr
 
     ! Local Variables
-    real(dp) :: a(3,3), tau(3), b(3)
-    integer(i32) :: i, pvt(3)
+    real(real64) :: a(3,3), tau(3), b(3)
+    integer(int32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |

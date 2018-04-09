@@ -26,73 +26,7 @@ module linalg_factor
 ! ******************************************************************************
 ! INTERFACES
 ! ------------------------------------------------------------------------------
-    !> @brief Extracts the L and U matrices from the condensed [L\\U] storage 
-    !! format used by the @ref lu_factor.
-    interface form_lu
-        module procedure :: form_lu_all
-        module procedure :: form_lu_only
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Computes the QR factorization of an M-by-N matrix.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/QRDecomposition.html)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
-    interface qr_factor
-        module procedure :: qr_factor_no_pivot
-        module procedure :: qr_factor_pivot
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
-    !! reflectors returned by the base QR factorization algorithm.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
-    interface form_qr
-        module procedure :: form_qr_no_pivot
-        module procedure :: form_qr_pivot
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
-    !! factorization.
-    interface mult_qr
-        module procedure :: mult_qr_mtx
-        module procedure :: mult_qr_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
-    !! RZ factorization.
-    interface mult_rz
-        module procedure :: mult_rz_mtx
-        module procedure :: mult_rz_vec
-    end interface
-
-contains
-! ******************************************************************************
-! LU FACTORIZATION
-! ------------------------------------------------------------------------------
     !> @brief Computes the LU factorization of an M-by-N matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
-    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
-    !! elements of L are not stored.
-    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
-    !!  operations.  The array stored pivot information such that row I is
-    !!  interchanged with row IPVT(I).
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
-    !!      singular.
     !!
     !! @par Usage
     !! To solve a system of 3 equations of 3 unknowns using LU factorization,
@@ -152,7 +86,198 @@ contains
     !! @par See Also
     !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
-    subroutine lu_factor(a, ipvt, err)
+    interface lu_factor
+        module procedure :: lu_factor_imp
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L and U matrices from the condensed [L\\U] storage 
+    !! format used by the @ref lu_factor.
+    !!
+    !! @par Usage
+    !! The following example illustrates how to extract the L, U, and P matrices
+    !! in order to solve a system of LU factored equations.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : lu_factor, form_lu
+    !!     use linalg_solve, only : solve_triangular_system
+    !!     implicit none
+    !!
+    !!     ! Variables
+    !!     real(real64) :: a(3,3), b(3), u(3,3), p(3,3)
+    !!     integer(int32) :: i, pvt(3)
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the LU factorization
+    !!     call lu_factor(a, pvt)
+    !!
+    !!     ! Extract the L and U matrices. A is overwritten with L.
+    !!     call form_lu(a, pvt, u, p)
+    !!
+    !!     ! Solve the lower triangular system L * Y = P * B for Y, but first compute
+    !!     ! P * B, and store the results in B
+    !!     b = matmul(p, b)
+    !!
+    !!     ! Now, compute the solution to the lower triangular system.  Store the
+    !!     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
+    !!     call solve_triangular_system(.false., .false., .false., a, b)
+    !! 
+    !!     ! Solve the upper triangular system U * X = Y for X.
+    !!     call solve_triangular_system(.true., .false., .true., u, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "LU Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! LU Solution: X =
+    !! 0.3333
+    !! -0.6667
+    !! 0.0000
+    !! @endcode
+    interface form_lu
+        module procedure :: form_lu_all
+        module procedure :: form_lu_only
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the QR factorization of an M-by-N matrix.
+    !!
+    !! @par Usage
+    !! The following example illustrates the solution of a system of equations
+    !! using QR factorization.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : qr_factor
+    !!     use linalg_solve, only : solve_qr
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,3), tau(3), b(3)
+    !!     integer(int32) :: i, pvt(3)
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the QR factorization, using pivoting
+    !!     pvt = 0     ! Zero every entry in order not to lock any column in place
+    !!     call qr_factor(a, tau, pvt)
+    !!
+    !!     ! Compute the solution.  The results overwrite b.
+    !!     call solve_qr(a, tau, pvt, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "QR Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !!
+    !!     ! Notice, QR factorization without pivoting could be accomplished in the
+    !!     ! same manner.  The only difference is to omit the PVT array (column pivot
+    !!     ! tracking array).
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! QR Solution: X =
+    !! 0.3333
+    !! -0.6667
+    !! 0.0000
+    !! @endcode
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/QRDecomposition.html)
+    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
+    interface qr_factor
+        module procedure :: qr_factor_no_pivot
+        module procedure :: qr_factor_pivot
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
+    !! reflectors returned by the base QR factorization algorithm.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
+    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
+    interface form_qr
+        module procedure :: form_qr_no_pivot
+        module procedure :: form_qr_pivot
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
+    !! factorization.
+    interface mult_qr
+        module procedure :: mult_qr_mtx
+        module procedure :: mult_qr_vec
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
+    !! RZ factorization.
+    interface mult_rz
+        module procedure :: mult_rz_mtx
+        module procedure :: mult_rz_vec
+    end interface
+
+contains
+! ******************************************************************************
+! LU FACTORIZATION
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of an M-by-N matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+    !! elements of L are not stored.
+    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+    !!  operations.  The array stored pivot information such that row I is
+    !!  interchanged with row IPVT(I).
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
+    subroutine lu_factor_imp(a, ipvt, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         integer(i32), intent(out), dimension(:) :: ipvt

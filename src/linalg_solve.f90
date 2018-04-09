@@ -26,6 +26,69 @@ module linalg_solve
 ! INTERFACES
 ! ------------------------------------------------------------------------------
     !> @brief Solves a triangular system of equations.
+    !!
+    !! @par Usage
+    !! The following example illustrates the solution of two triangular systems
+    !! to solve a system of LU factored equations.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : lu_factor, form_lu
+    !!     use linalg_solve, only : solve_triangular_system
+    !!     implicit none
+    !!
+    !!     ! Variables
+    !!     real(real64) :: a(3,3), b(3), u(3,3), p(3,3)
+    !!     integer(int32) :: i, pvt(3)
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the LU factorization
+    !!     call lu_factor(a, pvt)
+    !!
+    !!     ! Extract the L and U matrices. A is overwritten with L.
+    !!     call form_lu(a, pvt, u, p)
+    !!
+    !!     ! Solve the lower triangular system L * Y = P * B for Y, but first compute
+    !!     ! P * B, and store the results in B
+    !!     b = matmul(p, b)
+    !!
+    !!     ! Now, compute the solution to the lower triangular system.  Store the
+    !!     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
+    !!     call solve_triangular_system(.false., .false., .false., a, b)
+    !! 
+    !!     ! Solve the upper triangular system U * X = Y for X.
+    !!     call solve_triangular_system(.true., .false., .true., u, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "LU Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! LU Solution: X =
+    !! 0.3333
+    !! -0.6667
+    !! 0.0000
+    !! @endcode
     interface solve_triangular_system
         module procedure :: solve_tri_mtx
         module procedure :: solve_tri_vec
@@ -96,6 +159,62 @@ module linalg_solve
 
 ! ------------------------------------------------------------------------------
     !> @brief Solves a system of M QR-factored equations of N unknowns.
+    !!
+    !! @par Usage
+    !! The following example illustrates the solution of a system of equations
+    !! using QR factorization.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : qr_factor
+    !!     use linalg_solve, only : solve_qr
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,3), tau(3), b(3)
+    !!     integer(int32) :: i, pvt(3)
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the QR factorization, using pivoting
+    !!     pvt = 0     ! Zero every entry in order not to lock any column in place
+    !!     call qr_factor(a, tau, pvt)
+    !!
+    !!     ! Compute the solution.  The results overwrite b.
+    !!     call solve_qr(a, tau, pvt, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "QR Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !!
+    !!     ! Notice, QR factorization without pivoting could be accomplished in the
+    !!     ! same manner.  The only difference is to omit the PVT array (column pivot
+    !!     ! tracking array).
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! QR Solution: X =
+    !! 0.3333
+    !! -0.6667
+    !! 0.0000
+    !! @endcode
     !!
     !! @par See Also
     !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
@@ -170,27 +289,6 @@ contains
     !!  warning messages that may be encountered are as follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
     !!      @p a and @p b are not compatible.
-    !!
-    !! @par Usage
-    !! To solve a triangular system of N equations of N unknowns A*X = B, where
-    !! A is an N-by-N upper triangular matrix, and B and X are N-by-NRHS
-    !! matrices, the following code will suffice.
-    !!
-    !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an upper triangular N-by-N
-    !! ! matrix, and B and X are N-by-NRHS in size.
-    !!
-    !! ! Variables
-    !! integer(i32) :: info
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_triangular_system(.true., .true., .false., .true., &
-    !!      1.0d0, a, b)
-    !! @endcode
     !!
     !! @par Notes
     !! This routine is based upon the BLAS routine DTRSM.

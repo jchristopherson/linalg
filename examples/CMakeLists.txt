@@ -14,6 +14,10 @@ target_link_libraries(od_example linalg)
 add_executable(eigen_example linalg_eigen_example.f90)
 target_link_libraries(eigen_example linalg)
 
+# LU Example - Full Method
+add_executable(lu_full_example linalg_lu_full_example.f90)
+target_link_libraries(lu_full_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

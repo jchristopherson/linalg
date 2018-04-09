@@ -26,71 +26,6 @@ module linalg_factor
 ! ******************************************************************************
 ! INTERFACES
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the LU factorization of an M-by-N matrix.
-    !!
-    !! @par Usage
-    !! To solve a system of 3 equations of 3 unknowns using LU factorization,
-    !! the following code will suffice.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env
-    !!     use linalg_factor, only : lu_factor
-    !!     use linalg_solve, only : solve_lu
-    !!     implicit none
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,3), b(3)
-    !!     integer(int32) :: i, pvt(3)
-    !!
-    !!     ! Build the 3-by-3 matrix A.
-    !!     !     | 1   2   3 |
-    !!     ! A = | 4   5   6 |
-    !!     !     | 7   8   0 |
-    !!     a = reshape( &
-    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
-    !!         [3, 3])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     | -1 |
-    !!     ! b = | -2 |
-    !!     !     | -3 |
-    !!     b = [-1.0d0, -2.0d0, -3.0d0]
-    !!
-    !!     ! The solution is:
-    !!     !     |  1/3 |
-    !!     ! x = | -2/3 |
-    !!     !     |   0  |
-    !!
-    !!     ! Compute the LU factorization
-    !!     call lu_factor(a, pvt)
-    !!
-    !!     ! Compute the solution.  The results overwrite b.
-    !!     call solve_lu(a, pvt, b)
-    !!
-    !!     ! Display the results.
-    !!     print '(A)', "LU Solution: X = "
-    !!     print '(F8.4)', (b(i), i = 1, size(b))
-    !! end program
-    !! @endcode
-    !! The program generates the following output.
-    !! @code{.txt}
-    !!  LU Solution: X =
-    !!   0.3333
-    !!  -0.6667
-    !!   0.0000
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGETRF.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
-    interface lu_factor
-        module procedure :: lu_factor_imp
-    end interface
-
-! ------------------------------------------------------------------------------
     !> @brief Extracts the L and U matrices from the condensed [L\\U] storage 
     !! format used by the @ref lu_factor.
     !!
@@ -314,6 +249,74 @@ module linalg_factor
 ! ------------------------------------------------------------------------------
     !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
     !! factorization.
+    !!
+    !! @par Usage
+    !! The following example illustrates how to perform the multiplication 
+    !! Q**T * B when solving a system of QR factored equations without 
+    !! explicitly forming the matrix Q.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : qr_factor, mult_qr
+    !!     use linalg_solve, only : solve_triangular_system
+    !!     implicit none
+    !!
+    !!     ! Variables
+    !!     real(real64) :: a(3,3), b(3), tau(3)
+    !!     integer(int32) :: i
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the QR factorization without column pivoting
+    !!     call qr_factor(a, tau)
+    !!
+    !!     ! As this system is square, matrix R is upper triangular.  Also, Q is
+    !!     ! always orthogonal such that it's inverse and transpose are equal.  As the
+    !!     ! system is now factored, its form is: Q * R * X = B.  Solving this system
+    !!     ! is then as simple as solving the upper triangular system: 
+    !!     ! R * X = Q**T * B.
+    !!
+    !!     ! Compute Q**T * B, and store the results in B.  Notice, using mult_qr
+    !!     ! avoids direct construction of the full Q and R matrices.
+    !!     call mult_qr(.true., a, tau, b)
+    !!
+    !!     ! Solve the upper triangular system R * X = Q**T * B for X
+    !!     call solve_triangular_system(.true., .false., .true., a, b)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "QR Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !!
+    !!     ! Notice, QR factorization with column pivoting could be accomplished via
+    !!     ! a similar approach, but the column pivoting would need to be accounted
+    !!     ! for by noting that Q * R = A * P, where P is an N-by-N matrix describing
+    !!     ! the column pivoting operations.
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! QR Solution: X =
+    !! 0.3333
+    !! -0.6667
+    !! 0.0000
+    !! @endcode
     interface mult_qr
         module procedure :: mult_qr_mtx
         module procedure :: mult_qr_vec
@@ -347,7 +350,66 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
     !!      singular.
-    subroutine lu_factor_imp(a, ipvt, err)
+    !!
+    !! @par Usage
+    !! To solve a system of 3 equations of 3 unknowns using LU factorization,
+    !! the following code will suffice.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env
+    !!     use linalg_factor, only : lu_factor
+    !!     use linalg_solve, only : solve_lu
+    !!     implicit none
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,3), b(3)
+    !!     integer(int32) :: i, pvt(3)
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
+    !!
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
+    !!
+    !!     ! Compute the LU factorization
+    !!     call lu_factor(a, pvt)
+    !!
+    !!     ! Compute the solution.  The results overwrite b.
+    !!     call solve_lu(a, pvt, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "LU Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !! end program
+    !! @endcode
+    !! The program generates the following output.
+    !! @code{.txt}
+    !!  LU Solution: X =
+    !!   0.3333
+    !!  -0.6667
+    !!   0.0000
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine DGETRF.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    subroutine lu_factor(a, ipvt, err)
         ! Arguments
         real(dp), intent(inout), dimension(:,:) :: a
         integer(i32), intent(out), dimension(:) :: ipvt
@@ -595,54 +657,6 @@ contains
     !! defined system.  To solve an underdetermined system, it is recommended to
     !! use either LQ factorization, or a column-pivoting based QR factorization.
     !!
-    !! @par Usage
-    !! To solve a system of M equations of N unknowns using QR factorization,
-    !! the following code will suffice assuming M >= N.
-    !! @code {.f90}
-    !! ! Solve the system: A*X = B in a least-squares sense, where A is an
-    !! ! M-by-N matrix, B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.
-    !!
-    !! ! Variables
-    !! real(dp), dimension(m, n) :: a
-    !! real(dp), dimension(m, nrhs) :: b, qtb
-    !! real(dp), dimension(n, nrhs) :: x
-    !! real(dp), dimension(n) :: tau
-    !! real(dp), dimension(m, m) :: q
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Compute the QR factorization. We're intentionally not forming the full
-    !! ! Q matrix, but instead storing it in terms of its elementary reflector
-    !! ! components in the sub-diagonal portions of A, and the corresponding
-    !! ! scalar factors in TAU.  Additionally, we'll let the algorithm allocate
-    !! ! it's own workspace array; therefore, the call to factor A is:
-    !! call qr_factor(a, tau)
-    !!
-    !! ! Solve A*X = B for X.  The first N rows of B are used to store X.
-    !! call solve_qr(a, tau, b)
-    !!
-    !! ! Also note, we could form Q and R explicitly.  Then solution of the
-    !! ! system of equations can be found.  First we form Q and R.
-    !! call form_qr(a, tau, q) ! Forms Q, and R is stored in A
-    !!
-    !! ! Since we now have Q and R, we seek a solution to the equation:
-    !! ! Q*R*X = B, but Q is an orthogonal matrix (i.e. Q**T = inv(Q)).
-    !! ! Then: R*X = Q**T * B, and R is upper triangular; therefore, back
-    !! ! substitution will suffice for a solution procedure.
-    !! !
-    !! ! Next, compute Q**T * B, and store in QTB.
-    !! call mtx_mult(.true., .false., 1.0d0, q, b, 0.0d0, qtb)
-    !!
-    !! ! Copy the first N rows of Q**T * B into X for the solution process.
-    !! ! Notice, only the first N rows are needed as rows N+1:M are all zero in
-    !! ! matrix R.
-    !! x = qtb(1:n,nrhs)
-    !!
-    !! ! Compute the solution and store in X
-    !! call solve_triangular_system(.true., .true., .false., .true., 1.0d0, &
-    !!  a(1:n,1:n), x)
-    !! @endcode
-    !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGEQRF.
     subroutine qr_factor_no_pivot(a, tau, work, olwork, err)
@@ -745,57 +759,6 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    !!
-    !! @par Usage
-    !! To solve a system of M equations of N unknowns using QR factorization,
-    !! the following code will suffice for any M and N.
-    !! @code {.f90}
-    !! ! Solve the least-squares (M >= N), or the underdetermined (M < N)
-    !! ! problem A*X = B, where A is an M-by-N matrix, B is an M-by-NRHS matrix,
-    !! ! and X is an N-by-NRHS matrix.  In the underdetermined case, or the
-    !! ! case where the rank of matrix A is less than N, the solution obtained
-    !! ! contains the fewest possible non-zero entries.
-    !!
-    !! ! Variables
-    !! real(dp), dimension(m, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
-    !! real(dp), dimension(k) :: tau ! k = min(m, n)
-    !! real(dp), dimension(m, m) :: q
-    !! real(dp), dimension(n, n) :: p
-    !! integer(i32), dimension(n) :: pvt
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Allow all columns to be free.
-    !! pvt = 0
-    !!
-    !! ! Compute the QR factorization. We're intentionally not forming the full
-    !! ! Q matrix, but instead storing it in terms of its elementary reflector
-    !! ! components in the sub-diagonal portions of A, and the corresponding
-    !! ! scalar factors in TAU.  Additionally, we'll let the algorithm allocate
-    !! ! it's own workspace array; therefore, the call to factor A is:
-    !! call qr_factor(a, tau, pvt)
-    !!
-    !! ! Solve A*X = B for X.  If M > N, the first N rows of B are used to store
-    !! ! X.  If M < N, the input matrix B must be N-by-NRHS, and only the first
-    !! ! M rows are used for the actual matrix B.  The remaining N-M rows
-    !! ! can contain whatever as they are not referenced until they are
-    !! ! overwritten by the N-by-NRHS solution matrix X.
-    !! call solve_qr(a, tau, pvt, b)
-    !!
-    !! ! Notice, if the explicit Q matrix from the factorization is desired,
-    !! ! the form_qr routine works similarly as in the no-pivot case;
-    !! ! however, the permutation matrix P is also constructed.  The call would
-    !! ! be as follows.  Also, as with the no-pivot algorithm, the matrix R is
-    !! ! stored in matrix A.
-    !! call form_qr(a, tau, pvt, q, p)
-    !!
-    !! ! Solution can proceed as per typical, but with a full Q matrix.  Also
-    !! ! note, the problem is of the form: A*P = Q*R.  Solution is straight
-    !! ! forward, as with the no-pivot case; however, if M < N, then R is upper
-    !! ! trapezoidal, and must be appropriately partitioned to solve.  The rank
-    !! ! of matrix R should be considered when applying the partition.
-    !! @endcode
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGEQP3.

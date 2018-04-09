@@ -22,6 +22,10 @@ target_link_libraries(lu_full_example linalg)
 add_executable(qr_full_example linalg_qr_full_example.f90)
 target_link_libraries(qr_full_example linalg)
 
+# QR Example - QR Multiplication Example, No Pivoting
+add_executable(qr_mult_example linalg_qr_mult_example.f90)
+target_link_libraries(qr_mult_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

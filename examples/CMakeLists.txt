@@ -18,6 +18,10 @@ target_link_libraries(eigen_example linalg)
 add_executable(lu_full_example linalg_lu_full_example.f90)
 target_link_libraries(lu_full_example linalg)
 
+# QR Example - Full Method, No Pivoting
+add_executable(qr_full_example linalg_qr_full_example.f90)
+target_link_libraries(qr_full_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

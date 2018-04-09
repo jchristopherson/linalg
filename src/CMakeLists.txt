@@ -3,6 +3,7 @@ option(USE_EXISTING_BLAS "Use an existing BLAS instead of the default NETLIB BLA
 if (USE_EXISTING_BLAS)
     message(STATUS "Using an existing BLAS.")
     find_package(blas)
+    set(BLAS_LIBRARY blas)
 else()
     message(STATUS "Using the default NETLIB BLAS.")
     set(blas_sources
@@ -45,6 +46,7 @@ else()
         external/lapack/BLAS/SRC/zgemm.f
     )
     add_library(blas ${blas_sources})
+    set(BLAS_LIBRARY blas)
 endif()
 
 # Include only the necessary LAPACK files
@@ -209,7 +211,9 @@ list(APPEND linalg_sources ${lapack_sources})
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg blas ${FERROR_LIBRARIES})
+target_link_libraries(linalg ${BLAS_LIBRARY} ${FERROR_LIBRARY})
+
+# https://stackoverflow.com/questions/30987311/exporting-an-imported-library
 
 # ------------------------------------------------------------------------------
 # INSTALLATION INSTRUCTIONS
@@ -224,7 +228,8 @@ set_property(TARGET linalg APPEND PROPERTY COMPATIBLE_INTERFACE_STRING linalg_VE
 set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
 
 # Define the installation instructions
-install(TARGETS linalg EXPORT linalgTargets
+install(TARGETS linalg ${BLAS_LIBRARY}
+    EXPORT linalgTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

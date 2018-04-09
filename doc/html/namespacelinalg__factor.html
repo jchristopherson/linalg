@@ -222,7 +222,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of N equations of N unknowns using Cholesky factorization, the following code will suffice. Notice, the system of equations must be positive definite. <div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are</span></div><div class="line"><span class="comment">! N-by-NRHS in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b</div><div class="line"><span class="keywordtype">logical</span> :: upper</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Specify that we&#39;re using the upper portion of A (remember positive </span></div><div class="line"><span class="comment">! definite matrices are symmetric)</span></div><div class="line">upper = .true.</div><div class="line"></div><div class="line"><span class="comment">! Compute the factorization of A.</span></div><div class="line"><span class="keyword">call </span>cholesky_factor(a, upper)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__cholesky.html">solve_cholesky</a>(upper, a, b)</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRF. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01308">1308</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01337">1337</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -283,7 +283,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1DN.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01494">1494</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01523">1523</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -342,7 +342,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1UP.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01400">1400</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01429">1429</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -424,7 +424,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00211">211</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00240">240</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -481,7 +481,7 @@ Functions/Subroutines</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00288">288</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00317">317</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -561,7 +561,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORGQR. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00694">694</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00723">723</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -655,7 +655,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORGQR. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00825">825</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00854">854</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -704,7 +704,7 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Usage</dt><dd>To solve a system of N equations of N unknowns using LU factorization, the following code will suffice. <div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are</span></div><div class="line"><span class="comment">! N-by-NRHS in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b</div><div class="line"></div><div class="line"><span class="comment">! Define the array used to track row pivots.</span></div><div class="line"><span class="keywordtype">integer(i32)</span>, <span class="keywordtype">dimension(n)</span> :: pvt</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the LU factorization of A.  On output, A contains [L\U].</span></div><div class="line"><span class="keyword">call </span>lu_factor(a, pvt)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__lu.html">solve_lu</a>(a, pvt, b)</div></div><!-- fragment --></dd></dl>
+<dl class="section user"><dt>Usage</dt><dd>To solve a system of 3 equations of 3 unknowns using LU factorization, the following code will suffice. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div><div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__factor.html">linalg_factor</a>, <span class="keywordtype">only</span> : lu_factor</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__solve.html">linalg_solve</a>, <span class="keywordtype">only</span> : <a class="code" href="interfacelinalg__solve_1_1solve__lu.html">solve_lu</a></div><div class="line">    <span class="keywordtype">implicit none</span></div><div class="line"></div><div class="line">    <span class="comment">! Local Variables</span></div><div class="line">    <span class="keywordtype">real(real64)</span> :: a(3,3), b(3)</div><div class="line">    <span class="keywordtype">integer(int32)</span> :: i, pvt(3)</div><div class="line"></div><div class="line">    <span class="comment">! Build the 3-by-3 matrix A.</span></div><div class="line">    <span class="comment">!     | 1   2   3 |</span></div><div class="line">    <span class="comment">! A = | 4   5   6 |</span></div><div class="line">    <span class="comment">!     | 7   8   0 |</span></div><div class="line">    a = reshape( &amp;</div><div class="line">        [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &amp;</div><div class="line">        [3, 3])</div><div class="line"></div><div class="line">    <span class="comment">! Build the right-hand-side vector B.</span></div><div class="line">    <span class="comment">!     | -1 |</span></div><div class="line">    <span class="comment">! b = | -2 |</span></div><div class="line">    <span class="comment">!     | -3 |</span></div><div class="line">    b = [-1.0d0, -2.0d0, -3.0d0]</div><div class="line"></div><div class="line">    <span class="comment">! The solution is:</span></div><div class="line">    <span class="comment">!     |  1/3 |</span></div><div class="line">    <span class="comment">! x = | -2/3 |</span></div><div class="line">    <span class="comment">!     |   0  |</span></div><div class="line"></div><div class="line">    <span class="comment">! Compute the LU factorization</span></div><div class="line">    <span class="keyword">call </span>lu_factor(a, pvt)</div><div class="line"></div><div class="line">    <span class="comment">! Compute the solution.  The results overwrite b.</span></div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__lu.html">solve_lu</a>(a, pvt, b)</div><div class="line"></div><div class="line">    <span class="comment">! Display the results.</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div><div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div><div class="line"><span class="keyword">end program</span></div></div><!-- fragment --> The program generates the following output. <div class="fragment"><div class="line">LU Solution: X =</div><div class="line"> 0.3333</div><div class="line">-0.6667</div><div class="line"> 0.0000</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGETRF.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><ul>
 <li><a href="https://en.wikipedia.org/wiki/LU_decomposition">Wikipedia</a></li>
@@ -712,7 +712,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00127">127</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00156">156</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -806,7 +806,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMQR. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00927">927</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00956">956</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -893,7 +893,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon the LAPACK routine DORM2R. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01054">1054</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01083">1083</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -994,7 +994,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01745">1745</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01774">1774</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1088,7 +1088,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01887">1887</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01916">1916</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1163,7 +1163,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of M equations of N unknowns using QR factorization, the following code will suffice assuming M &gt;= N. <div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B in a least-squares sense, where A is an</span></div><div class="line"><span class="comment">! M-by-N matrix, B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, nrhs)</span> :: b, qtb</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: x</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n)</span> :: tau</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, m)</span> :: q</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the QR factorization. We&#39;re intentionally not forming the full</span></div><div class="line"><span class="comment">! Q matrix, but instead storing it in terms of its elementary reflector</span></div><div class="line"><span class="comment">! components in the sub-diagonal portions of A, and the corresponding</span></div><div class="line"><span class="comment">! scalar factors in TAU.  Additionally, we&#39;ll let the algorithm allocate</span></div><div class="line"><span class="comment">! it&#39;s own workspace array; therefore, the call to factor A is:</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1qr__factor.html">qr_factor</a>(a, tau)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X.  The first N rows of B are used to store X.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__qr.html">solve_qr</a>(a, tau, b)</div><div class="line"></div><div class="line"><span class="comment">! Also note, we could form Q and R explicitly.  Then solution of the</span></div><div class="line"><span class="comment">! system of equations can be found.  First we form Q and R.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1form__qr.html">form_qr</a>(a, tau, q) <span class="comment">! Forms Q, and R is stored in A</span></div><div class="line"></div><div class="line"><span class="comment">! Since we now have Q and R, we seek a solution to the equation:</span></div><div class="line"><span class="comment">! Q*R*X = B, but Q is an orthogonal matrix (i.e. Q**T = inv(Q)).</span></div><div class="line"><span class="comment">! Then: R*X = Q**T * B, and R is upper triangular; therefore, back</span></div><div class="line"><span class="comment">! substitution will suffice for a solution procedure.</span></div><div class="line"><span class="comment">!</span></div><div class="line"><span class="comment">! Next, compute Q**T * B, and store in QTB.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__core_1_1mtx__mult.html">mtx_mult</a>(.true., .false., 1.0d0, q, b, 0.0d0, qtb)</div><div class="line"></div><div class="line"><span class="comment">! Copy the first N rows of Q**T * B into X for the solution process.</span></div><div class="line"><span class="comment">! Notice, only the first N rows are needed as rows N+1:M are all zero in</span></div><div class="line"><span class="comment">! matrix R.</span></div><div class="line">x = qtb(1:n,nrhs)</div><div class="line"></div><div class="line"><span class="comment">! Compute the solution and store in X</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__triangular__system.html">solve_triangular_system</a>(.true., .true., .false., .true., 1.0d0, &amp;</div><div class="line"> a(1:n,1:n), x)</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGEQRF. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00425">425</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00454">454</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1244,7 +1244,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of M equations of N unknowns using QR factorization, the following code will suffice for any M and N. <div class="fragment"><div class="line"><span class="comment">! Solve the least-squares (M &gt;= N), or the underdetermined (M &lt; N)</span></div><div class="line"><span class="comment">! problem A*X = B, where A is an M-by-N matrix, B is an M-by-NRHS matrix,</span></div><div class="line"><span class="comment">! and X is an N-by-NRHS matrix.  In the underdetermined case, or the</span></div><div class="line"><span class="comment">! case where the rank of matrix A is less than N, the solution obtained</span></div><div class="line"><span class="comment">! contains the fewest possible non-zero entries.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(k)</span> :: tau <span class="comment">! k = min(m, n)</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, m)</span> :: q</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: p</div><div class="line"><span class="keywordtype">integer(i32)</span>, <span class="keywordtype">dimension(n)</span> :: pvt</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Allow all columns to be free.</span></div><div class="line">pvt = 0</div><div class="line"></div><div class="line"><span class="comment">! Compute the QR factorization. We&#39;re intentionally not forming the full</span></div><div class="line"><span class="comment">! Q matrix, but instead storing it in terms of its elementary reflector</span></div><div class="line"><span class="comment">! components in the sub-diagonal portions of A, and the corresponding</span></div><div class="line"><span class="comment">! scalar factors in TAU.  Additionally, we&#39;ll let the algorithm allocate</span></div><div class="line"><span class="comment">! it&#39;s own workspace array; therefore, the call to factor A is:</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1qr__factor.html">qr_factor</a>(a, tau, pvt)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X.  If M &gt; N, the first N rows of B are used to store</span></div><div class="line"><span class="comment">! X.  If M &lt; N, the input matrix B must be N-by-NRHS, and only the first</span></div><div class="line"><span class="comment">! M rows are used for the actual matrix B.  The remaining N-M rows</span></div><div class="line"><span class="comment">! can contain whatever as they are not referenced until they are</span></div><div class="line"><span class="comment">! overwritten by the N-by-NRHS solution matrix X.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__solve_1_1solve__qr.html">solve_qr</a>(a, tau, pvt, b)</div><div class="line"></div><div class="line"><span class="comment">! Notice, if the explicit Q matrix from the factorization is desired,</span></div><div class="line"><span class="comment">! the form_qr routine works similarly as in the no-pivot case;</span></div><div class="line"><span class="comment">! however, the permutation matrix P is also constructed.  The call would</span></div><div class="line"><span class="comment">! be as follows.  Also, as with the no-pivot algorithm, the matrix R is</span></div><div class="line"><span class="comment">! stored in matrix A.</span></div><div class="line"><span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1form__qr.html">form_qr</a>(a, tau, pvt, q, p)</div><div class="line"></div><div class="line"><span class="comment">! Solution can proceed as per typical, but with a full Q matrix.  Also</span></div><div class="line"><span class="comment">! note, the problem is of the form: A*P = Q*R.  Solution is straight</span></div><div class="line"><span class="comment">! forward, as with the no-pivot case; however, if M &lt; N, then R is upper</span></div><div class="line"><span class="comment">! trapezoidal, and must be appropriately partitioned to solve.  The rank</span></div><div class="line">! of matrix r should be considered when applying the partition.</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGEQP3. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00579">579</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l00608">608</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1324,7 +1324,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DQR1UP.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01180">1180</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01209">1209</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1417,7 +1417,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01633">1633</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01662">1662</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1503,7 +1503,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02046">2046</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02075">2075</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>

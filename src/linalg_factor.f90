@@ -95,26 +95,55 @@ contains
     !!      singular.
     !!
     !! @par Usage
-    !! To solve a system of N equations of N unknowns using LU factorization,
+    !! To solve a system of 3 equations of 3 unknowns using LU factorization,
     !! the following code will suffice.
     !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are
-    !! ! N-by-NRHS in size.
+    !! program example
+    !!     use iso_fortran_env
+    !!     use linalg_factor, only : lu_factor
+    !!     use linalg_solve, only : solve_lu
+    !!     implicit none
     !!
-    !! ! Variables
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,3), b(3)
+    !!     integer(int32) :: i, pvt(3)
     !!
-    !! ! Define the array used to track row pivots.
-    !! integer(i32), dimension(n) :: pvt
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
     !!
-    !! ! Initialize A and B...
+    !!     ! Build the right-hand-side vector B.
+    !!     !     | -1 |
+    !!     ! b = | -2 |
+    !!     !     | -3 |
+    !!     b = [-1.0d0, -2.0d0, -3.0d0]
     !!
-    !! ! Compute the LU factorization of A.  On output, A contains [L\U].
-    !! call lu_factor(a, pvt)
+    !!     ! The solution is:
+    !!     !     |  1/3 |
+    !!     ! x = | -2/3 |
+    !!     !     |   0  |
     !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_lu(a, pvt, b)
+    !!     ! Compute the LU factorization
+    !!     call lu_factor(a, pvt)
+    !!
+    !!     ! Compute the solution.  The results overwrite b.
+    !!     call solve_lu(a, pvt, b)
+    !!
+    !!     ! Display the results.
+    !!     print '(A)', "LU Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !! end program
+    !! @endcode
+    !! The program generates the following output.
+    !! @code{.txt}
+    !!  LU Solution: X =
+    !!   0.3333
+    !!  -0.6667
+    !!   0.0000
     !! @endcode
     !!
     !! @par Notes

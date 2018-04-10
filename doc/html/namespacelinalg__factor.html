@@ -238,7 +238,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of N equations of N unknowns using Cholesky factorization, the following code will suffice. Notice, the system of equations must be positive definite. <div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are</span></div><div class="line"><span class="comment">! N-by-NRHS in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b</div><div class="line"><span class="keywordtype">logical</span> :: upper</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Specify that we&#39;re using the upper portion of A (remember positive </span></div><div class="line"><span class="comment">! definite matrices are symmetric)</span></div><div class="line">upper = .true.</div><div class="line"></div><div class="line"><span class="comment">! Compute the factorization of A.</span></div><div class="line"><span class="keyword">call </span>cholesky_factor(a, upper)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span>solve_cholesky(upper, a, b)</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRF. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01495">1495</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01589">1589</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -297,7 +297,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1DN.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01681">1681</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01775">1775</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -354,7 +354,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1UP.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01587">1587</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01681">1681</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -990,7 +990,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01932">1932</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02026">2026</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1082,7 +1082,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02074">2074</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02168">2168</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1307,10 +1307,11 @@ Functions/Subroutines</h2></td></tr>
                          [0 ]
 
  Note: Ra is upper triangular of dimension N-by-N.</pre></dd></dl>
+<dl class="section user"><dt>Usage</dt><dd>The following example illustrates a rank 1 update to a QR factored system. The results are compared to updating the original matrix, and then performing the factorization. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div><div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__factor.html">linalg_factor</a></div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__solve.html">linalg_solve</a></div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__core.html">linalg_core</a></div><div class="line">    <span class="keywordtype">implicit none</span></div><div class="line"></div><div class="line">    <span class="comment">! Variables</span></div><div class="line">    <span class="keywordtype">real(real64)</span> :: a(3,3), u(3), v(3), r(3,3), tau(3), q(3,3), qu(3,3)</div><div class="line">    <span class="keywordtype">integer(int32)</span> :: i</div><div class="line"></div><div class="line">    <span class="comment">! Build the 3-by-3 matrix A.</span></div><div class="line">    <span class="comment">!     | 1   2   3 |</span></div><div class="line">    <span class="comment">! A = | 4   5   6 |</span></div><div class="line">    <span class="comment">!     | 7   8   0 |</span></div><div class="line">    a = reshape( &amp;</div><div class="line">        [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &amp;</div><div class="line">        [3, 3])</div><div class="line"></div><div class="line">    <span class="comment">! Build the update vectors</span></div><div class="line">    <span class="comment">!     | 1/2 |      | 1 |</span></div><div class="line">    <span class="comment">! u = | 3/2 |, v = | 5 |</span></div><div class="line">    <span class="comment">!     |  3  |      | 2 |</span></div><div class="line">    u = [0.5d0, 1.5d0, 3.0d0]</div><div class="line">    v = [1.0d0, 5.0d0, 2.0d0]</div><div class="line"></div><div class="line">    <span class="comment">! Compute the QR factorization of the original matrix</span></div><div class="line">    r = a   <span class="comment">! Making a copy as the matrix will be overwritten by qr_factor</span></div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1qr__factor.html">qr_factor</a>(r, tau)</div><div class="line"></div><div class="line">    <span class="comment">! Form Q &amp; R</span></div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1form__qr.html">form_qr</a>(r, tau, q)</div><div class="line"></div><div class="line">    <span class="comment">! Compute the rank 1 update to the original matrix such that: </span></div><div class="line">    <span class="comment">! A = A + u * v**T</span></div><div class="line">    <span class="keyword">call </span>rank1_update(1.0d0, u, v, a)</div><div class="line"></div><div class="line">    <span class="comment">! Compute the rank 1 update to the factorization.  Notice, the contents </span></div><div class="line">    <span class="comment">! of U &amp; V are destroyed as part of this process.</span></div><div class="line">    <span class="keyword">call </span>qr_rank1_update(q, r, u, v)</div><div class="line"></div><div class="line">    <span class="comment">! As comparison, compute the QR factorization of the rank 1 updated matrix</span></div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1qr__factor.html">qr_factor</a>(a, tau)</div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__factor_1_1form__qr.html">form_qr</a>(a, tau, qu)</div><div class="line"></div><div class="line">    <span class="comment">! Display the matrices</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Updating the Factored Form:&quot;</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Q = &quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(q, 1)</div><div class="line">        print *, q(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;R = &quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(r, 1)</div><div class="line">        print *, r(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Updating A Directly:&quot;</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Q = &quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(qu, 1)</div><div class="line">        print *, qu(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;R = &quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(a, 1)</div><div class="line">        print *, a(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"><span class="keyword">end program </span></div></div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Updating the Factored Form:</div><div class="line">Q =</div><div class="line"> -0.13031167282892092       0.98380249683206911      -0.12309149097933236</div><div class="line"> -0.47780946703937632      -0.17109608640557677      -0.86164043685532932</div><div class="line"> -0.86874448552613881       -5.3467527001743037E-002  0.49236596391733078</div><div class="line">R =</div><div class="line"> -11.510864433221338       -26.540144032823541       -10.033998807826904</div><div class="line"> 0.0000000000000000        1.0586570346345126        2.0745400476676279</div><div class="line"> 0.0000000000000000        0.0000000000000000       -5.2929341121113067</div><div class="line">Updating A Directly:</div><div class="line">Q =</div><div class="line"> -0.13031167282892087       0.98380249683206955      -0.12309149097933178</div><div class="line"> -0.47780946703937643      -0.17109608640557616      -0.86164043685532943</div><div class="line"> -0.86874448552613903       -5.3467527001742954E-002  0.49236596391733084</div><div class="line">R =</div><div class="line"> -11.510864433221336       -26.540144032823545       -10.033998807826906</div><div class="line"> 0.0000000000000000        1.0586570346345205        2.0745400476676350</div><div class="line"> 0.0000000000000000        0.0000000000000000       -5.2929341121113058</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DQR1UP.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01367">1367</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01461">1461</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1401,7 +1402,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01820">1820</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01914">1914</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1485,7 +1486,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02233">2233</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02327">2327</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>

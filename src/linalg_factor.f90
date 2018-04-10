@@ -1358,6 +1358,100 @@ contains
     !! Note: Ra is upper triangular of dimension N-by-N.
     !! @endverbatim
     !!
+    !! @par Usage
+    !! The following example illustrates a rank 1 update to a QR factored 
+    !! system.  The results are compared to updating the original matrix, and
+    !! then performing the factorization.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env
+    !!     use linalg_factor
+    !!     use linalg_solve
+    !!     use linalg_core
+    !!     implicit none
+    !!
+    !!     ! Variables
+    !!     real(real64) :: a(3,3), u(3), v(3), r(3,3), tau(3), q(3,3), qu(3,3)
+    !!     integer(int32) :: i
+    !!
+    !!     ! Build the 3-by-3 matrix A.
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape( &
+    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+    !!         [3, 3])
+    !!
+    !!     ! Build the update vectors
+    !!     !     | 1/2 |      | 1 |
+    !!     ! u = | 3/2 |, v = | 5 |
+    !!     !     |  3  |      | 2 |
+    !!     u = [0.5d0, 1.5d0, 3.0d0]
+    !!     v = [1.0d0, 5.0d0, 2.0d0]
+    !!
+    !!     ! Compute the QR factorization of the original matrix
+    !!     r = a   ! Making a copy as the matrix will be overwritten by qr_factor
+    !!     call qr_factor(r, tau)
+    !!
+    !!     ! Form Q & R
+    !!     call form_qr(r, tau, q)
+    !!
+    !!     ! Compute the rank 1 update to the original matrix such that: 
+    !!     ! A = A + u * v**T
+    !!     call rank1_update(1.0d0, u, v, a)
+    !!
+    !!     ! Compute the rank 1 update to the factorization.  Notice, the contents 
+    !!     ! of U & V are destroyed as part of this process.
+    !!     call qr_rank1_update(q, r, u, v)
+    !!
+    !!     ! As comparison, compute the QR factorization of the rank 1 updated matrix
+    !!     call qr_factor(a, tau)
+    !!     call form_qr(a, tau, qu)
+    !!
+    !!     ! Display the matrices
+    !!     print '(A)', "Updating the Factored Form:"
+    !!     print '(A)', "Q = "
+    !!     do i = 1, size(q, 1)
+    !!         print *, q(i,:)
+    !!     end do
+    !!     print '(A)', "R = "
+    !!     do i = 1, size(r, 1)
+    !!         print *, r(i,:)
+    !!     end do
+    !!
+    !!     print '(A)', "Updating A Directly:"
+    !!     print '(A)', "Q = "
+    !!     do i = 1, size(qu, 1)
+    !!         print *, qu(i,:)
+    !!     end do
+    !!     print '(A)', "R = "
+    !!     do i = 1, size(a, 1)
+    !!         print *, a(i,:)
+    !!     end do
+    !! end program 
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Updating the Factored Form:
+    !! Q =
+    !!  -0.13031167282892092       0.98380249683206911      -0.12309149097933236
+    !!  -0.47780946703937632      -0.17109608640557677      -0.86164043685532932
+    !!  -0.86874448552613881       -5.3467527001743037E-002  0.49236596391733078
+    !! R =
+    !!  -11.510864433221338       -26.540144032823541       -10.033998807826904
+    !!  0.0000000000000000        1.0586570346345126        2.0745400476676279
+    !!  0.0000000000000000        0.0000000000000000       -5.2929341121113067
+    !! Updating A Directly:
+    !! Q =
+    !!  -0.13031167282892087       0.98380249683206955      -0.12309149097933178
+    !!  -0.47780946703937643      -0.17109608640557616      -0.86164043685532943
+    !!  -0.86874448552613903       -5.3467527001742954E-002  0.49236596391733084
+    !! R =
+    !!  -11.510864433221336       -26.540144032823545       -10.033998807826906
+    !!  0.0000000000000000        1.0586570346345205        2.0745400476676350
+    !!  0.0000000000000000        0.0000000000000000       -5.2929341121113058
+    !! @endcode
+    !!
     !! @par Notes
     !! This routine utilizes the QRUPDATE routine DQR1UP.
     !!

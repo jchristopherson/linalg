@@ -26,6 +26,10 @@ target_link_libraries(qr_full_example linalg)
 add_executable(qr_mult_example linalg_qr_mult_example.f90)
 target_link_libraries(qr_mult_example linalg)
 
+# QR Update Example
+add_executable(qr_update_example linalg_qr_update_example.f90)
+target_link_libraries(qr_update_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

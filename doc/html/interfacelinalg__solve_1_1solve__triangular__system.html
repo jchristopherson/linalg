@@ -166,19 +166,19 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), intent(in)&#160;</td>
           <td class="paramname"><em>alpha</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -219,7 +219,7 @@ Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSM. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00364">364</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00452">452</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -251,13 +251,13 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -295,14 +295,14 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section user"><dt>Usage</dt><dd>To solve a triangular system of N equations of N unknowns A*X = B, where A is an N-by-N upper triangular matrix, and B and X are N-element arrays, the following code will suffice.</dd></dl>
-<div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an upper triangular N-by-N</span></div><div class="line"><span class="comment">! matrix, and B and X are N-elements in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">integer(i32)</span> :: info</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n)</span> :: b</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span>solve_triangular_system(.true., .false., a, b)</div></div><!-- fragment --><dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSV. </dd></dl>
+<div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an upper triangular N-by-N</span></div><div class="line"><span class="comment">! matrix, and B and X are N-elements in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">integer(int32)</span> :: info</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n)</span> :: b</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span>solve_triangular_system(.true., .false., a, b)</div></div><!-- fragment --><dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSV. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00470">470</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00558">558</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this interface was generated from the following file:<ul>
-<li>D:/users/christopherson/Code/linalg/src/<a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a></li>
+<li>/home/jason/Documents/Code/linalg/src/<a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

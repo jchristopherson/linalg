@@ -1,6 +1,5 @@
 var annotated_dup =
 [
-    [ "lapack", "namespacelapack.html", "namespacelapack" ],
     [ "linalg_core", "namespacelinalg__core.html", "namespacelinalg__core" ],
     [ "linalg_eigen", "namespacelinalg__eigen.html", "namespacelinalg__eigen" ],
     [ "linalg_factor", "namespacelinalg__factor.html", "namespacelinalg__factor" ],

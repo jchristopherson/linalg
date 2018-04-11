@@ -8,5 +8,5 @@ var searchData=
   ['cholesky_5frank1_5fupdate_5fc',['cholesky_rank1_update_c',['../namespacelinalg__c__binding.html#ad5fc29e4257189d6ecdecd838b137d79',1,'linalg_c_binding']]],
   ['cmplx_5fpartition',['cmplx_partition',['../namespacelinalg__sorting.html#af35924bdb48404bb542f78446ee3316d',1,'linalg_sorting']]],
   ['cmplx_5fpartition_5find',['cmplx_partition_ind',['../namespacelinalg__sorting.html#a839e984e7674083993adda852d5357f6',1,'linalg_sorting']]],
-  ['cmtx_5fmult_5fc',['cmtx_mult_c',['../namespacelinalg__c__binding.html#a30846d79f49024432caa4b8186742810',1,'linalg_c_binding']]]
+  ['cmtx_5fmult_5fc',['cmtx_mult_c',['../namespacelinalg__c__binding.html#adf1a0d5ff95f289da6dac3892b3b2f86',1,'linalg_c_binding']]]
 ];

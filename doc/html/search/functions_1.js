@@ -1,8 +1,8 @@
 var searchData=
 [
   ['dbl_5fpartition_5find',['dbl_partition_ind',['../namespacelinalg__sorting.html#a9ed91f8dc3eb938cb4ad62ca99d0a862',1,'linalg_sorting']]],
-  ['det',['det',['../namespacelinalg__core.html#a7403be198480d0be3e944d577425ef6a',1,'linalg_core']]],
-  ['det_5fc',['det_c',['../namespacelinalg__c__binding.html#a30d35954c375badb374c863746ae0b33',1,'linalg_c_binding']]],
+  ['det',['det',['../namespacelinalg__core.html#a9ab109a63d597ba55b8ab6c85edb4a41',1,'linalg_core']]],
+  ['det_5fc',['det_c',['../namespacelinalg__c__binding.html#a9132434856e1bcc212389d3192405dd3',1,'linalg_c_binding']]],
   ['diag_5fcmtx_5fmult_5fleft_5fc',['diag_cmtx_mult_left_c',['../namespacelinalg__c__binding.html#a1e8d75b44685315225b41c91a6b1bb00',1,'linalg_c_binding']]],
   ['diag_5fcmtx_5fmult_5fright_5fc',['diag_cmtx_mult_right_c',['../namespacelinalg__c__binding.html#abb5d5df3f4370e0fa17e02b5c50ce846',1,'linalg_c_binding']]],
   ['diag_5fmtx_5fmult_5fcmplx_5fleft_5fc',['diag_mtx_mult_cmplx_left_c',['../namespacelinalg__c__binding.html#a52ed3672e434e835eba0b5a90224f076',1,'linalg_c_binding']]],

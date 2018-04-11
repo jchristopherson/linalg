@@ -208,25 +208,25 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public linalg_solve::mtx_inverse </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>iwork</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -259,7 +259,7 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Usage</dt><dd><div class="fragment"><div class="line"><span class="comment">! The following example illustrates how to solve a system of linear</span></div><div class="line"><span class="comment">! equations by matrix inversion.  Notice, this is not a preferred</span></div><div class="line"><span class="comment">! solution technique (use LU factorization instead), but is merely a</span></div><div class="line"><span class="comment">! means of illustrating how to compute the inverse of a square matrix.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b, x</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the inverse of A.  The inverse will overwrite the original</span></div><div class="line"><span class="comment">! matrix.</span></div><div class="line"><span class="keyword">call </span>mtx_inverse(a)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B as X = inv(A) * B.</span></div><div class="line">x = matmul(a, b)</div></div><!-- fragment --></dd></dl>
+<dl class="section user"><dt>Usage</dt><dd><div class="fragment"><div class="line"><span class="comment">! The following example illustrates how to solve a system of linear</span></div><div class="line"><span class="comment">! equations by matrix inversion.  Notice, this is not a preferred</span></div><div class="line"><span class="comment">! solution technique (use LU factorization instead), but is merely a</span></div><div class="line"><span class="comment">! means of illustrating how to compute the inverse of a square matrix.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: b, x</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the inverse of A.  The inverse will overwrite the original</span></div><div class="line"><span class="comment">! matrix.</span></div><div class="line"><span class="keyword">call </span>mtx_inverse(a)</div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B as X = inv(A) * B.</span></div><div class="line">x = matmul(a, b)</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routines DGETRF to perform an LU factorization of the matrix, and DGETRI to invert the LU factored matrix.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><ul>
 <li><a href="https://en.wikipedia.org/wiki/Invertible_matrix">Wikipedia</a></li>
@@ -267,7 +267,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01435">1435</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01523">1523</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -278,31 +278,31 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public linalg_solve::mtx_pinverse </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(out)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(out)&#160;</td>
           <td class="paramname"><em>ainv</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), intent(in), optional&#160;</td>
+          <td class="paramtype">real(real64), intent(in), optional&#160;</td>
           <td class="paramname"><em>tol</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -336,7 +336,7 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Usage</dt><dd><div class="fragment"><div class="line"><span class="comment">! Use the pseudo-inverse to obtain a least-squares solution to the</span></div><div class="line"><span class="comment">! overdetermined problem A*X = B, where A is an M-by-N matrix (M &gt;= N),</span></div><div class="line"><span class="comment">! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, m)</span> :: ainv</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(m, nrhs)</span> :: b</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: x</div><div class="line"></div><div class="line"><span class="comment">! Initialize A, and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the pseudo-inverse of A.  Let the subroutine allocate its</span></div><div class="line"><span class="comment">! own workspace array.</span></div><div class="line"><span class="keyword">call </span>mtx_pinverse(a, ainv)</div><div class="line"></div><div class="line"><span class="comment">! Compute X = AINV * B to obtain the solution.</span></div><div class="line">x = matmul(ainv, b)</div></div><!-- fragment --></dd></dl>
+<dl class="section user"><dt>Usage</dt><dd><div class="fragment"><div class="line"><span class="comment">! Use the pseudo-inverse to obtain a least-squares solution to the</span></div><div class="line"><span class="comment">! overdetermined problem A*X = B, where A is an M-by-N matrix (M &gt;= N),</span></div><div class="line"><span class="comment">! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(m, n)</span> :: a</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, m)</span> :: ainv</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(m, nrhs)</span> :: b</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, nrhs)</span> :: x</div><div class="line"></div><div class="line"><span class="comment">! Initialize A, and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Compute the pseudo-inverse of A.  Let the subroutine allocate its</span></div><div class="line"><span class="comment">! own workspace array.</span></div><div class="line"><span class="keyword">call </span>mtx_pinverse(a, ainv)</div><div class="line"></div><div class="line"><span class="comment">! Compute X = AINV * B to obtain the solution.</span></div><div class="line">x = matmul(ainv, b)</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><ul>
 <li><a href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse">Wikipedia</a></li>
 <li><a href="http://mathworld.wolfram.com/Moore-PenroseMatrixInverse.html">Wolfram MathWorld</a></li>
@@ -344,7 +344,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01595">1595</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01683">1683</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -364,13 +364,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -407,7 +407,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01268">1268</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01356">1356</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -427,13 +427,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -470,7 +470,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01334">1334</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01422">1422</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -484,25 +484,25 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_mtx </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -542,7 +542,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01763">1763</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01860">1860</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -556,37 +556,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_mtx_pvt </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(inout), optional, target&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(inout), optional, target&#160;</td>
           <td class="paramname"><em>ipvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>arnk</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -627,7 +627,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSY. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01981">1981</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02078">2078</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -641,37 +641,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_mtx_svd </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>arnk</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out)&#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -713,7 +713,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02271">2271</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02368">2368</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -727,25 +727,25 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_vec </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -785,7 +785,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01869">1869</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01966">1966</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -799,37 +799,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_vec_pvt </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(inout), optional, target&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(inout), optional, target&#160;</td>
           <td class="paramname"><em>ipvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>arnk</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -870,7 +870,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSY. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02127">2127</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02224">2224</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -884,37 +884,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_least_squares_vec_svd </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>arnk</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out)&#160;</td>
           <td class="paramname"><em>s</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -956,7 +956,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02399">2399</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l02496">2496</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -970,19 +970,19 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_lu_mtx </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>ipvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -1019,7 +1019,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>The routine is based upon the LAPACK routine DGETRS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00546">546</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00634">634</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1033,19 +1033,19 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_lu_vec </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>ipvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -1082,7 +1082,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>The routine is based upon the LAPACK routine DGETRS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00607">607</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00695">695</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1096,31 +1096,31 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_qr_no_pivot_mtx </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>tau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -1160,7 +1160,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon a subset of the LAPACK routine DGELS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00682">682</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00770">770</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1174,31 +1174,31 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_qr_no_pivot_vec </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>tau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -1238,7 +1238,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon a subset of the LAPACK routine DGELS. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00797">797</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00885">885</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1252,37 +1252,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_qr_pivot_mtx </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>tau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>jpvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -1323,7 +1323,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon a subset of the LAPACK routine DGELSY. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00910">910</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00998">998</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1337,37 +1337,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine linalg_solve::solve_qr_pivot_vec </td>
           <td>(</td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>tau</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), dimension(:), intent(in)&#160;</td>
+          <td class="paramtype">integer(int32), dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>jpvt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(out), optional, target&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(out), optional, target&#160;</td>
           <td class="paramname"><em>work</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer(i32), intent(out), optional&#160;</td>
+          <td class="paramtype">integer(int32), intent(out), optional&#160;</td>
           <td class="paramname"><em>olwork</em>, </td>
         </tr>
         <tr>
@@ -1408,7 +1408,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon a subset of the LAPACK routine DGELSY. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01097">1097</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l01185">1185</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1446,19 +1446,19 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), intent(in)&#160;</td>
           <td class="paramname"><em>alpha</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>b</em>, </td>
         </tr>
         <tr>
@@ -1499,7 +1499,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSM. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00364">364</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00452">452</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>
@@ -1531,13 +1531,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), dimension(:), intent(inout)&#160;</td>
+          <td class="paramtype">real(real64), dimension(:), intent(inout)&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -1575,9 +1575,9 @@ Functions/Subroutines</h2></td></tr>
   </dd>
 </dl>
 <dl class="section user"><dt>Usage</dt><dd>To solve a triangular system of N equations of N unknowns A*X = B, where A is an N-by-N upper triangular matrix, and B and X are N-element arrays, the following code will suffice.</dd></dl>
-<div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an upper triangular N-by-N</span></div><div class="line"><span class="comment">! matrix, and B and X are N-elements in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">integer(i32)</span> :: info</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(n)</span> :: b</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span>solve_triangular_system(.true., .false., a, b)</div></div><!-- fragment --><dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSV. </dd></dl>
+<div class="fragment"><div class="line"><span class="comment">! Solve the system: A*X = B, where A is an upper triangular N-by-N</span></div><div class="line"><span class="comment">! matrix, and B and X are N-elements in size.</span></div><div class="line"></div><div class="line"><span class="comment">! Variables</span></div><div class="line"><span class="keywordtype">integer(int32)</span> :: info</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n, n)</span> :: a</div><div class="line"><span class="keywordtype">real(real64)</span>, <span class="keywordtype">dimension(n)</span> :: b</div><div class="line"></div><div class="line"><span class="comment">! Initialize A and B...</span></div><div class="line"></div><div class="line"><span class="comment">! Solve A*X = B for X - Note: X overwrites B.</span></div><div class="line"><span class="keyword">call </span>solve_triangular_system(.true., .false., a, b)</div></div><!-- fragment --><dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSV. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00470">470</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__solve_8f90_source.html#l00558">558</a> of file <a class="el" href="linalg__solve_8f90_source.html">linalg_solve.f90</a>.</p>
 
 </div>
 </div>

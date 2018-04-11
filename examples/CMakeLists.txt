@@ -39,7 +39,7 @@ add_executable(cholesky_update_example linalg_cholesky_update_example.f90)
 target_link_libraries(cholesky_update_example linalg)
 
 # Cholesky Downdate Example
-add_executable(cholesky_downdate_example linalg_cholesky_downdate_Example.f90)
+add_executable(cholesky_downdate_example linalg_cholesky_downdate_example.f90)
 target_link_libraries(cholesky_downdate_example linalg)
 
 # --------------------

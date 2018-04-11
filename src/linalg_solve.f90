@@ -304,6 +304,50 @@ module linalg_solve
 ! ------------------------------------------------------------------------------
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns.
+    !!
+    !! @par Usage
+    !! The following example illustrates the least squares solution of an
+    !! overdetermined system of linear equations.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_solve, only : solve_least_squares
+    !!     implicit none
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,2), b(3)
+    !!     integer(int32) :: i
+    !!
+    !!     ! Build the 3-by-2 matrix A
+    !!     !     | 2   1 |
+    !!     ! A = |-3   1 |
+    !!     !     |-1   1 |
+    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     |-1 |
+    !!     ! b = |-2 |
+    !!     !     | 1 |
+    !!     b = [-1.0d0, -2.0d0, 1.0d0]
+    !!
+    !!     ! The solution is:
+    !!     ! x = [0.13158, -0.57895]**T
+    !!
+    !!     ! Compute the solution via a least-squares approach.  The results overwrite
+    !!     ! the first 2 elements in b.
+    !!     call solve_least_squares(a, b)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "Least Squares Solution: X = "
+    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Least Squares Solution: X =
+    !!  0.13158
+    !! -0.57895
+    !! @endcode
     interface solve_least_squares
         module procedure :: solve_least_squares_mtx
         module procedure :: solve_least_squares_vec
@@ -313,6 +357,50 @@ module linalg_solve
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns, but uses a full orthogonal factorization of
     !! the system.
+    !!
+    !! @par Usage
+    !! The following example illustrates the least squares solution of an
+    !! overdetermined system of linear equations.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_solve, only : solve_least_squares_full
+    !!     implicit none
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,2), b(3)
+    !!     integer(int32) :: i
+    !!
+    !!     ! Build the 3-by-2 matrix A
+    !!     !     | 2   1 |
+    !!     ! A = |-3   1 |
+    !!     !     |-1   1 |
+    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     |-1 |
+    !!     ! b = |-2 |
+    !!     !     | 1 |
+    !!     b = [-1.0d0, -2.0d0, 1.0d0]
+    !!
+    !!     ! The solution is:
+    !!     ! x = [0.13158, -0.57895]**T
+    !!
+    !!     ! Compute the solution via a least-squares approach.  The results overwrite
+    !!     ! the first 2 elements in b.
+    !!     call solve_least_squares_full(a, b)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "Least Squares Solution: X = "
+    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Least Squares Solution: X =
+    !!  0.13158
+    !! -0.57895
+    !! @endcode
     interface solve_least_squares_full
         module procedure :: solve_least_squares_mtx_pvt
         module procedure :: solve_least_squares_vec_pvt
@@ -2025,8 +2113,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(ipvt) /= n) then
-            flag = 3
         end if
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &
@@ -2171,8 +2257,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(ipvt) /= n) then
-            flag = 3
         end if
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &

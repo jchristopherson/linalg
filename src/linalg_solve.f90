@@ -2319,7 +2319,7 @@ contains
         end if
 
         ! Process
-        call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, flag)
+        call DGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, flag)
         if (present(arnk)) arnk = rnk
     end subroutine
 

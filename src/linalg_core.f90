@@ -16,6 +16,7 @@
 !! @par Purpose
 !! Provides common "core" linear algebra routines.
 module linalg_core
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
     use lapack
     use linalg_constants
@@ -84,18 +85,18 @@ contains
     subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
         ! Arguments
         logical, intent(in) :: transa, transb
-        real(dp), intent(in) :: alpha, beta
-        real(dp), intent(in), dimension(:,:) :: a, b
-        real(dp), intent(inout), dimension(:,:) :: c
+        real(real64), intent(in) :: alpha, beta
+        real(real64), intent(in), dimension(:,:) :: a, b
+        real(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
         character :: ta, tb
-        integer(i32) :: m, n, k, lda, ldb, flag
+        integer(int32) :: m, n, k, lda, ldb, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -178,15 +179,15 @@ contains
     subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)
         ! Arguments
         logical, intent(in) :: trans
-        real(dp), intent(in) :: alpha, beta
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: b
-        real(dp), intent(inout), dimension(:) :: c
+        real(real64), intent(in) :: alpha, beta
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: b
+        real(real64), intent(inout), dimension(:) :: c
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: t
-        integer(i32) :: m, n, flag
+        integer(int32) :: m, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -255,17 +256,17 @@ contains
     !! This routine is based upon the BLAS routine DGER.
     subroutine rank1_update(alpha, x, y, a, err)
         ! Arguments
-        real(dp), intent(in) :: alpha
-        real(dp), intent(in), dimension(:) :: x, y
-        real(dp), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: x, y
+        real(real64), intent(inout), dimension(:,:) :: a
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(i32) :: j, m, n
-        real(dp) :: temp
+        integer(int32) :: j, m, n
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -328,19 +329,19 @@ contains
     subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
         ! Arguments
         logical, intent(in) :: lside, trans
-        real(dp) :: alpha, beta
-        real(dp), intent(in), dimension(:) :: a
-        real(dp), intent(in), dimension(:,:) :: b
-        real(dp), intent(inout), dimension(:,:) :: c
+        real(real64) :: alpha, beta
+        real(real64), intent(in), dimension(:) :: a
+        real(real64), intent(in), dimension(:,:) :: b
+        real(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, k, nrowb, ncolb, flag
-        real(dp) :: temp
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -495,18 +496,18 @@ contains
     subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
         ! Arguments
         logical, intent(in) :: lside
-        real(dp), intent(in) :: alpha
-        real(dp), intent(in), dimension(:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, k
-        real(dp) :: temp
+        integer(int32) :: i, m, n, k
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -578,19 +579,19 @@ contains
     subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
         ! Arguments
         logical, intent(in) :: lside, trans
-        real(dp) :: alpha, beta
-        complex(dp), intent(in), dimension(:) :: a
-        real(dp), intent(in), dimension(:,:) :: b
-        complex(dp), intent(inout), dimension(:,:) :: c
+        real(real64) :: alpha, beta
+        complex(real64), intent(in), dimension(:) :: a
+        real(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        complex(dp), parameter :: zero = (0.0d0, 0.0d0)
-        complex(dp), parameter :: one = (1.0d0, 0.0d0)
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        integer(i32) :: i, m, n, k, nrowb, ncolb, flag
-        complex(dp) :: temp
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -754,19 +755,19 @@ contains
     subroutine diag_mtx_mult_mtx4(lside, trans, alpha, a, b, beta, c, err)
         ! Arguments
         logical, intent(in) :: lside, trans
-        real(dp) :: alpha, beta
-        complex(dp), intent(in), dimension(:) :: a
-        complex(dp), intent(in), dimension(:,:) :: b
-        complex(dp), intent(inout), dimension(:,:) :: c
+        real(real64) :: alpha, beta
+        complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        complex(dp), parameter :: zero = (0.0d0, 0.0d0)
-        complex(dp), parameter :: one = (1.0d0, 0.0d0)
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        integer(i32) :: i, m, n, k, nrowb, ncolb, flag
-        complex(dp) :: temp
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -910,14 +911,14 @@ contains
     !! @return The trace of @p x.
     pure function trace(x) result(y)
         ! Arguments
-        real(dp), intent(in), dimension(:,:) :: x
-        real(dp) :: y
+        real(real64), intent(in), dimension(:,:) :: x
+        real(real64) :: y
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn
+        integer(int32) :: i, m, n, mn
 
         ! Initialization
         y = zero
@@ -966,19 +967,19 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
     function mtx_rank(a, tol, work, olwork, err) result(rnk)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), optional :: tol
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), optional :: tol
+        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
-        integer(i32) :: rnk
+        integer(int32) :: rnk
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn, istat, lwork, flag
-        real(dp), pointer, dimension(:) :: wptr, s, w
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp) :: t, tref, smlnum
-        real(dp), dimension(1) :: dummy, temp
+        integer(int32) :: i, m, n, mn, istat, lwork, flag
+        real(real64), pointer, dimension(:) :: wptr, s, w
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64) :: t, tref, smlnum
+        real(real64), dimension(1) :: dummy, temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1086,22 +1087,22 @@ contains
     !! @return The determinant of @p a.
     function det(a, iwork, err) result(x)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        integer(i32), intent(out), pointer, optional, dimension(:) :: iwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), pointer, optional, dimension(:) :: iwork
         class(errors), intent(inout), optional, target :: err
-        real(dp) :: x
+        real(real64) :: x
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
-        real(dp), parameter :: ten = 1.0d1
-        real(dp), parameter :: p1 = 1.0d-1
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
+        real(real64), parameter :: ten = 1.0d1
+        real(real64), parameter :: p1 = 1.0d-1
 
         ! Local Variables
-        integer(i32) :: i, ep, n, istat, flag
-        integer(i32), pointer, dimension(:) :: ipvt
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        real(dp) :: temp
+        integer(int32) :: i, ep, n, istat, flag
+        integer(int32), pointer, dimension(:) :: ipvt
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1191,12 +1192,12 @@ contains
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
     subroutine swap(x, y, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: x, y
+        real(real64), intent(inout), dimension(:) :: x, y
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: i, n
-        real(dp) :: temp
+        integer(int32) :: i, n
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1237,17 +1238,17 @@ contains
     !! This routine is based upon the LAPACK routine DRSCL.
     subroutine recip_mult_array(a, x)
         ! Arguments
-        real(dp), intent(in) :: a
-        real(dp), intent(inout), dimension(:) :: x
+        real(real64), intent(in) :: a
+        real(real64), intent(inout), dimension(:) :: x
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
-        real(dp), parameter :: twotho = 2.0d3
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
+        real(real64), parameter :: twotho = 2.0d3
 
         ! Local Variables
         logical :: done
-        real(dp) :: bignum, cden, cden1, cnum, cnum1, mul, smlnum
+        real(real64) :: bignum, cden, cden1, cnum, cnum1, mul, smlnum
 
         ! Initialization
         smlnum = DLAMCH('s')
@@ -1315,17 +1316,17 @@ contains
     subroutine tri_mtx_mult(upper, alpha, a, beta, b, err)
         ! Arguments
         logical, intent(in) :: upper
-        real(dp), intent(in) :: alpha, beta
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in) :: alpha, beta
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(i32) :: i, j, k, n, d1, d2, flag
-        real(dp) :: temp
+        integer(int32) :: i, j, k, n, d1, d2, flag
+        real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg

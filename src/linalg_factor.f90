@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides a set of matrix factorization routines.
 module linalg_factor
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
     use linalg_constants
     use linalg_core, only : swap
@@ -411,16 +412,16 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
     subroutine lu_factor(a, ipvt, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        integer(i32), intent(out), dimension(:) :: ipvt
+        real(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), dimension(:) :: ipvt
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: m, n, mn, flag
+        integer(int32) :: m, n, mn, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -495,20 +496,20 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
     subroutine form_lu_all(lu, ipvt, u, p, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: lu
-        integer(i32), intent(in), dimension(:) :: ipvt
-        real(dp), intent(out), dimension(:,:) :: u, p
+        real(real64), intent(inout), dimension(:,:) :: lu
+        integer(int32), intent(in), dimension(:) :: ipvt
+        real(real64), intent(out), dimension(:,:) :: u, p
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: j, jp, n, flag
+        integer(int32) :: j, jp, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Initialization
         n = size(lu, 1)
@@ -572,19 +573,19 @@ contains
     !!      incorrect.
     subroutine form_lu_only(lu, u, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: lu
-        real(dp), intent(out), dimension(:,:) :: u
+        real(real64), intent(inout), dimension(:,:) :: lu
+        real(real64), intent(out), dimension(:,:) :: u
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: j, n, flag
+        integer(int32) :: j, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Initialization
         n = size(lu, 1)
@@ -661,17 +662,17 @@ contains
     !! This routine utilizes the LAPACK routine DGEQRF.
     subroutine qr_factor_no_pivot(a, tau, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: tau
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: tau
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, mn, istat, lwork, flag
-        real(dp), dimension(1) :: temp
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, mn, istat, lwork, flag
+        real(real64), dimension(1) :: temp
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -764,18 +765,18 @@ contains
     !! This routine utilizes the LAPACK routine DGEQP3.
     subroutine qr_factor_pivot(a, tau, jpvt, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: tau
-        integer(i32), intent(inout), dimension(:) :: jpvt
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: tau
+        integer(int32), intent(inout), dimension(:) :: jpvt
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, mn, istat, lwork, flag
-        real(dp), dimension(1) :: temp
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, mn, istat, lwork, flag
+        real(real64), dimension(1) :: temp
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -879,21 +880,21 @@ contains
     !! This routine utilizes the LAPACK routine DORGQR.
     subroutine form_qr_no_pivot(r, tau, q, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: r
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), dimension(:,:) :: q
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: r
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), dimension(:,:) :: q
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(i32) :: j, m, n, mn, qcol, istat, flag, lwork
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: j, m, n, mn, qcol, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1010,20 +1011,20 @@ contains
     !! This routine utilizes the LAPACK routine DORGQR.
     subroutine form_qr_pivot(r, tau, pvt, q, p, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: r
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: pvt
-        real(dp), intent(out), dimension(:,:) :: q, p
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: r
+        real(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: pvt
+        real(real64), intent(out), dimension(:,:) :: q, p
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: j, jp, m, n, mn, flag
+        integer(int32) :: j, jp, m, n, mn, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1113,21 +1114,21 @@ contains
     subroutine mult_qr_mtx(lside, trans, a, tau, c, work, olwork, err)
         ! Arguments
         logical, intent(in) :: lside, trans
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:,:) :: a, c
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:,:) :: a, c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
         character :: side, t
-        integer(i32) :: m, n, k, nrowa, istat, flag, lwork
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, k, nrowa, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1240,22 +1241,22 @@ contains
     subroutine mult_qr_vec(trans, a, tau, c, work, olwork, err)
         ! Arguments
         logical, intent(in) :: trans
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:) :: c
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
         character :: side, t
-        integer(i32) :: m, k, nrowa, istat, flag, lwork
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, k, nrowa, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1459,16 +1460,16 @@ contains
     !! [Source](https://sourceforge.net/projects/qrupdate/)
     subroutine qr_rank1_update(q, r, u, v, work, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: q, r
-        real(dp), intent(inout), dimension(:) :: u, v
-        real(dp), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(inout), dimension(:,:) :: q, r
+        real(real64), intent(inout), dimension(:) :: u, v
+        real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         logical :: full
-        integer(i32) :: m, n, k, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, k, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1629,16 +1630,16 @@ contains
     !! This routine utilizes the LAPACK routine DPOTRF.
     subroutine cholesky_factor(a, upper, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: a
         logical, intent(in), optional :: upper
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
         character :: uplo
-        integer(i32) :: i, n, flag
+        integer(int32) :: i, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1782,15 +1783,15 @@ contains
     !! [Source](https://sourceforge.net/projects/qrupdate/)
     subroutine cholesky_rank1_update(r, u, work, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: r
-        real(dp), intent(inout), dimension(:) :: u
-        real(dp), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(inout), dimension(:,:) :: r
+        real(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: n, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1941,15 +1942,15 @@ contains
     !! [Source](https://sourceforge.net/projects/qrupdate/)
     subroutine cholesky_rank1_downdate(r, u, work, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: r
-        real(dp), intent(inout), dimension(:) :: u
-        real(dp), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(inout), dimension(:,:) :: r
+        real(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: n, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2080,17 +2081,17 @@ contains
     !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node44.html)
     subroutine rz_factor(a, tau, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: tau
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: tau
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, lwork, flag, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, lwork, flag, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2193,19 +2194,19 @@ contains
     subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
         ! Arguments
         logical, intent(in) :: lside, trans
-        integer(i32), intent(in) :: l
-        real(dp), intent(inout), dimension(:,:) :: a, c
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        integer(int32), intent(in) :: l
+        real(real64), intent(inout), dimension(:,:) :: a, c
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: side, t
-        integer(i32) :: m, n, k, lwork, flag, istat, lda
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, k, lwork, flag, istat, lda
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2335,20 +2336,20 @@ contains
     subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
         ! Arguments
         logical, intent(in) :: trans
-        integer(i32), intent(in) :: l
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:) :: c
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        integer(int32), intent(in) :: l
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: c
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: side, t
-        integer(i32) :: m, k, lwork, flag, istat, lda
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, k, lwork, flag, istat, lda
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2466,10 +2467,10 @@ contains
     !! ! M >= N.
     !!
     !! ! Variables
-    !! real(dp), dimension(m, n) :: a
-    !! real(dp), dimension(m, m) :: u
-    !! real(dp), dimension(n, n) :: vt
-    !! real(dp), dimension(n) :: s
+    !! real(real64), dimension(m, n) :: a
+    !! real(real64), dimension(m, m) :: u
+    !! real(real64), dimension(n, n) :: vt
+    !! real(real64), dimension(n) :: s
     !!
     !! ! Initialize A...
     !!
@@ -2493,19 +2494,19 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
     subroutine svd(a, s, u, vt, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: s
-        real(dp), intent(out), optional, dimension(:,:) :: u, vt
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: s
+        real(real64), intent(out), optional, dimension(:,:) :: u, vt
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: jobu, jobvt
-        integer(i32) :: m, n, mn, istat, lwork, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, mn, istat, lwork, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg

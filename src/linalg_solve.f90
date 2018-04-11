@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
 module linalg_solve
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
     use lapack
     use linalg_constants
@@ -363,18 +364,18 @@ contains
     subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
         ! Arguments
         logical, intent(in) :: lside, upper, trans, nounit
-        real(dp), intent(in) :: alpha
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
         character :: side, uplo, transa, diag
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: m, n, nrowa
+        integer(int32) :: m, n, nrowa
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -454,9 +455,9 @@ contains
     !! ! matrix, and B and X are N-elements in size.
     !!
     !! ! Variables
-    !! integer(i32) :: info
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n) :: b
+    !! integer(int32) :: info
+    !! real(real64), dimension(n, n) :: a
+    !! real(real64), dimension(n) :: b
     !!
     !! ! Initialize A and B...
     !!
@@ -469,16 +470,16 @@ contains
     subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
         ! Arguments
         logical, intent(in) :: upper, trans, nounit
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: x
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: x
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
         character :: uplo, t, diag
-        integer(i32) :: n
+        integer(int32) :: n
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -544,13 +545,13 @@ contains
     !! The routine is based upon the LAPACK routine DGETRS.
     subroutine solve_lu_mtx(a, ipvt, b, err)
         ! Arguments
-        real(dp), intent(in), dimension(:,:) :: a
-        integer(i32), intent(in), dimension(:) :: ipvt
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, nrhs, flag
+        integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -605,13 +606,13 @@ contains
     !! The routine is based upon the LAPACK routine DGETRS.
     subroutine solve_lu_vec(a, ipvt, b, err)
         ! Arguments
-        real(dp), intent(in), dimension(:,:) :: a
-        integer(i32), intent(in), dimension(:) :: ipvt
-        real(dp), intent(inout), dimension(:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        real(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, flag
+        integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -680,19 +681,19 @@ contains
     !! This routine is based upon a subset of the LAPACK routine DGELS.
     subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: m, n, nrhs, k, lwork, flag, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, nrhs, k, lwork, flag, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -795,17 +796,17 @@ contains
     !! This routine is based upon a subset of the LAPACK routine DGELS.
     subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, k, flag, lwork, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, k, flag, lwork, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -908,26 +909,26 @@ contains
     !! This routine is based upon a subset of the LAPACK routine DGELSY.
     subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:,:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        real(real64), intent(inout), dimension(:,:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
+        integer(int32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
             rnk, maxmn, flag, istat, lwork1, lwork2, lwork3
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
+        real(real64), pointer, dimension(:) :: wptr, w, tau2
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1095,26 +1096,26 @@ contains
     !! This routine is based upon a subset of the LAPACK routine DGELSY.
     subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
+        integer(int32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
             istat, lwork1, lwork2
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
+        real(real64), pointer, dimension(:) :: wptr, w, tau2
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1267,13 +1268,13 @@ contains
     subroutine solve_cholesky_mtx(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: uplo
-        integer(i32) :: n, nrhs, flag
+        integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1333,13 +1334,13 @@ contains
     subroutine solve_cholesky_vec(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: uplo
-        integer(i32) :: n, flag
+        integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1410,8 +1411,8 @@ contains
     !! ! means of illustrating how to compute the inverse of a square matrix.
     !!
     !! ! Variables
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b, x
+    !! real(real64), dimension(n, n) :: a
+    !! real(real64), dimension(n, nrhs) :: b, x
     !!
     !! ! Initialize A and B...
     !!
@@ -1433,19 +1434,19 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixInverse.html)
     subroutine mtx_inverse(a, iwork, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        integer(i32), intent(out), target, optional, dimension(:) :: iwork
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, liwork, lwork, istat, flag
-        integer(i32), pointer, dimension(:) :: iptr
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: n, liwork, lwork, istat, flag
+        integer(int32), pointer, dimension(:) :: iptr
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1572,10 +1573,10 @@ contains
     !! ! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.
     !!
     !! ! Variables
-    !! real(dp), dimension(m, n) :: a
-    !! real(dp), dimension(n, m) :: ainv
-    !! real(dp), dimension(m, nrhs) :: b
-    !! real(dp), dimension(n, nrhs) :: x
+    !! real(real64), dimension(m, n) :: a
+    !! real(real64), dimension(n, m) :: ainv
+    !! real(real64), dimension(m, nrhs) :: b
+    !! real(real64), dimension(n, nrhs) :: x
     !!
     !! ! Initialize A, and B...
     !!
@@ -1593,25 +1594,25 @@ contains
     !! - [MathWorks](http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle)
     subroutine mtx_pinverse(a, ainv, tol, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:,:) :: ainv
-        real(dp), intent(in), optional :: tol
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:,:) :: ainv
+        real(real64), intent(in), optional :: tol
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
+        integer(int32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
             i3b, i4
-        real(dp), pointer, dimension(:) :: s, wptr, w
-        real(dp), pointer, dimension(:,:) :: u, vt
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: t, tref, tolcheck
+        real(real64), pointer, dimension(:) :: s, wptr, w
+        real(real64), pointer, dimension(:,:) :: u, vt
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        real(real64) :: t, tref, tolcheck
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1761,16 +1762,16 @@ contains
     !! This routine utilizes the LAPACK routine DGELS.
     subroutine solve_least_squares_mtx(a, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1867,17 +1868,17 @@ contains
     !! This routine utilizes the LAPACK routine DGELS.
     subroutine solve_least_squares_vec(a, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, maxmn, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1979,22 +1980,22 @@ contains
     !! This routine utilizes the LAPACK routine DGELSY.
     subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        integer(i32), pointer, dimension(:) :: iptr
-        real(dp), dimension(1) :: temp
-        integer(i32), dimension(1) :: itemp
-        real(dp) :: rc
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        real(real64), dimension(1) :: temp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2125,23 +2126,23 @@ contains
     !! This routine utilizes the LAPACK routine DGELSY.
     subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, lwork, istat, flag, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        integer(i32), pointer, dimension(:) :: iptr
-        real(dp), dimension(1) :: temp
-        integer(i32), dimension(1) :: itemp
-        real(dp) :: rc
+        integer(int32) :: m, n, maxmn, lwork, istat, flag, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        real(real64), dimension(1) :: temp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2269,19 +2270,19 @@ contains
     !! This routine utilizes the LAPACK routine DGELSS.
     subroutine solve_least_squares_mtx_svd(a, b, arnk, s, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), dimension(:) :: s
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        real(real64), intent(out), dimension(:) :: s
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: rcond
+        integer(int32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2397,20 +2398,20 @@ contains
     !! This routine utilizes the LAPACK routine DGELSS.
     subroutine solve_least_squares_vec_svd(a, b, arnk, s, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), dimension(:) :: s
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), dimension(:) :: s
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: rcond
+        integer(int32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg

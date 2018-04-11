@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides routines for computing the eigenvalues and eigenvectors of matrices.
 module linalg_eigen
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
     use linalg_constants
     implicit none
@@ -67,18 +68,18 @@ contains
     subroutine eigen_symm(vecs, a, vals, work, olwork, err)
         ! Arguments
         logical, intent(in) :: vecs
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: vals
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: vals
+        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: jobz
-        integer(i32) :: n, istat, flag, lwork
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: n, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -183,27 +184,27 @@ contains
     !! This routine utilizes the LAPACK routine DGEEV.
     subroutine eigen_asymm(a, vals, vecs, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        complex(dp), intent(out), dimension(:) :: vals
-        complex(dp), intent(out), optional, dimension(:,:) :: vecs
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: vals
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: two = 2.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: two = 2.0d0
 
         ! Local Variables
         character :: jobvl, jobvr
-        integer(i32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, istat, flag, &
+        integer(int32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, istat, flag, &
             lwork, lwork1
-        real(dp) :: eps
-        real(dp), dimension(1) :: dummy, temp
-        real(dp), dimension(1,1) :: dummy_mtx
-        real(dp), pointer, dimension(:) :: wr, wi, wptr, w
-        real(dp), pointer, dimension(:,:) :: vr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: eps
+        real(real64), dimension(1) :: dummy, temp
+        real(real64), dimension(1,1) :: dummy_mtx
+        real(real64), pointer, dimension(:) :: wr, wi, wptr, w
+        real(real64), pointer, dimension(:,:) :: vr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -421,19 +422,19 @@ contains
     !!     implicit none
     !! 
     !!     ! Define the model parameters
-    !!     real(dp), parameter :: pi = 3.14159265359d0
-    !!     real(dp), parameter :: m1 = 0.5d0
-    !!     real(dp), parameter :: m2 = 2.5d0
-    !!     real(dp), parameter :: m3 = 0.75d0
-    !!     real(dp), parameter :: k1 = 5.0d6
-    !!     real(dp), parameter :: k2 = 10.0d6
-    !!     real(dp), parameter :: k3 = 10.0d6
-    !!     real(dp), parameter :: k4 = 5.0d6
+    !!     real(real64), parameter :: pi = 3.14159265359d0
+    !!     real(real64), parameter :: m1 = 0.5d0
+    !!     real(real64), parameter :: m2 = 2.5d0
+    !!     real(real64), parameter :: m3 = 0.75d0
+    !!     real(real64), parameter :: k1 = 5.0d6
+    !!     real(real64), parameter :: k2 = 10.0d6
+    !!     real(real64), parameter :: k3 = 10.0d6
+    !!     real(real64), parameter :: k4 = 5.0d6
     !! 
     !!     ! Local Variables
-    !!     integer(i32) :: i, j
-    !!     real(dp) :: m(3,3), k(3,3), natFreq(3)
-    !!    complex(dp) :: vals(3), modeShapes(3,3)
+    !!     integer(int32) :: i, j
+    !!     real(real64) :: m(3,3), k(3,3), natFreq(3)
+    !!    complex(real64) :: vals(3), modeShapes(3,3)
     !! 
     !!     ! Define the mass matrix
     !!     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])
@@ -463,28 +464,28 @@ contains
     !! This routine utilizes the LAPACK routine DGGEV.
     subroutine eigen_gen(a, b, alpha, beta, vecs, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        complex(dp), intent(out), dimension(:) :: alpha
-        real(dp), intent(out), optional, dimension(:) :: beta
-        complex(dp), intent(out), optional, dimension(:,:) :: vecs
-        real(dp), intent(out), optional, pointer, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        complex(real64), intent(out), dimension(:) :: alpha
+        real(real64), intent(out), optional, dimension(:) :: beta
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        real(real64), intent(out), optional, pointer, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: two = 2.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: two = 2.0d0
 
         ! Local Variables
         character :: jobvl, jobvr
-        integer(i32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, n4a, n4b, &
+        integer(int32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, n4a, n4b, &
             istat, flag, lwork, lwork1
-        real(dp), dimension(1) :: temp
-        real(dp), dimension(1,1) :: dummy
-        real(dp), pointer, dimension(:) :: wptr, w, alphar, alphai, bptr
-        real(dp), pointer, dimension(:,:) :: vr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp) :: eps
+        real(real64), dimension(1) :: temp
+        real(real64), dimension(1,1) :: dummy
+        real(real64), pointer, dimension(:) :: wptr, w, alphar, alphai, bptr
+        real(real64), pointer, dimension(:,:) :: vr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64) :: eps
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg

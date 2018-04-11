@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides sorting routines.
 module linalg_sorting
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
     use linalg_constants
     implicit none
@@ -45,12 +46,12 @@ contains
     !! This routine utilizes the LAPACK routine DLASRT.
     subroutine sort_dbl_array(x, ascend)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: x
+        real(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
 
         ! Local Variables
         character :: id
-        integer(i32) :: n, info
+        integer(int32) :: n, info
 
         ! Initialization
         if (present(ascend)) then
@@ -95,8 +96,8 @@ contains
     !! http://www.fortran.com/qsort_c.f95.
     subroutine sort_dbl_array_ind(x, ind, ascend, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -104,7 +105,7 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: n
+        integer(int32) :: n
         logical :: dir
 
         ! Initialization
@@ -154,7 +155,7 @@ contains
     !! http://www.fortran.com/qsort_c.f95.
     subroutine sort_cmplx_array(x, ascend)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
 
         ! Local Variables
@@ -203,8 +204,8 @@ contains
     !! http://www.fortran.com/qsort_c.f95.
     subroutine sort_cmplx_array_ind(x, ind, ascend, err)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -212,7 +213,7 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: n
+        integer(int32) :: n
         logical :: dir
 
         ! Initialization
@@ -265,8 +266,8 @@ contains
     !!      available to comoplete this operation.
     subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: vals
-        complex(dp), intent(inout), dimension(:,:) :: vecs
+        complex(real64), intent(inout), dimension(:) :: vals
+        complex(real64), intent(inout), dimension(:,:) :: vecs
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -274,9 +275,9 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: i, n, flag
+        integer(int32) :: i, n, flag
         logical :: dir
-        integer(i32), allocatable, dimension(:) :: ind
+        integer(int32), allocatable, dimension(:) :: ind
 
         ! Initialization
         if (present(err)) then
@@ -343,8 +344,8 @@ contains
     !!      available to comoplete this operation.
     subroutine sort_eigen_dbl(vals, vecs, ascend, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: vals
-        real(dp), intent(inout), dimension(:,:) :: vecs
+        real(real64), intent(inout), dimension(:) :: vals
+        real(real64), intent(inout), dimension(:,:) :: vecs
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -352,9 +353,9 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: i, n, flag
+        integer(int32) :: i, n, flag
         logical :: dir
-        integer(i32), allocatable, dimension(:) :: ind
+        integer(int32), allocatable, dimension(:) :: ind
 
         ! Initialization
         if (present(err)) then
@@ -418,11 +419,11 @@ contains
     recursive subroutine qsort_dbl_ind(ascend, x, ind)
         ! Arguments
         logical, intent(in) :: ascend
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -451,13 +452,13 @@ contains
     subroutine dbl_partition_ind(ascend, x, ind, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
-        integer(i32), intent(out) :: marker
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j, itemp
-        real(dp) :: temp, pivot
+        integer(int32) :: i, j, itemp
+        real(real64) :: temp, pivot
 
         ! Process
         pivot = x(1)
@@ -544,10 +545,10 @@ contains
     recursive subroutine qsort_cmplx(ascend, x)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: x
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -577,13 +578,13 @@ contains
     subroutine cmplx_partition(ascend, x, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(out) :: marker
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j
-        complex(dp) :: temp
-        real(dp) :: pivot
+        integer(int32) :: i, j
+        complex(real64) :: temp
+        real(real64) :: pivot
 
         ! Process
         pivot = real(x(1), dp)
@@ -665,11 +666,11 @@ contains
     recursive subroutine qsort_cmplx_ind(ascend, x, ind)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -702,14 +703,14 @@ contains
     subroutine cmplx_partition_ind(ascend, x, ind, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
-        integer(i32), intent(out) :: marker
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j, itemp
-        complex(dp) :: temp
-        real(dp) :: pivot
+        integer(int32) :: i, j, itemp
+        complex(real64) :: temp
+        real(real64) :: pivot
 
         ! Process
         pivot = real(x(1), dp)

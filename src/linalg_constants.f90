@@ -9,14 +9,6 @@ module linalg_constants
     implicit none
 
 ! ******************************************************************************
-! NUMERIC TYPE CONSTANTS
-! ------------------------------------------------------------------------------
-    !> @brief Defines a double-precision (64-bit) floating-point type.
-    integer, parameter :: dp = real64
-    !> @brief Defines a 32-bit signed integer type.
-    integer, parameter :: i32 = int32
-
-! ******************************************************************************
 ! ERROR FLAGS
 ! ------------------------------------------------------------------------------
     !> An error flag denoting an invalid input.

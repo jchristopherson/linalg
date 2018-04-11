@@ -6,7 +6,7 @@
 !! Provides a C friendly interface to the LINALG library.
 module linalg_c_binding
     use, intrinsic :: iso_c_binding
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg_core
     use linalg_factor
     use linalg_solve
@@ -46,10 +46,10 @@ contains
             beta, c) bind(C, name = "mtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: transa, transb
-        integer(i32), intent(in), value :: m, n, k, lda, ldb
-        real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(lda,*), b(ldb,*)
-        real(dp), intent(inout) :: c(m,n)
+        integer(int32), intent(in), value :: m, n, k, lda, ldb
+        real(real64), intent(in), value :: alpha, beta
+        real(real64), intent(in) :: a(lda,*), b(ldb,*)
+        real(real64), intent(inout) :: c(m,n)
 
         ! Process
         character :: ta, tb
@@ -95,13 +95,13 @@ contains
             beta, c) bind(C, name = "cmtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: transa, transb
-        integer(i32), intent(in), value :: m, n, k, lda, ldb
-        real(dp), intent(in), value :: alpha, beta
-        complex(dp), intent(in) :: a(lda,*), b(ldb,*)
-        complex(dp), intent(inout) :: c(m,n)
+        integer(int32), intent(in), value :: m, n, k, lda, ldb
+        real(real64), intent(in), value :: alpha, beta
+        complex(real64), intent(in) :: a(lda,*), b(ldb,*)
+        complex(real64), intent(inout) :: c(m,n)
 
         ! Local Variables
-        complex(dp) :: calpha, cbeta
+        complex(real64) :: calpha, cbeta
 
         ! Process
         character :: ta, tb
@@ -115,8 +115,8 @@ contains
         else
             tb = 'N'
         end if
-        calpha = cmplx(alpha, 0.0d0, dp)
-        cbeta = cmplx(beta, 0.0d0, dp)
+        calpha = cmplx(alpha, 0.0d0, real64)
+        cbeta = cmplx(beta, 0.0d0, real64)
         call ZGEMM(ta, tb, m, n, k, calpha, a, lda, b, ldb, cbeta, c, m)
     end subroutine
 
@@ -136,10 +136,10 @@ contains
     subroutine diag_mtx_mult_left_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_mtx_mult_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(min(m,k)), b(k,n)
-        real(dp), intent(inout) :: c(m,n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        real(real64), intent(in) :: a(min(m,k)), b(k,n)
+        real(real64), intent(inout) :: c(m,n)
 
         ! Process
         call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
@@ -161,10 +161,10 @@ contains
     subroutine disg_mtx_mult_right_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_mtx_rmult_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(m, k), b(min(k, n))
-        real(dp), intent(inout) :: c(m, n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        real(real64), intent(in) :: a(m, k), b(min(k, n))
+        real(real64), intent(inout) :: c(m, n)
 
         ! Process
         call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
@@ -186,11 +186,11 @@ contains
     subroutine diag_mtx_mult_cmplx_left_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_mtx_mult_cmplx_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        complex(dp), intent(in) :: a(min(m, k))
-        real(dp), intent(in) :: b(k, n)
-        complex(dp), intent(inout) :: c(m, n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        complex(real64), intent(in) :: a(min(m, k))
+        real(real64), intent(in) :: b(k, n)
+        complex(real64), intent(inout) :: c(m, n)
 
         ! Process
         call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
@@ -212,11 +212,11 @@ contains
     subroutine diag_mtx_mult_cmplx_right_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_mtx_rmult_cmplx_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(m, k)
-        complex(dp), intent(in) :: b(min(k, n))
-        complex(dp), intent(inout) :: c(m, n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        real(real64), intent(in) :: a(m, k)
+        complex(real64), intent(in) :: b(min(k, n))
+        complex(real64), intent(inout) :: c(m, n)
 
         ! Process
         call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
@@ -238,10 +238,10 @@ contains
     subroutine diag_cmtx_mult_left_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_cmtx_mult_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        complex(dp), intent(in) :: a(min(m, k)), b(k, n)
-        complex(dp), intent(inout) :: c(m, n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        complex(real64), intent(in) :: a(min(m, k)), b(k, n)
+        complex(real64), intent(inout) :: c(m, n)
 
         ! Process
         call diag_mtx_mult(.true., .false., alpha, a, b, beta, c)
@@ -263,10 +263,10 @@ contains
     subroutine diag_cmtx_mult_right_c(m, n, k, alpha, a, b, beta, c) &
             bind(C, name = "diag_cmtx_rmult_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, k
-        real(dp), intent(in), value :: alpha, beta
-        complex(dp), intent(in) :: a(m, k), b(min(k, n))
-        complex(dp), intent(inout) :: c(m, n)
+        integer(int32), intent(in), value :: m, n, k
+        real(real64), intent(in), value :: alpha, beta
+        complex(real64), intent(in) :: a(m, k), b(min(k, n))
+        complex(real64), intent(inout) :: c(m, n)
 
         ! Process
         call diag_mtx_mult(.false., .false., alpha, b, a, beta, c)
@@ -292,10 +292,10 @@ contains
     subroutine rank1_update_c(m, n, alpha, x, y, a) &
             bind(C, name = "rank1_update_")
         ! Arguments
-        real(dp), intent(in), value :: alpha
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(in) :: x(m), y(n)
-        real(dp), intent(inout) :: a(m,n)
+        real(real64), intent(in), value :: alpha
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(in) :: x(m), y(n)
+        real(real64), intent(inout) :: a(m,n)
 
         ! Process
         call rank1_update(alpha, x, y, a)
@@ -312,9 +312,9 @@ contains
     !! @return The trace of @p x.
     pure function trace_c(m, n, x) result(y) bind(C, name = "trace_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(in) :: x(m,n)
-        real(dp) :: y
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(in) :: x(m,n)
+        real(real64) :: y
 
         ! Process
         y = trace(x)
@@ -339,10 +339,10 @@ contains
     !!      could not converge to a zero value.
     function mtx_rank_c(m, n, a, err) result(rnk) bind(C, name = "mtx_rank_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
         type(errorhandler), intent(inout) :: err
-        integer(i32) :: rnk
+        integer(int32) :: rnk
 
         ! Local Variables
         type(errors), pointer :: eptr
@@ -372,10 +372,10 @@ contains
     !!      there is insufficient memory available.
     function det_c(n, a, err) result(x) bind(C, name = "det_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: a(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: a(n,n)
         type(errorhandler), intent(inout) :: err
-        real(dp) :: x
+        real(real64) :: x
 
         ! Local Variables
         type(errors), pointer :: eptr
@@ -397,8 +397,8 @@ contains
     !! @param[in,out] y The other N-element array.
     subroutine swap_c(n, x, y) bind(C, name = "swap_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: x(n), y(n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: x(n), y(n)
 
         ! Process
         call swap(x, y)
@@ -432,10 +432,10 @@ contains
             bind(C, name = "tri_mtx_mult_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper
-        integer(i32), intent(in), value :: n
-        real(dp), intent(in), value :: alpha, beta
-        real(dp), intent(in) :: a(n,n)
-        real(dp), intent(inout) :: b(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(in), value :: alpha, beta
+        real(real64), intent(in) :: a(n,n)
+        real(real64), intent(inout) :: b(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -473,9 +473,9 @@ contains
     !!      singular.
     subroutine lu_factor_c(m, n, a, ipvt, err) bind(C, name = "lu_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        integer(i32), intent(out) :: ipvt(min(m,n))
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        integer(int32), intent(out) :: ipvt(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -519,10 +519,10 @@ contains
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
     subroutine form_lu_c(n, lu, ipvt, u, p) bind(C, name = "form_lu_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: lu(n,n)
-        integer(i32), intent(in) :: ipvt(n)
-        real(dp), intent(out) :: u(n,n), p(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: lu(n,n)
+        integer(int32), intent(in) :: ipvt(n)
+        real(real64), intent(out) :: u(n,n), p(n,n)
 
         ! Process
         call form_lu(lu, ipvt, u, p)
@@ -551,9 +551,9 @@ contains
     !!      there is insufficient memory available.
     subroutine qr_factor_c(m, n, a, tau, err) bind(C, name = "qr_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: tau(min(m,n))
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        real(real64), intent(out) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -596,10 +596,10 @@ contains
     subroutine qr_factor_pivot_c(m, n, a, tau, jpvt, err) &
             bind(C, name = "qr_factor_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: tau(min(m,n))
-        integer(i32), intent(inout) :: jpvt(n)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        real(real64), intent(out) :: tau(min(m,n))
+        integer(int32), intent(inout) :: jpvt(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -641,10 +641,10 @@ contains
     !!      there is insufficient memory available.
     subroutine form_qr_c(m, n, r, tau, q, err) bind(C, name = "form_qr_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: r(m,n)
-        real(dp), intent(in) :: tau(min(m,n))
-        real(dp), intent(out) :: q(m,m)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: r(m,n)
+        real(real64), intent(in) :: tau(min(m,n))
+        real(real64), intent(out) :: q(m,m)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -690,11 +690,11 @@ contains
     subroutine form_qr_pivot_c(m, n, r, tau, pvt, q, p, err) &
             bind(C, name = "form_qr_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: r(m,n)
-        real(dp), intent(in) :: tau(min(m,n))
-        integer(i32), intent(in) :: pvt(n)
-        real(dp), intent(out) :: q(m,m), p(n,n)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: r(m,n)
+        real(real64), intent(in) :: tau(min(m,n))
+        integer(int32), intent(in) :: pvt(n)
+        real(real64), intent(out) :: q(m,m), p(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -736,9 +736,9 @@ contains
             bind(C, name = "mult_qr_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: q(m,m), c(m,n)
-        real(dp), intent(in) :: tau(min(m,n))
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: q(m,m), c(m,n)
+        real(real64), intent(in) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -776,8 +776,8 @@ contains
     subroutine qr_rank1_update_c(m, n, q, r, u, v, err) &
             bind(C, name = "qr_rank1_update_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -812,8 +812,8 @@ contains
     subroutine cholesky_factor_c(n, a, upper, err) &
             bind(C, name = "cholesky_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: a(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: a(n,n)
         logical(c_bool), intent(in), value :: upper
         type(errorhandler), intent(inout) :: err
 
@@ -847,8 +847,8 @@ contains
     subroutine cholesky_rank1_update_c(n, r, u, err) &
             bind(C, name = "cholesky_rank1_update_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: r(n,n), u(n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: r(n,n), u(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -886,8 +886,8 @@ contains
     subroutine cholesky_rank1_downdate_c(n, r, u, err) &
             bind(C, name = "cholesky_rank1_downdate_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: r(n,n), u(n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: r(n,n), u(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -925,9 +925,9 @@ contains
     !!      there is insufficient memory available.
     subroutine rz_factor_c(m, n, a, tau, err) bind(C, name = "rz_factor_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: tau(m)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        real(real64), intent(out) :: tau(m)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -968,9 +968,9 @@ contains
             bind(C, name = "mult_rz_")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
-        integer(i32), intent(in), value :: m, n, l
-        real(dp), intent(inout) :: a(m,m), c(m,n)
-        real(dp), intent(in) :: tau(m)
+        integer(int32), intent(in), value :: m, n, l
+        real(real64), intent(inout) :: a(m,m), c(m,n)
+        real(real64), intent(in) :: tau(m)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1014,9 +1014,9 @@ contains
     !!      could not converge to a zero value.
     subroutine svd_c(m, n, a, s, u, vt, err) bind(C, name = "svd_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: s(min(m,n)), u(m,m), vt(n,n)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        real(real64), intent(out) :: s(min(m,n)), u(m,m), vt(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1055,10 +1055,10 @@ contains
             bind(C, name = "solve_triangular_system_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper, trans, nounit
-        integer(i32), intent(in), value :: n, nrhs
-        real(dp), intent(in), value :: alpha
-        real(dp), intent(in) :: a(n,n)
-        real(dp), intent(inout) :: b(n,nrhs)
+        integer(int32), intent(in), value :: n, nrhs
+        real(real64), intent(in), value :: alpha
+        real(real64), intent(in) :: a(n,n)
+        real(real64), intent(inout) :: b(n,nrhs)
 
         ! Process
         call solve_triangular_system(.true., logical(upper), logical(trans), &
@@ -1077,10 +1077,10 @@ contains
     !!  output, the N-by-NRHS solution matrix.
     subroutine solve_lu_c(n, nrhs, a, ipvt, b) bind(C, name = "solve_lu_")
         ! Arguments
-        integer(i32), intent(in), value :: n, nrhs
-        real(dp), intent(in) :: a(n,n)
-        integer(i32), intent(in) :: ipvt(n)
-        real(dp), intent(inout) :: b(n,nrhs)
+        integer(int32), intent(in), value :: n, nrhs
+        real(real64), intent(in) :: a(n,n)
+        integer(int32), intent(in) :: ipvt(n)
+        real(real64), intent(inout) :: b(n,nrhs)
 
         ! Process
         call solve_lu(a, ipvt, b)
@@ -1110,9 +1110,9 @@ contains
     subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
             bind(C, name = "solve_qr_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs
-        real(dp), intent(inout) :: a(m,n), b(m,nrhs)
-        real(dp), intent(in) :: tau(min(m,n))
+        integer(int32), intent(in), value :: m, n, nrhs
+        real(real64), intent(inout) :: a(m,n), b(m,nrhs)
+        real(real64), intent(in) :: tau(min(m,n))
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1155,10 +1155,10 @@ contains
     subroutine solve_qr_pivot_c(m, n, nrhs, a, tau, jpvt, b, err) &
             bind(C, name = "solve_qr_pivot_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs
-        real(dp), intent(inout) :: a(m,n), b(max(m,n),nrhs)
-        real(dp), intent(in) :: tau(min(m,n))
-        integer(i32), intent(in) :: jpvt(n)
+        integer(int32), intent(in), value :: m, n, nrhs
+        real(real64), intent(inout) :: a(m,n), b(max(m,n),nrhs)
+        real(real64), intent(in) :: tau(min(m,n))
+        integer(int32), intent(in) :: jpvt(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1189,9 +1189,9 @@ contains
             bind(C, name = "solve_cholesky_")
         ! Arguments
         logical(c_bool), intent(in), value :: upper
-        integer(i32), intent(in), value :: n, nrhs
-        real(dp), intent(in) :: a(n,n)
-        real(dp), intent(inout) :: b(n,nrhs)
+        integer(int32), intent(in), value :: n, nrhs
+        real(real64), intent(in) :: a(n,n)
+        real(real64), intent(inout) :: b(n,nrhs)
 
         ! Process
         call solve_cholesky(logical(upper), a, b)
@@ -1212,8 +1212,8 @@ contains
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
     subroutine mtx_inverse_c(n, a, err) bind(C, name = "mtx_inverse_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: a(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: a(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1249,9 +1249,9 @@ contains
     subroutine mtx_pinverse_c(m, n, a, ainv, err) &
             bind(C, name = "mtx_pinverse_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n
-        real(dp), intent(inout) :: a(m,n)
-        real(dp), intent(out) :: ainv(n,m)
+        integer(int32), intent(in), value :: m, n
+        real(real64), intent(inout) :: a(m,n)
+        real(real64), intent(out) :: ainv(n,m)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1290,8 +1290,8 @@ contains
     subroutine solve_least_squares_c(m, n, nrhs, a, b, err) &
             bind(C, name = "solve_least_squares_")
         ! Arguments
-        integer(i32), intent(in), value :: m, n, nrhs
-        real(dp), intent(inout) :: a(m, n), b(max(m,n), nrhs)
+        integer(int32), intent(in), value :: m, n, nrhs
+        real(real64), intent(inout) :: a(m, n), b(max(m,n), nrhs)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1331,10 +1331,10 @@ contains
     !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
     subroutine eigen_symm_c(n, vecs, a, vals, err) bind(C, name = "eigen_symm_")
         ! Arguments
-        integer(i32), intent(in), value :: n
+        integer(int32), intent(in), value :: n
         logical(c_bool), intent(in), value :: vecs
-        real(dp), intent(inout) :: a(n,n)
-        real(dp), intent(out) :: vals(n)
+        real(real64), intent(inout) :: a(n,n)
+        real(real64), intent(out) :: vals(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1370,9 +1370,9 @@ contains
     subroutine eigen_asymm_c(n, a, vals, vecs, err) &
             bind(C, name = "eigen_asymm_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: a(n,n)
-        complex(dp), intent(out) :: vals(n), vecs(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: a(n,n)
+        complex(real64), intent(out) :: vals(n), vecs(n,n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1419,10 +1419,10 @@ contains
     subroutine eigen_gen_c(n, a, b, alpha, beta, vecs, err) &
             bind(C, name = "eigen_gen_")
         ! Arguments
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: a(n, n), b(n, n)
-        complex(dp), intent(out) :: alpha(n), vecs(n,n)
-        real(dp), intent(out) :: beta(n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: a(n, n), b(n, n)
+        complex(real64), intent(out) :: alpha(n), vecs(n,n)
+        real(real64), intent(out) :: beta(n)
         type(errorhandler), intent(inout) :: err
 
         ! Local Variables
@@ -1458,12 +1458,12 @@ contains
     subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: x(n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: x(n)
         type(c_ptr), intent(in), value :: ind
 
         ! Local Variables
-        integer(i32), pointer, dimension(:) :: ptr
+        integer(int32), pointer, dimension(:) :: ptr
         
         ! Process
         if (c_associated(ind)) then
@@ -1494,12 +1494,12 @@ contains
     subroutine sort_cmplx_ind_c(ascend, n, x, ind) bind(C, name = "sort_cmplx_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
-        integer(i32), intent(in), value :: n
-        complex(dp), intent(inout) :: x(n)
+        integer(int32), intent(in), value :: n
+        complex(real64), intent(inout) :: x(n)
         type(c_ptr), intent(in), value :: ind
 
         ! Local Variables
-        integer(i32), pointer, dimension(:) :: ptr
+        integer(int32), pointer, dimension(:) :: ptr
         
         ! Process
         if (c_associated(ind)) then
@@ -1526,8 +1526,8 @@ contains
             bind(C, name = "sort_eigen_cmplx_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
-        integer(i32), intent(in), value :: n
-        complex(dp), intent(inout) :: vals(n), vecs(n,n)
+        integer(int32), intent(in), value :: n
+        complex(real64), intent(inout) :: vals(n), vecs(n,n)
 
         ! Process
         call sort(vals, vecs, logical(ascend))
@@ -1549,8 +1549,8 @@ contains
             bind(C, name = "sort_eigen_dbl_")
         ! Arguments
         logical(c_bool), intent(in), value :: ascend
-        integer(i32), intent(in), value :: n
-        real(dp), intent(inout) :: vals(n), vecs(n,n)
+        integer(int32), intent(in), value :: n
+        real(real64), intent(inout) :: vals(n), vecs(n,n)
 
         ! Process
         call sort(vals, vecs, logical(ascend))

@@ -587,7 +587,7 @@ contains
         real(real64) :: pivot
 
         ! Process
-        pivot = real(x(1), dp)
+        pivot = real(x(1), real64)
         i = 0
         j = size(x) + 1
         if (ascend) then
@@ -595,12 +595,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) <= pivot) exit
+                    if (real(x(j), real64) <= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) >= pivot) exit
+                    if (real(x(i), real64) >= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -621,12 +621,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) >= pivot) exit
+                    if (real(x(j), real64) >= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) <= pivot) exit
+                    if (real(x(i), real64) <= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -713,7 +713,7 @@ contains
         real(real64) :: pivot
 
         ! Process
-        pivot = real(x(1), dp)
+        pivot = real(x(1), real64)
         i = 0
         j = size(x) + 1
         if (ascend) then
@@ -721,12 +721,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) <= pivot) exit
+                    if (real(x(j), real64) <= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) >= pivot) exit
+                    if (real(x(i), real64) >= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -751,12 +751,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) >= pivot) exit
+                    if (real(x(j), real64) >= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) <= pivot) exit
+                    if (real(x(i), real64) <= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then

@@ -196,8 +196,7 @@ set(qrupdate_sources
 )
 
 # Define the LINALG source files
-set(linalg_sources 
-    lapack.f90 
+set(linalg_sources
     linalg_c_binding.f90 
     linalg_constants.f90 
     linalg_core.f90 

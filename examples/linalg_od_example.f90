@@ -2,13 +2,13 @@
 
 ! Example Source: https://en.wikipedia.org/wiki/Overdetermined_system
 program example
-    use linalg_constants, only : dp, i32
+    use iso_fortran_env, only : real64, int32
     use linalg_solve, only : solve_least_squares
     implicit none
 
     ! Local Variables
-    real(dp) :: a(3,2), b(3)
-    integer(i32) :: i
+    real(real64) :: a(3,2), b(3)
+    integer(int32) :: i
 
     ! Build the 3-by-2 matrix A
     !     | 2   1 |

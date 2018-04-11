@@ -115,7 +115,7 @@ contains
 
         ! Workspace Query
         call DSYEV(jobz, 'L', n, a, n, vals, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -247,7 +247,7 @@ contains
         ! Workspace Query
         call DGEEV(jobvl, jobvr, n, a, n, dummy, dummy, dummy_mtx, n, &
             dummy_mtx, n, temp, -1, flag)
-        lwork1 = int(temp(1), i32)
+        lwork1 = int(temp(1), int32)
         if (present(vecs)) then
             lwork = lwork1 + 2 * n + n * n
         else
@@ -313,17 +313,17 @@ contains
             do while (j <= n)
                 if (abs(wi(j)) < eps) then
                     ! We've got a real-valued eigenvalue
-                    vals(j) = cmplx(wr(j), zero, dp)
+                    vals(j) = cmplx(wr(j), zero, real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), zero, dp)
+                        vecs(i,j) = cmplx(vr(i,j), zero, real64)
                     end do
                 else
                     ! We've got a complex cojugate pair of eigenvalues
                     jp1 = j + 1
-                    vals(j) = cmplx(wr(j), wi(j), dp)
+                    vals(j) = cmplx(wr(j), wi(j), real64)
                     vals(jp1) = conjg(vals(j))
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), dp)
+                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), real64)
                         vecs(i,jp1) = conjg(vecs(i,j))
                     end do
 
@@ -349,7 +349,7 @@ contains
 
             ! Store the eigenvalues
             do i = 1, n
-                vals(i) = cmplx(wr(i), wi(i), dp)
+                vals(i) = cmplx(wr(i), wi(i), real64)
             end do
         end if
     end subroutine
@@ -417,7 +417,7 @@ contains
     !! ! 
     !! ! Notice: x1" = the second time derivative of x1.
     !! program example
-    !!     use linalg_constants, only : dp, i32
+    !!     use linalg_constants, only : dp, int32
     !!     use linalg_eigen
     !!     implicit none
     !! 
@@ -531,7 +531,7 @@ contains
         ! Workspace Query
         call DGGEV(jobvl, jobvr, n, a, n, b, n, temp, temp, temp, dummy, n, &
             dummy, n, temp, -1, flag)
-        lwork1 = int(temp(1), i32)
+        lwork1 = int(temp(1), int32)
         lwork = lwork1 + 2 * n
         if (.not.present(beta)) then
             lwork = lwork + n
@@ -608,17 +608,17 @@ contains
             do while (j <= n)
                 if (abs(alphai(j)) < eps) then
                     ! Real-Valued
-                    alpha(j) = cmplx(alphar(j), zero, dp)
+                    alpha(j) = cmplx(alphar(j), zero, real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), zero, dp)
+                        vecs(i,j) = cmplx(vr(i,j), zero, real64)
                     end do
                 else
                     ! Complex-Valued
                     jp1 = j + 1
-                    alpha(j) = cmplx(alphar(j), alphai(j), dp)
-                    alpha(jp1) = cmplx(alphar(jp1), alphai(jp1), dp)
+                    alpha(j) = cmplx(alphar(j), alphai(j), real64)
+                    alpha(jp1) = cmplx(alphar(jp1), alphai(jp1), real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), dp)
+                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), real64)
                         vecs(i,jp1) = conjg(vecs(i,j))
                     end do
 
@@ -650,7 +650,7 @@ contains
 
             ! Store the eigenvalues
             do i = 1, n
-                alpha(i) = cmplx(alphar(i), alphai(i), dp)
+                alpha(i) = cmplx(alphar(i), alphai(i), real64)
             end do
             if (.not.present(beta)) alpha = alpha / bptr
         end if

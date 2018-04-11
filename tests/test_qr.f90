@@ -2,7 +2,7 @@
 
 ! Tests for QR factorization/solution operations.
 module test_qr
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg_core, only : rank1_update
     use linalg_factor, only : qr_factor, mult_qr, form_qr, qr_rank1_update
@@ -14,16 +14,16 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r1, r2
-        real(dp), dimension(m, m) :: q1, q2
-        real(dp), dimension(n, n) :: p2
-        real(dp), dimension(n) :: tau1, tau2
-        integer(i32), dimension(n) :: pvt2
+        real(real64), dimension(m, n) :: a, r1, r2
+        real(real64), dimension(m, m) :: q1, q2
+        real(real64), dimension(n, n) :: p2
+        real(real64), dimension(n) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -57,16 +57,16 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_od() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 50
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r1, r2
-        real(dp), dimension(m, m) :: q1, q2
-        real(dp), dimension(n, n) :: p2
-        real(dp), dimension(n) :: tau1, tau2
-        integer(i32), dimension(n) :: pvt2
+        real(real64), dimension(m, n) :: a, r1, r2
+        real(real64), dimension(m, m) :: q1, q2
+        real(real64), dimension(n, n) :: p2
+        real(real64), dimension(n) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -100,16 +100,16 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_ud() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 50
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r1, r2
-        real(dp), dimension(m, m) :: q1, q2
-        real(dp), dimension(n, n) :: p2
-        real(dp), dimension(m) :: tau1, tau2
-        integer(i32), dimension(n) :: pvt2
+        real(real64), dimension(m, n) :: a, r1, r2
+        real(real64), dimension(m, m) :: q1, q2
+        real(real64), dimension(n, n) :: p2
+        real(real64), dimension(m) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -146,14 +146,14 @@ contains
     ! LEFT SIDE
     function test_qr_mult() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r, c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, r, c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(n) :: tau
         logical :: rst
 
         ! Initialization
@@ -197,14 +197,14 @@ contains
     ! OVERDETERMINED - LEFT
     function test_qr_mult_od() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 50
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r, c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, r, c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(n) :: tau
         logical :: rst
 
         ! Initialization
@@ -248,14 +248,14 @@ contains
     ! UNDERDETERMINED - LEFT
     function test_qr_mult_ud() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 50
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r, c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(m) :: tau
+        real(real64), dimension(m, n) :: a, r, c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m) :: tau
         logical :: rst
 
         ! Initialization
@@ -299,15 +299,15 @@ contains
     ! RIGHT SIDE
     function test_qr_mult_right() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r
-        real(dp), dimension(n, m) :: c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(n, m) :: c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(n) :: tau
         logical :: rst
 
         ! Initialization
@@ -351,15 +351,15 @@ contains
     ! OVERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_od() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 50
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r
-        real(dp), dimension(n, m) :: c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(n, m) :: c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(n) :: tau
         logical :: rst
 
         ! Initialization
@@ -403,15 +403,15 @@ contains
     ! UNDERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_ud() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 50
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r
-        real(dp), dimension(n, m) :: c1, c2, ans
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(m) :: tau
+        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(n, m) :: c1, c2, ans
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m) :: tau
         logical :: rst
 
         ! Initialization
@@ -455,15 +455,15 @@ contains
     ! VECTOR
     function test_qr_mult_vector() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, r
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(m) :: c1, c2, ans
-        real(dp), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m) :: c1, c2, ans
+        real(real64), dimension(n) :: tau
         logical :: rst
 
         ! Initialization
@@ -508,18 +508,18 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1
-        real(dp), dimension(m, nrhs) :: b, b1, ans1
-        real(dp), dimension(n, nrhs) :: x1
-        real(dp), dimension(n) :: tau
-        real(dp), dimension(m) :: b2a, b2, ans2
-        real(dp), dimension(n) :: x2
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(m, nrhs) :: b, b1, ans1
+        real(real64), dimension(n, nrhs) :: x1
+        real(real64), dimension(n) :: tau
+        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(n) :: x2
         logical :: rst
 
         ! Initialization
@@ -564,19 +564,19 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 100
-        integer(i32), parameter :: n = 100
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1
-        real(dp), dimension(m, nrhs) :: b, b1, ans1
-        real(dp), dimension(n, nrhs) :: x1
-        real(dp), dimension(n) :: tau
-        real(dp), dimension(m) :: b2a, b2, ans2
-        real(dp), dimension(n) :: x2
-        integer(i32), dimension(n) :: pvt
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(m, nrhs) :: b, b1, ans1
+        real(real64), dimension(n, nrhs) :: x1
+        real(real64), dimension(n) :: tau
+        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(n) :: x2
+        integer(int32), dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -622,19 +622,19 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 200
-        integer(i32), parameter :: n = 100
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 200
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a1, a2
-        real(dp), dimension(m, nrhs) :: b1, b2
-        real(dp), dimension(n) :: tau
-        real(dp), allocatable, dimension(:) :: work
-        real(dp) :: temp(1), rcond
-        integer(i32), dimension(n) :: pvt
-        integer(i32) :: lwork, info, rnk
+        real(real64), dimension(m, n) :: a1, a2
+        real(real64), dimension(m, nrhs) :: b1, b2
+        real(real64), dimension(n) :: tau
+        real(real64), allocatable, dimension(:) :: work
+        real(real64) :: temp(1), rcond
+        integer(int32), dimension(n) :: pvt
+        integer(int32) :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -667,19 +667,19 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 5
-        integer(i32), parameter :: n = 6
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 5
+        integer(int32), parameter :: n = 6
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1, a2
-        real(dp), dimension(m, nrhs) :: b, ans1
-        real(dp), dimension(n, nrhs) :: x1
-        real(dp), dimension(m) :: tau
-        real(dp), dimension(m) :: b2, ans2
-        real(dp), dimension(n) :: x2
-        integer(i32), dimension(n) :: pvt
+        real(real64), dimension(m, n) :: a, a1, a2
+        real(real64), dimension(m, nrhs) :: b, ans1
+        real(real64), dimension(n, nrhs) :: x1
+        real(real64), dimension(m) :: tau
+        real(real64), dimension(m) :: b2, ans2
+        real(real64), dimension(n) :: x2
+        integer(int32), dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -722,15 +722,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_update_1() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 50
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1, r
-        real(dp), dimension(m, m) :: q
-        real(dp), dimension(m) :: u
-        real(dp), dimension(n) :: v, tau
+        real(real64), dimension(m, n) :: a, a1, r
+        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m) :: u
+        real(real64), dimension(n) :: v, tau
         logical :: rst
 
         ! Initialization

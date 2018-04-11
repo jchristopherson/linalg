@@ -2,7 +2,7 @@
 
 ! Tests matrix inversion routines
 module test_mtx_inverse
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg_solve, only : mtx_inverse, mtx_pinverse
     implicit none
@@ -12,16 +12,16 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1
-        real(dp), dimension(n, m) :: ainv
-        real(dp), dimension(m, nrhs) :: b
-        real(dp), dimension(n, nrhs) :: x
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(n, m) :: ainv
+        real(real64), dimension(m, nrhs) :: b
+        real(real64), dimension(n, nrhs) :: x
         logical :: rst
 
         ! Initialization
@@ -47,13 +47,13 @@ contains
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
     function test_pinv_od() result(rst)
         ! Parameters
-        real(dp), parameter :: tol = 1.0d-8
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(8, 6) :: a, a1
-        real(dp), dimension(6, 8) :: ainv
-        real(dp), dimension(8) :: b
-        real(dp), dimension(6) :: x, x1
+        real(real64), dimension(8, 6) :: a, a1
+        real(real64), dimension(6, 8) :: ainv
+        real(real64), dimension(8) :: b
+        real(real64), dimension(6) :: x, x1
         logical :: rst
 
         ! Initialization
@@ -83,11 +83,11 @@ contains
 ! ------------------------------------------------------------------------------
     function test_inv() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, ainv
+        real(real64), dimension(n, n) :: a, a1, ainv
         logical :: rst
 
         ! Initialization

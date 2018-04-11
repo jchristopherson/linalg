@@ -3,14 +3,14 @@
 ! Example Source: 
 ! https://www.mathworks.com/help/matlab/ref/lu.html?s_tid=srchtitle
 program example
-    use linalg_constants, only : dp, i32
+    use iso_fortran_env, only : real64, int32
     use linalg_factor, only : lu_factor
     use linalg_solve, only : solve_lu
     implicit none
 
     ! Local Variables
-    real(dp) :: a(3,3), b(3)
-    integer(i32) :: i, pvt(3)
+    real(real64) :: a(3,3), b(3)
+    integer(int32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |

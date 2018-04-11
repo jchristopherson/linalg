@@ -697,7 +697,7 @@ contains
 
         ! Workspace Query
         call DGEQRF(m, n, a, m, tau, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -809,7 +809,7 @@ contains
 
         ! Workspace Query
         call DGEQP3(m, n, a, m, jpvt, tau, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -930,7 +930,7 @@ contains
 
         ! Workspace Query
         call DORGQR(m, qcol, mn, q, m, tau, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1175,7 +1175,7 @@ contains
 
         ! Workspace Query
         call DORMQR(side, t, m, n, k, a, nrowa, tau, c, m, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1291,7 +1291,7 @@ contains
 
         ! Workspace Query
         call DORMQR(side, t, m, 1, k, a, nrowa, tau, c, m, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2121,7 +2121,7 @@ contains
 
         ! Workspace Query
         call DTZRZF(m, n, a, m, tau, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2262,7 +2262,7 @@ contains
 
         ! Workspace Query
         call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2390,7 +2390,7 @@ contains
 
         ! Workspace Query
         call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2557,7 +2557,7 @@ contains
         ! Workspace Query
         call DGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, temp, -1, &
             flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return

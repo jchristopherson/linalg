@@ -2,7 +2,7 @@
 
 ! Tests for SVD operations.
 module test_svd_ops
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg_factor, only : svd
     use linalg_core, only : diag_mtx_mult
@@ -11,15 +11,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1
-        real(dp), dimension(m, m) :: u1
-        real(dp), dimension(n, n) :: vt1
-        real(dp), dimension(n) :: s1
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(m, m) :: u1
+        real(real64), dimension(n, n) :: vt1
+        real(real64), dimension(n) :: s1
         logical :: rst
 
         ! Initialization
@@ -44,15 +44,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_od() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 60
-        integer(i32), parameter :: n = 50
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1, t1, u2
-        real(dp), dimension(m, m) :: u1
-        real(dp), dimension(n, n) :: vt1
-        real(dp), dimension(n) :: s1
+        real(real64), dimension(m, n) :: a, a1, t1, u2
+        real(real64), dimension(m, m) :: u1
+        real(real64), dimension(n, n) :: vt1
+        real(real64), dimension(n) :: s1
         logical :: rst
 
         ! Initialization
@@ -92,15 +92,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_ud() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 50
-        integer(i32), parameter :: n = 60
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1, t1
-        real(dp), dimension(m, m) :: u1
-        real(dp), dimension(n, n) :: vt1
-        real(dp), dimension(m) :: s1
+        real(real64), dimension(m, n) :: a, a1, t1
+        real(real64), dimension(m, m) :: u1
+        real(real64), dimension(n, n) :: vt1
+        real(real64), dimension(m) :: s1
         logical :: rst
 
         ! Initialization

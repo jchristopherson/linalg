@@ -7,7 +7,6 @@
 module linalg_solve
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
-    use lapack
     use linalg_constants
     use linalg_factor, only : rz_factor, mult_rz, mult_qr
     use linalg_core, only : mtx_mult, recip_mult_array
@@ -1468,7 +1467,7 @@ contains
 
         ! Workspace Query
         call DGETRI(n, a, n, istat, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1601,6 +1600,15 @@ contains
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
         ! Parameters
         real(real64), parameter :: zero = 0.0d0
         real(real64), parameter :: one = 1.0d0
@@ -1646,7 +1654,7 @@ contains
 
         ! Workspace Query
         call DGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         lwork = lwork + m * mn + n * n + mn
         if (present(olwork)) then
             olwork = lwork
@@ -1795,7 +1803,7 @@ contains
 
         ! Workspace Query
         call DGELS('N', m, n, nrhs, a, m, b, maxmn, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1901,7 +1909,7 @@ contains
 
         ! Workspace Query
         call DGELS('N', m, n, 1, a, m, b, maxmn, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2030,7 +2038,7 @@ contains
 
         ! Workspace Query
         call DGELSY(m, n, nrhs, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2176,7 +2184,7 @@ contains
 
         ! Workspace Query
         call DGELSY(m, n, 1, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2319,7 +2327,7 @@ contains
 
         ! Workspace Query
         call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2447,7 +2455,7 @@ contains
 
         ! Workspace Query
         call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return

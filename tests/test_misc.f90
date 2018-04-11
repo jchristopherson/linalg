@@ -2,7 +2,7 @@
 
 ! Tests miscellaneous routines.
 module test_misc
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg_core
     use test_core
     implicit none
@@ -12,19 +12,19 @@ contains
 ! ------------------------------------------------------------------------------
     function test_diagonal_mtx_mult() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 30
-        integer(i32), parameter :: n = 30
-        integer(i32), parameter :: k = 30
-        real(dp), parameter :: tol = 1.0d-8
-        real(dp), parameter :: alpha = 0.5d0
-        real(dp), parameter :: beta = 0.25d0
+        integer(int32), parameter :: m = 30
+        integer(int32), parameter :: n = 30
+        integer(int32), parameter :: k = 30
+        real(real64), parameter :: tol = 1.0d-8
+        real(real64), parameter :: alpha = 0.5d0
+        real(real64), parameter :: beta = 0.25d0
 
         ! Local Variables
-        integer(i32) :: i
-        real(dp), dimension(m, n) :: c1, ans1
-        real(dp), dimension(k, n) :: b1, b2, ans2
-        real(dp), dimension(m, k) :: d1
-        real(dp), dimension(k) :: d1v
+        integer(int32) :: i
+        real(real64), dimension(m, n) :: c1, ans1
+        real(real64), dimension(k, n) :: b1, b2, ans2
+        real(real64), dimension(m, k) :: d1
+        real(real64), dimension(k) :: d1v
         logical :: rst
 
         ! Initialization
@@ -73,15 +73,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_rank1_update() result(rst)
         ! Parameters
-        integer(i32), parameter :: m = 50
-        integer(i32), parameter :: n = 20
-        real(dp), parameter :: alpha = 0.5d0
-        real(dp), parameter :: tol = 1.0d-12
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 20
+        real(real64), parameter :: alpha = 0.5d0
+        real(real64), parameter :: tol = 1.0d-12
 
         ! Local Variables
-        real(dp), dimension(m, n) :: a, a1, b
-        real(dp), dimension(m, 1) :: x
-        real(dp), dimension(n, 1) :: y
+        real(real64), dimension(m, n) :: a, a1, b
+        real(real64), dimension(m, 1) :: x
+        real(real64), dimension(n, 1) :: y
         logical :: rst
 
         ! Initialization
@@ -111,7 +111,7 @@ contains
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
     function test_rank() result(rst)
         ! Local Variables
-        real(dp), dimension(8, 6) :: a
+        real(real64), dimension(8, 6) :: a
         logical :: rst
 
         ! Initialization
@@ -134,15 +134,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_1() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: alpha = 1.5d0
-        real(dp), parameter :: beta = -3.0d0
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: alpha = 1.5d0
+        real(real64), parameter :: beta = -3.0d0
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: check, rst
-        integer(i32) :: j
-        real(dp) :: a(n,n), b(n,n), bans(n,n)
+        integer(int32) :: j
+        real(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
         check = .true.
@@ -174,15 +174,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_2() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: alpha = 1.5d0
-        real(dp), parameter :: beta = -3.0d0
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: alpha = 1.5d0
+        real(real64), parameter :: beta = -3.0d0
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: check, rst
-        integer(i32) :: j
-        real(dp) :: a(n,n), b(n,n), bans(n,n)
+        integer(int32) :: j
+        real(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
         check = .true.

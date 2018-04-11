@@ -18,7 +18,6 @@
 module linalg_core
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
-    use lapack
     use linalg_constants
     implicit none
     private
@@ -974,6 +973,15 @@ contains
         class(errors), intent(inout), optional, target :: err
         integer(int32) :: rnk
 
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
         ! Local Variables
         integer(int32) :: i, m, n, mn, istat, lwork, flag
         real(real64), pointer, dimension(:) :: wptr, s, w
@@ -1000,7 +1008,7 @@ contains
         !call svd(a, a(1:mn,1), olwork = lwork)
         call DGESVD('N', 'N', m, n, a, m, dummy, dummy, m, dummy, n, temp, &
             -1, flag)
-        lwork = int(temp(1), i32) + mn
+        lwork = int(temp(1), int32) + mn
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1240,6 +1248,15 @@ contains
         ! Arguments
         real(real64), intent(in) :: a
         real(real64), intent(inout), dimension(:) :: x
+
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
 
         ! Parameters
         real(real64), parameter :: zero = 0.0d0

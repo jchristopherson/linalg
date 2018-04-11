@@ -38,6 +38,10 @@ target_link_libraries(cholesky_example linalg)
 add_executable(cholesky_update_example linalg_cholesky_update_example.f90)
 target_link_libraries(cholesky_update_example linalg)
 
+# Cholesky Downdate Example
+add_executable(cholesky_downdate_example linalg_cholesky_downdate_Example.f90)
+target_link_libraries(cholesky_downdate_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

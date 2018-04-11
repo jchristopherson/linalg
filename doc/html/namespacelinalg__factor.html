@@ -294,10 +294,11 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section user"><dt>Usage</dt><dd>The following example illustrates the use of the rank 1 Cholesky downdate, and compares the results to factoring the original rank 1 downdated matrix. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div><div class="line">    <span class="keywordtype">use </span>iso_fortran_env<span class="keywordtype">, only</span> : real64, int32</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__factor.html">linalg_factor</a><span class="keywordtype">, only</span> : cholesky_factor, cholesky_rank1_downdate</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__core.html">linalg_core</a><span class="keywordtype">, only</span> : rank1_update</div><div class="line">    <span class="keywordtype">implicit none</span></div><div class="line"></div><div class="line">    <span class="comment">! Variables</span></div><div class="line">    <span class="keywordtype">real(real64)</span> :: a(3,3), u(3), ad(3,3)</div><div class="line">    <span class="keywordtype">integer(int32)</span> :: i</div><div class="line"></div><div class="line">    <span class="comment">! Build the 3-by-3 matrix A.</span></div><div class="line">    <span class="comment">!     |  4.25   11.25   -15 |</span></div><div class="line">    <span class="comment">! A = | 11.25   39.25   -46 |</span></div><div class="line">    <span class="comment">!     |  -15     -46    102 |</span></div><div class="line">    a = reshape([4.25d0, 11.25d0, -15.0d0, 11.25d0, 39.25d0, -46.0d0, &amp;</div><div class="line">        -15.0d0, -46.0d0, 102.0d0], [3, 3])</div><div class="line"></div><div class="line">    <span class="comment">! The downdate vector</span></div><div class="line">    <span class="comment">!     |  0.5 |</span></div><div class="line">    <span class="comment">! u = | -1.5 |</span></div><div class="line">    <span class="comment">!     |   2  |</span></div><div class="line">    u = [0.5d0, -1.5d0, 2.0d0]</div><div class="line"></div><div class="line">    <span class="comment">! Compute the rank 1 downdate of A</span></div><div class="line">    ad = a</div><div class="line">    <span class="keyword">call </span>rank1_update(-1.0d0, u, u, ad)</div><div class="line"></div><div class="line">    <span class="comment">! Compute the Cholesky factorization of the original matrix</span></div><div class="line">    <span class="keyword">call </span>cholesky_factor(a)</div><div class="line"></div><div class="line">    <span class="comment">! Apply the rank 1 downdate to the factored matrix</span></div><div class="line">    <span class="keyword">call </span>cholesky_rank1_downdate(a, u)</div><div class="line"></div><div class="line">    <span class="comment">! Compute the Cholesky factorization of the downdate to the original matrix</span></div><div class="line">    <span class="keyword">call </span>cholesky_factor(ad)</div><div class="line"></div><div class="line">    <span class="comment">! Display the matrices</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Downdating the Factored Form:&quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(a, 1)</div><div class="line">        print *, a(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Downdating A Directly:&quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(ad, 1)</div><div class="line">        print *, ad(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"><span class="keyword">end program</span></div></div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Downdating the Factored Form:</div><div class="line"> 2.0000000000000000        6.0000000000000000       -8.0000000000000000</div><div class="line"> 0.0000000000000000        1.0000000000000000        4.9999999999999973</div><div class="line"> 0.0000000000000000        0.0000000000000000        3.0000000000000049</div><div class="line">Downdating A Directly:</div><div class="line"> 2.0000000000000000        6.0000000000000000       -8.0000000000000000</div><div class="line"> 0.0000000000000000        1.0000000000000000        5.0000000000000000</div><div class="line"> 0.0000000000000000        0.0000000000000000        3.0000000000000000</div></div><!-- fragment --></dd></dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1DN.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01878">1878</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l01943">1943</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -991,7 +992,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02129">2129</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02194">2194</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1083,7 +1084,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ. </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02271">2271</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02336">2336</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1403,7 +1404,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02017">2017</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02082">2082</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>
@@ -1487,7 +1488,7 @@ Functions/Subroutines</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02430">2430</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__factor_8f90_source.html#l02495">2495</a> of file <a class="el" href="linalg__factor_8f90_source.html">linalg_factor.f90</a>.</p>
 
 </div>
 </div>

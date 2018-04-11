@@ -3,7 +3,7 @@
 ! Example Source: https://en.wikipedia.org/wiki/Overdetermined_system
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_solve, only : solve_least_squares_full
+    use linalg_solve, only : solve_least_squares_svd
     implicit none
 
     ! Local Variables
@@ -27,7 +27,7 @@ program example
 
     ! Compute the solution via a least-squares approach.  The results overwrite
     ! the first 2 elements in b.
-    call solve_least_squares_full(a, b)
+    call solve_least_squares_svd(a, b)
 
     ! Display the results
     print '(A)', "Least Squares Solution: X = "

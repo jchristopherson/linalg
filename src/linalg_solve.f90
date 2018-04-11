@@ -410,6 +410,50 @@ module linalg_solve
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns using a singular value decomposition of
     !! matrix A.
+    !!
+    !! @par Usage
+    !! The following example illustrates the least squares solution of an
+    !! overdetermined system of linear equations.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_solve, only : solve_least_squares_svd
+    !!     implicit none
+    !!
+    !!     ! Local Variables
+    !!     real(real64) :: a(3,2), b(3)
+    !!     integer(int32) :: i
+    !!
+    !!     ! Build the 3-by-2 matrix A
+    !!     !     | 2   1 |
+    !!     ! A = |-3   1 |
+    !!     !     |-1   1 |
+    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
+    !!
+    !!     ! Build the right-hand-side vector B.
+    !!     !     |-1 |
+    !!     ! b = |-2 |
+    !!     !     | 1 |
+    !!     b = [-1.0d0, -2.0d0, 1.0d0]
+    !!
+    !!     ! The solution is:
+    !!     ! x = [0.13158, -0.57895]**T
+    !!
+    !!     ! Compute the solution via a least-squares approach.  The results overwrite
+    !!     ! the first 2 elements in b.
+    !!     call solve_least_squares_svd(a, b)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "Least Squares Solution: X = "
+    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Least Squares Solution: X =
+    !!  0.13158
+    !! -0.57895
+    !! @endcode
     interface solve_least_squares_svd
         module procedure :: solve_least_squares_mtx_svd
         module procedure :: solve_least_squares_vec_svd
@@ -2336,9 +2380,11 @@ contains
     !!  output, the N-by-NRHS solution matrix X.
     !! @param[out] arnk An optional output, that if provided, will return the
     !!  rank of @p a.
-    !! @param[out] s A MIN(M, N)-element array that on output contains the
-    !!  singular values of @p a in descending order.  Notice, the condition
+    !! @param[out] s An optional MIN(M, N)-element array that on output contains
+    !!  the singular values of @p a in descending order.  Notice, the condition
     !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
+    !! @param[out] arnk An optional output, that if provided, will return the
+    !!  rank of @p a.
     !! @param[out] work An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least
@@ -2360,19 +2406,18 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_mtx_svd(a, b, arnk, s, work, olwork, err)
+    subroutine solve_least_squares_mtx_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a, b
-        real(real64), intent(out), dimension(:) :: s
         integer(int32), intent(out), optional :: arnk
-        real(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: work, s
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(int32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
-        real(real64), pointer, dimension(:) :: wptr
-        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: wptr, sptr
+        real(real64), allocatable, target, dimension(:) :: wrk, sing
         real(real64), dimension(1) :: temp
         real(real64) :: rcond
         class(errors), pointer :: errmgr
@@ -2397,8 +2442,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(s) /= mn) then
-            flag = 4
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
@@ -2410,7 +2453,8 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, temp, rcond, rnk, temp, -1, &
+            flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -2418,6 +2462,27 @@ contains
         end if
 
         ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
@@ -2440,7 +2505,7 @@ contains
         end if
 
         ! Process
-        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, &
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
@@ -2462,11 +2527,11 @@ contains
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
     !!  output, the N-by-NRHS solution matrix X.
+    !! @param[out] s An optional MIN(M, N)-element array that on output contains
+    !!  the singular values of @p a in descending order.  Notice, the condition
+    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
     !! @param[out] arnk An optional output, that if provided, will return the
     !!  rank of @p a.
-    !! @param[out] s A MIN(M, N)-element array that on output contains the
-    !!  singular values of @p a in descending order.  Notice, the condition
-    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
     !! @param[out] work An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least
@@ -2488,20 +2553,19 @@ contains
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_vec_svd(a, b, arnk, s, work, olwork, err)
+    subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(inout), dimension(:) :: b
-        real(real64), intent(out), dimension(:) :: s
         integer(int32), intent(out), optional :: arnk
-        real(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: work, s
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(int32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
-        real(real64), pointer, dimension(:) :: wptr
-        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: wptr, sptr
+        real(real64), allocatable, target, dimension(:) :: wrk, sing
         real(real64), dimension(1) :: temp
         real(real64) :: rcond
         class(errors), pointer :: errmgr
@@ -2525,8 +2589,6 @@ contains
         flag = 0
         if (size(b) /= maxmn) then
             flag = 2
-        else if (size(s) /= mn) then
-            flag = 4
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
@@ -2538,7 +2600,7 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
+        call DGELSS(m, n, 1, a, m, b, maxmn, temp, rcond, rnk, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -2546,6 +2608,27 @@ contains
         end if
 
         ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_svd", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
@@ -2568,7 +2651,8 @@ contains
         end if
 
         ! Process
-        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, flag)
+        call DGELSS(m, n, 1, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
+            flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
             write(errmsg, '(I0A)') flag, " superdiagonals could not " // &

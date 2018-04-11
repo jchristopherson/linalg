@@ -30,6 +30,10 @@ target_link_libraries(qr_mult_example linalg)
 add_executable(qr_update_example linalg_qr_update_example.f90)
 target_link_libraries(qr_update_example linalg)
 
+# Cholesky Example
+add_executable(cholesky_example linalg_cholesky_example.f90)
+target_link_libraries(cholesky_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

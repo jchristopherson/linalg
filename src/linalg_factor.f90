@@ -1558,29 +1558,71 @@ contains
     !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
     !!
     !! @par Usage
-    !! To solve a system of N equations of N unknowns using Cholesky 
-    !! factorization, the following code will suffice.  Notice, the system of
-    !! equations must be positive definite.
+    !! The following example illustrates the solution of a positive-definite 
+    !! system of equations via Cholesky factorization.
     !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are
-    !! ! N-by-NRHS in size.
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_factor, only : cholesky_factor
+    !!     use linalg_solve, only : solve_cholesky, solve_triangular_system
+    !!     implicit none
     !!
-    !! ! Variables
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
-    !! logical :: upper
+    !!     ! Variables
+    !!     real(real64) :: a(3, 3), b(3), bu(3)
+    !!     integer(int32) :: i
     !!
-    !! ! Initialize A and B...
+    !!     ! Build the 3-by-3 positive-definite matrix A.
+    !!     !     | 4   12   -16 |
+    !!     ! A = | 12  37   -43 |
+    !!     !     |-16 -43    98 |
+    !!     a = reshape([4.0d0, 12.0d0, -16.0d0, 12.0d0, 37.0d0, -43.0d0, -16.0d0, &
+    !!         -43.0d0, 98.0d0], [3, 3])
     !!
-    !! ! Specify that we're using the upper portion of A (remember positive 
-    !! ! definite matrices are symmetric)
-    !! upper = .true.
+    !!     ! Build the 3-element array B
+    !!     !     | 5 |
+    !!     ! b = | 1 |
+    !!     !     | 3 |
+    !!     b = [5.0d0, 1.0d0, 3.0d0]
     !!
-    !! ! Compute the factorization of A.
-    !! call cholesky_factor(a, upper)
+    !!     ! Make a copy of B for later use - not necessary, but just for example to
+    !!     ! illustrate the long or manual method of solving a Cholesky factored system
+    !!     bu = b
     !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_cholesky(upper, a, b)
+    !!     ! Compute the Cholesky factorization of A considering only the upper 
+    !!     ! triangular portion of A (the default configuration).
+    !!     call cholesky_factor(a)
+    !!
+    !!     ! Compute the solution
+    !!     call solve_cholesky(.true., a, b)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "Cholesky Solution: X = "
+    !!     print '(F8.4)', (b(i), i = 1, size(b))
+    !!
+    !!     ! The solution could also be computed manually noting the Cholesky 
+    !!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.  
+    !!
+    !!     ! Step 1 would then be to solve the problem U**T * Y = B, for Y.
+    !!     call solve_triangular_system(.true., .true., .true., a, bu)
+    !!
+    !!     ! Now, solve the problem U * X = Y, for X
+    !!     call solve_triangular_system(.true., .false., .true., a, bu)
+    !!
+    !!     ! Display the results
+    !!     print '(A)', "Cholesky Solution (Manual Approach): X = "
+    !!     print '(F8.4)', (bu(i), i = 1, size(bu))
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Cholesky Solution: X =
+    !!  239.5833
+    !!  -65.6667
+    !!  10.3333
+    !! Cholesky Solution (Manual Approach): X =
+    !!  239.5833
+    !!  -65.6667
+    !!  10.3333
     !! @endcode
     !!
     !! @par Notes

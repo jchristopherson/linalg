@@ -2,7 +2,7 @@ var searchData=
 [
   ['mtx_5finverse',['mtx_inverse',['../namespacelinalg__solve.html#a16fafd5977d46d127a894be942d3f24b',1,'linalg_solve']]],
   ['mtx_5finverse_5fc',['mtx_inverse_c',['../namespacelinalg__c__binding.html#a12aacb4362b2939ec3bce0a30743ea4f',1,'linalg_c_binding']]],
-  ['mtx_5fmult_5fc',['mtx_mult_c',['../namespacelinalg__c__binding.html#a7cbe605511e1d19ecccdacbf76abc2e6',1,'linalg_c_binding']]],
+  ['mtx_5fmult_5fc',['mtx_mult_c',['../namespacelinalg__c__binding.html#a8b7e8b0ac48fb6e578e223370c393c86',1,'linalg_c_binding']]],
   ['mtx_5fmult_5fmtx',['mtx_mult_mtx',['../interfacelinalg__core_1_1mtx__mult.html#a90a8ba13d2b8d2cb023eb37411b4a3fe',1,'linalg_core::mtx_mult::mtx_mult_mtx()'],['../namespacelinalg__core.html#a27638122d960138dfcc2fea576a1f2f1',1,'linalg_core::mtx_mult_mtx()']]],
   ['mtx_5fmult_5fvec',['mtx_mult_vec',['../interfacelinalg__core_1_1mtx__mult.html#aa30b02ff489242e4c97bb84fb308a7ce',1,'linalg_core::mtx_mult::mtx_mult_vec()'],['../namespacelinalg__core.html#afcd5f683ab0c4813d583e6165c1a5aa0',1,'linalg_core::mtx_mult_vec()']]],
   ['mtx_5fpinverse',['mtx_pinverse',['../namespacelinalg__solve.html#af44256ed15ec2eadc5b4446222384617',1,'linalg_solve']]],

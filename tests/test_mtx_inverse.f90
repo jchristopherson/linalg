@@ -4,7 +4,7 @@
 module test_mtx_inverse
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_solve, only : mtx_inverse, mtx_pinverse
+    use linalg_core
     implicit none
 contains
 ! ******************************************************************************

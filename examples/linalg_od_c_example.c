@@ -20,7 +20,7 @@ int main() {
     // x = [0.13158, -0.57895]**T
 
     // Compute the solution.  The results overwrite the first 2 elements in b.
-    solve_least_squares_(3, 2, 1, a, b, NULL);
+    solve_least_squares(3, 2, 1, a, b, NULL);
 
     // Display the results
     printf("Least Squares Solution: X =\n%f\n%f\n", b[0], b[1]);

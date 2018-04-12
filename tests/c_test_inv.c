@@ -21,13 +21,13 @@ bool test_pinv() {
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
 
     // Compute the inverse
-    mtx_pinverse_(m, n, a1, ainv, NULL);
+    mtx_pinverse(m, n, a1, ainv, NULL);
 
     // Compute X = inv(A) * B
-    mtx_mult_(false, false, n, nrhs, m, 1.0, ainv, n, b, m, 0.0, x);
+    mtx_mult(false, false, n, nrhs, m, 1.0, ainv, n, b, m, 0.0, x);
 
     // Test A *X = B
-    mtx_mult_(false, false, m, nrhs, n, 1.0, a, m, x, n, 0.0, ans);
+    mtx_mult(false, false, m, nrhs, n, 1.0, a, m, x, n, 0.0, ans);
     if (!is_dbl_mtx_equal(m, nrhs, b, ans, tol)) {
         rst = false;
         printf("Test Failed: Pseudo-Inverse\n");
@@ -57,13 +57,13 @@ bool test_pinv_od() {
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
 
     // Compute the inverse
-    mtx_pinverse_(m, n, a1, ainv, NULL);
+    mtx_pinverse(m, n, a1, ainv, NULL);
 
     // Compute X = inv(A) * B
-    mtx_mult_(false, false, n, nrhs, m, 1.0, ainv, n, b, m, 0.0, x);
+    mtx_mult(false, false, n, nrhs, m, 1.0, ainv, n, b, m, 0.0, x);
 
     // Test A *X = B
-    mtx_mult_(false, false, m, nrhs, n, 1.0, a, m, x, n, 0.0, ans);
+    mtx_mult(false, false, m, nrhs, n, 1.0, a, m, x, n, 0.0, ans);
     if (!is_dbl_mtx_equal(m, nrhs, b, ans, tol)) {
         rst = false;
         printf("Test Failed: Overdetermined Pseudo-Inverse\n");
@@ -91,10 +91,10 @@ bool test_inv() {
     for (i = 0; i < m * m; ++i) a1[i] = a[i];
 
     // Compute the inverse
-    mtx_inverse_(m, a1, NULL);
+    mtx_inverse(m, a1, NULL);
 
     // Compute the psuedo-inverse
-    mtx_pinverse_(m, m, a, ainv, NULL);
+    mtx_pinverse(m, m, a, ainv, NULL);
 
     // Test 
     if (!is_dbl_mtx_equal(m, m, a1, ainv, tol)) {

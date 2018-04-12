@@ -1,8 +1,0 @@
-
-***** ERROR *****
-11/4/2018; 16:48:41
-Function: solve_least_squares_vec_pvt
-Error Flag: 102
-Message:
-Input number 3 is not sized correctly.
-

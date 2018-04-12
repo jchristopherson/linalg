@@ -19,11 +19,11 @@ bool test_svd() {
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
 
     // Compute the SVD of A
-    svd_(m, n, a1, s1, u1, vt1, NULL);
+    svd(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
-    mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
+    diag_mtx_mult(m, n, n, 1.0, s1, vt1, 0.0, svt);
+    mtx_mult(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test
     if (!is_dbl_mtx_equal(m, n, a1, a, tol)) {
@@ -57,8 +57,8 @@ bool test_svd_od() {
     svd_(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
-    mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
+    diag_mtx_mult(m, n, n, 1.0, s1, vt1, 0.0, svt);
+    mtx_mult(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test
     if (!is_dbl_mtx_equal(m, n, a1, a, tol)) {
@@ -89,11 +89,11 @@ bool test_svd_ud() {
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
 
     // Compute the SVD of A
-    svd_(m, n, a1, s1, u1, vt1, NULL);
+    svd(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
-    diag_mtx_mult_(m, n, n, 1.0, s1, vt1, 0.0, svt);
-    mtx_mult_(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
+    diag_mtx_mult(m, n, n, 1.0, s1, vt1, 0.0, svt);
+    mtx_mult(false, false, m, n, m, 1.0, u1, m, svt, m, 0.0, a1);
 
     // Test
     if (!is_dbl_mtx_equal(m, n, a1, a, tol)) {

@@ -50,9 +50,9 @@ extern "C" {
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha, 
-               const double *a, int lda, const double *b, int ldb, double beta,
-               double *c);
+void mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha, 
+              const double *a, int lda, const double *b, int ldb, double beta,
+              double *c);
 
 /** @brief Performs the matrix operation: 
  *  C = alpha * op(A) * op(B) + beta * C.
@@ -79,9 +79,9 @@ void mtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void cmtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
-                const double complex *a, int lda, const double complex *b,
-                int ldb, double beta, double complex *c);
+void cmtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
+               const double complex *a, int lda, const double complex *b,
+               int ldb, double beta, double complex *c);
 
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
  * A is a diagonal amtrix.
@@ -96,25 +96,25 @@ void cmtx_mult_(bool transa, bool transb, int m, int n, int k, double alpha,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void diag_mtx_mult_(int m, int n, int k, double alpha, const double *a,
+void diag_mtx_mult(int m, int n, int k, double alpha, const double *a,
+                   const double *b, double beta, double *c);
+
+/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+ * B is a diagonal matrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of columns in matrix A.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param b A MIN(K,N)-element array containing the diagonal elements of
+ *  matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
+ */
+void diag_mtx_rmult(int m, int n, int k, double alpha, const double *a,
                     const double *b, double beta, double *c);
 
-/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
- * B is a diagonal matrix.
- *
- * @param m The number of rows in matrix C.
- * @param n The number of columns in matrix C.
- * @param k The number of columns in matrix A.
- * @param alpha The scalar multiplier to matrix A.
- * @param a The M-by-K matrix A.
- * @param b A MIN(K,N)-element array containing the diagonal elements of
- *  matrix B.
- * @param beta The scalar multiplier to matrix C.
- * @param c The M-by-N matrix C.
- */
-void diag_mtx_rmult_(int m, int n, int k, double alpha, const double *a,
-                     const double *b, double beta, double *c);
-
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
  * A is a diagonal amtrix.
  *
@@ -128,27 +128,27 @@ void diag_mtx_rmult_(int m, int n, int k, double alpha, const double *a,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void diag_mtx_mult_cmplx_(int m, int n, int k, double alpha,
-                          const double complex *a, const double *b, double beta,
+void diag_mtx_mult_cmplx(int m, int n, int k, double alpha,
+                         const double complex *a, const double *b, double beta,
+                         double complex *c);
+
+/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
+ * B is a diagonal matrix.
+ *
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of columns in matrix A.
+ * @param alpha The scalar multiplier to matrix A.
+ * @param a The M-by-K matrix A.
+ * @param b A MIN(K,N)-element array containing the diagonal elements of
+ *  matrix B.
+ * @param beta The scalar multiplier to matrix C.
+ * @param c The M-by-N matrix C.
+ */
+void diag_mtx_rmult_cmplx(int m, int n, int k, double alpha, const double *a,
+                          const double complex *b, double beta, 
                           double complex *c);
 
-/** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
- * B is a diagonal matrix.
- *
- * @param m The number of rows in matrix C.
- * @param n The number of columns in matrix C.
- * @param k The number of columns in matrix A.
- * @param alpha The scalar multiplier to matrix A.
- * @param a The M-by-K matrix A.
- * @param b A MIN(K,N)-element array containing the diagonal elements of
- *  matrix B.
- * @param beta The scalar multiplier to matrix C.
- * @param c The M-by-N matrix C.
- */
-void diag_mtx_rmult_cmplx_(int m, int n, int k, double alpha, const double *a,
-                           const double complex *b, double beta, 
-                           double complex *c);
-
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
  * A is a diagonal amtrix.
  *
@@ -162,8 +162,8 @@ void diag_mtx_rmult_cmplx_(int m, int n, int k, double alpha, const double *a,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void diag_cmtx_mult_(int m, int n, int k, double alpha, const double complex *a,
-                     const double complex *b, double beta, double complex *c);
+void diag_cmtx_mult(int m, int n, int k, double alpha, const double complex *a,
+                    const double complex *b, double beta, double complex *c);
 
 /** @brief Comptues the matrix operation: C = alpha * A * B + beta * C, where
  * B is a diagonal matrix.
@@ -178,9 +178,9 @@ void diag_cmtx_mult_(int m, int n, int k, double alpha, const double complex *a,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void diag_cmtx_rmult_(int m, int n, int k, double alpha, 
-                      const double complex *a, const double complex *b, 
-                      double beta, double complex *c);
+void diag_cmtx_rmult(int m, int n, int k, double alpha, 
+                     const double complex *a, const double complex *b, 
+                     double beta, double complex *c);
 
 /** @brief Performs the rank-1 update to matrix A such that:
  * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
@@ -196,8 +196,8 @@ void diag_cmtx_rmult_(int m, int n, int k, double alpha,
  * @param a On input, the M-by-N matrix to update.  On output, the
  *  updated M-by-N matrix.
  */
-void rank1_update_(int m, int n, double alpha, const double *x, const double *y,
-                   double *a);
+void rank1_update(int m, int n, double alpha, const double *x, const double *y,
+                  double *a);
 
 /** @brief Computes the trace of a matrix (the sum of the main diagonal
  * elements).
@@ -208,7 +208,7 @@ void rank1_update_(int m, int n, double alpha, const double *x, const double *y,
  *
  * @return The trace of @p x.
  */
-double trace_(int m, int n, const double *x);
+double trace(int m, int n, const double *x);
 
 /** @brief Computes the rank of a matrix.
  *
@@ -227,7 +227,7 @@ double trace_(int m, int n, const double *x);
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-int mtx_rank_(int m, int n, double *a, errorhandler *err);
+int mtx_rank(int m, int n, double *a, errorhandler *err);
 
 /** @brief Computes the determinant of a square matrix.
  *
@@ -243,7 +243,7 @@ int mtx_rank_(int m, int n, double *a, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-double det_(int n, double *a, errorhandler *err);
+double det(int n, double *a, errorhandler *err);
 
 /** @brief Swaps the contents of two arrays.
  *
@@ -251,7 +251,7 @@ double det_(int n, double *a, errorhandler *err);
  * @param x One of the N-element arrays.
  * @param y The other N-element array.
  */
-void swap_(int n, double *x, double *y);
+void swap(int n, double *x, double *y);
 
 /** brief Computes the triangular matrix operation: 
  * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
@@ -277,8 +277,8 @@ void swap_(int n, double *x, double *y);
  *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
  *      appropriately.
  */
-void tri_mtx_mult_(bool upper, int n, double alpha, const double *a,
-                   double beta, double *b, errorhandler *err);
+void tri_mtx_mult(bool upper, int n, double alpha, const double *a,
+                  double beta, double *b, errorhandler *err);
 
 /** @brief Computes the LU factorization of an M-by-N matrix.
  *
@@ -299,7 +299,7 @@ void tri_mtx_mult_(bool upper, int n, double alpha, const double *a,
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
  *      singular.
  */
-void lu_factor_(int m, int n, double *a, int *ipvt, errorhandler *err);
+void lu_factor(int m, int n, double *a, int *ipvt, errorhandler *err);
 
 /** @brief Extracts the L, U, and P matrices from the output of the
  * @ref lu_factor routine.
@@ -324,7 +324,7 @@ void lu_factor_(int m, int n, double *a, int *ipvt, errorhandler *err);
  * Notice, as both L and U are triangular in structure, the above equations
  * can be solved by forward and backward substitution.
  */
-void form_lu_(int n, double *lu, const int *ipvt, double *u, double *p);
+void form_lu(int n, double *lu, const int *ipvt, double *u, double *p);
 
 /** @brief Computes the QR factorization of an M-by-N matrix without
  * pivoting.
@@ -347,7 +347,7 @@ void form_lu_(int n, double *lu, const int *ipvt, double *u, double *p);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor_(int m, int n, double *a, double *tau, errorhandler *err);
+void qr_factor(int m, int n, double *a, double *tau, errorhandler *err);
 
 /** @brief Computes the QR factorization of an M-by-N matrix with column
  * pivoting such that A * P = Q * R.
@@ -374,8 +374,8 @@ void qr_factor_(int m, int n, double *a, double *tau, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor_pivot_(int m, int n, double *a, double *tau, int *jpvt,
-                      errorhandler *err);
+void qr_factor_pivot(int m, int n, double *a, double *tau, int *jpvt,
+                     errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.
@@ -402,8 +402,8 @@ void qr_factor_pivot_(int m, int n, double *a, double *tau, int *jpvt,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void form_qr_(int m, int n, double *r, const double *tau, double *q,
-              errorhandler *err);
+void form_qr(int m, int n, double *r, const double *tau, double *q,
+             errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.
@@ -433,8 +433,8 @@ void form_qr_(int m, int n, double *r, const double *tau, double *q,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void form_qr_pivot_(int m, int n, double *r, const double *tau,
-                    const int *pvt, double *q, double *p, errorhandler *err);
+void form_qr_pivot(int m, int n, double *r, const double *tau,
+                   const int *pvt, double *q, double *p, errorhandler *err);
 
 /** @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
  * factorization such that: C = op(Q) * C.
@@ -459,8 +459,8 @@ void form_qr_pivot_(int m, int n, double *r, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void mult_qr_(bool trans, int m, int n, double *q, const double *tau,
-              double *c, errorhandler *err);
+void mult_qr(bool trans, int m, int n, double *q, const double *tau,
+             double *c, errorhandler *err);
 
 /** @brief Computes the rank 1 update to an M-by-N QR factored matrix A
  * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
@@ -482,8 +482,8 @@ void mult_qr_(bool trans, int m, int n, double *q, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_rank1_update_(int m, int n, double *q, double *r, double *u, double *v, 
-                      errorhandler *err);
+void qr_rank1_update(int m, int n, double *q, double *r, double *u, double *v, 
+                     errorhandler *err);
 
 /** @brief Computes the Cholesky factorization of a symmetric, positive
  * definite matrix.
@@ -502,7 +502,7 @@ void qr_rank1_update_(int m, int n, double *q, double *r, double *u, double *v,
  *  follows.
  *  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
  */
-void cholesky_factor_(int n, double *a, bool upper, errorhandler *err);
+void cholesky_factor(int n, double *a, bool upper, errorhandler *err);
 
 /** @brief Computes the rank 1 update to a Cholesky factored matrix (upper
  * triangular).
@@ -519,7 +519,7 @@ void cholesky_factor_(int n, double *a, bool upper, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void cholesky_rank1_update_(int n, double *r, double *u, errorhandler *err);
+void cholesky_rank1_update(int n, double *r, double *u, errorhandler *err);
 
 /** @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
  * triangular).
@@ -541,7 +541,7 @@ void cholesky_rank1_update_(int n, double *r, double *u, errorhandler *err);
  *      positive definite.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
  */
-void cholesky_rank1_downdate_(int n, double *r, double *u, errorhandler *err);
+void cholesky_rank1_downdate(int n, double *r, double *u, errorhandler *err);
 
 /** @brief Factors an upper trapezoidal matrix by means of orthogonal
  * transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
@@ -564,7 +564,7 @@ void cholesky_rank1_downdate_(int n, double *r, double *u, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void rz_factor_(int m, int n, double *a, double *tau, errorhandler *err);
+void rz_factor(int m, int n, double *a, double *tau, errorhandler *err);
 
 /** @brief Multiplies a general matrix by the orthogonal matrix Z from an
  * RZ factorization such that: C = op(Z) * C.
@@ -588,8 +588,8 @@ void rz_factor_(int m, int n, double *a, double *tau, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void mult_rz_(bool trans, int m, int n, int l, double *a, const double *tau, 
-              double *c, errorhandler *err);
+void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau, 
+             double *c, errorhandler *err);
 
 /** @brief Computes the singular value decomposition of a matrix A.  The
  *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
@@ -618,8 +618,8 @@ void mult_rz_(bool trans, int m, int n, int l, double *a, const double *tau,
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-void svd_(int m, int n, double *a, double *s, double *u, double *vt,
-          errorhandler *err);
+void svd(int m, int n, double *a, double *s, double *u, double *vt,
+         errorhandler *err);
 
 /** @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
  * A is a triangular matrix.
@@ -639,9 +639,9 @@ void svd_(int m, int n, double *a, double *s, double *u, double *vt,
  * @param b On input, the N-by-NRHS right-hand-side.  On output, the
  *  N-by-NRHS solution.
  */
-void solve_triangular_system_(bool upper, bool trans, bool nounit, int n, 
-                              int nrhs, double alpha, const double *a, 
-                              double *b);
+void solve_triangular_system(bool upper, bool trans, bool nounit, int n, 
+                             int nrhs, double alpha, const double *a, 
+                             double *b);
 
 /** @brief Solves a system of LU-factored equations.
  *
@@ -653,7 +653,7 @@ void solve_triangular_system_(bool upper, bool trans, bool nounit, int n,
  * @param b On input, the N-by-NRHS right-hand-side matrix.  On
  *  output, the N-by-NRHS solution matrix.
  */
-void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
+void solve_lu(int n, int nrhs, const double *a, const int *ipvt, double *b);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where
  * M >= N.
@@ -676,8 +676,8 @@ void solve_lu_(int n, int nrhs, const double *a, const int *ipvt, double *b);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_(int m, int n, int nrhs, double *a, const double *tau, double *b,
-               errorhandler *err);
+void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
+              errorhandler *err);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where the
  * QR factorization made use of column pivoting.
@@ -704,8 +704,8 @@ void solve_qr_(int m, int n, int nrhs, double *a, const double *tau, double *b,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_pivot_(int m, int n, int nrhs, double *a, const double *tau, 
-                     const int *jpvt, double *b, errorhandler *err);
+void solve_qr_pivot(int m, int n, int nrhs, double *a, const double *tau, 
+                    const int *jpvt, double *b, errorhandler *err);
 
 /** @brief Solves a system of Cholesky factored equations.
  *
@@ -719,7 +719,7 @@ void solve_qr_pivot_(int m, int n, int nrhs, double *a, const double *tau,
  * @param b On input, the N-by-NRHS right-hand-side matrix B.  On
  *  output, the solution matrix X.
  */
-void solve_cholesky_(bool upper, int n, int nrhs, const double *a, double *b);
+void solve_cholesky(bool upper, int n, int nrhs, const double *a, double *b);
 
 /** @brief Computes the inverse of a square matrix.
  *
@@ -734,7 +734,7 @@ void solve_cholesky_(bool upper, int n, int nrhs, const double *a, double *b);
  *      there is insufficient memory available.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
  */
-void mtx_inverse_(int n, double *a, errorhandler *err);
+void mtx_inverse(int n, double *a, errorhandler *err);
 
 /** @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
  * using the singular value decomposition of the matrix.
@@ -754,7 +754,7 @@ void mtx_inverse_(int n, double *a, errorhandler *err);
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-void mtx_pinverse_(int m, int n, double *a, double *ainv, errorhandler *err);
+void mtx_pinverse(int m, int n, double *a, double *ainv, errorhandler *err);
 
 /** @brief Solves the overdetermined or underdetermined system (A*X = B) of
  * M equations of N unknowns using a QR or LQ factorization of the matrix A.
@@ -777,8 +777,8 @@ void mtx_pinverse_(int m, int n, double *a, double *ainv, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_least_squares_(int m, int n, int nrhs, double *a, double *b,
-                          errorhandler *err);
+void solve_least_squares(int m, int n, int nrhs, double *a, double *b,
+                         errorhandler *err);
 
 /** @brief Computes the eigenvalues, and optionally the eigenvectors of a
  * real, symmetric matrix.
@@ -801,7 +801,7 @@ void solve_least_squares_(int m, int n, int nrhs, double *a, double *b,
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
-void eigen_symm_(int n, bool vecs, double *a, double *vals, errorhandler *err);
+void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler *err);
 
 /** @brief Computes the eigenvalues, and the right eigenvectors of a square 
  *  matrix.
@@ -821,8 +821,8 @@ void eigen_symm_(int n, bool vecs, double *a, double *vals, errorhandler *err);
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
-void eigen_asymm_(int n, double *a, double complex *vals, double complex *vecs,
-                  errorhandler *err);
+void eigen_asymm(int n, double *a, double complex *vals, double complex *vecs,
+                 errorhandler *err);
 
 /** @brief Computes the eigenvalues, and optionally the right eigenvectors of
  * a square matrix assuming the structure of the eigenvalue problem is
@@ -852,8 +852,8 @@ void eigen_asymm_(int n, double *a, double complex *vals, double complex *vecs,
  *      there is insufficient memory available.
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
-void eigen_gen_(int n, double *a, double *b, double complex *alpha,
-                double *beta, double complex *vecs, errorhandler *err);
+void eigen_gen(int n, double *a, double *b, double complex *alpha,
+               double *beta, double complex *vecs, errorhandler *err);
 
 
 /** @brief Sorts an array of double-precision values.
@@ -872,7 +872,7 @@ void eigen_gen_(int n, double *a, double *b, double complex *alpha,
  *  sorted array.  Such an array can then be used to align other arrays.  
  *  This array must be the same size as @p x.
  */
-void sort_dbl_(bool ascend, int n, double *x, int *ind);
+void sort_dbl(bool ascend, int n, double *x, int *ind);
 
 /** @brief Sorts an array of complex values according to their real 
  * components.
@@ -891,7 +891,7 @@ void sort_dbl_(bool ascend, int n, double *x, int *ind);
  *  sorted array.  Such an array can then be used to align other arrays.  
  *  This array must be the same size as @p x.
  */
-void sort_cmplx_(bool ascend, int n, double complex *x, int *ind);
+void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
 
 /** @brief A sorting routine specifically tailored for sorting of eigenvalues
  * and their associated eigenvectors using a quick-sort approach.
@@ -905,8 +905,8 @@ void sort_cmplx_(bool ascend, int n, double complex *x, int *ind);
  *  eigenvectors associated with @p vals (one vector per column).  On 
  *  output, the sorted eigenvector matrix.
  */
-void sort_eigen_cmplx_(bool ascend, int n, double complex *vals, 
-                       double complex *vecs);
+void sort_eigen_cmplx(bool ascend, int n, double complex *vals, 
+                      double complex *vecs);
 
 /** @brief A sorting routine specifically tailored for sorting of eigenvalues
  * and their associated eigenvectors using a quick-sort approach.
@@ -920,7 +920,7 @@ void sort_eigen_cmplx_(bool ascend, int n, double complex *vals,
  *  eigenvectors associated with @p vals (one vector per column).  On 
  *  output, the sorted eigenvector matrix.
  */
-void sort_eigen_dbl_(bool ascend, int n, double *vals, double *vecs);
+void sort_eigen_dbl(bool ascend, int n, double *vals, double *vecs);
 
 
 #ifdef __cplusplus

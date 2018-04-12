@@ -114,7 +114,7 @@ endif()
 # ------------------------------------------------------------------------------
 # TESTS
 # ------------------------------------------------------------------------------
-option(BUILD_LINALG_TESTS "Build LINALG tests?" OFF)
+option(BUILD_LINALG_TESTS "Build LINALG tests?" ON)
 if (BUILD_LINALG_TESTS)
   message(STATUS "Building LINALG tests.")
   add_subdirectory(tests)

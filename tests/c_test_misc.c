@@ -27,8 +27,8 @@ bool test_diagonal_mtx_mult() {
 
     // Compute C1 = D1 * B1 + C1
     for (i = 0; i < m*n; ++i) ans1[i] = c1[i];
-    diag_mtx_mult_(m, n, k, alpha, d1v, b1, beta, c1);
-    mtx_mult_(false, false, m, n, k, alpha, d1, m, b1, k, beta, ans1);
+    diag_mtx_mult(m, n, k, alpha, d1v, b1, beta, c1);
+    mtx_mult(false, false, m, n, k, alpha, d1, m, b1, k, beta, ans1);
     if (!is_dbl_mtx_equal(m, n, ans1, c1, tol)) {
         rst = false;
         printf("Test Failed: Diagonal Matrix Multiply Test 1\n");
@@ -56,13 +56,13 @@ bool test_rank1_update() {
     make_rand_mtx(n, 1, y);
 
     // Define the solution
-    mtx_mult_(false, true, m, n, 1, alpha, x, m, y, n, 0.0, b);
+    mtx_mult(false, true, m, n, 1, alpha, x, m, y, n, 0.0, b);
     for (j = 0; j < n; ++j)
         for (i = 0; i < m; ++i)
             b[INDEX(i,j,m)] += a[INDEX(i,j,m)];
     
     // Test
-    rank1_update_(m, n, alpha, x, y, a);
+    rank1_update(m, n, alpha, x, y, a);
     if (!is_dbl_mtx_equal(m, n, a, b, tol)) {
         rst = false;
         printf("Test Failed: Rank 1 Update\n");
@@ -85,7 +85,7 @@ bool test_rank() {
     bool rst = true;
 
     // The rank of A should be 3
-    if (mtx_rank_(m, n, a, NULL) != 3) {
+    if (mtx_rank(m, n, a, NULL) != 3) {
         rst = false;
         printf("Test Failed: Matrix Rank");
     }
@@ -114,8 +114,8 @@ bool test_tri_mtx_mult() {
             a[INDEX(i,j,n)] = 0.0;
     
     // Test 1 (beta = 0)
-    mtx_mult_(true, false, n, n, n, alpha, a, n, a, n, 0.0, bans);
-    tri_mtx_mult_(true, n, alpha, a, 0.0, b, NULL);
+    mtx_mult(true, false, n, n, n, alpha, a, n, a, n, 0.0, bans);
+    tri_mtx_mult(true, n, alpha, a, 0.0, b, NULL);
     if (!is_dbl_mtx_equal(n, n, b, bans, tol)) {
         check = false;
         printf("Test Failed: Triangular Matrix Update - Test 1A\n");
@@ -124,8 +124,8 @@ bool test_tri_mtx_mult() {
 
     // Test 2 (beta /= 0)
     check = true;
-    mtx_mult_(true, false, n, n, n,alpha, a, n, a, n, beta, bans);
-    tri_mtx_mult_(true, n, alpha, a, beta, b, NULL);
+    mtx_mult(true, false, n, n, n,alpha, a, n, a, n, beta, bans);
+    tri_mtx_mult(true, n, alpha, a, beta, b, NULL);
     if (!is_dbl_mtx_equal(n, n, b, bans, tol)) {
         check = false;
         rst = false;

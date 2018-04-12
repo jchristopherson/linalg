@@ -15,17 +15,17 @@ bool test_eigen_symm() {
     // Initialization
     rst = true;
     make_rand_mtx(n, n, a1);
-    mtx_mult_(false, true, n, n, n, 1.0, a1, n, a1, n, 0.0, a);
+    mtx_mult(false, true, n, n, n, 1.0, a1, n, a1, n, 0.0, a);
     for (i = 0; i < n * n; ++i) vecs[i] = a[i];
 
     // Compute the eigenvalues and vectors of A
-    eigen_symm_(n, true, vecs, vals, NULL);
+    eigen_symm(n, true, vecs, vals, NULL);
 
     // Compute VECS * VALS where VALS is a diagonal matrix.
-    diag_mtx_rmult_(n, n, n, 1.0, vecs, vals, 0.0, x);
+    diag_mtx_rmult(n, n, n, 1.0, vecs, vals, 0.0, x);
 
     // Compute A * VECS, and then test
-    mtx_mult_(false, false, n, n, n, 1.0, a, n, vecs, n, 0.0, y);
+    mtx_mult(false, false, n, n, n, 1.0, a, n, vecs, n, 0.0, y);
     if (!is_dbl_mtx_equal(n, n, x, y, tol)) {
         rst = false;
         printf("Test Failed: Symmetric Eigen\n");
@@ -53,13 +53,13 @@ bool test_eigen_asymm() {
     for (i = 0; i < n * n; ++i) ac[i] = a[i] + 0.0 * _Complex_I;
 
     // Compute the eigenvalues and vectors
-    eigen_asymm_(n, a, vals, vecs, NULL);
+    eigen_asymm(n, a, vals, vecs, NULL);
 
     // Compute VECS * VALS, where VALS is a diagonal matrix
-    diag_cmtx_rmult_(n, n, n, 1.0, vecs, vals, 0.0, x);
+    diag_cmtx_rmult(n, n, n, 1.0, vecs, vals, 0.0, x);
 
     // Compute A * VECS, and then test
-    cmtx_mult_(false, false, n, n, n, 1.0, ac, n, vecs, n, 0.0, y);
+    cmtx_mult(false, false, n, n, n, 1.0, ac, n, vecs, n, 0.0, y);
     if (!is_cmplx_mtx_equal(n, n, x, y, tol)) {
         rst = false;
         printf("Test Failed: Asymmetric Eigen\n");
@@ -91,15 +91,15 @@ bool test_eigen_gen() {
     }
 
     // Compute the eigenvalues and vectors
-    eigen_gen_(n, a, b, vals, beta, vecs, NULL);
+    eigen_gen(n, a, b, vals, beta, vecs, NULL);
     for (i = 0; i < n; ++i) vals[i] /= beta[i];
 
     // Compute X = A * VECS
-    cmtx_mult_(false, false, n, n, n, 1.0, ac, n, vecs, n, 0.0, x);
+    cmtx_mult(false, false, n, n, n, 1.0, ac, n, vecs, n, 0.0, x);
 
     // And Y = B * (VECS * VALS)
-    diag_cmtx_rmult_(n, n, n, 1.0, vecs, vals, 0.0, t);
-    cmtx_mult_(false, false, n, n, n, 1.0, bc, n, t, n, 0.0, y);
+    diag_cmtx_rmult(n, n, n, 1.0, vecs, vals, 0.0, t);
+    cmtx_mult(false, false, n, n, n, 1.0, bc, n, t, n, 0.0, y);
     if (!is_cmplx_mtx_equal(n, n, x, y, tol)) {
         rst = false;
         printf("Test Failed: Geenralized Eigen\n");

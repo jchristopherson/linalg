@@ -1535,24 +1535,55 @@ contains
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
     !!
     !! @par Usage
-    !! @code {.f90}
-    !! ! The following example illustrates how to solve a system of linear
-    !! ! equations by matrix inversion.  Notice, this is not a preferred
-    !! ! solution technique (use LU factorization instead), but is merely a
-    !! ! means of illustrating how to compute the inverse of a square matrix.
+    !! The following example illustrates the inversion of a 3-by-3 matrix.
+    !! @code{.f90}
+    !! program example
+    !!     use iso_fortran_env, only : real64, int32
+    !!     use linalg_solve, only : mtx_inverse
+    !!     implicit none
     !!
-    !! ! Variables
-    !! real(real64), dimension(n, n) :: a
-    !! real(real64), dimension(n, nrhs) :: b, x
+    !!     ! Variables
+    !!     real(real64) :: a(3,3), ai(3,3), c(3,3)
+    !!     integer(int32) :: i
     !!
-    !! ! Initialize A and B...
+    !!     ! Construct the 3-by-3 matrix A to invert
+    !!     !     | 1   2   3 |
+    !!     ! A = | 4   5   6 |
+    !!     !     | 7   8   0 |
+    !!     a = reshape([1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, &
+    !!         0.0d0], [3, 3])
     !!
-    !! ! Compute the inverse of A.  The inverse will overwrite the original
-    !! ! matrix.
-    !! call mtx_inverse(a)
+    !!     ! Compute the inverse of A.  Notice, the original matrix is overwritten
+    !!     ! with it's inverse.
+    !!     ai = a
+    !!     call mtx_inverse(ai)
     !!
-    !! ! Solve A*X = B as X = inv(A) * B.
-    !! x = matmul(a, b)
+    !!     ! Show that A * inv(A) = I
+    !!     c = matmul(a, ai)
+    !!
+    !!     ! Display the inverse
+    !!     print '(A)', "Inverse:"
+    !!     do i = 1, size(ai, 1)
+    !!         print *, ai(i,:)
+    !!     end do
+    !!
+    !!     ! Display the result of A * inv(A)
+    !!     print '(A)', "A * A**-1:"
+    !!     do i = 1, size(c, 1)
+    !!         print *, c(i,:)
+    !!     end do
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Inverse:
+    !!  -1.7777777777777777       0.88888888888888884      -0.11111111111111110
+    !!   1.5555555555555556      -0.77777777777777779       0.22222222222222221
+    !!  -0.11111111111111119      0.22222222222222227      -0.11111111111111112
+    !! A * A**-1:
+    !!   0.99999999999999989       5.5511151231257827E-017  -4.1633363423443370E-017
+    !!   5.5511151231257827E-017   1.0000000000000000       -8.3266726846886741E-017
+    !!   1.7763568394002505E-015  -8.8817841970012523E-016   1.0000000000000000
     !! @endcode
     !!
     !! @par Notes
@@ -1698,25 +1729,56 @@ contains
     !!      could not converge to a zero value.
     !!
     !! @par Usage
+    !! The following example illustrates how to compute the Moore-Penrose
+    !! pseudo-inverse of a matrix.
     !! @code{.f90}
-    !! ! Use the pseudo-inverse to obtain a least-squares solution to the
-    !! ! overdetermined problem A*X = B, where A is an M-by-N matrix (M >= N),
-    !! ! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.
+    !! program example
+    !!     use iso_fortran_env, only : int32, real64
+    !!     use linalg_solve, only : mtx_pinverse
+    !!     implicit none
     !!
-    !! ! Variables
-    !! real(real64), dimension(m, n) :: a
-    !! real(real64), dimension(n, m) :: ainv
-    !! real(real64), dimension(m, nrhs) :: b
-    !! real(real64), dimension(n, nrhs) :: x
+    !!     ! Variables
+    !!     real(real64) :: a(3,2), ai(2,3), ao(3,2), c(2,2)
+    !!     integer(int32) :: i
     !!
-    !! ! Initialize A, and B...
+    !!     ! Create the 3-by-2 matrix A
+    !!     !     | 1   0 |
+    !!     ! A = | 0   1 |
+    !!     !     | 0   1 |
+    !!     a = reshape([1.0d0, 0.0d0, 0.0d0, 0.0d0, 1.0d0, 1.0d0], [3, 2])
+    !!     ao = a  ! Just making a copy for later as mtx_pinverse will destroy the
+    !!             ! contents of the original matrix
     !!
-    !! ! Compute the pseudo-inverse of A.  Let the subroutine allocate its
-    !! ! own workspace array.
-    !! call mtx_pinverse(a, ainv)
+    !!     ! The Moore-Penrose pseudo-inverse of this matrix is:
+    !!     !         | 1   0    0  |
+    !!     ! A**-1 = |             |
+    !!     !         | 0  1/2  1/2 |
+    !!     call mtx_pinverse(a, ai)
     !!
-    !! ! Compute X = AINV * B to obtain the solution.
-    !! x = matmul(ainv, b)
+    !!     ! Notice, A**-1 * A is an identity matrix.
+    !!     c = matmul(ai, ao)
+    !!
+    !!     ! Display the inverse
+    !!     print '(A)', "Inverse:"
+    !!     do i = 1, size(ai, 1)
+    !!         print *, ai(i,:)
+    !!     end do
+    !!
+    !!     ! Display the result of inv(A) * A
+    !!     print '(A)', "A**-1 * A:"
+    !!     do i = 1, size(c, 1)
+    !!         print *, c(i,:)
+    !!     end do
+    !! end program
+    !! @endcode
+    !! The above program produces the following output.
+    !! @code{.txt}
+    !! Inverse:
+    !!  1.0000000000000000        0.0000000000000000        0.0000000000000000
+    !!  0.0000000000000000       0.49999999999999978       0.49999999999999989
+    !! A**-1 * A:
+    !!  1.0000000000000000        0.0000000000000000
+    !!  0.0000000000000000       0.99999999999999967
     !! @endcode
     !!
     !! @par See Also

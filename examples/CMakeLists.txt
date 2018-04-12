@@ -42,6 +42,14 @@ target_link_libraries(cholesky_update_example linalg)
 add_executable(cholesky_downdate_example linalg_cholesky_downdate_example.f90)
 target_link_libraries(cholesky_downdate_example linalg)
 
+# Matrix Inverse Example
+add_executable(inverse_example linalg_inverse_example.f90)
+target_link_libraries(inverse_example linalg)
+
+# Moore-Penrose Example
+add_executable(pinverse_example linalg_pinverse_example.f90)
+target_link_libraries(pinverse_example linalg)
+
 # --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)

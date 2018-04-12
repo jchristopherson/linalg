@@ -50,8 +50,12 @@ target_link_libraries(inverse_example linalg)
 add_executable(pinverse_example linalg_pinverse_example.f90)
 target_link_libraries(pinverse_example linalg)
 
+# SVD Example
+add_executable(svd_example linalg_svd_example.f90)
+target_link_libraries(svd_example linalg)
+
 # --------------------
-include_directories(${PROJECT_SOURCE_DIR}/include 
+include_directories(${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
 
 # LU Example

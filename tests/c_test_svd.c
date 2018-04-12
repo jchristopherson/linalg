@@ -54,7 +54,7 @@ bool test_svd_od() {
     for (i = 0; i < m * n; ++i) a1[i] = a[i];
 
     // Compute the SVD of A
-    svd_(m, n, a1, s1, u1, vt1, NULL);
+    svd(m, n, a1, s1, u1, vt1, NULL);
 
     // Ensure A = U * S * V**T
     diag_mtx_mult(m, n, n, 1.0, s1, vt1, 0.0, svt);

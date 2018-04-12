@@ -4,7 +4,7 @@
 !> @mainpage
 !!
 !! @section intro_sec Introduction
-!! LINALG is a linear algebra library that provides a user-friendly interface 
+!! LINALG is a linear algebra library that provides a user-friendly interface
 !! to several BLAS and LAPACK routines.
 !!
 !! @author Jason Christopherson
@@ -58,7 +58,7 @@ module linalg_core
 ! ******************************************************************************
 ! INTERFACES
 ! ------------------------------------------------------------------------------
-!> @brief Performs the matrix operation: 
+!> @brief Performs the matrix operation:
 !!  C = alpha * op(A) * op(B) + beta * C.
 interface mtx_mult
     module procedure :: mtx_mult_mtx
@@ -75,6 +75,71 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Multiplies a diagonal matrix with another matrix or array.
+!!
+!! @par Usage
+!! The following example illustrates the use of the diagonal matrix
+!! multiplication routine to compute the S * V**T component of a singular
+!! value decomposition.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : int32, real64
+!!     use linalg_core
+!!     implicit none
+!!
+!!     ! Variables
+!!     real(real64) :: a(3,2), s(2), u(3,3), vt(2,2), ac(3,2)
+!!     integer(int32) :: i
+!!
+!!     ! Initialize the 3-by-2 matrix A
+!!     !     | 2   1 |
+!!     ! A = |-3   1 |
+!!     !     |-1   1 |
+!!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
+!!
+!!     ! Compute the singular value decomposition of A.  Notice, V**T is returned
+!!     ! instead of V.  Also note, A is overwritten.
+!!     call svd(a, s, u, vt)
+!!
+!!     ! Display the results
+!!     print '(A)', "U ="
+!!     do i = 1, size(u, 1)
+!!         print *, u(i,:)
+!!     end do
+!!
+!!     print '(A)', "S ="
+!!     print '(F9.5)', (s(i), i = 1, size(a, 2))
+!!
+!!     print '(A)', "V**T ="
+!!     do i = 1, size(vt, 1)
+!!         print *, vt(i,:)
+!!     end do
+!!
+!!     ! Compute U * S * V**T, but first establish S in full form
+!!     call diag_mtx_mult(.true., 1.0d0, s, vt) ! Compute: VT = S * V**T
+!!     ac = matmul(u(:,1:2), vt)
+!!     print '(A)', "U * S * V**T ="
+!!     do i = 1, size(ac, 1)
+!!         print *, ac(i,:)
+!!     end do
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! U =
+!!  -0.47411577501825380      -0.81850539032073777      -0.32444284226152509
+!!   0.82566838523833064      -0.28535874325972488      -0.48666426339228758
+!!   0.30575472113569685      -0.49861740208412991       0.81110710565381272
+!! S =
+!!   3.78845
+!!   1.62716
+!! V**T =
+!!  -0.98483334211643059       0.17350299206578967
+!!  -0.17350299206578967      -0.98483334211643059
+!! U * S * V**T =
+!!    1.9999999999999993       0.99999999999999956
+!!   -3.0000000000000000        1.0000000000000000
+!!   -1.0000000000000000       0.99999999999999967
+!! @endcode
 interface diag_mtx_mult
     module procedure :: diag_mtx_mult_mtx
     module procedure :: diag_mtx_mult_mtx2
@@ -83,7 +148,7 @@ interface diag_mtx_mult
 end interface
 
 ! ------------------------------------------------------------------------------
-!> @brief Computes the trace of a matrix (the sum of the main diagonal 
+!> @brief Computes the trace of a matrix (the sum of the main diagonal
 !! elements).
 interface trace
     module procedure :: trace_dbl
@@ -114,8 +179,8 @@ interface recip_mult_array
 end interface
 
 ! ------------------------------------------------------------------------------
-!> @brief Computes the triangular matrix operation: 
-!! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+!> @brief Computes the triangular matrix operation:
+!! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
 !! where A is a triangular matrix.
 interface tri_mtx_mult
     module procedure :: tri_mtx_mult_dbl
@@ -178,7 +243,7 @@ interface lu_factor
     module procedure :: lu_factor_dbl
 end interface
 
-!> @brief Extracts the L and U matrices from the condensed [L\\U] storage 
+!> @brief Extracts the L and U matrices from the condensed [L\\U] storage
 !! format used by the @ref lu_factor.
 !!
 !! @par Usage
@@ -226,7 +291,7 @@ end interface
 !!     ! Now, compute the solution to the lower triangular system.  Store the
 !!     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
 !!     call solve_triangular_system(.false., .false., .false., a, b)
-!! 
+!!
 !!     ! Solve the upper triangular system U * X = Y for X.
 !!     call solve_triangular_system(.true., .false., .true., u, b)
 !!
@@ -321,7 +386,7 @@ end interface
 !!
 !! @par Usage
 !! The following example illustrates how to explicitly form the Q and R
-!! matrices from the output of qr_factor, and then use the resulting 
+!! matrices from the output of qr_factor, and then use the resulting
 !! matrices to solve a system of linear equations.
 !! @code{.f90}
 !! program example
@@ -361,7 +426,7 @@ end interface
 !!     ! As this system is square, matrix R is upper triangular.  Also, Q is
 !!     ! always orthogonal such that it's inverse and transpose are equal.  As the
 !!     ! system is now factored, its form is: Q * R * X = B.  Solving this system
-!!     ! is then as simple as solving the upper triangular system: 
+!!     ! is then as simple as solving the upper triangular system:
 !!     ! R * X = Q**T * B.
 !!
 !!     ! Compute Q**T * B, and store the results in B
@@ -401,8 +466,8 @@ end interface
 !! factorization.
 !!
 !! @par Usage
-!! The following example illustrates how to perform the multiplication 
-!! Q**T * B when solving a system of QR factored equations without 
+!! The following example illustrates how to perform the multiplication
+!! Q**T * B when solving a system of QR factored equations without
 !! explicitly forming the matrix Q.
 !! @code{.f90}
 !! program example
@@ -439,7 +504,7 @@ end interface
 !!     ! As this system is square, matrix R is upper triangular.  Also, Q is
 !!     ! always orthogonal such that it's inverse and transpose are equal.  As the
 !!     ! system is now factored, its form is: Q * R * X = B.  Solving this system
-!!     ! is then as simple as solving the upper triangular system: 
+!!     ! is then as simple as solving the upper triangular system:
 !!     ! R * X = Q**T * B.
 !!
 !!     ! Compute Q**T * B, and store the results in B.  Notice, using mult_qr
@@ -476,7 +541,7 @@ end interface
 !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
 !!
 !! @par Usage
-!! The following example illustrates a rank 1 update to a QR factored 
+!! The following example illustrates a rank 1 update to a QR factored
 !! system.  The results are compared to updating the original matrix, and
 !! then performing the factorization.
 !! @code{.f90}
@@ -511,11 +576,11 @@ end interface
 !!     ! Form Q & R
 !!     call form_qr(r, tau, q)
 !!
-!!     ! Compute the rank 1 update to the original matrix such that: 
+!!     ! Compute the rank 1 update to the original matrix such that:
 !!     ! A = A + u * v**T
 !!     call rank1_update(1.0d0, u, v, a)
 !!
-!!     ! Compute the rank 1 update to the factorization.  Notice, the contents 
+!!     ! Compute the rank 1 update to the factorization.  Notice, the contents
 !!     ! of U & V are destroyed as part of this process.
 !!     call qr_rank1_update(q, r, u, v)
 !!
@@ -543,7 +608,7 @@ end interface
 !!     do i = 1, size(a, 1)
 !!         print *, a(i,:)
 !!     end do
-!! end program 
+!! end program
 !! @endcode
 !! The above program produces the following output.
 !! @code{.txt}
@@ -575,7 +640,7 @@ end interface
 !! definite matrix.
 !!
 !! @par Usage
-!! The following example illustrates the solution of a positive-definite 
+!! The following example illustrates the solution of a positive-definite
 !! system of equations via Cholesky factorization.
 !! @code{.f90}
 !! program example
@@ -604,7 +669,7 @@ end interface
 !!     ! illustrate the long or manual method of solving a Cholesky factored system
 !!     bu = b
 !!
-!!     ! Compute the Cholesky factorization of A considering only the upper 
+!!     ! Compute the Cholesky factorization of A considering only the upper
 !!     ! triangular portion of A (the default configuration).
 !!     call cholesky_factor(a)
 !!
@@ -615,8 +680,8 @@ end interface
 !!     print '(A)', "Cholesky Solution: X = "
 !!     print '(F8.4)', (b(i), i = 1, size(b))
 !!
-!!     ! The solution could also be computed manually noting the Cholesky 
-!!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.  
+!!     ! The solution could also be computed manually noting the Cholesky
+!!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.
 !!
 !!     ! Step 1 would then be to solve the problem U**T * Y = B, for Y.
 !!     call solve_triangular_system(.true., .true., .true., a, bu)
@@ -716,8 +781,8 @@ end interface
 !! triangular).
 !!
 !! @par Usage
-!! The following example illustrates the use of the rank 1 Cholesky 
-!! downdate, and compares the results to factoring the original rank 1 
+!! The following example illustrates the use of the rank 1 Cholesky
+!! downdate, and compares the results to factoring the original rank 1
 !! downdated matrix.
 !! @code{.f90}
 !! program example
@@ -805,6 +870,70 @@ end interface
 !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
 !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
 !!  matrix.
+!!
+!! @par Usage
+!! The following example illustrates the calculation of the singular value
+!! decomposition of an overdetermined system.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : int32, real64
+!!     use linalg_core
+!!     implicit none
+!!
+!!     ! Variables
+!!     real(real64) :: a(3,2), s(2), u(3,3), vt(2,2), ac(3,2)
+!!     integer(int32) :: i
+!!
+!!     ! Initialize the 3-by-2 matrix A
+!!     !     | 2   1 |
+!!     ! A = |-3   1 |
+!!     !     |-1   1 |
+!!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
+!!
+!!     ! Compute the singular value decomposition of A.  Notice, V**T is returned
+!!     ! instead of V.  Also note, A is overwritten.
+!!     call svd(a, s, u, vt)
+!!
+!!     ! Display the results
+!!     print '(A)', "U ="
+!!     do i = 1, size(u, 1)
+!!         print *, u(i,:)
+!!     end do
+!!
+!!     print '(A)', "S ="
+!!     print '(F9.5)', (s(i), i = 1, size(a, 2))
+!!
+!!     print '(A)', "V**T ="
+!!     do i = 1, size(vt, 1)
+!!         print *, vt(i,:)
+!!     end do
+!!
+!!     ! Compute U * S * V**T, but first establish S in full form
+!!     call diag_mtx_mult(.true., 1.0d0, s, vt) ! Compute: VT = S * V**T
+!!     ac = matmul(u(:,1:2), vt)
+!!     print '(A)', "U * S * V**T ="
+!!     do i = 1, size(ac, 1)
+!!         print *, ac(i,:)
+!!     end do
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! U =
+!!  -0.47411577501825380      -0.81850539032073777      -0.32444284226152509
+!!   0.82566838523833064      -0.28535874325972488      -0.48666426339228758
+!!   0.30575472113569685      -0.49861740208412991       0.81110710565381272
+!! S =
+!!   3.78845
+!!   1.62716
+!! V**T =
+!!  -0.98483334211643059       0.17350299206578967
+!!  -0.17350299206578967      -0.98483334211643059
+!! U * S * V**T =
+!!    1.9999999999999993       0.99999999999999956
+!!   -3.0000000000000000        1.0000000000000000
+!!   -1.0000000000000000       0.99999999999999967
+!! @endcode
 interface svd
     module procedure :: svd_dbl
 end interface
@@ -857,7 +986,7 @@ end interface
 !!     ! Now, compute the solution to the lower triangular system.  Store the
 !!     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
 !!     call solve_triangular_system(.false., .false., .false., a, b)
-!! 
+!!
 !!     ! Solve the upper triangular system U * X = Y for X.
 !!     call solve_triangular_system(.true., .false., .true., u, b)
 !!
@@ -1013,7 +1142,7 @@ end interface
 !> @brief Solves a system of Cholesky factored equations.
 !!
 !! @par Usage
-!! The following example illustrates the solution of a positive-definite 
+!! The following example illustrates the solution of a positive-definite
 !! system of equations via Cholesky factorization.
 !! @code{.f90}
 !! program example
@@ -1042,7 +1171,7 @@ end interface
 !!     ! illustrate the long or manual method of solving a Cholesky factored system
 !!     bu = b
 !!
-!!     ! Compute the Cholesky factorization of A considering only the upper 
+!!     ! Compute the Cholesky factorization of A considering only the upper
 !!     ! triangular portion of A (the default configuration).
 !!     call cholesky_factor(a)
 !!
@@ -1053,8 +1182,8 @@ end interface
 !!     print '(A)', "Cholesky Solution: X = "
 !!     print '(F8.4)', (b(i), i = 1, size(b))
 !!
-!!     ! The solution could also be computed manually noting the Cholesky 
-!!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.  
+!!     ! The solution could also be computed manually noting the Cholesky
+!!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.
 !!
 !!     ! Step 1 would then be to solve the problem U**T * Y = B, for Y.
 !!     call solve_triangular_system(.true., .true., .true., a, bu)
@@ -1369,26 +1498,26 @@ end interface
 !! a mass matrix M, and the arrangement of springs are described by a
 !! stiffness matrix K.
 !! @code {.f90}
-!! ! This is an example illustrating the use of the eigenvalue and eigenvector 
+!! ! This is an example illustrating the use of the eigenvalue and eigenvector
 !! ! routines to solve a free vibration problem of 3 masses connected by springs.
-!! ! 
+!! !
 !! !     k1           k2           k3           k4
 !! ! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|
-!! ! 
+!! !
 !! ! As illustrated above, the system consists of 3 masses connected by springs.
-!! ! Spring k1 and spring k4 connect the end masses to ground.  The equations of 
+!! ! Spring k1 and spring k4 connect the end masses to ground.  The equations of
 !! ! motion for this system are as follows.
-!! ! 
+!! !
 !! ! | m1  0   0 | |x1"|   | k1+k2  -k2      0  | |x1|   |0|
 !! ! | 0   m2  0 | |x2"| + |  -k2  k2+k3    -k3 | |x2| = |0|
 !! ! | 0   0   m3| |x3"|   |   0    -k3    k3+k4| |x3|   |0|
-!! ! 
+!! !
 !! ! Notice: x1" = the second time derivative of x1.
 !! program example
 !!     use iso_fortran_env, only : int32, real64
 !!     use linalg_core
 !!     implicit none
-!! 
+!!
 !!     ! Define the model parameters
 !!     real(real64), parameter :: pi = 3.14159265359d0
 !!     real(real64), parameter :: m1 = 0.5d0
@@ -1398,26 +1527,26 @@ end interface
 !!     real(real64), parameter :: k2 = 10.0d6
 !!     real(real64), parameter :: k3 = 10.0d6
 !!     real(real64), parameter :: k4 = 5.0d6
-!! 
+!!
 !!     ! Local Variables
 !!     integer(int32) :: i, j
 !!     real(real64) :: m(3,3), k(3,3), natFreq(3)
 !!    complex(real64) :: vals(3), modeShapes(3,3)
-!! 
+!!
 !!     ! Define the mass matrix
 !!     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])
-!! 
+!!
 !!     ! Define the stiffness matrix
 !!     k = reshape([k1 + k2, -k2, 0.0d0, -k2, k2 + k3, -k3, 0.0d0, -k3, k3 + k4], &
 !!         [3, 3])
-!!     
+!!
 !!     ! Compute the eigenvalues and eigenvectors.
 !!     call eigen(k, m, vals, vecs = modeShapes)
-!! 
-!!     ! Compute the natural frequency values, and return them with units of Hz.  
+!!
+!!     ! Compute the natural frequency values, and return them with units of Hz.
 !!     ! Notice, all eigenvalues and eigenvectors are real for this example.
 !!     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
-!! 
+!!
 !!     ! Display the natural frequency and mode shape values.  Notice, the eigen
 !!     ! routine does not necessarily sort the values.
 !!     print '(A)', "Modal Information (Not Sorted):"
@@ -1490,7 +1619,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -1521,7 +1650,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -1549,7 +1678,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with
     !!      @p x and @p y.
     !!
     !! @par Notes
@@ -1560,7 +1689,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: a
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
     !! or C = alpha * op(B) * A + beta * C.
     !!
@@ -1586,7 +1715,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     module subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside, trans
@@ -1613,7 +1742,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     module subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
         logical, intent(in) :: lside
@@ -1622,7 +1751,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
     !! or C = alpha * op(B) * A + beta * C, where A and C are complex-valued.
     !!
@@ -1648,7 +1777,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     module subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside, trans
@@ -1658,7 +1787,7 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
     !! or C = alpha * op(B) * A + beta * C, where A, B,  and C are
     !! complex-valued.
@@ -1684,7 +1813,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     module subroutine diag_mtx_mult_mtx4(lside, trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside, trans
@@ -1694,7 +1823,7 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the trace of a matrix (the sum of the main diagonal
     !! elements).
     !!
@@ -1705,7 +1834,7 @@ interface
         real(real64), intent(in), dimension(:,:) :: x
         real(real64) :: y
     end function
-    
+
     !> @brief Computes the rank of a matrix.
     !!
     !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
@@ -1773,7 +1902,7 @@ interface
         class(errors), intent(inout), optional, target :: err
         real(real64) :: x
     end function
-    
+
     !> @brief Swaps the contents of two arrays.
     !!
     !! @param[in,out] x One of the N-element arrays.
@@ -1801,12 +1930,12 @@ interface
         real(real64), intent(in) :: a
         real(real64), intent(inout), dimension(:) :: x
     end subroutine
-    
-    !> @brief Computes the triangular matrix operation: 
-    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+
+    !> @brief Computes the triangular matrix operation:
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
     !! where A is a triangular matrix.
     !!
-    !! @param[in] upper Set to true if matrix A is upper triangular, and 
+    !! @param[in] upper Set to true if matrix A is upper triangular, and
     !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
     !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
     !!  be computed.
@@ -1867,7 +1996,7 @@ interface
         integer(int32), intent(out), dimension(:) :: ipvt
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Extracts the L, U, and P matrices from the output of the
     !! @ref lu_factor routine.
     !!
@@ -1883,7 +2012,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Remarks
@@ -1918,7 +2047,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     module subroutine form_lu_only(lu, u, err)
         real(real64), intent(inout), dimension(:,:) :: lu
@@ -1948,7 +2077,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -2141,7 +2270,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Multiplies a vector by the orthogonal matrix Q from a QR
     !! factorization such that: C = op(Q) * C.
     !!
@@ -2181,7 +2310,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
     !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
     !!
@@ -2228,7 +2357,7 @@ interface
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the Cholesky factorization of a symmetric, positive
     !! definite matrix.
     !!
@@ -2271,7 +2400,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -2304,11 +2433,11 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
     !!      positive definite.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
     !!
@@ -2323,7 +2452,7 @@ interface
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Factors an upper trapezoidal matrix by means of orthogonal
     !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
     !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
@@ -2642,7 +2771,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -2653,7 +2782,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of LU-factored equations.
     !!
     !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
@@ -2665,7 +2794,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -2676,7 +2805,7 @@ interface
         real(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of M QR-factored equations of N unknowns where
     !! M >= N.
     !!
@@ -2713,7 +2842,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of M QR-factored equations of N unknowns where
     !! M >= N.
     !!
@@ -2751,7 +2880,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of M QR-factored equations of N unknowns where the
     !! QR factorization made use of column pivoting.
     !!
@@ -2792,7 +2921,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of M QR-factored equations of N unknowns where the
     !! QR factorization made use of column pivoting.
     !!
@@ -2847,7 +2976,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -2858,7 +2987,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves a system of Cholesky factored equations.
     !!
     !! @param[in] upper Set to true if the original matrix A was factored such
@@ -2872,7 +3001,7 @@ interface
     !!  execution.  If not provided, a default implementation of the errors
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!
     !! @par Notes
@@ -2921,7 +3050,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
     !! Notice, it is assumed that matrix A has full rank.
@@ -2960,7 +3089,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns using a complete orthogonal factorization of
     !! matrix A.
@@ -2971,10 +3100,10 @@ interface
     !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
     !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
     !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
+    !! @param[out] ipvt An optional input that on input, an N-element array
+    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front
+    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On
+    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th
     !!  column of A.  If not supplied, memory is allocated internally, and IPVT
     !!  is set to all zeros such that all columns are treated as free.
     !! @param[out] arnk An optional output, that if provided, will return the
@@ -3006,7 +3135,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
     !! M equations of N unknowns using a complete orthogonal factorization of
     !! matrix A.
@@ -3017,10 +3146,10 @@ interface
     !!  N elements contain the N-element solution array X.  If M < N, an
     !!  N-element array with the first M elements containing the array B.  On
     !!  output, the N-element solution array X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
+    !! @param[out] ipvt An optional input that on input, an N-element array
+    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front
+    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On
+    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th
     !!  column of A.  If not supplied, memory is allocated internally, and IPVT
     !!  is set to all zeros such that all columns are treated as free.
     !! @param[out] arnk An optional output, that if provided, will return the
@@ -3183,7 +3312,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
     !! using the singular value decomposition of the matrix.
     !!
@@ -3376,7 +3505,7 @@ end interface
 interface
     !> @brief Sorts an array.
     !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted
     !!  array.
     !! @param[in] ascend An optional input that, if specified, controls if the
     !!  the array is sorted in an ascending order (default), or a descending
@@ -3396,7 +3525,7 @@ interface
 
     !> @brief Sorts an array.
     !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted
     !!  array.
     !! @param[in,out] ind On input, an integer array.  On output, the contents
     !!  of this array are shifted in the same order as that of @p x as a means
@@ -3416,7 +3545,7 @@ interface
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
     !!
     !! @par Remarks
-    !! This routine utilizes a quick sort algorithm explained at 
+    !! This routine utilizes a quick sort algorithm explained at
     !! http://www.fortran.com/qsort_c.f95.
     module subroutine sort_dbl_array_ind(x, ind, ascend, err)
         real(real64), intent(inout), dimension(:) :: x
@@ -3424,18 +3553,18 @@ interface
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief Sorts an array.
     !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted
     !!  array.
     !! @param[in] ascend An optional input that, if specified, controls if the
     !!  the array is sorted in an ascending order (default), or a descending
     !!  order.
     !!
     !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
+    !! This routine utilizes a quick sort algorithm.  As this routine operates
+    !! on complex valued items, the complex values are sorted based upon the
     !! real component of the number.
     !!
     !! @par Notes
@@ -3448,7 +3577,7 @@ interface
 
     !> @brief Sorts an array.
     !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted
     !!  array.
     !! @param[in,out] ind On input, an integer array.  On output, the contents
     !!  of this array are shifted in the same order as that of @p x as a means
@@ -3468,8 +3597,8 @@ interface
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
     !!
     !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
+    !! This routine utilizes a quick sort algorithm.  As this routine operates
+    !! on complex valued items, the complex values are sorted based upon the
     !! real component of the number.
     !!
     !! @par Notes
@@ -3485,10 +3614,10 @@ interface
     !> @brief A sorting routine specifically tailored for sorting of eigenvalues
     !! and their associated eigenvectors using a quick-sort approach.
     !!
-    !! @param[in,out] vals On input, an N-element array containing the 
+    !! @param[in,out] vals On input, an N-element array containing the
     !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
     !!  output, the sorted eigenvector matrix.
     !! @param[in] ascend An optional input that, if specified, controls if the
     !!  the array is sorted in an ascending order (default), or a descending
@@ -3499,7 +3628,7 @@ interface
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory
     !!      available to comoplete this operation.
     module subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         complex(real64), intent(inout), dimension(:) :: vals
@@ -3507,14 +3636,14 @@ interface
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
     end subroutine
-    
+
     !> @brief A sorting routine specifically tailored for sorting of eigenvalues
     !! and their associated eigenvectors using a quick-sort approach.
     !!
-    !! @param[in,out] vals On input, an N-element array containing the 
+    !! @param[in,out] vals On input, an N-element array containing the
     !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
     !!  output, the sorted eigenvector matrix.
     !! @param[in] ascend An optional input that, if specified, controls if the
     !!  the array is sorted in an ascending order (default), or a descending
@@ -3525,7 +3654,7 @@ interface
     !!  class is used internally to provide error handling.  Possible errors and
     !!  warning messages that may be encountered are as follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory
     !!      available to comoplete this operation.
     module subroutine sort_eigen_dbl(vals, vecs, ascend, err)
         real(real64), intent(inout), dimension(:) :: vals

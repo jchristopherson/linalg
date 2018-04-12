@@ -1739,7 +1739,6 @@ interface
     !! @par See Also
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
     module function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
-        ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), optional :: tol
         real(real64), intent(out), pointer, optional, dimension(:) :: work
@@ -2478,7 +2477,6 @@ interface
     !! @par Notes
     !! This routine utilizes the LAPACK routine DORMRZ.
     module subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
-        ! Arguments
         logical, intent(in) :: trans
         integer(int32), intent(in) :: l
         real(real64), intent(inout), dimension(:,:) :: a
@@ -2532,7 +2530,6 @@ interface
     !! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
     !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
     module subroutine svd_dbl(a, s, u, vt, work, olwork, err)
-        ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: s
         real(real64), intent(out), optional, dimension(:,:) :: u, vt
@@ -2674,7 +2671,6 @@ interface
     !! @par Notes
     !! The routine is based upon the LAPACK routine DGETRS.
     module subroutine solve_lu_vec(a, ipvt, b, err)
-        ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
         integer(int32), intent(in), dimension(:) :: ipvt
         real(real64), intent(inout), dimension(:) :: b

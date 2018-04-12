@@ -10,10 +10,6 @@ var searchData=
   ['linalg_5fc_5fbinding',['linalg_c_binding',['../namespacelinalg__c__binding.html',1,'']]],
   ['linalg_5fconstants',['linalg_constants',['../namespacelinalg__constants.html',1,'']]],
   ['linalg_5fcore',['linalg_core',['../namespacelinalg__core.html',1,'']]],
-  ['linalg_5feigen',['linalg_eigen',['../namespacelinalg__eigen.html',1,'']]],
-  ['linalg_5ffactor',['linalg_factor',['../namespacelinalg__factor.html',1,'']]],
-  ['linalg_5fsolve',['linalg_solve',['../namespacelinalg__solve.html',1,'']]],
-  ['linalg_5fsorting',['linalg_sorting',['../namespacelinalg__sorting.html',1,'']]],
-  ['lu_5ffactor',['lu_factor',['../namespacelinalg__factor.html#a3714624ab99aff29de340cb03b40a336',1,'linalg_factor']]],
+  ['lu_5ffactor',['lu_factor',['../interfacelinalg__core_1_1lu__factor.html',1,'linalg_core']]],
   ['lu_5ffactor_5fc',['lu_factor_c',['../namespacelinalg__c__binding.html#ad56b68663844796fb3d20fb1ee0e75c8',1,'linalg_c_binding']]]
 ];

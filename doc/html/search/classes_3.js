@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['mtx_5fmult',['mtx_mult',['../interfacelinalg__core_1_1mtx__mult.html',1,'linalg_core']]],
-  ['mult_5fqr',['mult_qr',['../interfacelinalg__factor_1_1mult__qr.html',1,'linalg_factor']]],
-  ['mult_5frz',['mult_rz',['../interfacelinalg__factor_1_1mult__rz.html',1,'linalg_factor']]]
+  ['form_5flu',['form_lu',['../interfacelinalg__core_1_1form__lu.html',1,'linalg_core']]],
+  ['form_5fqr',['form_qr',['../interfacelinalg__core_1_1form__qr.html',1,'linalg_core']]]
 ];

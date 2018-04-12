@@ -2,8 +2,6 @@
 
 program example
     use iso_fortran_env
-    use linalg_factor
-    use linalg_solve
     use linalg_core
     implicit none
 

@@ -8,10 +8,6 @@ module linalg_c_binding
     use, intrinsic :: iso_c_binding
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg_core
-    use linalg_factor
-    use linalg_solve
-    use linalg_eigen
-    use linalg_sorting
     use ferror, only : errors
     use ferror_c_binding, only : errorhandler, get_errorhandler
 contains

@@ -2,8 +2,7 @@
 
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_factor, only : qr_factor, mult_qr
-    use linalg_solve, only : solve_triangular_system
+    use linalg_core
     implicit none
 
     ! Variables

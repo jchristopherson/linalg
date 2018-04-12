@@ -2,7 +2,7 @@
 
 program example
     use iso_fortran_env, only : int32, real64
-    use linalg_solve, only : mtx_pinverse
+    use linalg_core
     implicit none
 
     ! Variables

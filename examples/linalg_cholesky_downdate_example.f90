@@ -2,8 +2,7 @@
 
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_factor, only : cholesky_factor, cholesky_rank1_downdate
-    use linalg_core, only : rank1_update
+    use linalg_core
     implicit none
 
     ! Variables

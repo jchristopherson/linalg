@@ -1,5 +1,5 @@
 # Master CMAKE Build Script
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 project(linalg C CXX Fortran)
 
 # Define version information

@@ -3,9 +3,8 @@
 ! Tests the eigenvalue/eigenvector routines
 module test_eigen
     use, intrinsic :: iso_fortran_env, only : int32, real64
-    use linalg_core, only : diag_mtx_mult
+    use linalg_core
     use test_core
-    use linalg_eigen
     implicit none
 contains
 ! ******************************************************************************

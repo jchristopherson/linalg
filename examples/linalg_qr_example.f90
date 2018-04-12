@@ -7,8 +7,8 @@
 ! instead.
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_factor, only : qr_factor
-    use linalg_solve, only : solve_qr
+    use linalg_core
+    implicit none
 
     ! Local Variables
     real(real64) :: a(3,3), tau(3), b(3)

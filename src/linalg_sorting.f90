@@ -4,47 +4,12 @@
 !!
 !! @par Purpose
 !! Provides sorting routines.
-module linalg_sorting
-    use, intrinsic :: iso_fortran_env, only : int32, real64
-    use ferror, only : errors
-    use linalg_constants
-    implicit none
-    private
-    public :: sort
-
-! ******************************************************************************
-! INTERFACES
-! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    interface sort
-        module procedure :: sort_dbl_array
-        module procedure :: sort_dbl_array_ind
-        module procedure :: sort_cmplx_array
-        module procedure :: sort_cmplx_array_ind
-        module procedure :: sort_eigen_cmplx
-        module procedure :: sort_eigen_dbl
-    end interface
-
+submodule (linalg_core) linalg_sorting
 contains
 ! ******************************************************************************
 ! SORTING ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! The routine utilizes a quick sort algorithm unless the size of the array
-    !! is less than or equal to 20.  For such small arrays an insertion sort
-    !! algorithm is utilized.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DLASRT.
-    subroutine sort_dbl_array(x, ascend)
+    module subroutine sort_dbl_array(x, ascend)
         ! Arguments
         real(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
@@ -70,31 +35,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm explained at 
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_dbl_array_ind(x, ind, ascend, err)
+    module subroutine sort_dbl_array_ind(x, ind, ascend, err)
         ! Arguments
         real(real64), intent(inout), dimension(:) :: x
         integer(int32), intent(inout), dimension(:) :: ind
@@ -137,23 +78,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_cmplx_array(x, ascend)
+    module subroutine sort_cmplx_array(x, ascend)
         ! Arguments
         complex(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
@@ -173,36 +98,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_cmplx_array_ind(x, ind, ascend, err)
+    module subroutine sort_cmplx_array_ind(x, ind, ascend, err)
         ! Arguments
         complex(real64), intent(inout), dimension(:) :: x
         integer(int32), intent(inout), dimension(:) :: ind
@@ -245,26 +141,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the 
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
-    !!      available to comoplete this operation.
-    subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
+    module subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         ! Arguments
         complex(real64), intent(inout), dimension(:) :: vals
         complex(real64), intent(inout), dimension(:,:) :: vecs
@@ -323,26 +200,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the 
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
-    !!      available to comoplete this operation.
-    subroutine sort_eigen_dbl(vals, vecs, ascend, err)
+    module subroutine sort_eigen_dbl(vals, vecs, ascend, err)
         ! Arguments
         real(real64), intent(inout), dimension(:) :: vals
         real(real64), intent(inout), dimension(:,:) :: vecs
@@ -780,4 +638,4 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-end module
+end submodule

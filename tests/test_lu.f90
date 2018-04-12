@@ -4,8 +4,7 @@
 module test_lu
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_factor, only : lu_factor, form_lu
-    use linalg_solve, only : solve_lu
+    use linalg_core
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION TEST

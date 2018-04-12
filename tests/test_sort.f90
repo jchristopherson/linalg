@@ -4,7 +4,7 @@
 module test_sort
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_sorting
+    use linalg_core
     implicit none
 
 contains

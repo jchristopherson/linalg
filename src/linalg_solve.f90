@@ -4,495 +4,12 @@
 !!
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
-module linalg_solve
-    use, intrinsic :: iso_fortran_env, only : int32, real64
-    use ferror, only : errors
-    use linalg_constants
-    use linalg_factor, only : rz_factor, mult_rz, mult_qr
-    use linalg_core, only : mtx_mult, recip_mult_array
-    implicit none
-    private
-    public :: solve_triangular_system
-    public :: solve_lu
-    public :: solve_qr
-    public :: solve_cholesky
-    public :: mtx_inverse
-    public :: mtx_pinverse
-    public :: solve_least_squares
-    public :: solve_least_squares_full
-    public :: solve_least_squares_svd
-
-! ******************************************************************************
-! INTERFACES
-! ------------------------------------------------------------------------------
-    !> @brief Solves a triangular system of equations.
-    !!
-    !! @par Usage
-    !! The following example illustrates the solution of two triangular systems
-    !! to solve a system of LU factored equations.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_factor, only : lu_factor, form_lu
-    !!     use linalg_solve, only : solve_triangular_system
-    !!     implicit none
-    !!
-    !!     ! Variables
-    !!     real(real64) :: a(3,3), b(3), u(3,3), p(3,3)
-    !!     integer(int32) :: i, pvt(3)
-    !!
-    !!     ! Build the 3-by-3 matrix A.
-    !!     !     | 1   2   3 |
-    !!     ! A = | 4   5   6 |
-    !!     !     | 7   8   0 |
-    !!     a = reshape( &
-    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
-    !!         [3, 3])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     | -1 |
-    !!     ! b = | -2 |
-    !!     !     | -3 |
-    !!     b = [-1.0d0, -2.0d0, -3.0d0]
-    !!
-    !!     ! The solution is:
-    !!     !     |  1/3 |
-    !!     ! x = | -2/3 |
-    !!     !     |   0  |
-    !!
-    !!     ! Compute the LU factorization
-    !!     call lu_factor(a, pvt)
-    !!
-    !!     ! Extract the L and U matrices. A is overwritten with L.
-    !!     call form_lu(a, pvt, u, p)
-    !!
-    !!     ! Solve the lower triangular system L * Y = P * B for Y, but first compute
-    !!     ! P * B, and store the results in B
-    !!     b = matmul(p, b)
-    !!
-    !!     ! Now, compute the solution to the lower triangular system.  Store the
-    !!     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
-    !!     call solve_triangular_system(.false., .false., .false., a, b)
-    !! 
-    !!     ! Solve the upper triangular system U * X = Y for X.
-    !!     call solve_triangular_system(.true., .false., .true., u, b)
-    !!
-    !!     ! Display the results.
-    !!     print '(A)', "LU Solution: X = "
-    !!     print '(F8.4)', (b(i), i = 1, size(b))
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! LU Solution: X =
-    !! 0.3333
-    !! -0.6667
-    !! 0.0000
-    !! @endcode
-    interface solve_triangular_system
-        module procedure :: solve_tri_mtx
-        module procedure :: solve_tri_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @par Usage
-    !! To solve a system of 3 equations of 3 unknowns using LU factorization,
-    !! the following code will suffice.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env
-    !!     use linalg_factor, only : lu_factor
-    !!     use linalg_solve, only : solve_lu
-    !!     implicit none
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,3), b(3)
-    !!     integer(int32) :: i, pvt(3)
-    !!
-    !!     ! Build the 3-by-3 matrix A.
-    !!     !     | 1   2   3 |
-    !!     ! A = | 4   5   6 |
-    !!     !     | 7   8   0 |
-    !!     a = reshape( &
-    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
-    !!         [3, 3])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     | -1 |
-    !!     ! b = | -2 |
-    !!     !     | -3 |
-    !!     b = [-1.0d0, -2.0d0, -3.0d0]
-    !!
-    !!     ! The solution is:
-    !!     !     |  1/3 |
-    !!     ! x = | -2/3 |
-    !!     !     |   0  |
-    !!
-    !!     ! Compute the LU factorization
-    !!     call lu_factor(a, pvt)
-    !!
-    !!     ! Compute the solution.  The results overwrite b.
-    !!     call solve_lu(a, pvt, b)
-    !!
-    !!     ! Display the results.
-    !!     print '(A)', "LU Solution: X = "
-    !!     print '(F8.4)', (b(i), i = 1, size(b))
-    !! end program
-    !! @endcode
-    !! The program generates the following output.
-    !! @code{.txt}
-    !!  LU Solution: X =
-    !!   0.3333
-    !!  -0.6667
-    !!   0.0000
-    !! @endcode
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
-    interface solve_lu
-        module procedure :: solve_lu_mtx
-        module procedure :: solve_lu_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns.
-    !!
-    !! @par Usage
-    !! The following example illustrates the solution of a system of equations
-    !! using QR factorization.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_factor, only : qr_factor
-    !!     use linalg_solve, only : solve_qr
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,3), tau(3), b(3)
-    !!     integer(int32) :: i, pvt(3)
-    !!
-    !!     ! Build the 3-by-3 matrix A.
-    !!     !     | 1   2   3 |
-    !!     ! A = | 4   5   6 |
-    !!     !     | 7   8   0 |
-    !!     a = reshape( &
-    !!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
-    !!         [3, 3])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     | -1 |
-    !!     ! b = | -2 |
-    !!     !     | -3 |
-    !!     b = [-1.0d0, -2.0d0, -3.0d0]
-    !!
-    !!     ! The solution is:
-    !!     !     |  1/3 |
-    !!     ! x = | -2/3 |
-    !!     !     |   0  |
-    !!
-    !!     ! Compute the QR factorization, using pivoting
-    !!     pvt = 0     ! Zero every entry in order not to lock any column in place
-    !!     call qr_factor(a, tau, pvt)
-    !!
-    !!     ! Compute the solution.  The results overwrite b.
-    !!     call solve_qr(a, tau, pvt, b)
-    !!
-    !!     ! Display the results.
-    !!     print '(A)', "QR Solution: X = "
-    !!     print '(F8.4)', (b(i), i = 1, size(b))
-    !!
-    !!     ! Notice, QR factorization without pivoting could be accomplished in the
-    !!     ! same manner.  The only difference is to omit the PVT array (column pivot
-    !!     ! tracking array).
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! QR Solution: X =
-    !! 0.3333
-    !! -0.6667
-    !! 0.0000
-    !! @endcode
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
-    interface solve_qr
-        module procedure :: solve_qr_no_pivot_mtx
-        module procedure :: solve_qr_no_pivot_vec
-        module procedure :: solve_qr_pivot_mtx
-        module procedure :: solve_qr_pivot_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    !!
-    !! @par Usage
-    !! The following example illustrates the solution of a positive-definite 
-    !! system of equations via Cholesky factorization.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_factor, only : cholesky_factor
-    !!     use linalg_solve, only : solve_cholesky, solve_triangular_system
-    !!     implicit none
-    !!
-    !!     ! Variables
-    !!     real(real64) :: a(3, 3), b(3), bu(3)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Build the 3-by-3 positive-definite matrix A.
-    !!     !     | 4   12   -16 |
-    !!     ! A = | 12  37   -43 |
-    !!     !     |-16 -43    98 |
-    !!     a = reshape([4.0d0, 12.0d0, -16.0d0, 12.0d0, 37.0d0, -43.0d0, -16.0d0, &
-    !!         -43.0d0, 98.0d0], [3, 3])
-    !!
-    !!     ! Build the 3-element array B
-    !!     !     | 5 |
-    !!     ! b = | 1 |
-    !!     !     | 3 |
-    !!     b = [5.0d0, 1.0d0, 3.0d0]
-    !!
-    !!     ! Make a copy of B for later use - not necessary, but just for example to
-    !!     ! illustrate the long or manual method of solving a Cholesky factored system
-    !!     bu = b
-    !!
-    !!     ! Compute the Cholesky factorization of A considering only the upper 
-    !!     ! triangular portion of A (the default configuration).
-    !!     call cholesky_factor(a)
-    !!
-    !!     ! Compute the solution
-    !!     call solve_cholesky(.true., a, b)
-    !!
-    !!     ! Display the results
-    !!     print '(A)', "Cholesky Solution: X = "
-    !!     print '(F8.4)', (b(i), i = 1, size(b))
-    !!
-    !!     ! The solution could also be computed manually noting the Cholesky 
-    !!     ! factorization causes A = U**T * U.  Then U**T * U * X = B.  
-    !!
-    !!     ! Step 1 would then be to solve the problem U**T * Y = B, for Y.
-    !!     call solve_triangular_system(.true., .true., .true., a, bu)
-    !!
-    !!     ! Now, solve the problem U * X = Y, for X
-    !!     call solve_triangular_system(.true., .false., .true., a, bu)
-    !!
-    !!     ! Display the results
-    !!     print '(A)', "Cholesky Solution (Manual Approach): X = "
-    !!     print '(F8.4)', (bu(i), i = 1, size(bu))
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Cholesky Solution: X =
-    !!  239.5833
-    !!  -65.6667
-    !!  10.3333
-    !! Cholesky Solution (Manual Approach): X =
-    !!  239.5833
-    !!  -65.6667
-    !!  10.3333
-    !! @endcode
-    interface solve_cholesky
-        module procedure :: solve_cholesky_mtx
-        module procedure :: solve_cholesky_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns.
-    !!
-    !! @par Usage
-    !! The following example illustrates the least squares solution of an
-    !! overdetermined system of linear equations.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_solve, only : solve_least_squares
-    !!     implicit none
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,2), b(3)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Build the 3-by-2 matrix A
-    !!     !     | 2   1 |
-    !!     ! A = |-3   1 |
-    !!     !     |-1   1 |
-    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     |-1 |
-    !!     ! b = |-2 |
-    !!     !     | 1 |
-    !!     b = [-1.0d0, -2.0d0, 1.0d0]
-    !!
-    !!     ! The solution is:
-    !!     ! x = [0.13158, -0.57895]**T
-    !!
-    !!     ! Compute the solution via a least-squares approach.  The results overwrite
-    !!     ! the first 2 elements in b.
-    !!     call solve_least_squares(a, b)
-    !!
-    !!     ! Display the results
-    !!     print '(A)', "Least Squares Solution: X = "
-    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Least Squares Solution: X =
-    !!  0.13158
-    !! -0.57895
-    !! @endcode
-    interface solve_least_squares
-        module procedure :: solve_least_squares_mtx
-        module procedure :: solve_least_squares_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns, but uses a full orthogonal factorization of
-    !! the system.
-    !!
-    !! @par Usage
-    !! The following example illustrates the least squares solution of an
-    !! overdetermined system of linear equations.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_solve, only : solve_least_squares_full
-    !!     implicit none
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,2), b(3)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Build the 3-by-2 matrix A
-    !!     !     | 2   1 |
-    !!     ! A = |-3   1 |
-    !!     !     |-1   1 |
-    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     |-1 |
-    !!     ! b = |-2 |
-    !!     !     | 1 |
-    !!     b = [-1.0d0, -2.0d0, 1.0d0]
-    !!
-    !!     ! The solution is:
-    !!     ! x = [0.13158, -0.57895]**T
-    !!
-    !!     ! Compute the solution via a least-squares approach.  The results overwrite
-    !!     ! the first 2 elements in b.
-    !!     call solve_least_squares_full(a, b)
-    !!
-    !!     ! Display the results
-    !!     print '(A)', "Least Squares Solution: X = "
-    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Least Squares Solution: X =
-    !!  0.13158
-    !! -0.57895
-    !! @endcode
-    interface solve_least_squares_full
-        module procedure :: solve_least_squares_mtx_pvt
-        module procedure :: solve_least_squares_vec_pvt
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    !!
-    !! @par Usage
-    !! The following example illustrates the least squares solution of an
-    !! overdetermined system of linear equations.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_solve, only : solve_least_squares_svd
-    !!     implicit none
-    !!
-    !!     ! Local Variables
-    !!     real(real64) :: a(3,2), b(3)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Build the 3-by-2 matrix A
-    !!     !     | 2   1 |
-    !!     ! A = |-3   1 |
-    !!     !     |-1   1 |
-    !!     a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])
-    !!
-    !!     ! Build the right-hand-side vector B.
-    !!     !     |-1 |
-    !!     ! b = |-2 |
-    !!     !     | 1 |
-    !!     b = [-1.0d0, -2.0d0, 1.0d0]
-    !!
-    !!     ! The solution is:
-    !!     ! x = [0.13158, -0.57895]**T
-    !!
-    !!     ! Compute the solution via a least-squares approach.  The results overwrite
-    !!     ! the first 2 elements in b.
-    !!     call solve_least_squares_svd(a, b)
-    !!
-    !!     ! Display the results
-    !!     print '(A)', "Least Squares Solution: X = "
-    !!     print '(F9.5)', (b(i), i = 1, size(a, 2))
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Least Squares Solution: X =
-    !!  0.13158
-    !! -0.57895
-    !! @endcode
-    interface solve_least_squares_svd
-        module procedure :: solve_least_squares_mtx_svd
-        module procedure :: solve_least_squares_vec_svd
-    end interface
-
-
+submodule (linalg_core) linalg_solve
 contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX SOLUTION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, or
-    !! X * op(A) = alpha * B, where A is a triangular matrix.
-    !!
-    !! @param[in] lside Set to true to solve op(A) * X = alpha * B; else, set to
-    !!  false to solve X * op(A) = alpha * B.
-    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
-    !!  set to false if A is a lower triangular matrix.
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
-    !!  op(A) = A.
-    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
-    !!  every diagonal element); else, set to false if A is a unit-diagonal
-    !!  matrix.
-    !! @param[in] alpha The scalar multiplier to B.
-    !! @param[in] a If @p lside is true, the M-by-M triangular matrix on which
-    !!  to operate; else, if @p lside is false, the N-by-N triangular matrix on
-    !!  which to operate.
-    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
-    !!  M-by-N solution.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
-    !!      @p a and @p b are not compatible.
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine DTRSM.
-    subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
+    module subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
         ! Arguments
         logical, intent(in) :: lside, upper, trans, nounit
         real(real64), intent(in) :: alpha
@@ -554,51 +71,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the system of equations: op(A) * X = B, where A is a
-    !!  triangular matrix.
-    !!
-    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
-    !!  set to false if A is a lower triangular matrix.
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
-    !!  op(A) = A.
-    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
-    !!  every diagonal element); else, set to false if A is a unit-diagonal
-    !!  matrix.
-    !! @param[in] a The N-by-N triangular matrix.
-    !! @param[in,out] x On input, the N-element right-hand-side array.  On
-    !!  output, the N-element solution array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
-    !!      @p a and @p b are not compatible.
-    !!
-    !!
-    !! @par Usage
-    !! To solve a triangular system of N equations of N unknowns A*X = B, where
-    !! A is an N-by-N upper triangular matrix, and B and X are N-element
-    !! arrays, the following code will suffice.
-    !!
-    !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an upper triangular N-by-N
-    !! ! matrix, and B and X are N-elements in size.
-    !!
-    !! ! Variables
-    !! integer(int32) :: info
-    !! real(real64), dimension(n, n) :: a
-    !! real(real64), dimension(n) :: b
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_triangular_system(.true., .false., a, b)
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine DTRSV.
-    subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
+    module subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
         ! Arguments
         logical, intent(in) :: upper, trans, nounit
         real(real64), intent(in), dimension(:,:) :: a
@@ -658,23 +131,7 @@ contains
 ! ******************************************************************************
 ! LU SOLUTION
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
-    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
-    !!  output, the N-by-NRHS solution matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! The routine is based upon the LAPACK routine DGETRS.
-    subroutine solve_lu_mtx(a, ipvt, b, err)
+    module subroutine solve_lu_mtx(a, ipvt, b, err)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
         integer(int32), intent(in), dimension(:) :: ipvt
@@ -719,23 +176,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
-    !! @param[in,out] b On input, the N-element right-hand-side array.  On
-    !!  output, the N-element solution array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! The routine is based upon the LAPACK routine DGETRS.
-    subroutine solve_lu_vec(a, ipvt, b, err)
+    module subroutine solve_lu_vec(a, ipvt, b, err)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
         integer(int32), intent(in), dimension(:) :: ipvt
@@ -781,36 +222,7 @@ contains
 ! ******************************************************************************
 ! QR SOLUTION
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
-    !!  the first N columns are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
+    module subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a, b
         real(real64), intent(in), dimension(:) :: tau
@@ -896,36 +308,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] b On input, the M-element right-hand-side vector.  On output,
-    !!  the first N elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
+    module subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), dimension(:) :: tau
@@ -1007,38 +390,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are altered.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
-    !!  rows contain the right-hand-side matrix B.  On output, the first N rows
-    !!  are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
+    module subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), dimension(:) :: tau
@@ -1194,38 +546,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are altered.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-element array where the first M
-    !!  elements contain the right-hand-side vector B.  On output, the first N
-    !!  elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
+    module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), dimension(:) :: tau
@@ -1378,25 +699,7 @@ contains
 ! ******************************************************************************
 ! CHOLESKY SOLVE
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    !!
-    !! @param[in] upper Set to true if the original matrix A was factored such
-    !!  that A = U**T * U; else, set to false if the factorization of A was
-    !!  A = L**T * L.
-    !! @param[in] a The N-by-N Cholesky factored matrix.
-    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix B.  On
-    !!  output, the solution matrix X.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DPOTRS.
-    subroutine solve_cholesky_mtx(upper, a, b, err)
+    module subroutine solve_cholesky_mtx(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
         real(real64), intent(in), dimension(:,:) :: a
@@ -1444,25 +747,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    !!
-    !! @param[in] upper Set to true if the original matrix A was factored such
-    !!  that A = U**T * U; else, set to false if the factorization of A was
-    !!  A = L**T * L.
-    !! @param[in] a The N-by-N Cholesky factored matrix.
-    !! @param[in,out] b On input, the N-element right-hand-side vector B.  On
-    !!  output, the solution vector X.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DPOTRS.
-    subroutine solve_cholesky_vec(upper, a, b, err)
+    module subroutine solve_cholesky_vec(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
         real(real64), intent(in), dimension(:,:) :: a
@@ -1511,90 +796,7 @@ contains
 ! ******************************************************************************
 ! MATRIX INVERSION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the inverse of a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
-    !!  inverted matrix.
-    !! @param[out] iwork An optional N-element integer workspace array.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.  Will also occur if
-    !!      incorrectly sized workspace arrays are provided.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
-    !!
-    !! @par Usage
-    !! The following example illustrates the inversion of a 3-by-3 matrix.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : real64, int32
-    !!     use linalg_solve, only : mtx_inverse
-    !!     implicit none
-    !!
-    !!     ! Variables
-    !!     real(real64) :: a(3,3), ai(3,3), c(3,3)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Construct the 3-by-3 matrix A to invert
-    !!     !     | 1   2   3 |
-    !!     ! A = | 4   5   6 |
-    !!     !     | 7   8   0 |
-    !!     a = reshape([1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, &
-    !!         0.0d0], [3, 3])
-    !!
-    !!     ! Compute the inverse of A.  Notice, the original matrix is overwritten
-    !!     ! with it's inverse.
-    !!     ai = a
-    !!     call mtx_inverse(ai)
-    !!
-    !!     ! Show that A * inv(A) = I
-    !!     c = matmul(a, ai)
-    !!
-    !!     ! Display the inverse
-    !!     print '(A)', "Inverse:"
-    !!     do i = 1, size(ai, 1)
-    !!         print *, ai(i,:)
-    !!     end do
-    !!
-    !!     ! Display the result of A * inv(A)
-    !!     print '(A)', "A * A**-1:"
-    !!     do i = 1, size(c, 1)
-    !!         print *, c(i,:)
-    !!     end do
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Inverse:
-    !!  -1.7777777777777777       0.88888888888888884      -0.11111111111111110
-    !!   1.5555555555555556      -0.77777777777777779       0.22222222222222221
-    !!  -0.11111111111111119      0.22222222222222227      -0.11111111111111112
-    !! A * A**-1:
-    !!   0.99999999999999989       5.5511151231257827E-017  -4.1633363423443370E-017
-    !!   5.5511151231257827E-017   1.0000000000000000       -8.3266726846886741E-017
-    !!   1.7763568394002505E-015  -8.8817841970012523E-016   1.0000000000000000
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routines DGETRF to perform an LU
-    !! factorization of the matrix, and DGETRI to invert the LU factored
-    !! matrix.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Invertible_matrix)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixInverse.html)
-    subroutine mtx_inverse(a, iwork, work, olwork, err)
+    module subroutine mtx_inverse_dbl(a, iwork, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         integer(int32), intent(out), target, optional, dimension(:) :: iwork
@@ -1695,97 +897,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
-    !! using the singular value decomposition of the matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
-    !!  overwritten on output.
-    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
-    !!  will be written.
-    !! @param[in] tol An optional input, that if supplied, overrides the default
-    !!  tolerance on singular values such that singular values less than this
-    !!  tolerance are forced to have a reciprocal of zero, as opposed to 1/S(I).
-    !!  The default tolerance is: MAX(M, N) * EPS * MAX(S).  If the supplied
-    !!  value is less than a value that causes an overflow, the tolerance
-    !!  reverts back to its default value, and the operation continues;
-    !!  however, a warning message is issued.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Usage
-    !! The following example illustrates how to compute the Moore-Penrose
-    !! pseudo-inverse of a matrix.
-    !! @code{.f90}
-    !! program example
-    !!     use iso_fortran_env, only : int32, real64
-    !!     use linalg_solve, only : mtx_pinverse
-    !!     implicit none
-    !!
-    !!     ! Variables
-    !!     real(real64) :: a(3,2), ai(2,3), ao(3,2), c(2,2)
-    !!     integer(int32) :: i
-    !!
-    !!     ! Create the 3-by-2 matrix A
-    !!     !     | 1   0 |
-    !!     ! A = | 0   1 |
-    !!     !     | 0   1 |
-    !!     a = reshape([1.0d0, 0.0d0, 0.0d0, 0.0d0, 1.0d0, 1.0d0], [3, 2])
-    !!     ao = a  ! Just making a copy for later as mtx_pinverse will destroy the
-    !!             ! contents of the original matrix
-    !!
-    !!     ! The Moore-Penrose pseudo-inverse of this matrix is:
-    !!     !         | 1   0    0  |
-    !!     ! A**-1 = |             |
-    !!     !         | 0  1/2  1/2 |
-    !!     call mtx_pinverse(a, ai)
-    !!
-    !!     ! Notice, A**-1 * A is an identity matrix.
-    !!     c = matmul(ai, ao)
-    !!
-    !!     ! Display the inverse
-    !!     print '(A)', "Inverse:"
-    !!     do i = 1, size(ai, 1)
-    !!         print *, ai(i,:)
-    !!     end do
-    !!
-    !!     ! Display the result of inv(A) * A
-    !!     print '(A)', "A**-1 * A:"
-    !!     do i = 1, size(c, 1)
-    !!         print *, c(i,:)
-    !!     end do
-    !! end program
-    !! @endcode
-    !! The above program produces the following output.
-    !! @code{.txt}
-    !! Inverse:
-    !!  1.0000000000000000        0.0000000000000000        0.0000000000000000
-    !!  0.0000000000000000       0.49999999999999978       0.49999999999999989
-    !! A**-1 * A:
-    !!  1.0000000000000000        0.0000000000000000
-    !!  0.0000000000000000       0.99999999999999967
-    !! @endcode
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/Moore-PenroseMatrixInverse.html)
-    !! - [MathWorks](http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle)
-    subroutine mtx_pinverse(a, ainv, tol, work, olwork, err)
+    module subroutine mtx_pinverse_dbl(a, ainv, tol, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:,:) :: ainv
@@ -1931,38 +1043,7 @@ contains
 ! ******************************************************************************
 ! LEAST SQUARES SOLUTION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
-    !! Notice, it is assumed that matrix A has full rank.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by qr_factor; else,
-    !!  if M < N, the LQ factorization of A.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELS.
-    subroutine solve_least_squares_mtx(a, b, work, olwork, err)
+    module subroutine solve_least_squares_mtx(a, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a, b
         real(real64), intent(out), target, optional, dimension(:) :: work
@@ -2037,38 +1118,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
-    !! Notice, it is assumed that matrix A has full rank.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by qr_factor; else,
-    !!  if M < N, the LQ factorization of A.
-    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
-    !!  N elements contain the N-element solution array X.  If M < N, an
-    !!  N-element array with the first M elements containing the array B.  On
-    !!  output, the N-element solution array X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELS.
-    subroutine solve_least_squares_vec(a, b, work, olwork, err)
+    module subroutine solve_least_squares_vec(a, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(inout), dimension(:) :: b
@@ -2143,44 +1193,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a complete orthogonal factorization of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
-    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
-    !!  is set to all zeros such that all columns are treated as free.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
+    module subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a, b
         integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
@@ -2287,44 +1300,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a complete orthogonal factorization of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
-    !!  N elements contain the N-element solution array X.  If M < N, an
-    !!  N-element array with the first M elements containing the array B.  On
-    !!  output, the N-element solution array X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
-    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
-    !!  is set to all zeros such that all columns are treated as free.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
+    module subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(inout), dimension(:) :: b
@@ -2430,45 +1406,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] s An optional MIN(M, N)-element array that on output contains
-    !!  the singular values of @p a in descending order.  Notice, the condition
-    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_mtx_svd(a, b, s, arnk, work, olwork, err)
+    module subroutine solve_least_squares_mtx_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a, b
         integer(int32), intent(out), optional :: arnk
@@ -2579,43 +1517,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] s An optional MIN(M, N)-element array that on output contains
-    !!  the singular values of @p a in descending order.  Notice, the condition
-    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
+    module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(inout), dimension(:) :: b
@@ -2725,4 +1627,4 @@ contains
     end subroutine
 
 
-end module
+end submodule

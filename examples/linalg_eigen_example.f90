@@ -17,8 +17,7 @@
 ! Notice: x1" = the second time derivative of x1.
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_eigen
-    use linalg_sorting
+    use linalg_core
     implicit none
 
     ! Define the model parameters

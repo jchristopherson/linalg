@@ -73,3 +73,11 @@ target_link_libraries(od_example_c linalg)
 # Eigen Example
 add_executable(eigen_example_c linalg_eigen_c_example.c)
 target_link_libraries(eigen_example_c linalg m)
+
+# --------------------
+# Copy FERROR to the runtime directory
+add_custom_command(
+    TARGET svd_example POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${ferror_LibLocation} $<TARGET_FILE_DIR:svd_example>
+)

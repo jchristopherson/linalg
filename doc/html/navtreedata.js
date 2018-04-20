@@ -12,7 +12,12 @@ var NAVTREE =
     ] ],
     [ "Data Types List", "annotated.html", [
       [ "Data Types List", "annotated.html", "annotated_dup" ],
-      [ "Data Types", "classes.html", null ]
+      [ "Data Types", "classes.html", null ],
+      [ "Data Fields", "functions.html", [
+        [ "All", "functions.html", null ],
+        [ "Functions/Subroutines", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ]
+      ] ]
     ] ],
     [ "Files", null, [
       [ "File List", "files.html", "files" ]

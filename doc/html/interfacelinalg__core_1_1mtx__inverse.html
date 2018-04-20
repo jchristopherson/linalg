@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">linalg
-   &#160;<span id="projectnumber">1.4.3</span>
+   &#160;<span id="projectnumber">1.5.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -73,6 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="classes.html"><span>Data&#160;Types</span></a></li>
+      <li><a href="functions.html"><span>Data&#160;Fields</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -126,7 +127,7 @@ Private Member Functions</h2></td></tr>
 <div class="textblock"><p>Computes the inverse of a square matrix. </p>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the inversion of a 3-by-3 matrix. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div><div class="line">    <span class="keywordtype">use </span>iso_fortran_env<span class="keywordtype">, only</span> : real64, int32</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__core.html">linalg_core</a></div><div class="line">    <span class="keywordtype">implicit none</span></div><div class="line"></div><div class="line">    <span class="comment">! Variables</span></div><div class="line">    <span class="keywordtype">real(real64)</span> :: a(3,3), ai(3,3), c(3,3)</div><div class="line">    <span class="keywordtype">integer(int32)</span> :: i</div><div class="line"></div><div class="line">    <span class="comment">! Construct the 3-by-3 matrix A to invert</span></div><div class="line">    <span class="comment">!     | 1   2   3 |</span></div><div class="line">    <span class="comment">! A = | 4   5   6 |</span></div><div class="line">    <span class="comment">!     | 7   8   0 |</span></div><div class="line">    a = reshape([1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, &amp;</div><div class="line">        0.0d0], [3, 3])</div><div class="line"></div><div class="line">    <span class="comment">! Compute the inverse of A.  Notice, the original matrix is overwritten</span></div><div class="line">    <span class="comment">! with it&#39;s inverse.</span></div><div class="line">    ai = a</div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__core_1_1mtx__inverse.html">mtx_inverse</a>(ai)</div><div class="line"></div><div class="line">    <span class="comment">! Show that A * inv(A) = I</span></div><div class="line">    c = matmul(a, ai)</div><div class="line"></div><div class="line">    <span class="comment">! Display the inverse</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Inverse:&quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(ai, 1)</div><div class="line">        print *, ai(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"></div><div class="line">    <span class="comment">! Display the result of A * inv(A)</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;A * A**-1:&quot;</span></div><div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(c, 1)</div><div class="line">        print *, c(i,:)</div><div class="line"><span class="keywordflow">    end do</span></div><div class="line"><span class="keyword">end program</span></div></div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Inverse:</div><div class="line"> -1.7777777777777777       0.88888888888888884      -0.11111111111111110</div><div class="line">  1.5555555555555556      -0.77777777777777779       0.22222222222222221</div><div class="line"> -0.11111111111111119      0.22222222222222227      -0.11111111111111112</div><div class="line">A * A**-1:</div><div class="line">  0.99999999999999989       5.5511151231257827E-017  -4.1633363423443370E-017</div><div class="line">  5.5511151231257827E-017   1.0000000000000000       -8.3266726846886741E-017</div><div class="line">  1.7763568394002505E-015  -8.8817841970012523E-016   1.0000000000000000</div></div><!-- fragment --> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__core_8f90_source.html#l01362">1362</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__core_8f90_source.html#l01427">1427</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/users/christopherson/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

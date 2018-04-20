@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['l',['l',['../structlinalg__immutable_1_1lu__results.html#a7a11c264a8858527ebc021e609600cbb',1,'linalg_immutable::lu_results']]],
   ['la_5farray_5fsize_5ferror',['la_array_size_error',['../namespacelinalg__constants.html#ab386cf77a1f7d7461d8d84788488bfd4',1,'linalg_constants']]],
   ['la_5fconvergence_5ferror',['la_convergence_error',['../namespacelinalg__constants.html#aee6bab378c354622ec672e5098c91931',1,'linalg_constants']]],
   ['la_5finvalid_5finput_5ferror',['la_invalid_input_error',['../namespacelinalg__constants.html#ae8deb3aa896d9dbaed1d67fd051cc40f',1,'linalg_constants']]],

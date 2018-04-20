@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">linalg
-   &#160;<span id="projectnumber">1.4.3</span>
+   &#160;<span id="projectnumber">1.5.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -73,6 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="classes.html"><span>Data&#160;Types</span></a></li>
+      <li><a href="functions.html"><span>Data&#160;Fields</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -129,7 +130,7 @@ Private Member Functions</h2></td></tr>
 <div class="textblock"><p>Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns. </p>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the least squares solution of an overdetermined system of linear equations. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div><div class="line">    <span class="keywordtype">use </span>iso_fortran_env<span class="keywordtype">, only</span> : real64, int32</div><div class="line">    <span class="keywordtype">use </span><a class="code" href="namespacelinalg__core.html">linalg_core</a></div><div class="line">    <span class="keywordtype">implicit none</span></div><div class="line"></div><div class="line">    <span class="comment">! Local Variables</span></div><div class="line">    <span class="keywordtype">real(real64)</span> :: a(3,2), b(3)</div><div class="line">    <span class="keywordtype">integer(int32)</span> :: i</div><div class="line"></div><div class="line">    <span class="comment">! Build the 3-by-2 matrix A</span></div><div class="line">    <span class="comment">!     | 2   1 |</span></div><div class="line">    <span class="comment">! A = |-3   1 |</span></div><div class="line">    <span class="comment">!     |-1   1 |</span></div><div class="line">    a = reshape([2.0d0, -3.0d0, -1.0d0, 1.0d0, 1.0d0, 1.0d0], [3, 2])</div><div class="line"></div><div class="line">    <span class="comment">! Build the right-hand-side vector B.</span></div><div class="line">    <span class="comment">!     |-1 |</span></div><div class="line">    <span class="comment">! b = |-2 |</span></div><div class="line">    <span class="comment">!     | 1 |</span></div><div class="line">    b = [-1.0d0, -2.0d0, 1.0d0]</div><div class="line"></div><div class="line">    <span class="comment">! The solution is:</span></div><div class="line">    <span class="comment">! x = [0.13158, -0.57895]**T</span></div><div class="line"></div><div class="line">    <span class="comment">! Compute the solution via a least-squares approach.  The results overwrite</span></div><div class="line">    <span class="comment">! the first 2 elements in b.</span></div><div class="line">    <span class="keyword">call </span><a class="code" href="interfacelinalg__core_1_1solve__least__squares.html">solve_least_squares</a>(a, b)</div><div class="line"></div><div class="line">    <span class="comment">! Display the results</span></div><div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Least Squares Solution: X = &quot;</span></div><div class="line">    print <span class="stringliteral">&#39;(F9.5)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(a, 2))</div><div class="line"><span class="keyword">end program</span></div></div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Least Squares Solution: X =</div><div class="line"> 0.13158</div><div class="line">-0.57895</div></div><!-- fragment --> </dd></dl>
 
-<p>Definition at line <a class="el" href="linalg__core_8f90_source.html#l01197">1197</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p>Definition at line <a class="el" href="linalg__core_8f90_source.html#l01262">1262</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/users/christopherson/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

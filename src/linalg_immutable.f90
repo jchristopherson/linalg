@@ -41,7 +41,7 @@ module linalg_immutable
     public :: eigen_results
 
 ! ------------------------------------------------------------------------------
-    !> @brielf Computes the matrix operation: C = A * B, where A is a
+    !> @brief Computes the matrix operation: C = A * B, where A is a
     !! diagonal matrix.
     interface mat_mult_diag
         module procedure :: mat_mult_diag_1
@@ -156,7 +156,7 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    !> @brielf Computes the matrix operation: C = A * B, where A is a
+    !> @brief Computes the matrix operation: C = A * B, where A is a
     !! diagonal matrix.
     !!
     !! @param[in] a The M-element array containing the diagonal elements of
@@ -179,7 +179,7 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-!> @brielf Computes the matrix operation: C = A * B, where A is a
+!> @brief Computes the matrix operation: C = A * B, where A is a
 !! diagonal matrix.
 !!
 !! @param[in] a The M-element array containing the diagonal elements of
@@ -295,7 +295,7 @@ end function
     !! partial row pivoting is utilized.
     !!
     !! @param[in] a The N-by-N matrix to factor.
-    !! @results The L, U, and P matrices resulting from the factorization.
+    !! @result The L, U, and P matrices resulting from the factorization.
     function mat_lu(a) result(x)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
@@ -410,7 +410,7 @@ end function
     !> @brief Computes the singular value decomposition of an M-by-N matrix.
     !!
     !! @param[in] a The M-by-N matrix to factor.
-    !! @results The U, S, and transpose of V matrices resulting from the
+    !! @result The U, S, and transpose of V matrices resulting from the
     !!  factorization where A = U * S * V**T.
     function mat_svd(a) result(x)
         ! Arguments

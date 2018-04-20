@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">linalg
-   &#160;<span id="projectnumber">1.4.3</span>
+   &#160;<span id="projectnumber">1.5.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -105,6 +105,9 @@ $(document).ready(function(){initNavTree('namespacelinalg__immutable.html','');}
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Data Types</a> &#124;
+<a href="#func-members">Functions/Subroutines</a>  </div>
   <div class="headertitle">
 <div class="title">linalg_immutable Module Reference</div>  </div>
 </div><!--header-->
@@ -112,11 +115,1042 @@ $(document).ready(function(){initNavTree('namespacelinalg__immutable.html','');}
 
 <p><b><a class="el" href="namespacelinalg__immutable.html" title="linalg_immutable ">linalg_immutable</a></b>  
 <a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Data Types</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlinalg__immutable_1_1eigen__results.html">eigen_results</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a container for the output of an Eigen analysis of a square matrix.  <a href="structlinalg__immutable_1_1eigen__results.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlinalg__immutable_1_1lu__results.html">lu_results</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a container for the output of an LU factorization.  <a href="structlinalg__immutable_1_1lu__results.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__eigen.html">mat_eigen</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the eigenvalues and eigenvectors (right) of a general N-by-N matrix.  <a href="interfacelinalg__immutable_1_1mat__eigen.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__diag.html">mat_mult_diag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation: C = A * B, where A is a diagonal matrix.  <a href="interfacelinalg__immutable_1_1mat__mult__diag.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__lower__tri.html">mat_mult_lower_tri</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="interfacelinalg__immutable_1_1mat__mult__lower__tri.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__upper__tri.html">mat_mult_upper_tri</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is an upper triangular matrix.  <a href="interfacelinalg__immutable_1_1mat__mult__upper__tri.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__solve__lower__tri.html">mat_solve_lower_tri</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the lower triangular system A X = B, where A is a lower triangular matrix.  <a href="interfacelinalg__immutable_1_1mat__solve__lower__tri.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">interface &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__solve__upper__tri.html">mat_solve_upper_tri</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the upper triangular system A X = B, where A is an upper triangular matrix.  <a href="interfacelinalg__immutable_1_1mat__solve__upper__tri.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlinalg__immutable_1_1qr__results.html">qr_results</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a container for the output of a QR factorization.  <a href="structlinalg__immutable_1_1qr__results.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlinalg__immutable_1_1svd__results.html">svd_results</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a container for the output of a singular value decomposition of a matrix.  <a href="structlinalg__immutable_1_1svd__results.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions/Subroutines</h2></td></tr>
+<tr class="memitem:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(a, 2)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a9648fd41cc3ce8ec40f67236d274f9a8">mat_rank1_update</a> (a, x, y)</td></tr>
+<tr class="memdesc:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the rank-1 update to matrix A such that: B = X * Y**T + A, where A is an M-by-N matrix, X is an M-element array, and N is an N-element array.  <a href="#a9648fd41cc3ce8ec40f67236d274f9a8">More...</a><br /></td></tr>
+<tr class="separator:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f1744ac9f0385bd2079c6615b22b4a8"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a2f1744ac9f0385bd2079c6615b22b4a8">mat_mult_diag_1</a> (a, b)</td></tr>
+<tr class="memdesc:a2f1744ac9f0385bd2079c6615b22b4a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation: C = A * B, where A is a diagonal matrix.  <a href="#a2f1744ac9f0385bd2079c6615b22b4a8">More...</a><br /></td></tr>
+<tr class="separator:a2f1744ac9f0385bd2079c6615b22b4a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b66504ea3cb772e1bf44017d2fe864"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#ac2b66504ea3cb772e1bf44017d2fe864">mat_mult_diag_2</a> (a, b)</td></tr>
+<tr class="memdesc:ac2b66504ea3cb772e1bf44017d2fe864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation: C = A * B, where A is a diagonal matrix.  <a href="#ac2b66504ea3cb772e1bf44017d2fe864">More...</a><br /></td></tr>
+<tr class="separator:ac2b66504ea3cb772e1bf44017d2fe864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf02322c06a6a0ec301f06f120662959"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#aaf02322c06a6a0ec301f06f120662959">mat_mult_upper_tri_1</a> (a, b)</td></tr>
+<tr class="memdesc:aaf02322c06a6a0ec301f06f120662959"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is an upper triangular matrix.  <a href="#aaf02322c06a6a0ec301f06f120662959">More...</a><br /></td></tr>
+<tr class="separator:aaf02322c06a6a0ec301f06f120662959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222bcdc4b18a3297de7fed3ccbbb7aac"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a222bcdc4b18a3297de7fed3ccbbb7aac">mat_mult_upper_tri_2</a> (a, b)</td></tr>
+<tr class="memdesc:a222bcdc4b18a3297de7fed3ccbbb7aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is an upper triangular matrix.  <a href="#a222bcdc4b18a3297de7fed3ccbbb7aac">More...</a><br /></td></tr>
+<tr class="separator:a222bcdc4b18a3297de7fed3ccbbb7aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e4106f6834d3ca9980765f9140a07f6"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a2e4106f6834d3ca9980765f9140a07f6">mat_mult_lower_tri_1</a> (a, b)</td></tr>
+<tr class="memdesc:a2e4106f6834d3ca9980765f9140a07f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="#a2e4106f6834d3ca9980765f9140a07f6">More...</a><br /></td></tr>
+<tr class="separator:a2e4106f6834d3ca9980765f9140a07f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac278e04a89fc8e5e759cca3006b10a77"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#ac278e04a89fc8e5e759cca3006b10a77">mat_mult_lower_tri_2</a> (a, b)</td></tr>
+<tr class="memdesc:ac278e04a89fc8e5e759cca3006b10a77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="#ac278e04a89fc8e5e759cca3006b10a77">More...</a><br /></td></tr>
+<tr class="separator:ac278e04a89fc8e5e759cca3006b10a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7abd8e3fd4170b5b5dfad4448a651c9"><td class="memItemLeft" align="right" valign="top">real(real64) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#ab7abd8e3fd4170b5b5dfad4448a651c9">mat_det</a> (a)</td></tr>
+<tr class="memdesc:ab7abd8e3fd4170b5b5dfad4448a651c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the determinant of a square matrix.  <a href="#ab7abd8e3fd4170b5b5dfad4448a651c9">More...</a><br /></td></tr>
+<tr class="separator:ab7abd8e3fd4170b5b5dfad4448a651c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c69d2ac436565670016bf7b5c6f8183"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1lu__results.html">lu_results</a>) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a7c69d2ac436565670016bf7b5c6f8183">mat_lu</a> (a)</td></tr>
+<tr class="memdesc:a7c69d2ac436565670016bf7b5c6f8183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the LU factorization of a square matrix. Notice, partial row pivoting is utilized.  <a href="#a7c69d2ac436565670016bf7b5c6f8183">More...</a><br /></td></tr>
+<tr class="separator:a7c69d2ac436565670016bf7b5c6f8183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f1ba0ce9f8fbece16a512145bbc197f"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1qr__results.html">qr_results</a>) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a8f1ba0ce9f8fbece16a512145bbc197f">mat_qr</a> (a, pvt)</td></tr>
+<tr class="memdesc:a8f1ba0ce9f8fbece16a512145bbc197f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the QR factorization of an M-by-N matrix. column pivoting can be used by this routine.  <a href="#a8f1ba0ce9f8fbece16a512145bbc197f">More...</a><br /></td></tr>
+<tr class="separator:a8f1ba0ce9f8fbece16a512145bbc197f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b09077ad1495833919bab84b144b297"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1qr__results.html">qr_results</a>) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a4b09077ad1495833919bab84b144b297">mat_qr_rank1_update</a> (q, r, x, y)</td></tr>
+<tr class="memdesc:a4b09077ad1495833919bab84b144b297"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the rank-1 update of a QR-factored system.  <a href="#a4b09077ad1495833919bab84b144b297">More...</a><br /></td></tr>
+<tr class="separator:a4b09077ad1495833919bab84b144b297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6236acadb527f7762e3e1c0ee3d9ca82"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1svd__results.html">svd_results</a>) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a6236acadb527f7762e3e1c0ee3d9ca82">mat_svd</a> (a)</td></tr>
+<tr class="memdesc:a6236acadb527f7762e3e1c0ee3d9ca82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the singular value decomposition of an M-by-N matrix.  <a href="#a6236acadb527f7762e3e1c0ee3d9ca82">More...</a><br /></td></tr>
+<tr class="separator:a6236acadb527f7762e3e1c0ee3d9ca82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5876e7f21f20679fd6c0c84768061a30"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(a, 2)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a5876e7f21f20679fd6c0c84768061a30">mat_cholesky</a> (a, upper)</td></tr>
+<tr class="memdesc:a5876e7f21f20679fd6c0c84768061a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Cholesky factorization of a positive-definite matrix.  <a href="#a5876e7f21f20679fd6c0c84768061a30">More...</a><br /></td></tr>
+<tr class="separator:a5876e7f21f20679fd6c0c84768061a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83eaeadc3a3cc5d81c46824174e5a90b"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(a, 2)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a83eaeadc3a3cc5d81c46824174e5a90b">mat_cholesky_rank1_update</a> (a, x)</td></tr>
+<tr class="memdesc:a83eaeadc3a3cc5d81c46824174e5a90b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the rank 1 update to a Cholesky factored matrix.  <a href="#a83eaeadc3a3cc5d81c46824174e5a90b">More...</a><br /></td></tr>
+<tr class="separator:a83eaeadc3a3cc5d81c46824174e5a90b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb844327cadfdd08580c94cb1668c2a8"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(a, 2)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#afb844327cadfdd08580c94cb1668c2a8">mat_cholesky_rank1_downdate</a> (a, x)</td></tr>
+<tr class="memdesc:afb844327cadfdd08580c94cb1668c2a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the rank 1 downdate to a Cholesky factored matrix.  <a href="#afb844327cadfdd08580c94cb1668c2a8">More...</a><br /></td></tr>
+<tr class="separator:afb844327cadfdd08580c94cb1668c2a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f5b4e5de682d686cb763ab60fcde7f"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 2), size(a, 1)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a98f5b4e5de682d686cb763ab60fcde7f">mat_inverse</a> (a)</td></tr>
+<tr class="memdesc:a98f5b4e5de682d686cb763ab60fcde7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse of a square matrix.  <a href="#a98f5b4e5de682d686cb763ab60fcde7f">More...</a><br /></td></tr>
+<tr class="separator:a98f5b4e5de682d686cb763ab60fcde7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf39795f72fad79a38213893b850d793"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 2), size(a, 1)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#aaf39795f72fad79a38213893b850d793">mat_pinverse</a> (a)</td></tr>
+<tr class="memdesc:aaf39795f72fad79a38213893b850d793"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix.  <a href="#aaf39795f72fad79a38213893b850d793">More...</a><br /></td></tr>
+<tr class="separator:aaf39795f72fad79a38213893b850d793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4906084c7d42b573a13b46996bcdc8eb"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(b, 1), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a4906084c7d42b573a13b46996bcdc8eb">mat_solve_upper_tri_1</a> (a, b)</td></tr>
+<tr class="memdesc:a4906084c7d42b573a13b46996bcdc8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the upper triangular system A X = B, where A is an upper triangular matrix.  <a href="#a4906084c7d42b573a13b46996bcdc8eb">More...</a><br /></td></tr>
+<tr class="separator:a4906084c7d42b573a13b46996bcdc8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4599b0f5c5cbb89e77ee132b6be5386"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(b))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#ae4599b0f5c5cbb89e77ee132b6be5386">mat_solve_upper_tri_2</a> (a, b)</td></tr>
+<tr class="memdesc:ae4599b0f5c5cbb89e77ee132b6be5386"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the upper triangular system A X = B, where A is an upper triangular matrix.  <a href="#ae4599b0f5c5cbb89e77ee132b6be5386">More...</a><br /></td></tr>
+<tr class="separator:ae4599b0f5c5cbb89e77ee132b6be5386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f274a564220237f437d97eb8bb32bed"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(b, 1), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a7f274a564220237f437d97eb8bb32bed">mat_solve_lower_tri_1</a> (a, b)</td></tr>
+<tr class="memdesc:a7f274a564220237f437d97eb8bb32bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the lower triangular system A X = B, where A is a lower triangular matrix.  <a href="#a7f274a564220237f437d97eb8bb32bed">More...</a><br /></td></tr>
+<tr class="separator:a7f274a564220237f437d97eb8bb32bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af92354265e3c2d5fbaaea92527c2e66d"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(b))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#af92354265e3c2d5fbaaea92527c2e66d">mat_solve_lower_tri_2</a> (a, b)</td></tr>
+<tr class="memdesc:af92354265e3c2d5fbaaea92527c2e66d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the lower triangular system A X = B, where A is a lower triangular matrix.  <a href="#af92354265e3c2d5fbaaea92527c2e66d">More...</a><br /></td></tr>
+<tr class="separator:af92354265e3c2d5fbaaea92527c2e66d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43cd58b7e0a06b193dce3cf94c4619d1"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1eigen__results.html">eigen_results</a>) function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a43cd58b7e0a06b193dce3cf94c4619d1">mat_eigen_1</a> (a)</td></tr>
+<tr class="memdesc:a43cd58b7e0a06b193dce3cf94c4619d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the eigenvalues and eigenvectors (right) of a general N-by-N matrix.  <a href="#a43cd58b7e0a06b193dce3cf94c4619d1">More...</a><br /></td></tr>
+<tr class="separator:a43cd58b7e0a06b193dce3cf94c4619d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a989c2bf5f15c717046815005a2280e1d"><td class="memItemLeft" align="right" valign="top">type(<a class="el" href="structlinalg__immutable_1_1eigen__results.html">eigen_results</a>) function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a989c2bf5f15c717046815005a2280e1d">mat_eigen_2</a> (a, b)</td></tr>
+<tr class="memdesc:a989c2bf5f15c717046815005a2280e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes eigenvalues and eigenvectors (right) from the eigenvalue problem: A X = lambda B X.  <a href="#a989c2bf5f15c717046815005a2280e1d">More...</a><br /></td></tr>
+<tr class="separator:a989c2bf5f15c717046815005a2280e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><b><a class="el" href="namespacelinalg__immutable.html" title="linalg_immutable ">linalg_immutable</a></b> </p>
-<dl class="section user"><dt>Purpose</dt><dd>Provide a user-friendly, immutable interface for the linear algebra routines in <a class="el" href="namespacelinalg__core.html" title="linalg_core ">linalg_core</a>.</dd></dl>
-<dl class="section user"><dt>Remarks</dt><dd>This module came about as a means to support smaller analysis where memory and speed are of lesser importance as compared with readability of the code. </dd></dl>
-</div></div><!-- contents -->
+<dl class="section user"><dt>Purpose</dt><dd>Provides an immutable interface to many of the core linear algebra routines in this library. The intent is to allow for ease of use in situations where memory allocation, or absolute speed are of lesser importance to code readability.</dd></dl>
+<dl class="section user"><dt></dt><dd>Routines in this module do not provide an error handling interface. Any errors encountered will result in an error message printed to the prompt, the generation (or appending to) an error file, and termination of the program. Notice, warning situations will be handled similarily, but without termination of the program. </dd></dl>
+</div><h2 class="groupheader">Function/Subroutine Documentation</h2>
+<a class="anchor" id="a5876e7f21f20679fd6c0c84768061a30"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(a, 2)), public linalg_immutable::mat_cholesky </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in), optional&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the Cholesky factorization of a positive-definite matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M positive definite matrix to factor. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">upper</td><td>An optional input that can be used to determine if the upper triangular factorization should be computed such that A = R**T * R, or if the lower triangular facotrization should be computed such that A = L * L**T. The default is true such that the upper triangular form is computed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00457">457</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afb844327cadfdd08580c94cb1668c2a8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(a, 2)), public linalg_immutable::mat_cholesky_rank1_downdate </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the rank 1 downdate to a Cholesky factored matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M upper triangular Cholesky factored matrix to downdate. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>The M-element downdate array. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The downdated M-by-M upper triangular matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00502">502</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a83eaeadc3a3cc5d81c46824174e5a90b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(a, 2)), public linalg_immutable::mat_cholesky_rank1_update </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the rank 1 update to a Cholesky factored matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M upper triangular Cholesky factored matrix to update. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>The M-element update array. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The updated M-by-M upper triangular matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00480">480</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab7abd8e3fd4170b5b5dfad4448a651c9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, public linalg_immutable::mat_det </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the determinant of a square matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N matrix on which to operate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The determinant of the matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00281">281</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a43cd58b7e0a06b193dce3cf94c4619d1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1eigen__results.html">eigen_results</a>) function linalg_immutable::mat_eigen_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the eigenvalues and eigenvectors (right) of a general N-by-N matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N matrix on which to operate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The eigenvalues and eigenvectors of the matrix. The results are sorted into ascending order. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00629">629</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a989c2bf5f15c717046815005a2280e1d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1eigen__results.html">eigen_results</a>) function linalg_immutable::mat_eigen_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes eigenvalues and eigenvectors (right) from the eigenvalue problem: A X = lambda B X. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The N-by-N matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The eigenvalues and eigenvectors. The results are sorted into ascending order. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00659">659</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a98f5b4e5de682d686cb763ab60fcde7f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 2), size(a, 1)), public linalg_immutable::mat_inverse </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the inverse of a square matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M matrix to invert. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The M-by-M inverted matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00522">522</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7c69d2ac436565670016bf7b5c6f8183"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1lu__results.html">lu_results</a>) function, public linalg_immutable::mat_lu </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the LU factorization of a square matrix. Notice, partial row pivoting is utilized. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N matrix to factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The L, U, and P matrices resulting from the factorization. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00300">300</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2f1744ac9f0385bd2079c6615b22b4a8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a), size(b, 2)) linalg_immutable::mat_mult_diag_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation: C = A * B, where A is a diagonal matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-element array containing the diagonal elements of the matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The P-by-N matrix B where P is greater than or equal to M. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00167">167</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac2b66504ea3cb772e1bf44017d2fe864"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a)) linalg_immutable::mat_mult_diag_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation: C = A * B, where A is a diagonal matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-element array containing the diagonal elements of the matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The P-element array B where P is greater than or equal to M. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-element array. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00190">190</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2e4106f6834d3ca9980765f9140a07f6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(b, 2)) linalg_immutable::mat_mult_lower_tri_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-by-N matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00247">247</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac278e04a89fc8e5e759cca3006b10a77"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1)) linalg_immutable::mat_mult_lower_tri_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-element array B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-element array. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00265">265</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaf02322c06a6a0ec301f06f120662959"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(b, 2)) linalg_immutable::mat_mult_upper_tri_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is an upper triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-by-N matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00211">211</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a222bcdc4b18a3297de7fed3ccbbb7aac"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1)) linalg_immutable::mat_mult_upper_tri_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is an upper triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-element array B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-element array. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00229">229</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaf39795f72fad79a38213893b850d793"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 2), size(a, 1)), public linalg_immutable::mat_pinverse </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N matrix to invert. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The N-by-M inverted matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00537">537</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8f1ba0ce9f8fbece16a512145bbc197f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1qr__results.html">qr_results</a>) function, public linalg_immutable::mat_qr </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in), optional&#160;</td>
+          <td class="paramname"><em>pvt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the QR factorization of an M-by-N matrix. column pivoting can be used by this routine. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N matrix to factor. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pvt</td><td>An optional value that, if supplied, can be used to turn on column pivoting. The default value is false, such that no column pivoting is utilized. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Q, R, and optionally P matrices resulting from the factorization. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00334">334</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4b09077ad1495833919bab84b144b297"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1qr__results.html">qr_results</a>) function, public linalg_immutable::mat_qr_rank1_update </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the rank-1 update of a QR-factored system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">q</td><td>The M-by-M orthogonal matrix Q from the factorization of the original system. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">r</td><td>The M-by-N upper trapezoidal matrix R from the factorization of the original system. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>The M-element update vector. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>The N-element update vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The updated Q and R matrices. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00380">380</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9648fd41cc3ce8ec40f67236d274f9a8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(a, 1), size(a, 2)), public linalg_immutable::mat_rank1_update </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Performs the rank-1 update to matrix A such that: B = X * Y**T + A, where A is an M-by-N matrix, X is an M-element array, and N is an N-element array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>The M-element array X. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>THe N-element array Y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00148">148</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7f274a564220237f437d97eb8bb32bed"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(b, 1), size(b, 2)) linalg_immutable::mat_solve_lower_tri_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solves the lower triangular system A X = B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M lower triangluar matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-by-NRHS matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The M-by-NRHS solution matrix X. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00593">593</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af92354265e3c2d5fbaaea92527c2e66d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(b)) linalg_immutable::mat_solve_lower_tri_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solves the lower triangular system A X = B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M lower triangluar matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-element array B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The M-element solution array X. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00611">611</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4906084c7d42b573a13b46996bcdc8eb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(b, 1), size(b, 2)) linalg_immutable::mat_solve_upper_tri_1 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solves the upper triangular system A X = B, where A is an upper triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M upper triangluar matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-by-NRHS matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The M-by-NRHS solution matrix X. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00557">557</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae4599b0f5c5cbb89e77ee132b6be5386"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">real(real64) function, dimension(size(b)) linalg_immutable::mat_solve_upper_tri_2 </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solves the upper triangular system A X = B, where A is an upper triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M upper triangluar matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-element array B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The M-element solution array X. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00575">575</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6236acadb527f7762e3e1c0ee3d9ca82"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">type(<a class="el" href="structlinalg__immutable_1_1svd__results.html">svd_results</a>) function, public linalg_immutable::mat_svd </td>
+          <td>(</td>
+          <td class="paramtype">real(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the singular value decomposition of an M-by-N matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N matrix to factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The U, S, and transpose of V matrices resulting from the factorization where A = U * S * V**T. </dd></dl>
+
+<p>Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00416">416</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

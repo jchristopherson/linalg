@@ -34,10 +34,11 @@ module linalg_immutable
     public :: mat_pinverse
     public :: mat_solve_upper_tri
     public :: mat_solve_lower_tri
-
+    public :: mat_eigen
     public :: lu_results
     public :: qr_results
     public :: svd_results
+    public :: eigen_results
 
 ! ------------------------------------------------------------------------------
     !> @brielf Computes the matrix operation: C = A * B, where A is a
@@ -80,6 +81,14 @@ module linalg_immutable
     end interface
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues and eigenvectors (right) of a general
+    !! N-by-N matrix.
+    interface mat_eigen
+        module procedure :: mat_eigen_1
+        module procedure :: mat_eigen_2
+    end interface
+
+! ------------------------------------------------------------------------------
     !> @brief Defines a container for the output of an LU factorization.
     type lu_results
         !> The lower triangular matrix L.
@@ -112,6 +121,17 @@ module linalg_immutable
         real(real64), allocatable, dimension(:,:) :: s
         !> The N-by-N transpose of the matrix V.
         real(real64), allocatable, dimension(:,:) :: vt
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of an Eigen analysis of a
+    !! square matrix.
+    type eigen_results
+        !> @brief An N-element array containing the eigenvalues.
+        complex(real64), allocatable, dimension(:) :: values
+        !> @brief An N-by-N matrix containing the N right eigenvectors (one per
+        !! column).
+        complex(real64), allocatable, dimension(:,:) :: vectors
     end type
 
 contains
@@ -599,8 +619,69 @@ end function
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues and eigenvectors (right) of a general
+    !! N-by-N matrix.
+    !!
+    !! @param[in] a The N-by-N matrix on which to operate.
+    !! @return The eigenvalues and eigenvectors of the matrix.  The results are
+    !!  sorted into ascending order.
+    function mat_eigen_1(a) result(x)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        type(eigen_results) :: x
+
+        ! Local Variables
+        integer(int32) :: n
+        real(real64), dimension(size(a, 1), size(a, 2)) :: ac
+
+        ! Memory Allocation
+        n = size(a, 1)
+        allocate(x%values(n))
+        allocate(x%vectors(n,n))
+
+        ! Process
+        ac = a
+        call eigen(ac, x%values, x%vectors)
+
+        ! Sort the eigenvalues and eigenvectors.
+        call sort(x%values, x%vectors, .true.)
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes eigenvalues and eigenvectors (right) from the eigenvalue
+    !! problem: A X = lambda B X.
+    !!
+    !! @param[in] a The N-by-N matrix A.
+    !! @param[in] b The N-by-N matrix B.
+    !! @return The eigenvalues and eigenvectors.  The results are sorted into
+    !!  ascending order.
+    function mat_eigen_2(a, b) result(x)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a, b
+        type(eigen_results) :: x
+
+        ! Local Variables
+        integer(int32) :: i, j, n
+        real(real64), dimension(size(a, 1), size(a, 2)) :: ac
+        real(real64), dimension(size(b, 1), size(b, 2)) :: bc
+
+        ! Memory Allocation
+        n = size(a, 1)
+        allocate(x%values(n))
+        allocate(x%vectors(n,n))
+
+        ! Process
+        do j = 1, n
+            do i = 1, n
+                ac(i,j) = a(i,j)
+                bc(i,j) = b(i,j)
+            end do
+        end do
+        call eigen(ac, bc, x%values, vecs = x%vectors)
+
+        ! Sort the eigenvalues and eigenvectors.
+        call sort(x%values, x%vectors, .true.)
+    end function
 
 ! ------------------------------------------------------------------------------
 end module

@@ -55,6 +55,11 @@ add_executable(svd_example linalg_svd_example.f90)
 target_link_libraries(svd_example linalg)
 
 # --------------------
+# Immutable LU Example
+add_executable(lu_example_immutable linalg_lu_example_immutable.f90)
+target_link_libraries(lu_example_immutable linalg)
+
+# --------------------
 include_directories(${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/src/external/ferror/include)
 

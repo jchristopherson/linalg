@@ -184,27 +184,28 @@ set(lapack_sources
 )
 
 # Define the QRUPDATE source files
-set(qrupdate_sources 
-    external/qrupdate/dch1dn.f 
-    external/qrupdate/dch1up.f 
-    external/qrupdate/dlup1up.f 
-    external/qrupdate/dqhqr.f 
-    external/qrupdate/dqr1up.f 
-    external/qrupdate/dqrot.f 
-    external/qrupdate/dqrqh.f 
+set(qrupdate_sources
+    external/qrupdate/dch1dn.f
+    external/qrupdate/dch1up.f
+    external/qrupdate/dlup1up.f
+    external/qrupdate/dqhqr.f
+    external/qrupdate/dqr1up.f
+    external/qrupdate/dqrot.f
+    external/qrupdate/dqrqh.f
     external/qrupdate/dqrtv1.f
 )
 
 # Define the LINALG source files
 set(linalg_sources
-    linalg_core.f90 
-    linalg_c_binding.f90 
-    linalg_constants.f90 
-    linalg_eigen.f90 
-    linalg_factor.f90 
-    linalg_solve.f90 
+    linalg_core.f90
+    linalg_c_binding.f90
+    linalg_constants.f90
+    linalg_eigen.f90
+    linalg_factor.f90
+    linalg_solve.f90
     linalg_sorting.f90
     linalg_basic.f90
+    linalg_immutable.f90
 )
 list(APPEND linalg_sources ${qrupdate_sources})
 list(APPEND linalg_sources ${lapack_sources})
@@ -237,7 +238,7 @@ install(TARGETS linalg ${BLAS_LIBRARY}
     INCLUDES DESTINATION include
 )
 install(
-    DIRECTORY ${PROJECT_SOURCE_DIR}/include 
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include
     DESTINATION ${CMAKE_INSTALL_PREFIX}
     COMPONENT Devel
 )

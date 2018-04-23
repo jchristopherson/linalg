@@ -14,7 +14,7 @@ contains
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Performs the matrix operation: 
+    !> @brief Performs the matrix operation:
     !!  C = alpha * op(A) * op(B) + beta * C.
     !!
     !! @param[in] transa Set to true if op(A) == A**T; else, set to false if
@@ -29,7 +29,7 @@ contains
     !!  rows in the matrix op(B).
     !! @param[in] alpha The scalar multiplier to matrix A.
     !! @param[in] a The M-by-K matrix A.
-    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true, 
+    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true,
     !!  this value must be at least MAX(1, K); else, if @p transa is false, this
     !!  value must be at least MAX(1, M).
     !! @param[in] b The K-by-N matrix B.
@@ -63,7 +63,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Performs the matrix operation: 
+    !> @brief Performs the matrix operation:
     !!  C = alpha * op(A) * op(B) + beta * C.
     !!
     !! @param[in] transa Set to true if op(A) == A**T; else, set to false if
@@ -78,7 +78,7 @@ contains
     !!  rows in the matrix op(B).
     !! @param[in] alpha The scalar multiplier to matrix A.
     !! @param[in] a The M-by-K matrix A.
-    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true, 
+    !! @param[in] lda The leading dimension of matrix A.  If @p transa is true,
     !!  this value must be at least MAX(1, K); else, if @p transa is false, this
     !!  value must be at least MAX(1, M).
     !! @param[in] b The K-by-N matrix B.
@@ -401,11 +401,11 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !@ brief Computes the triangular matrix operation: 
-    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+    !@ brief Computes the triangular matrix operation:
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
     !! where A is a triangular matrix.
     !!
-    !! @param[in] upper Set to true if matrix A is upper triangular, and 
+    !! @param[in] upper Set to true if matrix A is upper triangular, and
     !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
     !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
     !!  be computed.
@@ -463,7 +463,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized
     !!      appropriately.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
     !!      singular.
@@ -541,7 +541,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -585,7 +585,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -631,7 +631,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -679,7 +679,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -713,10 +713,10 @@ contains
     !! @param[in] m The number of rows in the matrix @p c.
     !! @param[in] n The number of columns in the matrix @p c.
     !! @param[in] q On input, an M-by-M matrix containing the elementary
-    !!  reflectors output from the QR factorization.    Notice, the contents of 
+    !!  reflectors output from the QR factorization.    Notice, the contents of
     !!  this matrix are restored on exit.
     !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] tau A MIN(M,N)-element array containing the scalar factors of 
+    !! @param[in] tau A MIN(M,N)-element array containing the scalar factors of
     !!  each elementary reflector defined in @p a.
     !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
     !!  of the orthogonal matrix Q and the original matrix C.
@@ -724,7 +724,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -872,11 +872,11 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
     !!      positive definite.
     !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
     subroutine cholesky_rank1_downdate_c(n, r, u, err) &
@@ -1002,7 +1002,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -1030,7 +1030,7 @@ contains
 ! ******************************************************************************
 ! LINALG_SOLVE ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
+    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, where
     !! A is a triangular matrix.
     !!
     !! @param[in] upper Set to true if A is an upper triangular matrix; else,
@@ -1144,7 +1144,7 @@ contains
     !!  desired, simply pass NULL, and errors will be dealt with by the default
     !!  internal error handler.  Possible errors that may be encountered are as
     !!  follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized 
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -1346,7 +1346,7 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the eigenvalues, and the right eigenvectors of a square 
+    !> @brief Computes the eigenvalues, and the right eigenvectors of a square
     !!  matrix.
     !!
     !! @param[in] n The dimension of the matrix.
@@ -1354,7 +1354,7 @@ contains
     !!  output, the contents of this matrix are overwritten.
     !! @param[out] vals An N-element array containing the eigenvalues of the
     !!  matrix on output.  The eigenvalues are not sorted.
-    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
+    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors
     !!  (one per column) on output.
     !! @param[in,out] err The errorhandler object.  If no error handling is
     !!  desired, simply pass NULL, and errors will be dealt with by the default
@@ -1393,17 +1393,17 @@ contains
     !!  of this matrix are overwritten.
     !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
     !!  of this matrix are overwritten.
-    !! @param[out] alpha An N-element array that, on output, contains the 
+    !! @param[out] alpha An N-element array that, on output, contains the
     !!  numerator of the eigenvalue ration ALPHA / BETA.  Computation of this
-    !!  ratio isn't necessarily as trivial as it seems as it is entirely 
+    !!  ratio isn't necessarily as trivial as it seems as it is entirely
     !!  possible, and likely, that ALPHA / BETA can overflow or underflow.  With
-    !!  that said, the values in ALPHA will always be less than and usually 
+    !!  that said, the values in ALPHA will always be less than and usually
     !!  comparable with the NORM(A).
     !! @param[out] beta An N-element array that, on output, contains the
-    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  The 
+    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  The
     !!  values in this array will always be less than and usually comparable
     !!  with the NORM(B).
-    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors 
+    !! @param[out] vecs An N-by-N matrix containing the right eigenvectors
     !!  (one per column) on output.
     !! @param[in,out] err The errorhandler object.  If no error handling is
     !!  desired, simply pass NULL, and errors will be dealt with by the default
@@ -1441,15 +1441,15 @@ contains
     !! @param[in] ascend Set to true to sort in ascending order; else, false to
     !!  sort in descending order.
     !! @param[in] n The number of elements in the array.
-    !! @param[in,out] x On input, the N-element array to sort.  On output, the 
+    !! @param[in,out] x On input, the N-element array to sort.  On output, the
     !!  sorted array.
-    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
-    !!  this argument is ignored, and @p x is sorted as expected.  However, if 
-    !!  used, on output, the contents of this array are shifted in the same 
-    !!  order as that of @p x as a means of tracking the sorting operation.  It 
-    !!  is often useful to set this array to an ascending group of values 
-    !!  (1, 2, ... n) such that this array tracks the original positions of the 
-    !!  sorted array.  Such an array can then be used to align other arrays.  
+    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL,
+    !!  this argument is ignored, and @p x is sorted as expected.  However, if
+    !!  used, on output, the contents of this array are shifted in the same
+    !!  order as that of @p x as a means of tracking the sorting operation.  It
+    !!  is often useful to set this array to an ascending group of values
+    !!  (1, 2, ... n) such that this array tracks the original positions of the
+    !!  sorted array.  Such an array can then be used to align other arrays.
     !!  This array must be the same size as @p x.
     subroutine sort_dbl_ind_c(ascend, n, x, ind) bind(C, name = "sort_dbl")
         ! Arguments
@@ -1460,7 +1460,7 @@ contains
 
         ! Local Variables
         integer(int32), pointer, dimension(:) :: ptr
-        
+
         ! Process
         if (c_associated(ind)) then
             call c_f_pointer(ind, ptr, [n])
@@ -1471,21 +1471,21 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array of complex values according to their real 
+    !> @brief Sorts an array of complex values according to their real
     !! components.
     !!
     !! @param[in] ascend Set to true to sort in ascending order; else, false to
     !!  sort in descending order.
     !! @param[in] n The number of elements in the array.
-    !! @param[in,out] x On input, the N-element array to sort.  On output, the 
+    !! @param[in,out] x On input, the N-element array to sort.  On output, the
     !!  sorted array.
-    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL, 
-    !!  this argument is ignored, and @p x is sorted as expected.  However, if 
-    !!  used, on output, the contents of this array are shifted in the same 
-    !!  order as that of @p x as a means of tracking the sorting operation.  It 
-    !!  is often useful to set this array to an ascending group of values 
-    !!  (1, 2, ... n) such that this array tracks the original positions of the 
-    !!  sorted array.  Such an array can then be used to align other arrays.  
+    !! @param[in,out] ind On input, a pointer to an integer array.  If NULL,
+    !!  this argument is ignored, and @p x is sorted as expected.  However, if
+    !!  used, on output, the contents of this array are shifted in the same
+    !!  order as that of @p x as a means of tracking the sorting operation.  It
+    !!  is often useful to set this array to an ascending group of values
+    !!  (1, 2, ... n) such that this array tracks the original positions of the
+    !!  sorted array.  Such an array can then be used to align other arrays.
     !!  This array must be the same size as @p x.
     subroutine sort_cmplx_ind_c(ascend, n, x, ind) bind(C, name = "sort_cmplx")
         ! Arguments
@@ -1496,7 +1496,7 @@ contains
 
         ! Local Variables
         integer(int32), pointer, dimension(:) :: ptr
-        
+
         ! Process
         if (c_associated(ind)) then
             call c_f_pointer(ind, ptr, [n])
@@ -1513,10 +1513,10 @@ contains
     !! @param[in] ascend Set to true to sort in ascending order; else, false to
     !!  sort in descending order.
     !! @param[in] n The number of eigenvalues.
-    !! @param[in,out] vals On input, an N-element array containing the 
+    !! @param[in,out] vals On input, an N-element array containing the
     !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
     !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_cmplx_c(ascend, n, vals, vecs) &
             bind(C, name = "sort_eigen_cmplx")
@@ -1536,10 +1536,10 @@ contains
     !! @param[in] ascend Set to true to sort in ascending order; else, false to
     !!  sort in descending order.
     !! @param[in] n The number of eigenvalues.
-    !! @param[in,out] vals On input, an N-element array containing the 
+    !! @param[in,out] vals On input, an N-element array containing the
     !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
     !!  output, the sorted eigenvector matrix.
     subroutine sort_eigen_dbl_c(ascend, n, vals, vecs) &
             bind(C, name = "sort_eigen_dbl")

@@ -15,18 +15,6 @@ add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
 
 # C Tests
-# if (${USE_DEFAULT_FERROR})
-#   include_directories(
-#     ${PROJECT_SOURCE_DIR}/tests
-#     ${PROJECT_SOURCE_DIR}/include
-#     ${PROJECT_SOURCE_DIR}/src/external/ferror/include
-#   )
-# else()
-#   include_directories(
-#     ${PROJECT_SOURCE_DIR}/tests
-#     ${PROJECT_SOURCE_DIR}/include
-#   )
-# endif()
 include_directories(
     ${PROJECT_SOURCE_DIR}/tests
     ${PROJECT_SOURCE_DIR}/include

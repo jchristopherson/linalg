@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-/** @brief Performs the matrix operation: 
+/** @brief Performs the matrix operation:
  *  C = alpha * op(A) * op(B) + beta * C.
  *
  * @param transa Set to true if op(A) == A**T; else, set to false if
@@ -40,7 +40,7 @@ extern "C" {
  *  rows in the matrix op(B).
  * @param alpha The scalar multiplier to matrix A.
  * @param a The M-by-K matrix A.
- * @param lda The leading dimension of matrix A.  If @p transa is true, 
+ * @param lda The leading dimension of matrix A.  If @p transa is true,
  *  this value must be at least MAX(1, K); else, if @p transa is false, this
  *  value must be at least MAX(1, M).
  * @param b The K-by-N matrix B.
@@ -50,11 +50,11 @@ extern "C" {
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha, 
+void mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
               const double *a, int lda, const double *b, int ldb, double beta,
               double *c);
 
-/** @brief Performs the matrix operation: 
+/** @brief Performs the matrix operation:
  *  C = alpha * op(A) * op(B) + beta * C.
  *
  * @param transa Set to true if op(A) == A**T; else, set to false if
@@ -69,7 +69,7 @@ void mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
  *  rows in the matrix op(B).
  * @param alpha The scalar multiplier to matrix A.
  * @param a The M-by-K matrix A.
- * @param lda The leading dimension of matrix A.  If @p transa is true, 
+ * @param lda The leading dimension of matrix A.  If @p transa is true,
  *  this value must be at least MAX(1, K); else, if @p transa is false, this
  *  value must be at least MAX(1, M).
  * @param b The K-by-N matrix B.
@@ -146,7 +146,7 @@ void diag_mtx_mult_cmplx(int m, int n, int k, double alpha,
  * @param c The M-by-N matrix C.
  */
 void diag_mtx_rmult_cmplx(int m, int n, int k, double alpha, const double *a,
-                          const double complex *b, double beta, 
+                          const double complex *b, double beta,
                           double complex *c);
 
 /** @brief Computes the matirx operation: C = alpha * A * B + beta * C, where
@@ -178,8 +178,8 @@ void diag_cmtx_mult(int m, int n, int k, double alpha, const double complex *a,
  * @param beta The scalar multiplier to matrix C.
  * @param c The M-by-N matrix C.
  */
-void diag_cmtx_rmult(int m, int n, int k, double alpha, 
-                     const double complex *a, const double complex *b, 
+void diag_cmtx_rmult(int m, int n, int k, double alpha,
+                     const double complex *a, const double complex *b,
                      double beta, double complex *c);
 
 /** @brief Performs the rank-1 update to matrix A such that:
@@ -253,11 +253,11 @@ double det(int n, double *a, errorhandler *err);
  */
 void swap(int n, double *x, double *y);
 
-/** brief Computes the triangular matrix operation: 
- * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, 
+/** brief Computes the triangular matrix operation:
+ * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
  * where A is a triangular matrix.
  *
- * @param upper Set to true if matrix A is upper triangular, and 
+ * @param upper Set to true if matrix A is upper triangular, and
  *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
  *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
  *  be computed.
@@ -294,7 +294,7 @@ void tri_mtx_mult(bool upper, int n, double alpha, const double *a,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the pivot array is not sized
  *      appropriately.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
  *      singular.
@@ -342,7 +342,7 @@ void form_lu(int n, double *lu, const int *ipvt, double *u, double *p);
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -369,7 +369,7 @@ void qr_factor(int m, int n, double *a, double *tau, errorhandler *err);
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -397,7 +397,7 @@ void qr_factor_pivot(int m, int n, double *a, double *tau, int *jpvt,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -428,7 +428,7 @@ void form_qr(int m, int n, double *r, const double *tau, double *q,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -443,10 +443,10 @@ void form_qr_pivot(int m, int n, double *r, const double *tau,
  * @param m The number of rows in the matrix @p c.
  * @param n The number of columns in the matrix @p c.
  * @param q On input, an M-by-M matrix containing the elementary
- *  reflectors output from the QR factorization.    Notice, the contents of 
+ *  reflectors output from the QR factorization.    Notice, the contents of
  *  this matrix are restored on exit.
  *  that the remaining matrix is simply the M-by-N matrix R.
- * @param tau A MIN(M,N)-element array containing the scalar factors of 
+ * @param tau A MIN(M,N)-element array containing the scalar factors of
  *  each elementary reflector defined in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
  *  of the orthogonal matrix Q and the original matrix C.
@@ -454,7 +454,7 @@ void form_qr_pivot(int m, int n, double *r, const double *tau,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the scalar factor array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -482,7 +482,7 @@ void mult_qr(bool trans, int m, int n, double *q, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_rank1_update(int m, int n, double *q, double *r, double *u, double *v, 
+void qr_rank1_update(int m, int n, double *q, double *r, double *u, double *v,
                      errorhandler *err);
 
 /** @brief Computes the Cholesky factorization of a symmetric, positive
@@ -533,11 +533,11 @@ void cholesky_rank1_update(int n, double *r, double *u, errorhandler *err);
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
  *      incorrect.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
- *  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not 
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
  *      positive definite.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
  */
@@ -588,7 +588,7 @@ void rz_factor(int m, int n, double *a, double *tau, errorhandler *err);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau, 
+void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau,
              double *c, errorhandler *err);
 
 /** @brief Computes the singular value decomposition of a matrix A.  The
@@ -611,7 +611,7 @@ void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if the singular value array is not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
@@ -621,7 +621,7 @@ void mult_rz(bool trans, int m, int n, int l, double *a, const double *tau,
 void svd(int m, int n, double *a, double *s, double *u, double *vt,
          errorhandler *err);
 
-/** @brief Solves one of the matrix equations: op(A) * X = alpha * B, where 
+/** @brief Solves one of the matrix equations: op(A) * X = alpha * B, where
  * A is a triangular matrix.
  *
  * @param upper Set to true if A is an upper triangular matrix; else,
@@ -639,8 +639,8 @@ void svd(int m, int n, double *a, double *s, double *u, double *vt,
  * @param b On input, the N-by-NRHS right-hand-side.  On output, the
  *  N-by-NRHS solution.
  */
-void solve_triangular_system(bool upper, bool trans, bool nounit, int n, 
-                             int nrhs, double alpha, const double *a, 
+void solve_triangular_system(bool upper, bool trans, bool nounit, int n,
+                             int nrhs, double alpha, const double *a,
                              double *b);
 
 /** @brief Solves a system of LU-factored equations.
@@ -699,12 +699,12 @@ void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
  *  desired, simply pass NULL, and errors will be dealt with by the default
  *  internal error handler.  Possible errors that may be encountered are as
  *  follows.
- *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized 
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
  *      appropriately.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr_pivot(int m, int n, int nrhs, double *a, const double *tau, 
+void solve_qr_pivot(int m, int n, int nrhs, double *a, const double *tau,
                     const int *jpvt, double *b, errorhandler *err);
 
 /** @brief Solves a system of Cholesky factored equations.
@@ -803,7 +803,7 @@ void solve_least_squares(int m, int n, int nrhs, double *a, double *b,
  */
 void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler *err);
 
-/** @brief Computes the eigenvalues, and the right eigenvectors of a square 
+/** @brief Computes the eigenvalues, and the right eigenvectors of a square
  *  matrix.
  *
  * @param n The dimension of the matrix.
@@ -811,7 +811,7 @@ void eigen_symm(int n, bool vecs, double *a, double *vals, errorhandler *err);
  *  output, the contents of this matrix are overwritten.
  * @param vals An N-element array containing the eigenvalues of the
  *  matrix on output.  The eigenvalues are not sorted.
- * @param vecs An N-by-N matrix containing the right eigenvectors 
+ * @param vecs An N-by-N matrix containing the right eigenvectors
  *  (one per column) on output.
  * @param err The errorhandler object.  If no error handling is
  *  desired, simply pass NULL, and errors will be dealt with by the default
@@ -832,17 +832,17 @@ void eigen_asymm(int n, double *a, double complex *vals, double complex *vecs,
  *  of this matrix are overwritten.
  * @param b On input, the N-by-N matrix B.  On output, the contents
  *  of this matrix are overwritten.
- * @param alpha An N-element array that, on output, contains the 
+ * @param alpha An N-element array that, on output, contains the
  *  numerator of the eigenvalue ration ALPHA / BETA.  Computation of this
- *  ratio isn't necessarily as trivial as it seems as it is entirely 
+ *  ratio isn't necessarily as trivial as it seems as it is entirely
  *  possible, and likely, that ALPHA / BETA can overflow or underflow.  With
- *  that said, the values in ALPHA will always be less than and usually 
+ *  that said, the values in ALPHA will always be less than and usually
  *  comparable with the NORM(A).
  * @param beta An N-element array that, on output, contains the
- *  denominator used to determine the eigenvalues as ALPHA / BETA.  The 
+ *  denominator used to determine the eigenvalues as ALPHA / BETA.  The
  *  values in this array will always be less than and usually comparable
  *  with the NORM(B).
- * @param vecs An N-by-N matrix containing the right eigenvectors 
+ * @param vecs An N-by-N matrix containing the right eigenvectors
  *  (one per column) on output.
  * @param err The errorhandler object.  If no error handling is
  *  desired, simply pass NULL, and errors will be dealt with by the default
@@ -861,34 +861,34 @@ void eigen_gen(int n, double *a, double *b, double complex *alpha,
  * @param ascend Set to true to sort in ascending order; else, false to
  *  sort in descending order.
  * @param n The number of elements in the array.
- * @param x On input, the N-element array to sort.  On output, the 
+ * @param x On input, the N-element array to sort.  On output, the
  *  sorted array.
- * @param ind On input, a pointer to an integer array.  If NULL, 
- *  this argument is ignored, and @p x is sorted as expected.  However, if 
- *  used, on output, the contents of this array are shifted in the same 
- *  order as that of @p x as a means of tracking the sorting operation.  It 
- *  is often useful to set this array to an ascending group of values 
- *  (1, 2, ... n) such that this array tracks the original positions of the 
- *  sorted array.  Such an array can then be used to align other arrays.  
+ * @param ind On input, a pointer to an integer array.  If NULL,
+ *  this argument is ignored, and @p x is sorted as expected.  However, if
+ *  used, on output, the contents of this array are shifted in the same
+ *  order as that of @p x as a means of tracking the sorting operation.  It
+ *  is often useful to set this array to an ascending group of values
+ *  (1, 2, ... n) such that this array tracks the original positions of the
+ *  sorted array.  Such an array can then be used to align other arrays.
  *  This array must be the same size as @p x.
  */
 void sort_dbl(bool ascend, int n, double *x, int *ind);
 
-/** @brief Sorts an array of complex values according to their real 
+/** @brief Sorts an array of complex values according to their real
  * components.
  *
  * @param ascend Set to true to sort in ascending order; else, false to
  *  sort in descending order.
  * @param n The number of elements in the array.
- * @param x On input, the N-element array to sort.  On output, the 
+ * @param x On input, the N-element array to sort.  On output, the
  *  sorted array.
- * @param ind On input, a pointer to an integer array.  If NULL, 
- *  this argument is ignored, and @p x is sorted as expected.  However, if 
- *  used, on output, the contents of this array are shifted in the same 
- *  order as that of @p x as a means of tracking the sorting operation.  It 
- *  is often useful to set this array to an ascending group of values 
- *  (1, 2, ... n) such that this array tracks the original positions of the 
- *  sorted array.  Such an array can then be used to align other arrays.  
+ * @param ind On input, a pointer to an integer array.  If NULL,
+ *  this argument is ignored, and @p x is sorted as expected.  However, if
+ *  used, on output, the contents of this array are shifted in the same
+ *  order as that of @p x as a means of tracking the sorting operation.  It
+ *  is often useful to set this array to an ascending group of values
+ *  (1, 2, ... n) such that this array tracks the original positions of the
+ *  sorted array.  Such an array can then be used to align other arrays.
  *  This array must be the same size as @p x.
  */
 void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
@@ -899,13 +899,13 @@ void sort_cmplx(bool ascend, int n, double complex *x, int *ind);
  * @param ascend Set to true to sort in ascending order; else, false to
  *  sort in descending order.
  * @param n The number of eigenvalues.
- * @param vals On input, an N-element array containing the 
+ * @param vals On input, an N-element array containing the
  *  eigenvalues.  On output, the sorted eigenvalues.
- * @param vecs On input, an N-by-N matrix containing the 
- *  eigenvectors associated with @p vals (one vector per column).  On 
+ * @param vecs On input, an N-by-N matrix containing the
+ *  eigenvectors associated with @p vals (one vector per column).  On
  *  output, the sorted eigenvector matrix.
  */
-void sort_eigen_cmplx(bool ascend, int n, double complex *vals, 
+void sort_eigen_cmplx(bool ascend, int n, double complex *vals,
                       double complex *vecs);
 
 /** @brief A sorting routine specifically tailored for sorting of eigenvalues
@@ -914,10 +914,10 @@ void sort_eigen_cmplx(bool ascend, int n, double complex *vals,
  * @param ascend Set to true to sort in ascending order; else, false to
  *  sort in descending order.
  * @param n The number of eigenvalues.
- * @param vals On input, an N-element array containing the 
+ * @param vals On input, an N-element array containing the
  *  eigenvalues.  On output, the sorted eigenvalues.
- * @param vecs On input, an N-by-N matrix containing the 
- *  eigenvectors associated with @p vals (one vector per column).  On 
+ * @param vecs On input, an N-by-N matrix containing the
+ *  eigenvectors associated with @p vals (one vector per column).  On
  *  output, the sorted eigenvector matrix.
  */
 void sort_eigen_dbl(bool ascend, int n, double *vals, double *vecs);

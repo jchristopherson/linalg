@@ -15,18 +15,23 @@ add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
 
 # C Tests
-if (${USE_DEFAULT_FERROR})
-  include_directories(
+# if (${USE_DEFAULT_FERROR})
+#   include_directories(
+#     ${PROJECT_SOURCE_DIR}/tests
+#     ${PROJECT_SOURCE_DIR}/include
+#     ${PROJECT_SOURCE_DIR}/src/external/ferror/include
+#   )
+# else()
+#   include_directories(
+#     ${PROJECT_SOURCE_DIR}/tests
+#     ${PROJECT_SOURCE_DIR}/include
+#   )
+# endif()
+include_directories(
     ${PROJECT_SOURCE_DIR}/tests
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src/external/ferror/include
-  )
-else()
-  include_directories(
-    ${PROJECT_SOURCE_DIR}/tests
-    ${PROJECT_SOURCE_DIR}/include
-  )
-endif()
+    ${ferror_INCLUDE_DIRS}
+)
 set(c_linalg_test_sources
     linalg_c_test.c
     c_test_core.c
@@ -44,25 +49,17 @@ target_link_libraries(linalg_c_test linalg m)
 # Copy the FERROR shared object to the runtime directory on Windows
 if (WIN32)
     add_custom_command(
-        TARGET linalg_test POST_BUILD
+        TARGET linalg_c_test POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${ferror_LibLocation} $<TARGET_FILE_DIR:linalg_test>
+        ${ferror_LibLocation} $<TARGET_FILE_DIR:linalg_c_test>
     )
 endif()
 
 # Run the tests
-# add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
-#     COMMAND linalg_test)
-# add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
+    COMMAND linalg_test)
+add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
 
-# add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
-#     COMMAND linalg_c_test)
-# add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)
-
-# --------------------
-# Copy FERROR to the runtime directory
-add_custom_command(
-    TARGET linalg_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${ferror_LibLocation} $<TARGET_FILE_DIR:linalg_test>
-)
+add_custom_command(OUTPUT linalg_c_tests DEPENDS ${c_linalg_test_sources}
+    COMMAND linalg_c_test)
+add_custom_target(run_linalg_c_tests ALL DEPENDS linalg_c_tests)

@@ -4,8 +4,8 @@ project(linalg C CXX Fortran)
 
 # Define version information
 set(linalg_VERSION_MAJOR 1)
-set(linalg_VERSION_MINOR 4)
-set(linalg_VERSION_PATCH 3)
+set(linalg_VERSION_MINOR 5)
+set(linalg_VERSION_PATCH 0)
 set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERSION_PATCH})
 
 # Set a default build type if none was specified
@@ -13,43 +13,60 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
 
 # By default, shared library
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 # Get compiler info
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 # Locate Dependencies
-if ((Fortran_COMPILER_NAME MATCHES "gfortran.*") AND WIN32)
-  message(STATUS "Windows & gfortran detected.  The default implementation of FERROR will be used.")
-  add_subdirectory(src/external/ferror)
-  include_directories(src/external/ferror/include)
-  set(FERROR_LIBRARY ferror)
-  set(ferror_LibLocation ${ferror_BINARY_DIR})
-  set(USE_DEFAULT_FERROR TRUE)
-else()
-  # Locate Dependencies
-  find_package(ferror 1.3.0)
+find_package(ferror 1.3.0)
 
-  # If FERROR is not installed on the system, build the default implementation
-  if (NOT ${ferror_FOUND})
-      message(STATUS "FERROR not found.  The default implementation will be used.")
-      add_subdirectory(src/external/ferror)
-      include_directories(src/external/ferror/include)
-      set(FERROR_LIBRARY ferror)
-      set(ferror_LibLocation ${ferror_BINARY_DIR})
-      set(USE_DEFAULT_FERROR TRUE)
-  else()
-      message(STATUS "An acceptable version of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
-      include_directories(${ferror_INCLUDE_DIRS})
-      set(FERROR_LIBRARY ferror)
-      get_target_property(ferror_LibLocation ferror LOCATION)
-      set(USE_DEFAULT_FERROR FALSE)
-  endif()
+# If FERROR is not installed on the system, build the default implementation
+if (NOT ${ferror_FOUND})
+    message(STATUS "FERROR not found.  The default implementation will be used.")
+    add_subdirectory(external/ferror)
+    include_directories(external/ferror/include)
+    set(FERROR_LIBRARIES ferror)
+    set(ferror_LibLocation ${ferror_BINARY_DIR})
+else()
+    message(STATUS "An acceptable version  of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
+    include_directories(${ferror_INCLUDE_DIRS})
+    set(FERROR_LIBRARIES ferror)
+    get_target_property(ferror_LibLocation ferror LOCATION)
 endif()
+#
+# # Locate Dependencies
+# if ((Fortran_COMPILER_NAME MATCHES "gfortran.*") AND WIN32)
+#   message(STATUS "Windows & gfortran detected.  The default implementation of FERROR will be used.")
+#   add_subdirectory(src/external/ferror)
+#   include_directories(src/external/ferror/include)
+#   set(FERROR_LIBRARY ferror)
+#   set(ferror_LibLocation ${ferror_BINARY_DIR})
+#   set(USE_DEFAULT_FERROR TRUE)
+# else()
+#   # Locate Dependencies
+#   find_package(ferror 1.3.0)
+#
+#   # If FERROR is not installed on the system, build the default implementation
+#   if (NOT ${ferror_FOUND})
+#       message(STATUS "FERROR not found.  The default implementation will be used.")
+#       add_subdirectory(src/external/ferror)
+#       include_directories(src/external/ferror/include)
+#       set(FERROR_LIBRARY ferror)
+#       set(ferror_LibLocation ${ferror_BINARY_DIR})
+#       set(USE_DEFAULT_FERROR TRUE)
+#   else()
+#       message(STATUS "An acceptable version of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
+#       include_directories(${ferror_INCLUDE_DIRS})
+#       set(FERROR_LIBRARY ferror)
+#       get_target_property(ferror_LibLocation ferror LOCATION)
+#       set(USE_DEFAULT_FERROR FALSE)
+#   endif()
+# endif()
 
 # Export all symbols on Windows when building shared libraries
 SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)

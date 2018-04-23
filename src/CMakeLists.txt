@@ -212,7 +212,7 @@ list(APPEND linalg_sources ${lapack_sources})
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg ${BLAS_LIBRARY} ${FERROR_LIBRARY})
+target_link_libraries(linalg ${BLAS_LIBRARY} ${FERROR_LIBRARIES})
 
 # https://stackoverflow.com/questions/30987311/exporting-an-imported-library
 

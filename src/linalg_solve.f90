@@ -4,182 +4,26 @@
 !!
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
-module linalg_solve
-    use ferror, only : errors
-    use lapack
-    use linalg_constants
-    use linalg_factor, only : rz_factor, mult_rz, mult_qr
-    use linalg_core, only : mtx_mult, recip_mult_array
-    implicit none
-    private
-    public :: solve_triangular_system
-    public :: solve_lu
-    public :: solve_qr
-    public :: solve_cholesky
-    public :: mtx_inverse
-    public :: mtx_pinverse
-    public :: solve_least_squares
-    public :: solve_least_squares_full
-    public :: solve_least_squares_svd
-
-! ******************************************************************************
-! INTERFACES
-! ------------------------------------------------------------------------------
-    !> @brief Solves a triangular system of equations.
-    interface solve_triangular_system
-        module procedure :: solve_tri_mtx
-        module procedure :: solve_tri_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @par Usage
-    !! To solve a system of N equations of N unknowns using LU factorization,
-    !! the following code will suffice.
-    !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an N-by-N matrix, and B and X are
-    !! ! N-by-NRHS in size.
-    !!
-    !! ! Variables
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
-    !!
-    !! ! Define the array used to track row pivots.
-    !! integer(i32), dimension(n) :: pvt
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Compute the LU factorization of A.  On output, A contains [L\U].
-    !! call lu_factor(a, pvt)
-    !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_lu(a, pvt, b)
-    !! @endcode
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
-    interface solve_lu
-        module procedure :: solve_lu_mtx
-        module procedure :: solve_lu_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/QR_decomposition)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
-    interface solve_qr
-        module procedure :: solve_qr_no_pivot_mtx
-        module procedure :: solve_qr_no_pivot_vec
-        module procedure :: solve_qr_pivot_mtx
-        module procedure :: solve_qr_pivot_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    interface solve_cholesky
-        module procedure :: solve_cholesky_mtx
-        module procedure :: solve_cholesky_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns.
-    interface solve_least_squares
-        module procedure :: solve_least_squares_mtx
-        module procedure :: solve_least_squares_vec
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns, but uses a full orthogonal factorization of
-    !! the system.
-    interface solve_least_squares_full
-        module procedure :: solve_least_squares_mtx_pvt
-        module procedure :: solve_least_squares_vec_pvt
-    end interface
-
-! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    interface solve_least_squares_svd
-        module procedure :: solve_least_squares_mtx_svd
-        module procedure :: solve_least_squares_vec_svd
-    end interface
-
-
+submodule (linalg_core) linalg_solve
 contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX SOLUTION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, or
-    !! X * op(A) = alpha * B, where A is a triangular matrix.
-    !!
-    !! @param[in] lside Set to true to solve op(A) * X = alpha * B; else, set to
-    !!  false to solve X * op(A) = alpha * B.
-    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
-    !!  set to false if A is a lower triangular matrix.
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
-    !!  op(A) = A.
-    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
-    !!  every diagonal element); else, set to false if A is a unit-diagonal
-    !!  matrix.
-    !! @param[in] alpha The scalar multiplier to B.
-    !! @param[in] a If @p lside is true, the M-by-M triangular matrix on which
-    !!  to operate; else, if @p lside is false, the N-by-N triangular matrix on
-    !!  which to operate.
-    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
-    !!  M-by-N solution.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
-    !!      @p a and @p b are not compatible.
-    !!
-    !! @par Usage
-    !! To solve a triangular system of N equations of N unknowns A*X = B, where
-    !! A is an N-by-N upper triangular matrix, and B and X are N-by-NRHS
-    !! matrices, the following code will suffice.
-    !!
-    !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an upper triangular N-by-N
-    !! ! matrix, and B and X are N-by-NRHS in size.
-    !!
-    !! ! Variables
-    !! integer(i32) :: info
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_triangular_system(.true., .true., .false., .true., &
-    !!      1.0d0, a, b)
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine DTRSM.
-    subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
+    module subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
         ! Arguments
         logical, intent(in) :: lside, upper, trans, nounit
-        real(dp), intent(in) :: alpha
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
         character :: side, uplo, transa, diag
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: m, n, nrowa
+        integer(int32) :: m, n, nrowa
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -227,63 +71,19 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the system of equations: op(A) * X = B, where A is a
-    !!  triangular matrix.
-    !!
-    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
-    !!  set to false if A is a lower triangular matrix.
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
-    !!  op(A) = A.
-    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
-    !!  every diagonal element); else, set to false if A is a unit-diagonal
-    !!  matrix.
-    !! @param[in] a The N-by-N triangular matrix.
-    !! @param[in,out] x On input, the N-element right-hand-side array.  On
-    !!  output, the N-element solution array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
-    !!      @p a and @p b are not compatible.
-    !!
-    !!
-    !! @par Usage
-    !! To solve a triangular system of N equations of N unknowns A*X = B, where
-    !! A is an N-by-N upper triangular matrix, and B and X are N-element
-    !! arrays, the following code will suffice.
-    !!
-    !! @code{.f90}
-    !! ! Solve the system: A*X = B, where A is an upper triangular N-by-N
-    !! ! matrix, and B and X are N-elements in size.
-    !!
-    !! ! Variables
-    !! integer(i32) :: info
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n) :: b
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Solve A*X = B for X - Note: X overwrites B.
-    !! call solve_triangular_system(.true., .false., a, b)
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine DTRSV.
-    subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
+    module subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
         ! Arguments
         logical, intent(in) :: upper, trans, nounit
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: x
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: x
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
+        real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
         character :: uplo, t, diag
-        integer(i32) :: n
+        integer(int32) :: n
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -331,31 +131,15 @@ contains
 ! ******************************************************************************
 ! LU SOLUTION
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
-    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
-    !!  output, the N-by-NRHS solution matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! The routine is based upon the LAPACK routine DGETRS.
-    subroutine solve_lu_mtx(a, ipvt, b, err)
+    module subroutine solve_lu_mtx(a, ipvt, b, err)
         ! Arguments
-        real(dp), intent(in), dimension(:,:) :: a
-        integer(i32), intent(in), dimension(:) :: ipvt
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, nrhs, flag
+        integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -392,31 +176,15 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of LU-factored equations.
-    !!
-    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
-    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
-    !! @param[in,out] b On input, the N-element right-hand-side array.  On
-    !!  output, the N-element solution array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! The routine is based upon the LAPACK routine DGETRS.
-    subroutine solve_lu_vec(a, ipvt, b, err)
+    module subroutine solve_lu_vec(a, ipvt, b, err)
         ! Arguments
-        real(dp), intent(in), dimension(:,:) :: a
-        integer(i32), intent(in), dimension(:) :: ipvt
-        real(dp), intent(inout), dimension(:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        real(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, flag
+        integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -454,50 +222,21 @@ contains
 ! ******************************************************************************
 ! QR SOLUTION
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
-    !!  the first N columns are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
+    module subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: m, n, nrhs, k, lwork, flag, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, nrhs, k, lwork, flag, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -569,48 +308,19 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where
-    !! M >= N.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are restored.
-    !!  Notice, M must be greater than or equal to N.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] b On input, the M-element right-hand-side vector.  On output,
-    !!  the first N elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELS.
-    subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
+    module subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, k, flag, lwork, istat
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        integer(int32) :: m, n, k, flag, lwork, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -680,59 +390,28 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are altered.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
-    !!  rows contain the right-hand-side matrix B.  On output, the first N rows
-    !!  are overwritten by the solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
+    module subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:,:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        real(real64), intent(inout), dimension(:,:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
+        integer(int32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
             rnk, maxmn, flag, istat, lwork1, lwork2, lwork3
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
+        real(real64), pointer, dimension(:) :: wptr, w, tau2
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -867,59 +546,28 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of M QR-factored equations of N unknowns where the
-    !! QR factorization made use of column pivoting.
-    !!
-    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
-    !!  qr_factor.  On output, the contents of this matrix are altered.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  the elementary reflectors as returned by qr_factor.
-    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
-    !!  track the column pivots.
-    !! @param[in] b On input, the MAX(M, N)-element array where the first M
-    !!  elements contain the right-hand-side vector B.  On output, the first N
-    !!  elements are overwritten by the solution vector X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon a subset of the LAPACK routine DGELSY.
-    subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
+    module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(in), dimension(:) :: tau
-        integer(i32), intent(in), dimension(:) :: jpvt
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        integer(i32), parameter :: imin = 2
-        integer(i32), parameter :: imax = 1
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
+        integer(int32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
             istat, lwork1, lwork2
-        real(dp) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
-        real(dp), pointer, dimension(:) :: wptr, w, tau2
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
+        real(real64), pointer, dimension(:) :: wptr, w, tau2
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1051,34 +699,16 @@ contains
 ! ******************************************************************************
 ! CHOLESKY SOLVE
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    !!
-    !! @param[in] upper Set to true if the original matrix A was factored such
-    !!  that A = U**T * U; else, set to false if the factorization of A was
-    !!  A = L**T * L.
-    !! @param[in] a The N-by-N Cholesky factored matrix.
-    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix B.  On
-    !!  output, the solution matrix X.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DPOTRS.
-    subroutine solve_cholesky_mtx(upper, a, b, err)
+    module subroutine solve_cholesky_mtx(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:,:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: uplo
-        integer(i32) :: n, nrhs, flag
+        integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1117,34 +747,16 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves a system of Cholesky factored equations.
-    !!
-    !! @param[in] upper Set to true if the original matrix A was factored such
-    !!  that A = U**T * U; else, set to false if the factorization of A was
-    !!  A = L**T * L.
-    !! @param[in] a The N-by-N Cholesky factored matrix.
-    !! @param[in,out] b On input, the N-element right-hand-side vector B.  On
-    !!  output, the solution vector X.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are 
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DPOTRS.
-    subroutine solve_cholesky_vec(upper, a, b, err)
+    module subroutine solve_cholesky_vec(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
-        real(dp), intent(in), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: uplo
-        integer(i32) :: n, flag
+        integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1184,73 +796,21 @@ contains
 ! ******************************************************************************
 ! MATRIX INVERSION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the inverse of a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
-    !!  inverted matrix.
-    !! @param[out] iwork An optional N-element integer workspace array.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.  Will also occur if
-    !!      incorrectly sized workspace arrays are provided.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
-    !!
-    !! @par Usage
-    !! @code {.f90}
-    !! ! The following example illustrates how to solve a system of linear
-    !! ! equations by matrix inversion.  Notice, this is not a preferred
-    !! ! solution technique (use LU factorization instead), but is merely a
-    !! ! means of illustrating how to compute the inverse of a square matrix.
-    !!
-    !! ! Variables
-    !! real(dp), dimension(n, n) :: a
-    !! real(dp), dimension(n, nrhs) :: b, x
-    !!
-    !! ! Initialize A and B...
-    !!
-    !! ! Compute the inverse of A.  The inverse will overwrite the original
-    !! ! matrix.
-    !! call mtx_inverse(a)
-    !!
-    !! ! Solve A*X = B as X = inv(A) * B.
-    !! x = matmul(a, b)
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routines DGETRF to perform an LU
-    !! factorization of the matrix, and DGETRI to invert the LU factored
-    !! matrix.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Invertible_matrix)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixInverse.html)
-    subroutine mtx_inverse(a, iwork, work, olwork, err)
+    module subroutine mtx_inverse_dbl(a, iwork, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        integer(i32), intent(out), target, optional, dimension(:) :: iwork
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: n, liwork, lwork, istat, flag
-        integer(i32), pointer, dimension(:) :: iptr
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: n, liwork, lwork, istat, flag
+        integer(int32), pointer, dimension(:) :: iptr
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1272,7 +832,7 @@ contains
 
         ! Workspace Query
         call DGETRI(n, a, n, istat, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1337,86 +897,36 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix
-    !! using the singular value decomposition of the matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
-    !!  overwritten on output.
-    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
-    !!  will be written.
-    !! @param[in] tol An optional input, that if supplied, overrides the default
-    !!  tolerance on singular values such that singular values less than this
-    !!  tolerance are forced to have a reciprocal of zero, as opposed to 1/S(I).
-    !!  The default tolerance is: MAX(M, N) * EPS * MAX(S).  If the supplied
-    !!  value is less than a value that causes an overflow, the tolerance
-    !!  reverts back to its default value, and the operation continues;
-    !!  however, a warning message is issued.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Usage
-    !! @code{.f90}
-    !! ! Use the pseudo-inverse to obtain a least-squares solution to the
-    !! ! overdetermined problem A*X = B, where A is an M-by-N matrix (M >= N),
-    !! ! B is an M-by-NRHS matrix, and X is an N-by-NRHS matrix.
-    !!
-    !! ! Variables
-    !! real(dp), dimension(m, n) :: a
-    !! real(dp), dimension(n, m) :: ainv
-    !! real(dp), dimension(m, nrhs) :: b
-    !! real(dp), dimension(n, nrhs) :: x
-    !!
-    !! ! Initialize A, and B...
-    !!
-    !! ! Compute the pseudo-inverse of A.  Let the subroutine allocate its
-    !! ! own workspace array.
-    !! call mtx_pinverse(a, ainv)
-    !!
-    !! ! Compute X = AINV * B to obtain the solution.
-    !! x = matmul(ainv, b)
-    !! @endcode
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/Moore-PenroseMatrixInverse.html)
-    !! - [MathWorks](http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle)
-    subroutine mtx_pinverse(a, ainv, tol, work, olwork, err)
+    module subroutine mtx_pinverse_dbl(a, ainv, tol, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:,:) :: ainv
-        real(dp), intent(in), optional :: tol
-        real(dp), intent(out), target, dimension(:), optional :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:,:) :: ainv
+        real(real64), intent(in), optional :: tol
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: one = 1.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
-        integer(i32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
+        integer(int32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
             i3b, i4
-        real(dp), pointer, dimension(:) :: s, wptr, w
-        real(dp), pointer, dimension(:,:) :: u, vt
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: t, tref, tolcheck
+        real(real64), pointer, dimension(:) :: s, wptr, w
+        real(real64), pointer, dimension(:,:) :: u, vt
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        real(real64) :: t, tref, tolcheck
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1450,7 +960,7 @@ contains
 
         ! Workspace Query
         call DGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         lwork = lwork + m * mn + n * n + mn
         if (present(olwork)) then
             olwork = lwork
@@ -1533,49 +1043,18 @@ contains
 ! ******************************************************************************
 ! LEAST SQUARES SOLUTION ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
-    !! Notice, it is assumed that matrix A has full rank.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by qr_factor; else,
-    !!  if M < N, the LQ factorization of A.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELS.
-    subroutine solve_least_squares_mtx(a, b, work, olwork, err)
+    module subroutine solve_least_squares_mtx(a, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1599,7 +1078,7 @@ contains
 
         ! Workspace Query
         call DGELS('N', m, n, nrhs, a, m, b, maxmn, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1639,50 +1118,19 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
-    !! Notice, it is assumed that matrix A has full rank.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
-    !!  the QR factorization of A in the form as output by qr_factor; else,
-    !!  if M < N, the LQ factorization of A.
-    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
-    !!  N elements contain the N-element solution array X.  If M < N, an
-    !!  N-element array with the first M elements containing the array B.  On
-    !!  output, the N-element solution array X.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELS.
-    subroutine solve_least_squares_vec(a, b, work, olwork, err)
+    module subroutine solve_least_squares_vec(a, b, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, lwork, istat, flag
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: m, n, maxmn, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
 
@@ -1705,7 +1153,7 @@ contains
 
         ! Workspace Query
         call DGELS('N', m, n, 1, a, m, b, maxmn, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1745,61 +1193,24 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a complete orthogonal factorization of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
-    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
-    !!  is set to all zeros such that all columns are treated as free.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
+    module subroutine solve_least_squares_mtx_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        integer(i32), pointer, dimension(:) :: iptr
-        real(dp), dimension(1) :: temp
-        integer(i32), dimension(1) :: itemp
-        real(dp) :: rc
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        real(real64), dimension(1) :: temp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1821,8 +1232,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(ipvt) /= n) then
-            flag = 3
         end if
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &
@@ -1834,7 +1243,7 @@ contains
 
         ! Workspace Query
         call DGELSY(m, n, nrhs, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1891,62 +1300,25 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a complete orthogonal factorization of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-element array B.  On output, the first
-    !!  N elements contain the N-element solution array X.  If M < N, an
-    !!  N-element array with the first M elements containing the array B.  On
-    !!  output, the N-element solution array X.
-    !! @param[out] ipvt An optional input that on input, an N-element array 
-    !!  that if IPVT(I) .ne. 0, the I-th column of A is permuted to the front 
-    !!  of A * P; if IPVT(I) = 0, the I-th column of A is a free column.  On 
-    !!  output, if IPVT(I) = K, then the I-th column of A * P was the K-th 
-    !!  column of A.  If not supplied, memory is allocated internally, and IPVT
-    !!  is set to all zeros such that all columns are treated as free.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSY.
-    subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
+    module subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        integer(i32), intent(inout), target, optional, dimension(:) :: ipvt
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, maxmn, lwork, istat, flag, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        integer(i32), allocatable, target, dimension(:) :: iwrk
-        integer(i32), pointer, dimension(:) :: iptr
-        real(dp), dimension(1) :: temp
-        integer(i32), dimension(1) :: itemp
-        real(dp) :: rc
+        integer(int32) :: m, n, maxmn, lwork, istat, flag, rnk
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        real(real64), dimension(1) :: temp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -1967,8 +1339,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(ipvt) /= n) then
-            flag = 3
         end if
         if (flag /= 0) then
             write(errmsg, '(AI0A)') "Input number ", flag, &
@@ -1980,7 +1350,7 @@ contains
 
         ! Workspace Query
         call DGELSY(m, n, 1, a, m, b, maxmn, itemp, rc, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -2031,62 +1401,25 @@ contains
         end if
 
         ! Process
-        call DGELSY(m, n, 1, a, m, b, maxmn, ipvt, rc, rnk, wptr, lwork, flag)
+        call DGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, flag)
         if (present(arnk)) arnk = rnk
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] s A MIN(M, N)-element array that on output contains the
-    !!  singular values of @p a in descending order.  Notice, the condition
-    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_mtx_svd(a, b, arnk, s, work, olwork, err)
+    module subroutine solve_least_squares_mtx_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        real(dp), intent(out), dimension(:) :: s
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work, s
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: rcond
+        integer(int32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk
+        real(real64), pointer, dimension(:) :: wptr, sptr
+        real(real64), allocatable, target, dimension(:) :: wrk, sing
+        real(real64), dimension(1) :: temp
+        real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2109,8 +1442,6 @@ contains
         flag = 0
         if (size(b, 1) /= maxmn) then
             flag = 2
-        else if (size(s) /= mn) then
-            flag = 4
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
@@ -2122,14 +1453,36 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, temp, rcond, rnk, temp, -1, &
+            flag)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
         end if
 
         ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
@@ -2152,7 +1505,7 @@ contains
         end if
 
         ! Process
-        call DGELSS(m, n, nrhs, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, &
+        call DGELSS(m, n, nrhs, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
@@ -2164,58 +1517,21 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
-    !! M equations of N unknowns using a singular value decomposition of
-    !! matrix A.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix A.  On output, the matrix
-    !!  is overwritten by the details of its complete orthogonal factorization.
-    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
-    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
-    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
-    !!  output, the N-by-NRHS solution matrix X.
-    !! @param[out] arnk An optional output, that if provided, will return the
-    !!  rank of @p a.
-    !! @param[out] s A MIN(M, N)-element array that on output contains the
-    !!  singular values of @p a in descending order.  Notice, the condition
-    !!  number of @p a can be determined by S(1) / S(MIN(M, N)).
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGELSS.
-    subroutine solve_least_squares_vec_svd(a, b, arnk, s, work, olwork, err)
+    module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(inout), dimension(:) :: b
-        real(dp), intent(out), dimension(:) :: s
-        integer(i32), intent(out), optional :: arnk
-        real(dp), intent(out), target, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(inout), dimension(:) :: b
+        integer(int32), intent(out), optional :: arnk
+        real(real64), intent(out), target, optional, dimension(:) :: work, s
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(i32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
-        real(dp) :: rcond
+        integer(int32) :: m, n, mn, maxmn, istat, flag, lwork, rnk
+        real(real64), pointer, dimension(:) :: wptr, sptr
+        real(real64), allocatable, target, dimension(:) :: wrk, sing
+        real(real64), dimension(1) :: temp
+        real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -2237,8 +1553,6 @@ contains
         flag = 0
         if (size(b) /= maxmn) then
             flag = 2
-        else if (size(s) /= mn) then
-            flag = 4
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
@@ -2250,14 +1564,35 @@ contains
         end if
 
         ! Workspace Query
-        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        call DGELSS(m, n, 1, a, m, b, maxmn, temp, rcond, rnk, temp, -1, flag)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
         end if
 
         ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_svd", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_svd", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
@@ -2280,7 +1615,8 @@ contains
         end if
 
         ! Process
-        call DGELSS(m, n, 1, a, m, b, maxmn, s, rcond, rnk, wptr, lwork, flag)
+        call DGELSS(m, n, 1, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
+            flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
             write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
@@ -2291,4 +1627,4 @@ contains
     end subroutine
 
 
-end module
+end submodule

@@ -4,81 +4,24 @@
 !!
 !! @par Purpose
 !! Provides routines for computing the eigenvalues and eigenvectors of matrices.
-module linalg_eigen
-    use ferror, only : errors
-    use linalg_constants
-    implicit none
-    private
-    public :: eigen
-
-! ******************************************************************************
-! INTERFACES
-! ------------------------------------------------------------------------------
-    !> @brief Computes the eigenvalues, and optionally the eigenvectors, of a
-    !! matrix.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/Eigenvalue.html)
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node56.html)
-    interface eigen
-        module procedure :: eigen_symm
-        module procedure :: eigen_asymm
-        module procedure :: eigen_gen
-    end interface
-
-
+submodule (linalg_core) linalg_eigen
 contains
-! ******************************************************************************
-! EIGENVALUE/EIGENVECTOR ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the eigenvalues, and optionally the eigenvectors of a
-    !! real, symmetric matrix.
-    !!
-    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
-    !!  eigenvalues; else, set to false to just compute the eigenvalues.
-    !! @param[in,out] a On input, the N-by-N symmetric matrix on which to
-    !!  operate.  On output, and if @p vecs is set to true, the matrix will
-    !!  contain the eigenvectors (one per column) corresponding to each
-    !!  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
-    !!  portion of the matrix is overwritten.
-    !! @param[out] vals An N-element array that will contain the eigenvalues
-    !!  sorted into ascending order.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DSYEV.
-    subroutine eigen_symm(vecs, a, vals, work, olwork, err)
+    module subroutine eigen_symm(vecs, a, vals, work, olwork, err)
         ! Arguments
         logical, intent(in) :: vecs
-        real(dp), intent(inout), dimension(:,:) :: a
-        real(dp), intent(out), dimension(:) :: vals
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: vals
+        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         character :: jobz
-        integer(i32) :: n, istat, flag, lwork
-        real(dp), pointer, dimension(:) :: wptr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp), dimension(1) :: temp
+        integer(int32) :: n, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -114,7 +57,7 @@ contains
 
         ! Workspace Query
         call DSYEV(jobz, 'L', n, a, n, vals, temp, -1, flag)
-        lwork = int(temp(1), i32)
+        lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
             return
@@ -151,59 +94,29 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
-    !! a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
-    !!  output, the contents of this matrix are overwritten.
-    !! @param[out] vals An N-element array containing the eigenvalues of the
-    !!  matrix.  The eigenvalues are not sorted.
-    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
-    !!  compute the right eigenvectors (one per column).  If not provided, only
-    !!  the eigenvalues will be computed.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGEEV.
-    subroutine eigen_asymm(a, vals, vecs, work, olwork, err)
+    module subroutine eigen_asymm(a, vals, vecs, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a
-        complex(dp), intent(out), dimension(:) :: vals
-        complex(dp), intent(out), optional, dimension(:,:) :: vecs
-        real(dp), intent(out), pointer, optional, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: vals
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: two = 2.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: two = 2.0d0
 
         ! Local Variables
         character :: jobvl, jobvr
-        integer(i32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, istat, flag, &
+        integer(int32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, istat, flag, &
             lwork, lwork1
-        real(dp) :: eps
-        real(dp), dimension(1) :: dummy, temp
-        real(dp), dimension(1,1) :: dummy_mtx
-        real(dp), pointer, dimension(:) :: wr, wi, wptr, w
-        real(dp), pointer, dimension(:,:) :: vr
-        real(dp), allocatable, target, dimension(:) :: wrk
+        real(real64) :: eps
+        real(real64), dimension(1) :: dummy, temp
+        real(real64), dimension(1,1) :: dummy_mtx
+        real(real64), pointer, dimension(:) :: wr, wi, wptr, w
+        real(real64), pointer, dimension(:,:) :: vr
+        real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -246,7 +159,7 @@ contains
         ! Workspace Query
         call DGEEV(jobvl, jobvr, n, a, n, dummy, dummy, dummy_mtx, n, &
             dummy_mtx, n, temp, -1, flag)
-        lwork1 = int(temp(1), i32)
+        lwork1 = int(temp(1), int32)
         if (present(vecs)) then
             lwork = lwork1 + 2 * n + n * n
         else
@@ -312,17 +225,17 @@ contains
             do while (j <= n)
                 if (abs(wi(j)) < eps) then
                     ! We've got a real-valued eigenvalue
-                    vals(j) = cmplx(wr(j), zero, dp)
+                    vals(j) = cmplx(wr(j), zero, real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), zero, dp)
+                        vecs(i,j) = cmplx(vr(i,j), zero, real64)
                     end do
                 else
                     ! We've got a complex cojugate pair of eigenvalues
                     jp1 = j + 1
-                    vals(j) = cmplx(wr(j), wi(j), dp)
+                    vals(j) = cmplx(wr(j), wi(j), real64)
                     vals(jp1) = conjg(vals(j))
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), dp)
+                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), real64)
                         vecs(i,jp1) = conjg(vecs(i,j))
                     end do
 
@@ -348,143 +261,36 @@ contains
 
             ! Store the eigenvalues
             do i = 1, n
-                vals(i) = cmplx(wr(i), wi(i), dp)
+                vals(i) = cmplx(wr(i), wi(i), real64)
             end do
         end if
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
-    !! a square matrix assuming the structure of the eigenvalue problem is
-    !! A*X = lambda*B*X.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
-    !!  of this matrix are overwritten.
-    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
-    !!  of this matrix are overwritten.
-    !! @param[out] alpha An N-element array that, if @p beta is not supplied,
-    !!  contains the eigenvalues.  If @p beta is supplied however, the
-    !!  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
-    !!  trivial as it seems as it is entirely possible, and likely, that
-    !!  ALPHA / BETA can overflow or underflow.  With that said, the values in
-    !!  ALPHA will always be less than and usually comparable with the NORM(A).
-    !! @param[out] beta An optional N-element array that if provided forces
-    !!  @p alpha to return the numerator, and this array contains the
-    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
-    !!  the values in this array will always be less than and usually comparable
-    !!  with the NORM(B).
-    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
-    !!  compute the right eigenvectors (one per column).  If not provided, only
-    !!  the eigenvalues will be computed.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Usage
-    !! As an example, consider the eigenvalue problem arising from a mechanical
-    !! system of masses and springs such that the masses are described by
-    !! a mass matrix M, and the arrangement of springs are described by a
-    !! stiffness matrix K.
-    !! @code {.f90}
-    !! ! This is an example illustrating the use of the eigenvalue and eigenvector 
-    !! ! routines to solve a free vibration problem of 3 masses connected by springs.
-    !! ! 
-    !! !     k1           k2           k3           k4
-    !! ! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|
-    !! ! 
-    !! ! As illustrated above, the system consists of 3 masses connected by springs.
-    !! ! Spring k1 and spring k4 connect the end masses to ground.  The equations of 
-    !! ! motion for this system are as follows.
-    !! ! 
-    !! ! | m1  0   0 | |x1"|   | k1+k2  -k2      0  | |x1|   |0|
-    !! ! | 0   m2  0 | |x2"| + |  -k2  k2+k3    -k3 | |x2| = |0|
-    !! ! | 0   0   m3| |x3"|   |   0    -k3    k3+k4| |x3|   |0|
-    !! ! 
-    !! ! Notice: x1" = the second time derivative of x1.
-    !! program example
-    !!     use linalg_constants, only : dp, i32
-    !!     use linalg_eigen
-    !!     implicit none
-    !! 
-    !!     ! Define the model parameters
-    !!     real(dp), parameter :: pi = 3.14159265359d0
-    !!     real(dp), parameter :: m1 = 0.5d0
-    !!     real(dp), parameter :: m2 = 2.5d0
-    !!     real(dp), parameter :: m3 = 0.75d0
-    !!     real(dp), parameter :: k1 = 5.0d6
-    !!     real(dp), parameter :: k2 = 10.0d6
-    !!     real(dp), parameter :: k3 = 10.0d6
-    !!     real(dp), parameter :: k4 = 5.0d6
-    !! 
-    !!     ! Local Variables
-    !!     integer(i32) :: i, j
-    !!     real(dp) :: m(3,3), k(3,3), natFreq(3)
-    !!    complex(dp) :: vals(3), modeShapes(3,3)
-    !! 
-    !!     ! Define the mass matrix
-    !!     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])
-    !! 
-    !!     ! Define the stiffness matrix
-    !!     k = reshape([k1 + k2, -k2, 0.0d0, -k2, k2 + k3, -k3, 0.0d0, -k3, k3 + k4], &
-    !!         [3, 3])
-    !!     
-    !!     ! Compute the eigenvalues and eigenvectors.
-    !!     call eigen(k, m, vals, vecs = modeShapes)
-    !! 
-    !!     ! Compute the natural frequency values, and return them with units of Hz.  
-    !!     ! Notice, all eigenvalues and eigenvectors are real for this example.
-    !!     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
-    !! 
-    !!     ! Display the natural frequency and mode shape values.  Notice, the eigen
-    !!     ! routine does not necessarily sort the values.
-    !!     print '(A)', "Modal Information (Not Sorted):"
-    !!     do i = 1, size(natFreq)
-    !!         print '(AI0AF8.4A)', "Mode ", i, ": (", natFreq(i), " Hz)"
-    !!         print '(F10.3)', (real(modeShapes(j,i)), j = 1, size(natFreq))
-    !!     end do
-    !! end program
-    !! @endcode
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGGEV.
-    subroutine eigen_gen(a, b, alpha, beta, vecs, work, olwork, err)
+    module subroutine eigen_gen(a, b, alpha, beta, vecs, work, olwork, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:,:) :: a, b
-        complex(dp), intent(out), dimension(:) :: alpha
-        real(dp), intent(out), optional, dimension(:) :: beta
-        complex(dp), intent(out), optional, dimension(:,:) :: vecs
-        real(dp), intent(out), optional, pointer, dimension(:) :: work
-        integer(i32), intent(out), optional :: olwork
+        real(real64), intent(inout), dimension(:,:) :: a, b
+        complex(real64), intent(out), dimension(:) :: alpha
+        real(real64), intent(out), optional, dimension(:) :: beta
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        real(real64), intent(out), optional, pointer, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
         ! Parameters
-        real(dp), parameter :: zero = 0.0d0
-        real(dp), parameter :: two = 2.0d0
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: two = 2.0d0
 
         ! Local Variables
         character :: jobvl, jobvr
-        integer(i32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, n4a, n4b, &
+        integer(int32) :: i, j, jp1, n, n1, n2a, n2b, n3a, n3b, n4a, n4b, &
             istat, flag, lwork, lwork1
-        real(dp), dimension(1) :: temp
-        real(dp), dimension(1,1) :: dummy
-        real(dp), pointer, dimension(:) :: wptr, w, alphar, alphai, bptr
-        real(dp), pointer, dimension(:,:) :: vr
-        real(dp), allocatable, target, dimension(:) :: wrk
-        real(dp) :: eps
+        real(real64), dimension(1) :: temp
+        real(real64), dimension(1,1) :: dummy
+        real(real64), pointer, dimension(:) :: wptr, w, alphar, alphai, bptr
+        real(real64), pointer, dimension(:,:) :: vr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64) :: eps
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -530,7 +336,7 @@ contains
         ! Workspace Query
         call DGGEV(jobvl, jobvr, n, a, n, b, n, temp, temp, temp, dummy, n, &
             dummy, n, temp, -1, flag)
-        lwork1 = int(temp(1), i32)
+        lwork1 = int(temp(1), int32)
         lwork = lwork1 + 2 * n
         if (.not.present(beta)) then
             lwork = lwork + n
@@ -607,17 +413,17 @@ contains
             do while (j <= n)
                 if (abs(alphai(j)) < eps) then
                     ! Real-Valued
-                    alpha(j) = cmplx(alphar(j), zero, dp)
+                    alpha(j) = cmplx(alphar(j), zero, real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), zero, dp)
+                        vecs(i,j) = cmplx(vr(i,j), zero, real64)
                     end do
                 else
                     ! Complex-Valued
                     jp1 = j + 1
-                    alpha(j) = cmplx(alphar(j), alphai(j), dp)
-                    alpha(jp1) = cmplx(alphar(jp1), alphai(jp1), dp)
+                    alpha(j) = cmplx(alphar(j), alphai(j), real64)
+                    alpha(jp1) = cmplx(alphar(jp1), alphai(jp1), real64)
                     do i = 1, n
-                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), dp)
+                        vecs(i,j) = cmplx(vr(i,j), vr(i,jp1), real64)
                         vecs(i,jp1) = conjg(vecs(i,j))
                     end do
 
@@ -649,12 +455,10 @@ contains
 
             ! Store the eigenvalues
             do i = 1, n
-                alpha(i) = cmplx(alphar(i), alphai(i), dp)
+                alpha(i) = cmplx(alphar(i), alphai(i), real64)
             end do
             if (.not.present(beta)) alpha = alpha / bptr
         end if
     end subroutine
 
-
-
-end module
+end submodule

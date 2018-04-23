@@ -2,12 +2,9 @@
 
 ! Tests the Cholesky factorization/solution operations
 module test_cholesky
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_core, only : rank1_update
-    use linalg_factor, only : cholesky_factor, cholesky_rank1_update, &
-        cholesky_rank1_downdate
-    use linalg_solve, only : solve_cholesky
+    use linalg_core
     implicit none
 contains
 ! ******************************************************************************
@@ -15,13 +12,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_cholesky_factor() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, u, l
-        real(dp), dimension(n, nrhs) :: b, b1, b2
+        real(real64), dimension(n, n) :: a, a1, u, l
+        real(real64), dimension(n, nrhs) :: b, b1, b2
         logical :: rst
 
         ! Initialization
@@ -66,12 +63,12 @@ contains
 ! ------------------------------------------------------------------------------
     function test_cholesky_rank1_update() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, r
-        real(dp), dimension(n) :: u
+        real(real64), dimension(n, n) :: a, a1, r
+        real(real64), dimension(n) :: u
         logical :: rst
 
         ! Initialization
@@ -100,12 +97,12 @@ contains
 ! ------------------------------------------------------------------------------
     function test_cholesky_rank1_downdate() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, r
-        real(dp), dimension(n) :: u
+        real(real64), dimension(n, n) :: a, a1, r
+        real(real64), dimension(n) :: u
         logical :: rst
 
         ! Initialization

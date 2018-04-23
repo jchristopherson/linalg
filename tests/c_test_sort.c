@@ -14,7 +14,7 @@ bool test_ascending_sort() {
     make_rand_mtx(n, 1, x);
 
     // Sort the array into ascending order
-    sort_dbl_(true, n, x, NULL);
+    sort_dbl(true, n, x, NULL);
 
     // Ensure X is now ascending
     for (i = 1; i < n; ++i) {
@@ -41,7 +41,7 @@ bool test_descending_sort() {
     make_rand_mtx(n, 1, x);
 
     // Sort the array into descending order
-    sort_dbl_(false, n, x, NULL);
+    sort_dbl(false, n, x, NULL);
 
     // Ensure X is now ascending
     for (i = 1; i < n; ++i) {

@@ -2,22 +2,21 @@
 
 ! Tests the LU factorization routines
 module test_lu
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_factor, only : lu_factor, form_lu
-    use linalg_solve, only : solve_lu
+    use linalg_core
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION TEST
 ! ------------------------------------------------------------------------------
     function test_lu_factor() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 75
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 75
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, l, u, p
-        integer(i32), dimension(n) :: ipvt
+        real(real64), dimension(n, n) :: a, a1, l, u, p
+        integer(int32), dimension(n) :: ipvt
         logical :: rst
 
         ! Initialization
@@ -40,14 +39,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lu_solve() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 75
-        integer(i32), parameter :: nrhs = 20
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 75
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1
-        real(dp), dimension(n, nrhs) :: b, x
-        integer(i32), dimension(n) :: ipvt
+        real(real64), dimension(n, n) :: a, a1
+        real(real64), dimension(n, nrhs) :: b, x
+        integer(int32), dimension(n) :: ipvt
         logical :: rst
 
         ! Initialization

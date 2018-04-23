@@ -2,10 +2,9 @@
 
 ! Tests the eigenvalue/eigenvector routines
 module test_eigen
-    use linalg_constants
-    use linalg_core, only : diag_mtx_mult
+    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use linalg_core
     use test_core
-    use linalg_eigen
     implicit none
 contains
 ! ******************************************************************************
@@ -13,12 +12,12 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_symm() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, vecs, x, y
-        real(dp), dimension(n) :: vals
+        real(real64), dimension(n, n) :: a, vecs, x, y
+        real(real64), dimension(n) :: vals
         logical :: rst
 
         ! Initialization
@@ -44,21 +43,21 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_asymm() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1
-        complex(dp), dimension(n, n) :: vecs, vmtx, x, y
-        complex(dp), dimension(n) :: vals, vals1
-        integer(i32) :: i
+        real(real64), dimension(n, n) :: a, a1
+        complex(real64), dimension(n, n) :: vecs, vmtx, x, y
+        complex(real64), dimension(n) :: vals, vals1
+        integer(int32) :: i
         logical :: rst
 
         ! Initialization
         rst = .true.
         call random_number(a)
         a1 = a
-        vmtx = cmplx(0.0d0, 0.0d0, dp)
+        vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
         call eigen(a1, vals, vecs)
@@ -87,13 +86,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_gen() result(rst)
         ! Parameters
-        integer(i32), parameter :: n = 100
-        real(dp), parameter :: tol = 1.0d-8
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(dp), dimension(n, n) :: a, a1, b, b1
-        complex(dp), dimension(n) :: vals, vals2
-        complex(dp), dimension(n, n) :: vecs, x, y
+        real(real64), dimension(n, n) :: a, a1, b, b1
+        complex(real64), dimension(n) :: vals, vals2
+        complex(real64), dimension(n, n) :: vecs, x, y
         logical :: rst
 
         ! Initialization

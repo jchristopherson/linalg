@@ -17,17 +17,17 @@ bool test_lu_factor() {
     for (i = 0; i < n*n; ++i) a1[i] = a[i];
 
     // Compute the factorization
-    lu_factor_(n, n, a1, ipvt, NULL);
+    lu_factor(n, n, a1, ipvt, NULL);
 
     // Extract L, U, and P to determine if P * A = L * U
     for (i = 0; i < n*n; ++i) l[i] = a1[i];
-    form_lu_(n, l, ipvt, u, p);
+    form_lu(n, l, ipvt, u, p);
 
     // Compute A1 = P * A
-    mtx_mult_(false, false, n, n, n, 1.0, p, n, a, n, 0.0, a1);
+    mtx_mult(false, false, n, n, n, 1.0, p, n, a, n, 0.0, a1);
 
     // Compute B = L * U
-    mtx_mult_(false, false, n, n, n, 1.0, l, n, u, n, 0.0, b);
+    mtx_mult(false, false, n, n, n, 1.0, l, n, u, n, 0.0, b);
 
     // Test
     if (!is_dbl_mtx_equal(n, n, a1, b, tol)) {
@@ -58,13 +58,13 @@ bool test_lu_solve() {
     for (i = 0; i < n*nrhs; ++i) x[i] = b[i];
 
     // Compute the factorization
-    lu_factor_(n, n, a1, ipvt, NULL);
+    lu_factor(n, n, a1, ipvt, NULL);
 
     // Solve for X
-    solve_lu_(n, nrhs, a1, ipvt, x);
+    solve_lu(n, nrhs, a1, ipvt, x);
 
     // Test by determining if A * X = B
-    mtx_mult_(false, false, n, nrhs, n, 1.0, a, n, x, n, 0.0, b1);
+    mtx_mult(false, false, n, nrhs, n, 1.0, a, n, x, n, 0.0, b1);
     if (!is_dbl_mtx_equal(n, nrhs, b, b1, tol)) {
         rst = false;
         printf("Test Failed: LU Factorization & Solution Test\n");

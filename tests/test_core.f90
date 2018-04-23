@@ -2,7 +2,7 @@
 
 ! A module containing routines to support basic testing operations.
 module test_core
-    use linalg_constants
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     implicit none
     private
     public :: is_mtx_equal
@@ -24,12 +24,12 @@ contains
 ! ------------------------------------------------------------------------------
 function is_mtx_equal_double(x, y, tol) result(check)
     ! Arguments
-    real(dp), intent(in), dimension(:,:) :: x, y
-    real(dp), intent(in) :: tol
+    real(real64), intent(in), dimension(:,:) :: x, y
+    real(real64), intent(in) :: tol
     logical :: check
 
     ! Local Variables
-    integer(i32) :: i, j, m, n
+    integer(int32) :: i, j, m, n
 
     ! Initialization
     m = size(x, 1)
@@ -54,12 +54,12 @@ end function
 ! ------------------------------------------------------------------------------
 function is_vec_equal_double(x, y, tol) result(check)
     ! Arguments
-    real(dp), intent(in), dimension(:) :: x, y
-    real(dp), intent(in) :: tol
+    real(real64), intent(in), dimension(:) :: x, y
+    real(real64), intent(in) :: tol
     logical :: check
 
     ! Local Variables
-    integer(i32) :: i, n
+    integer(int32) :: i, n
 
     ! Initialization
     n = size(x)
@@ -81,11 +81,11 @@ end function
 ! ------------------------------------------------------------------------------
 function is_vec_equal_i32(x, y) result(check)
     ! Arguments
-    integer(i32), intent(in), dimension(:) :: x, y
+    integer(int32), intent(in), dimension(:) :: x, y
     logical :: check
 
     ! Local Variables
-    integer(i32) :: i, n
+    integer(int32) :: i, n
 
     ! Initialization
     n = size(x)
@@ -107,12 +107,12 @@ end function
 ! ------------------------------------------------------------------------------
 function is_mtx_equal_complex(x, y, tol) result(check)
     ! Arguments
-    complex(dp), intent(in), dimension(:,:) :: x, y
-    real(dp), intent(in) :: tol
+    complex(real64), intent(in), dimension(:,:) :: x, y
+    real(real64), intent(in) :: tol
     logical :: check
 
     ! Local Variables
-    integer(i32) :: i, j, m, n
+    integer(int32) :: i, j, m, n
 
     ! Initialization
     m = size(x, 1)
@@ -126,7 +126,7 @@ function is_mtx_equal_complex(x, y, tol) result(check)
     end if
     do j = 1, n
         do i = 1, m
-            if (abs(real(x(i,j), dp) - real(y(i,j), dp)) > tol .or. &
+            if (abs(real(x(i,j), real64) - real(y(i,j), real64)) > tol .or. &
                 abs(aimag(x(i,j)) - aimag(y(i,j))) > tol) then
                 check = .false.
                 return
@@ -138,12 +138,12 @@ end function
 ! ------------------------------------------------------------------------------
 function is_vec_equal_complex(x, y, tol) result(check)
     ! Arguments
-    complex(dp), intent(in), dimension(:) :: x, y
-    real(dp), intent(in) :: tol
+    complex(real64), intent(in), dimension(:) :: x, y
+    real(real64), intent(in) :: tol
     logical :: check
 
     ! Local Variables
-    integer(i32) :: i, n
+    integer(int32) :: i, n
 
     ! Initialization
     n = size(x)
@@ -155,7 +155,7 @@ function is_vec_equal_complex(x, y, tol) result(check)
         return
     end if
     do i = 1, n
-        if (abs(real(x(i), dp) - real(y(i), dp)) > tol .or. &
+        if (abs(real(x(i), real64) - real(y(i), real64)) > tol .or. &
             abs(aimag(x(i)) - aimag(y(i))) > tol) then
             check = .false.
             return

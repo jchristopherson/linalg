@@ -2,13 +2,13 @@
 
 ! Example Source: https://en.wikipedia.org/wiki/Overdetermined_system
 program example
-    use linalg_constants, only : dp, i32
-    use linalg_solve, only : solve_least_squares
+    use iso_fortran_env, only : real64, int32
+    use linalg_core
     implicit none
 
     ! Local Variables
-    real(dp) :: a(3,2), b(3)
-    integer(i32) :: i
+    real(real64) :: a(3,2), b(3)
+    integer(int32) :: i
 
     ! Build the 3-by-2 matrix A
     !     | 2   1 |
@@ -27,7 +27,7 @@ program example
 
     ! Compute the solution via a least-squares approach.  The results overwrite
     ! the first 2 elements in b.
-    call solve_least_squares(a, b)
+    call solve_least_squares_svd(a, b)
 
     ! Display the results
     print '(A)', "Least Squares Solution: X = "

@@ -2,9 +2,9 @@
 
 ! A module containing routines to support testing of the sorting routines.
 module test_sort
+    use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_constants
-    use linalg_sorting
+    use linalg_core
     implicit none
 
 contains
@@ -13,13 +13,13 @@ contains
 ! ------------------------------------------------------------------------------
 function test_dbl_ascend_sort() result(rst)
     ! Parameters
-    integer(i32), parameter :: n = 200
-    real(dp), parameter :: tol = 1.0d-8
+    integer(int32), parameter :: n = 200
+    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
-    integer(i32) :: i, ind(n)
-    real(dp) :: x1(n), x2(n)
+    integer(int32) :: i, ind(n)
+    real(real64) :: x1(n), x2(n)
 
     ! Initialization
     rst = .true.
@@ -58,13 +58,13 @@ end function
 ! ------------------------------------------------------------------------------
 function test_dbl_descend_sort() result(rst)
     ! Parameters
-    integer(i32), parameter :: n = 200
-    real(dp), parameter :: tol = 1.0d-8
+    integer(int32), parameter :: n = 200
+    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
-    integer(i32) :: i, ind(n)
-    real(dp) :: x1(n), x2(n)
+    integer(int32) :: i, ind(n)
+    real(real64) :: x1(n), x2(n)
 
     ! Initialization
     rst = .true.

@@ -16,25 +16,24 @@
 !
 ! Notice: x1" = the second time derivative of x1.
 program example
-    use linalg_constants, only : dp, i32
-    use linalg_eigen
-    use linalg_sorting
+    use iso_fortran_env, only : real64, int32
+    use linalg_core
     implicit none
 
     ! Define the model parameters
-    real(dp), parameter :: pi = 3.14159265359d0
-    real(dp), parameter :: m1 = 0.5d0
-    real(dp), parameter :: m2 = 2.5d0
-    real(dp), parameter :: m3 = 0.75d0
-    real(dp), parameter :: k1 = 5.0d6
-    real(dp), parameter :: k2 = 10.0d6
-    real(dp), parameter :: k3 = 10.0d6
-    real(dp), parameter :: k4 = 5.0d6
+    real(real64), parameter :: pi = 3.14159265359d0
+    real(real64), parameter :: m1 = 0.5d0
+    real(real64), parameter :: m2 = 2.5d0
+    real(real64), parameter :: m3 = 0.75d0
+    real(real64), parameter :: k1 = 5.0d6
+    real(real64), parameter :: k2 = 10.0d6
+    real(real64), parameter :: k3 = 10.0d6
+    real(real64), parameter :: k4 = 5.0d6
 
     ! Local Variables
-    integer(i32) :: i, j
-    real(dp) :: m(3,3), k(3,3), natFreq(3)
-    complex(dp) :: vals(3), modeShapes(3,3)
+    integer(int32) :: i, j
+    real(real64) :: m(3,3), k(3,3), natFreq(3)
+    complex(real64) :: vals(3), modeShapes(3,3)
 
     ! Define the mass matrix
     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])

@@ -4,53 +4,19 @@
 !!
 !! @par Purpose
 !! Provides sorting routines.
-module linalg_sorting
-    use ferror, only : errors
-    use linalg_constants
-    implicit none
-    private
-    public :: sort
-
-! ******************************************************************************
-! INTERFACES
-! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    interface sort
-        module procedure :: sort_dbl_array
-        module procedure :: sort_dbl_array_ind
-        module procedure :: sort_cmplx_array
-        module procedure :: sort_cmplx_array_ind
-        module procedure :: sort_eigen_cmplx
-        module procedure :: sort_eigen_dbl
-    end interface
-
+submodule (linalg_core) linalg_sorting
 contains
 ! ******************************************************************************
 ! SORTING ROUTINES
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! The routine utilizes a quick sort algorithm unless the size of the array
-    !! is less than or equal to 20.  For such small arrays an insertion sort
-    !! algorithm is utilized.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DLASRT.
-    subroutine sort_dbl_array(x, ascend)
+    module subroutine sort_dbl_array(x, ascend)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: x
+        real(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
 
         ! Local Variables
         character :: id
-        integer(i32) :: n, info
+        integer(int32) :: n, info
 
         ! Initialization
         if (present(ascend)) then
@@ -69,34 +35,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm explained at 
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_dbl_array_ind(x, ind, ascend, err)
+    module subroutine sort_dbl_array_ind(x, ind, ascend, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -104,7 +46,7 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: n
+        integer(int32) :: n
         logical :: dir
 
         ! Initialization
@@ -136,25 +78,9 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_cmplx_array(x, ascend)
+    module subroutine sort_cmplx_array(x, ascend)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
 
         ! Local Variables
@@ -172,39 +98,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates 
-    !! on complex valued items, the complex values are sorted based upon the 
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
-    subroutine sort_cmplx_array_ind(x, ind, ascend, err)
+    module subroutine sort_cmplx_array_ind(x, ind, ascend, err)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -212,7 +109,7 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: n
+        integer(int32) :: n
         logical :: dir
 
         ! Initialization
@@ -244,29 +141,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the 
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
-    !!      available to comoplete this operation.
-    subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
+    module subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         ! Arguments
-        complex(dp), intent(inout), dimension(:) :: vals
-        complex(dp), intent(inout), dimension(:,:) :: vecs
+        complex(real64), intent(inout), dimension(:) :: vals
+        complex(real64), intent(inout), dimension(:,:) :: vecs
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -274,9 +152,9 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: i, n, flag
+        integer(int32) :: i, n, flag
         logical :: dir
-        integer(i32), allocatable, dimension(:) :: ind
+        integer(int32), allocatable, dimension(:) :: ind
 
         ! Initialization
         if (present(err)) then
@@ -322,29 +200,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the 
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the 
-    !!  eigenvectors associated with @p vals (one vector per column).  On 
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
-    !!      available to comoplete this operation.
-    subroutine sort_eigen_dbl(vals, vecs, ascend, err)
+    module subroutine sort_eigen_dbl(vals, vecs, ascend, err)
         ! Arguments
-        real(dp), intent(inout), dimension(:) :: vals
-        real(dp), intent(inout), dimension(:,:) :: vecs
+        real(real64), intent(inout), dimension(:) :: vals
+        real(real64), intent(inout), dimension(:,:) :: vecs
         logical, intent(in), optional :: ascend
         class(errors), intent(inout), optional, target :: err
 
@@ -352,9 +211,9 @@ contains
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
-        integer(i32) :: i, n, flag
+        integer(int32) :: i, n, flag
         logical :: dir
-        integer(i32), allocatable, dimension(:) :: ind
+        integer(int32), allocatable, dimension(:) :: ind
 
         ! Initialization
         if (present(err)) then
@@ -418,11 +277,11 @@ contains
     recursive subroutine qsort_dbl_ind(ascend, x, ind)
         ! Arguments
         logical, intent(in) :: ascend
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -451,13 +310,13 @@ contains
     subroutine dbl_partition_ind(ascend, x, ind, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        real(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
-        integer(i32), intent(out) :: marker
+        real(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j, itemp
-        real(dp) :: temp, pivot
+        integer(int32) :: i, j, itemp
+        real(real64) :: temp, pivot
 
         ! Process
         pivot = x(1)
@@ -544,10 +403,10 @@ contains
     recursive subroutine qsort_cmplx(ascend, x)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: x
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -577,16 +436,16 @@ contains
     subroutine cmplx_partition(ascend, x, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(out) :: marker
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j
-        complex(dp) :: temp
-        real(dp) :: pivot
+        integer(int32) :: i, j
+        complex(real64) :: temp
+        real(real64) :: pivot
 
         ! Process
-        pivot = real(x(1), dp)
+        pivot = real(x(1), real64)
         i = 0
         j = size(x) + 1
         if (ascend) then
@@ -594,12 +453,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) <= pivot) exit
+                    if (real(x(j), real64) <= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) >= pivot) exit
+                    if (real(x(i), real64) >= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -620,12 +479,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) >= pivot) exit
+                    if (real(x(j), real64) >= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) <= pivot) exit
+                    if (real(x(i), real64) <= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -665,11 +524,11 @@ contains
     recursive subroutine qsort_cmplx_ind(ascend, x, ind)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
 
         ! Local Variables
-        integer(i32) :: iq
+        integer(int32) :: iq
 
         ! Process
         if (size(x) > 1) then
@@ -702,17 +561,17 @@ contains
     subroutine cmplx_partition_ind(ascend, x, ind, marker)
         ! Arguments
         logical, intent(in) :: ascend
-        complex(dp), intent(inout), dimension(:) :: x
-        integer(i32), intent(inout), dimension(:) :: ind
-        integer(i32), intent(out) :: marker
+        complex(real64), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        integer(int32), intent(out) :: marker
 
         ! Local Variables
-        integer(i32) :: i, j, itemp
-        complex(dp) :: temp
-        real(dp) :: pivot
+        integer(int32) :: i, j, itemp
+        complex(real64) :: temp
+        real(real64) :: pivot
 
         ! Process
-        pivot = real(x(1), dp)
+        pivot = real(x(1), real64)
         i = 0
         j = size(x) + 1
         if (ascend) then
@@ -720,12 +579,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) <= pivot) exit
+                    if (real(x(j), real64) <= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) >= pivot) exit
+                    if (real(x(i), real64) >= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -750,12 +609,12 @@ contains
             do
                 j = j - 1
                 do
-                    if (real(x(j), dp) >= pivot) exit
+                    if (real(x(j), real64) >= pivot) exit
                     j = j - 1
                 end do
                 i = i + 1
                 do
-                    if (real(x(i), dp) <= pivot) exit
+                    if (real(x(i), real64) <= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then
@@ -779,4 +638,4 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-end module
+end submodule

@@ -17,18 +17,18 @@ int main() {
     rst = test_rank();
     if (!rst) overall = false;
 
-    // rst = test_tri_mtx_mult();
-    // if (!rst) overall = false;
-    //
-    // rst = test_lu_factor();
-    // if (!rst) overall = false;
-    //
-    // rst = test_lu_solve();
-    // if (!rst) overall = false;
-    //
+    rst = test_tri_mtx_mult();
+    if (!rst) overall = false;
+
+    rst = test_lu_factor();
+    if (!rst) overall = false;
+
+    rst = test_lu_solve();
+    if (!rst) overall = false;
+
     // rst = test_qr_factor();
     // if (!rst) overall = false;
-    //
+
     // rst = test_qr_factor_od();
     // if (!rst) overall = false;
     //
@@ -55,39 +55,39 @@ int main() {
     //
     // rst = test_qr_update();
     // if (!rst) overall = false;
-    //
-    // rst = test_svd();
-    // if (!rst) overall = false;
-    //
-    // rst = test_svd_od();
-    // if (!rst) overall = false;
-    //
-    // rst = test_svd_ud();
-    // if (!rst) overall = false;
-    //
-    // rst = test_pinv();
-    // if (!rst) overall = false;
-    //
-    // rst = test_pinv_od();
-    // if (!rst) overall = false;
-    //
-    // rst = test_inv();
-    // if (!rst) overall = false;
-    //
+
+    rst = test_svd();
+    if (!rst) overall = false;
+
+    rst = test_svd_od();
+    if (!rst) overall = false;
+
+    rst = test_svd_ud();
+    if (!rst) overall = false;
+
+    rst = test_pinv();
+    if (!rst) overall = false;
+
+    rst = test_pinv_od();
+    if (!rst) overall = false;
+
+    rst = test_inv();
+    if (!rst) overall = false;
+
     // rst = test_eigen_symm();
     // if (!rst) overall = false;
-    //
+
     // rst = test_eigen_asymm();
     // if (!rst) overall = false;
     //
     // rst = test_eigen_gen();
     // if (!rst) overall = false;
-    //
-    // rst = test_ascending_sort();
-    // if (!rst) overall = false;
-    //
-    // rst = test_descending_sort();
-    // if (!rst) overall = false;
+
+    rst = test_ascending_sort();
+    if (!rst) overall = false;
+
+    rst = test_descending_sort();
+    if (!rst) overall = false;
 
     // End
     if (overall) printf("C API LINALG TEST STATUS: PASS\n");

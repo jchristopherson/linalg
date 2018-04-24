@@ -8,7 +8,7 @@ bool test_qr_factor() {
     const int n = 100;
     const double tol = 1.0e-8;
 
-    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n],
         a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, pvt2[n];
     bool rst;
@@ -19,10 +19,10 @@ bool test_qr_factor() {
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
     // Compute the factorization of A
-    qr_factor(m, n, r1, tau1, NULL);
+    qr_factor_no_pivot(m, n, r1, tau1, NULL);
 
     // Extract Q and R, and then check that Q * R = A
-    form_qr(m, n, r1, tau1, q1, NULL);
+    form_qr_no_pivot(m, n, r1, tau1, q1, NULL);
     mtx_mult(false, false, m, n, m, 1.0, q1, m, r1, m, 0.0, a1);
     if (!is_dbl_mtx_equal(m, n, a, a1, tol)) {
         rst = false;
@@ -53,7 +53,7 @@ bool test_qr_factor_od() {
     const int n = 100;
     const double tol = 1.0e-8;
 
-    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n],
         a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, pvt2[n];
     bool rst;
@@ -64,10 +64,10 @@ bool test_qr_factor_od() {
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
     // Compute the factorization of A
-    qr_factor(m, n, r1, tau1, NULL);
+    qr_factor_no_pivot(m, n, r1, tau1, NULL);
 
     // Extract Q and R, and then check that Q * R = A
-    form_qr(m, n, r1, tau1, q1, NULL);
+    form_qr_no_pivot(m, n, r1, tau1, q1, NULL);
     mtx_mult(false, false, m, n, m, 1.0, q1, m, r1, m, 0.0, a1);
     if (!is_dbl_mtx_equal(m, n, a, a1, tol)) {
         rst = false;
@@ -99,7 +99,7 @@ bool test_qr_factor_ud() {
     const int n = 200;
     const double tol = 1.0e-8;
 
-    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n], 
+    double a[m*n], r1[m*n], r2[m*n], q1[m*m], q2[m*m], p2[n*n], a1[m*n],
         a2[m*n], tau1[MIN(m,n)], tau2[MIN(m,n)];
     int i, pvt2[n];
     bool rst;
@@ -110,10 +110,10 @@ bool test_qr_factor_ud() {
     for (i = 0; i < m * n; ++i) r1[i] = r2[i] = a[i];
 
     // Compute the factorization of A
-    qr_factor(m, n, r1, tau1, NULL);
+    qr_factor_no_pivot(m, n, r1, tau1, NULL);
 
     // Extract Q and R, and then check that Q * R = A
-    form_qr(m, n, r1, tau1, q1, NULL);
+    form_qr_no_pivot(m, n, r1, tau1, q1, NULL);
     mtx_mult(false, false, m, n, m, 1.0, q1, m, r1, m, 0.0, a1);
     if (!is_dbl_mtx_equal(m, n, a, a1, tol)) {
         rst = false;
@@ -156,12 +156,12 @@ bool test_qr_mult() {
     for (i = 0; i < m * n; ++i) c2[i] = c1[i];
 
     // Generate the QR factorization of A
-    qr_factor(m, n, a, tau, NULL);
+    qr_factor_no_pivot(m, n, a, tau, NULL);
     for (i = 0; i < m * n; ++i) r[i] = a[i];
-    form_qr(m, n, a, tau, q, NULL);
+    form_qr_no_pivot(m, n, a, tau, q, NULL);
 
     // Compute C = Q * C
-    mult_qr(false, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(false, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q * C
     mtx_mult(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -174,7 +174,7 @@ bool test_qr_mult() {
 
     // Compute C = Q**T * C
     for (i = 0; i < m * n; ++i) c1[i] = c2[i];
-    mult_qr(true, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(true, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q**T * C
     mtx_mult(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -208,12 +208,12 @@ bool test_qr_mult_od() {
     for (i = 0; i < m * n; ++i) c2[i] = c1[i];
 
     // Generate the QR factorization of A
-    qr_factor(m, n, a, tau, NULL);
+    qr_factor_no_pivot(m, n, a, tau, NULL);
     for (i = 0; i < m * n; ++i) r[i] = a[i];
-    form_qr(m, n, a, tau, q, NULL);
+    form_qr_no_pivot(m, n, a, tau, q, NULL);
 
     // Compute C = Q * C
-    mult_qr(false, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(false, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q * C
     mtx_mult(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -226,7 +226,7 @@ bool test_qr_mult_od() {
 
     // Compute C = Q**T * C
     for (i = 0; i < m * n; ++i) c1[i] = c2[i];
-    mult_qr(true, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(true, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q**T * C
     mtx_mult(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -260,12 +260,12 @@ bool test_qr_mult_ud() {
     for (i = 0; i < m * n; ++i) c2[i] = c1[i];
 
     // Generate the QR factorization of A
-    qr_factor(m, n, a, tau, NULL);
+    qr_factor_no_pivot(m, n, a, tau, NULL);
     for (i = 0; i < m * n; ++i) r[i] = a[i];
-    form_qr(m, n, a, tau, q, NULL);
+    form_qr_no_pivot(m, n, a, tau, q, NULL);
 
     // Compute C = Q * C
-    mult_qr(false, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(false, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q * C
     mtx_mult(false, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -278,7 +278,7 @@ bool test_qr_mult_ud() {
 
     // Compute C = Q**T * C
     for (i = 0; i < m * n; ++i) c1[i] = c2[i];
-    mult_qr(true, m, n, r, tau, c1, NULL);
+    mult_qr_no_pivot(true, m, n, r, tau, c1, NULL);
 
     // Compute ANS = Q**T * C
     mtx_mult(true, false, m, n, m, 1.0, q, m, c2, m, 0.0, ans);
@@ -317,14 +317,14 @@ bool test_qr_solve_no_pivot() {
     for (i = 0; i < m; ++i) b2[i] = b2a[i];
 
     // Compute the QR factorization of A
-    qr_factor(m, n, a1, tau, NULL);
+    qr_factor_no_pivot(m, n, a1, tau, NULL);
 
     // Solve the system of equations
-    solve_qr(m, n, nrhs, a1, tau, b1, NULL);
+    solve_qr_no_pivot(m, n, nrhs, a1, tau, b1, NULL);
     for (j = 0; j < nrhs; ++j)
         for (i = 0; i < n; ++i)
             x1[INDEX(i,j,n)] = b1[INDEX(i,j,m)];
-    
+
     // Test
     mtx_mult(false, false, m, nrhs, n, 1.0, a, m, x1, n, 0.0, ans1);
     if (!is_dbl_mtx_equal(m, nrhs, ans1, b, tol)) {
@@ -333,7 +333,7 @@ bool test_qr_solve_no_pivot() {
     }
 
     // Solve the system of equations
-    solve_qr(m, n, 1, a1, tau, b2, NULL);
+    solve_qr_no_pivot(m, n, 1, a1, tau, b2, NULL);
     for (i = 0; i < n; ++i) x2[i] = b2[i];
 
     // Test 2
@@ -377,7 +377,7 @@ bool test_qr_solve_pivot() {
     for (j = 0; j < nrhs; ++j)
         for (i = 0; i < n; ++i)
             x1[INDEX(i,j,n)] = b1[INDEX(i,j,m)];
-    
+
     // Test
     mtx_mult(false, false, m, nrhs, n, 1.0, a, m, x1, n, 0.0, ans1);
     if (!is_dbl_mtx_equal(m, nrhs, ans1, b, tol)) {
@@ -421,7 +421,7 @@ bool test_qr_solve_pivot_ud() {
     for (j = 0; j < nrhs; ++j)
         for (i = 0; i < n; ++i)
             x1[INDEX(i,j,n)] = b1[INDEX(i,j,n)];
-    
+
     // Test
     mtx_mult(false, false, m, nrhs, n, 1.0, a, m, x1, n, 0.0, ans1);
     if (!is_dbl_mtx_equal(m, nrhs, ans1, b, tol)) {
@@ -452,10 +452,10 @@ bool test_qr_update() {
     for (i = 0; i < m * n; ++i) r[i] = a1[i] = a[i];
 
     // Compute the QR factorization of A
-    qr_factor(m, n, r, tau, NULL);
+    qr_factor_no_pivot(m, n, r, tau, NULL);
 
     // Form Q & R
-    form_qr(m, n, r, tau, q, NULL);
+    form_qr_no_pivot(m, n, r, tau, q, NULL);
 
     // Compute the rank 1 update A1 = A + u * v**T
     rank1_update(m, n, 1.0, u, v, a1);

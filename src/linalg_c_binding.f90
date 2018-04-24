@@ -9,8 +9,28 @@ module linalg_c_binding
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg_core
     use ferror, only : errors
-    use ferror_c_binding, only : errorhandler, get_errorhandler
+    use ferror_c_binding, only : errorhandler
 contains
+! ******************************************************************************
+! SUPPORTING ROUTINES
+! ------------------------------------------------------------------------------
+    subroutine get_fortran_errorhandler(cerr, ferr)
+        ! Arguments
+        type(errorhandler), intent(in), target :: cerr
+        type(errors), intent(out), pointer :: ferr
+
+        ! Local Variables
+        type(c_ptr) :: testptr
+
+        ! Process
+        testptr = c_loc(cerr)
+        nullify(ferr)
+        if (.not.c_associated(testptr)) return
+        if (.not.c_associated(cerr%ptr)) return
+        if (cerr%n == 0) return
+        call c_f_pointer(cerr%ptr, ferr)
+    end subroutine
+
 ! ******************************************************************************
 ! LINALG_CORE ROUTINES
 ! ------------------------------------------------------------------------------
@@ -337,14 +357,14 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
         integer(int32) :: rnk
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             rnk = mtx_rank(a, err = eptr)
         else
@@ -370,14 +390,14 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: a(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
         real(real64) :: x
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             x = det(a, err = eptr)
         else
@@ -432,13 +452,13 @@ contains
         real(real64), intent(in), value :: alpha, beta
         real(real64), intent(in) :: a(n,n)
         real(real64), intent(inout) :: b(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call tri_mtx_mult(logical(upper), alpha, a, beta, b, eptr)
         else
@@ -472,13 +492,13 @@ contains
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
         integer(int32), intent(out) :: ipvt(min(m,n))
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call lu_factor(a, ipvt, eptr)
         else
@@ -545,18 +565,18 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine qr_factor_c(m, n, a, tau, err) bind(C, name = "qr_factor")
+    subroutine qr_factor_c(m, n, a, tau, err) bind(C, name = "qr_factor_no_pivot")
         ! Arguments
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
         real(real64), intent(out) :: tau(min(m,n))
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call qr_factor(a, tau, err = eptr)
         else
@@ -596,13 +616,13 @@ contains
         real(real64), intent(inout) :: a(m,n)
         real(real64), intent(out) :: tau(min(m,n))
         integer(int32), intent(inout) :: jpvt(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call qr_factor(a, tau, jpvt, err = eptr)
         else
@@ -635,19 +655,19 @@ contains
     !!      appropriately.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
-    subroutine form_qr_c(m, n, r, tau, q, err) bind(C, name = "form_qr")
+    subroutine form_qr_c(m, n, r, tau, q, err) bind(C, name = "form_qr_no_pivot")
         ! Arguments
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: r(m,n)
         real(real64), intent(in) :: tau(min(m,n))
         real(real64), intent(out) :: q(m,m)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call form_qr(r, tau, q, err = eptr)
         else
@@ -691,13 +711,13 @@ contains
         real(real64), intent(in) :: tau(min(m,n))
         integer(int32), intent(in) :: pvt(n)
         real(real64), intent(out) :: q(m,m), p(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call form_qr(r, tau, pvt, q, p, err = eptr)
         else
@@ -729,19 +749,19 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine mult_qr_c(trans, m, n, q, tau, c, err) &
-            bind(C, name = "mult_qr")
+            bind(C, name = "mult_qr_no_pivot")
         ! Arguments
         logical(c_bool), intent(in), value :: trans
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: q(m,m), c(m,n)
         real(real64), intent(in) :: tau(min(m,n))
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call mult_qr(.true., logical(trans), q, tau, c, err = eptr)
         else
@@ -774,13 +794,13 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: q(m,m), r(m,n), u(m), v(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call qr_rank1_update(q, r, u, v, err = eptr)
         else
@@ -811,13 +831,13 @@ contains
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: a(n,n)
         logical(c_bool), intent(in), value :: upper
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call cholesky_factor(a, logical(upper), eptr)
         else
@@ -845,13 +865,13 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: r(n,n), u(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call cholesky_rank1_update(r, u, err = eptr)
         else
@@ -884,13 +904,13 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: r(n,n), u(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call cholesky_rank1_downdate(r, u, err = eptr)
         else
@@ -924,13 +944,13 @@ contains
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
         real(real64), intent(out) :: tau(m)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call rz_factor(a, tau, err = eptr)
         else
@@ -967,13 +987,13 @@ contains
         integer(int32), intent(in), value :: m, n, l
         real(real64), intent(inout) :: a(m,m), c(m,n)
         real(real64), intent(in) :: tau(m)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call mult_rz(.true., logical(trans), l, a, tau, c, err = eptr)
         else
@@ -1013,13 +1033,13 @@ contains
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
         real(real64), intent(out) :: s(min(m,n)), u(m,m), vt(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call svd(a, s, u, vt, err = eptr)
         else
@@ -1104,18 +1124,18 @@ contains
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
     subroutine solve_qr_c(m, n, nrhs, a, tau, b, err) &
-            bind(C, name = "solve_qr")
+            bind(C, name = "solve_qr_no_pivot")
         ! Arguments
         integer(int32), intent(in), value :: m, n, nrhs
         real(real64), intent(inout) :: a(m,n), b(m,nrhs)
         real(real64), intent(in) :: tau(min(m,n))
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call solve_qr(a, tau, b, err = eptr)
         else
@@ -1155,13 +1175,13 @@ contains
         real(real64), intent(inout) :: a(m,n), b(max(m,n),nrhs)
         real(real64), intent(in) :: tau(min(m,n))
         integer(int32), intent(in) :: jpvt(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call solve_qr(a, tau, jpvt, b, err = eptr)
         else
@@ -1210,13 +1230,13 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: a(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call mtx_inverse(a, err = eptr)
         else
@@ -1248,13 +1268,13 @@ contains
         integer(int32), intent(in), value :: m, n
         real(real64), intent(inout) :: a(m,n)
         real(real64), intent(out) :: ainv(n,m)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call mtx_pinverse(a, ainv, err = eptr)
         else
@@ -1288,13 +1308,13 @@ contains
         ! Arguments
         integer(int32), intent(in), value :: m, n, nrhs
         real(real64), intent(inout) :: a(m, n), b(max(m,n), nrhs)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call solve_least_squares(a, b, err = eptr)
         else
@@ -1331,13 +1351,13 @@ contains
         logical(c_bool), intent(in), value :: vecs
         real(real64), intent(inout) :: a(n,n)
         real(real64), intent(out) :: vals(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call eigen(logical(vecs), a, vals, err = eptr)
         else
@@ -1369,13 +1389,13 @@ contains
         integer(int32), intent(in), value :: n
         real(real64), intent(inout) :: a(n,n)
         complex(real64), intent(out) :: vals(n), vecs(n,n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call eigen(a, vals, vecs, err = eptr)
         else
@@ -1419,13 +1439,13 @@ contains
         real(real64), intent(inout) :: a(n, n), b(n, n)
         complex(real64), intent(out) :: alpha(n), vecs(n,n)
         real(real64), intent(out) :: beta(n)
-        type(errorhandler), intent(inout) :: err
+        type(errorhandler), intent(inout), target :: err
 
         ! Local Variables
         type(errors), pointer :: eptr
 
         ! Process
-        call get_errorhandler(err, eptr)
+        call get_fortran_errorhandler(err, eptr)
         if (associated(eptr)) then
             call eigen(a, b, alpha, beta = beta, vecs = vecs, err = eptr)
         else

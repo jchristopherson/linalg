@@ -347,7 +347,7 @@ void form_lu(int n, double *lu, const int *ipvt, double *u, double *p);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void qr_factor(int m, int n, double *a, double *tau, errorhandler *err);
+void qr_factor_no_pivot(int m, int n, double *a, double *tau, errorhandler *err);
 
 /** @brief Computes the QR factorization of an M-by-N matrix with column
  * pivoting such that A * P = Q * R.
@@ -402,8 +402,8 @@ void qr_factor_pivot(int m, int n, double *a, double *tau, int *jpvt,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void form_qr(int m, int n, double *r, const double *tau, double *q,
-             errorhandler *err);
+void form_qr_no_pivot(int m, int n, double *r, const double *tau, double *q,
+                      errorhandler *err);
 
 /** @brief Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.
@@ -459,8 +459,8 @@ void form_qr_pivot(int m, int n, double *r, const double *tau,
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void mult_qr(bool trans, int m, int n, double *q, const double *tau,
-             double *c, errorhandler *err);
+void mult_qr_no_pivot(bool trans, int m, int n, double *q, const double *tau,
+                      double *c, errorhandler *err);
 
 /** @brief Computes the rank 1 update to an M-by-N QR factored matrix A
  * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
@@ -676,8 +676,8 @@ void solve_lu(int n, int nrhs, const double *a, const int *ipvt, double *b);
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
  *      there is insufficient memory available.
  */
-void solve_qr(int m, int n, int nrhs, double *a, const double *tau, double *b,
-              errorhandler *err);
+void solve_qr_no_pivot(int m, int n, int nrhs, double *a, const double *tau,
+                       double *b, errorhandler *err);
 
 /** @brief Solves a system of M QR-factored equations of N unknowns where the
  * QR factorization made use of column pivoting.

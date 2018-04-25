@@ -24,7 +24,7 @@ program example
     a = reshape( &
         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
         [3, 3])
-    
+
     ! Build the right-hand-side vector B.
     !     | -1 |
     ! b = | -2 |
@@ -103,14 +103,14 @@ Least Squares Solution: X =
 This example computes the eigenvalues and eigenvectors of a mechanical system consisting of several masses connected by springs.
 
 ```fortran
-! This is an example illustrating the use of the eigenvalue and eigenvector 
+! This is an example illustrating the use of the eigenvalue and eigenvector
 ! routines to solve a free vibration problem of 3 masses connected by springs.
 !
 !     k1           k2           k3           k4
 ! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|
 !
 ! As illustrated above, the system consists of 3 masses connected by springs.
-! Spring k1 and spring k4 connect the end masses to ground.  The equations of 
+! Spring k1 and spring k4 connect the end masses to ground.  The equations of
 ! motion for this system are as follows.
 !
 ! | m1  0   0 | |x1"|   | k1+k2  -k2      0  | |x1|   |0|
@@ -144,7 +144,7 @@ program example
     ! Define the stiffness matrix
     k = reshape([k1 + k2, -k2, 0.0d0, -k2, k2 + k3, -k3, 0.0d0, -k3, k3 + k4], &
         [3, 3])
-    
+
     ! Compute the eigenvalues and eigenvectors.
     call eigen(k, m, vals, vecs = modeShapes)
 
@@ -178,46 +178,6 @@ Mode 3: (923.5669 Hz)
      1.000
     -0.184
      0.179
-```
-
-## C Example
-This example makes use of the C API to compute the solution to an overdetermined system of 3 equations of 2 unknowns.
-
-```c
-#include <stdio.h>
-#include "linalg.h"
-
-int main() {
-    // Define local variables and populate the matrices (column-major format):
-    //
-    //     | 2   1 |
-    // A = |-3   1 |
-    //     |-1   1 |
-    //
-    //     |-1 |
-    // b = |-2 |
-    //     | 1 |
-    double a[6] = {2.0, -3.0, -1.0, 1.0, 1.0, 1.0},
-        b[3] = {-1.0, -2.0, 1.0};
-
-    // The solution is:
-    // x = [0.13158, -0.57895]**T
-
-    // Compute the solution.  The results overwrite the first 2 elements in b.
-    solve_least_squares_(3, 2, 1, a, b, NULL);
-
-    // Display the results
-    printf("Least Squares Solution: X =\n%f\n%f\n", b[0], b[1]);
-
-    // End
-    return 0;
-}
-```
-The above program produces the following output.
-```text
-Least Squares Solution: X =
-0.131579
--0.578947
 ```
 
 ## Building LINALG

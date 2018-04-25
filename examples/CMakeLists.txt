@@ -60,26 +60,6 @@ add_executable(lu_example_immutable linalg_lu_example_immutable.f90)
 target_link_libraries(lu_example_immutable linalg)
 
 # --------------------
-include_directories(${PROJECT_SOURCE_DIR}/include
-${PROJECT_SOURCE_DIR}/src/external/ferror/include)
-
-# LU Example
-add_executable(lu_example_c linalg_lu_c_example.c)
-target_link_libraries(lu_example_c linalg)
-
-# QR Example
-add_executable(qr_example_c linalg_qr_c_example.c)
-target_link_libraries(qr_example_c linalg)
-
-# Overdetermined Example
-add_executable(od_example_c linalg_od_c_example.c)
-target_link_libraries(od_example_c linalg)
-
-# Eigen Example
-add_executable(eigen_example_c linalg_eigen_c_example.c)
-target_link_libraries(eigen_example_c linalg m)
-
-# --------------------
 # Copy FERROR to the runtime directory
 add_custom_command(
     TARGET svd_example POST_BUILD

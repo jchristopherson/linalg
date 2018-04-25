@@ -116,7 +116,7 @@ add_subdirectory(src)
 # ------------------------------------------------------------------------------
 # EXAMPLES
 # ------------------------------------------------------------------------------
-option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" ON)
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
 if (BUILD_LINALG_EXAMPLES)
   message(STATUS "Building LINALG examples.")
   add_subdirectory(examples)
@@ -125,7 +125,7 @@ endif()
 # ------------------------------------------------------------------------------
 # TESTS
 # ------------------------------------------------------------------------------
-option(BUILD_LINALG_TESTS "Build LINALG tests?" ON)
+option(BUILD_LINALG_TESTS "Build LINALG tests?" OFF)
 if (BUILD_LINALG_TESTS)
   message(STATUS "Building LINALG tests.")
   add_subdirectory(tests)

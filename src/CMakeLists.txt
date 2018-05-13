@@ -230,21 +230,21 @@ set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
 # Define the installation instructions
 install(TARGETS linalg ${BLAS_LIBRARY}
     EXPORT linalgTargets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION linalg/bin
+    LIBRARY DESTINATION linalg/lib
+    ARCHIVE DESTINATION linalg/lib
     CONFIGURATIONS Release
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION linalg/include
 )
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include
-    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/linalg
     COMPONENT Devel
 )
 
 # Include the documentation
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/html DESTINATION doc)
-install(FILES ${PROJECT_SOURCE_DIR}/doc/refman.pdf DESTINATION doc)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/html DESTINATION linalg/doc)
+install(FILES ${PROJECT_SOURCE_DIR}/doc/refman.pdf DESTINATION linalg/doc)
 
 # Define the version file
 include(CMakePackageConfigHelpers)

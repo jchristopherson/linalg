@@ -265,7 +265,7 @@ configure_file(
     COPYONLY
 )
 
-set(ConfigPackageLocation lib/cmake/linalg)
+set(ConfigPackageLocation linalg/lib/cmake/linalg)
 install(
     EXPORT linalgTargets
     FILE linalgTargets.cmake

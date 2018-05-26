@@ -184,7 +184,7 @@ Mode 3: (923.5669 Hz)
 This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
 
 ## Documentation
-Documentation can be found [here](doc/refman.pdf)
+Documentation can be found [here](http://htmlpreview.github.io/?https://github.com/jchristopherson/linalg/blob/master/doc/html/index.html)
 
 ## External Libraries
 Here is a list of external code libraries utilized by this library.

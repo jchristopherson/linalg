@@ -8,11 +8,9 @@ var searchData=
   ['la_5fmatrix_5fformat_5ferror',['la_matrix_format_error',['../namespacelinalg__constants.html#a7f486be4cebd7e76639f1adfac5b7b38',1,'linalg_constants']]],
   ['la_5fout_5fof_5fmemory_5ferror',['la_out_of_memory_error',['../namespacelinalg__constants.html#a8e74f1668032bcaf14926e7922835ab9',1,'linalg_constants']]],
   ['la_5fsingular_5fmatrix_5ferror',['la_singular_matrix_error',['../namespacelinalg__constants.html#a148955f3cedb137453b00f829914e1f7',1,'linalg_constants']]],
-  ['linalg_5fc_5fbinding',['linalg_c_binding',['../namespacelinalg__c__binding.html',1,'']]],
   ['linalg_5fconstants',['linalg_constants',['../namespacelinalg__constants.html',1,'']]],
   ['linalg_5fcore',['linalg_core',['../namespacelinalg__core.html',1,'']]],
   ['linalg_5fimmutable',['linalg_immutable',['../namespacelinalg__immutable.html',1,'']]],
   ['lu_5ffactor',['lu_factor',['../interfacelinalg__core_1_1lu__factor.html',1,'linalg_core']]],
-  ['lu_5ffactor_5fc',['lu_factor_c',['../namespacelinalg__c__binding.html#ad56b68663844796fb3d20fb1ee0e75c8',1,'linalg_c_binding']]],
   ['lu_5fresults',['lu_results',['../structlinalg__immutable_1_1lu__results.html',1,'linalg_immutable']]]
 ];

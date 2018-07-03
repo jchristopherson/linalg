@@ -287,7 +287,6 @@ install(
 
 # Include the documentation
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/html DESTINATION linalg/doc)
-install(FILES ${PROJECT_SOURCE_DIR}/doc/refman.pdf DESTINATION linalg/doc)
 
 # Define the version file
 include(CMakePackageConfigHelpers)

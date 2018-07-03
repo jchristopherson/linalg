@@ -2,5 +2,5 @@
     "name": "linalg-jchristopherson",
     "description": "A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.",
     "author": "Jason Christopherson",
-    "version": "1.4.3"
+    "version": "1.5.0"
 }

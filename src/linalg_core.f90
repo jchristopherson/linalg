@@ -241,6 +241,7 @@ end interface
 !! @endcode
 interface lu_factor
     module procedure :: lu_factor_dbl
+    module procedure :: lu_factor_cmplx
 end interface
 
 !> @brief Extracts the L and U matrices from the condensed [L\\U] storage
@@ -309,7 +310,9 @@ end interface
 !! @endcode
 interface form_lu
     module procedure :: form_lu_all
+    module procedure :: form_lu_all_cmplx
     module procedure :: form_lu_only
+    module procedure :: form_lu_only_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -1997,6 +2000,35 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Computes the LU factorization of a complex-valued M-by-N matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+    !! elements of L are not stored.
+    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+    !!  operations.  The array stored pivot information such that row I is
+    !!  interchanged with row IPVT(I).
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine ZGETRF.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    module subroutine lu_factor_cmplx(a, ipvt, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), dimension(:) :: ipvt
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Extracts the L, U, and P matrices from the output of the
     !! @ref lu_factor routine.
     !!
@@ -2036,6 +2068,46 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Extracts the L, U, and P matrices from the output of the
+    !! @ref lu_factor routine.
+    !!
+    !! @param[in,out] lu On input, the N-by-N matrix as output by
+    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param[in] ipvt The N-element pivot array as output by
+    !!  @ref lu_factor.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
+    !!  written.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!
+    !! @par Remarks
+    !! This routine allows extraction of the actual "L", "U", and "P" matrices
+    !! of the decomposition.  To use these matrices to solve the system A*X = B,
+    !! the following approach is used.
+    !!
+    !! 1. First, solve the linear system: L*Y = P*B for Y.
+    !! 2. Second, solve the linear system: U*X = Y for X.
+    !!
+    !! Notice, as both L and U are triangular in structure, the above equations
+    !! can be solved by forward and backward substitution.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    module subroutine form_lu_all_cmplx(lu, ipvt, u, p, err)
+        complex(real64), intent(inout), dimension(:,:) :: lu
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(out), dimension(:,:) :: u
+        real(real64), intent(out), dimension(:,:) :: p
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Extracts the L, and U matrices from the output of the
     !! @ref lu_factor routine.
     !!
@@ -2052,6 +2124,25 @@ interface
     module subroutine form_lu_only(lu, u, err)
         real(real64), intent(inout), dimension(:,:) :: lu
         real(real64), intent(out), dimension(:,:) :: u
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Extracts the L, and U matrices from the output of the
+    !! @ref lu_factor routine.
+    !!
+    !! @param[in,out] lu On input, the N-by-N matrix as output by
+    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    module subroutine form_lu_only_cmplx(lu, u, err)
+        complex(real64), intent(inout), dimension(:,:) :: lu
+        complex(real64), intent(out), dimension(:,:) :: u
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

@@ -43,7 +43,45 @@ else()
         external/lapack/BLAS/SRC/idamax.f
         external/lapack/BLAS/SRC/lsame.f
         external/lapack/BLAS/SRC/xerbla.f
+        external/lapack/BLAS/SRC/dcabs1.f
+        external/lapack/BLAS/SRC/dzasum.f
+        external/lapack/BLAS/SRC/dznrm2.f
+        external/lapack/BLAS/SRC/izamax.f
+        external/lapack/BLAS/SRC/zaxpy.f
+        external/lapack/BLAS/SRC/zcopy.f
+        external/lapack/BLAS/SRC/zdotc.f
+        external/lapack/BLAS/SRC/zdotu.f
+        external/lapack/BLAS/SRC/zdscal.f
+        external/lapack/BLAS/SRC/zrotg.f
+        external/lapack/BLAS/SRC/zscal.f
+        external/lapack/BLAS/SRC/zswap.f
+        external/lapack/BLAS/SRC/zdrot.f
+        external/lapack/BLAS/SRC/zgemv.f
+        external/lapack/BLAS/SRC/zgbmv.f
+        external/lapack/BLAS/SRC/zhemv.f
+        external/lapack/BLAS/SRC/zhbmv.f
+        external/lapack/BLAS/SRC/zhpmv.f
+        external/lapack/BLAS/SRC/ztrmv.f
+        external/lapack/BLAS/SRC/ztbmv.f
+        external/lapack/BLAS/SRC/ztpmv.f
+        external/lapack/BLAS/SRC/ztrsv.f
+        external/lapack/BLAS/SRC/ztbsv.f
+        external/lapack/BLAS/SRC/ztpsv.f
+        external/lapack/BLAS/SRC/zgerc.f
+        external/lapack/BLAS/SRC/zgeru.f
+        external/lapack/BLAS/SRC/zher.f
+        external/lapack/BLAS/SRC/zhpr.f
+        external/lapack/BLAS/SRC/zher2.f
+        external/lapack/BLAS/SRC/zhpr2.f
         external/lapack/BLAS/SRC/zgemm.f
+        external/lapack/BLAS/SRC/zsymm.f
+        external/lapack/BLAS/SRC/zsyrk.f
+        external/lapack/BLAS/SRC/zsyr2k.f
+        external/lapack/BLAS/SRC/ztrmm.f
+        external/lapack/BLAS/SRC/ztrsm.f
+        external/lapack/BLAS/SRC/zhemm.f
+        external/lapack/BLAS/SRC/zherk.f
+        external/lapack/BLAS/SRC/zher2k.f
     )
     add_library(blas ${blas_sources})
     set(BLAS_LIBRARY blas)
@@ -181,6 +219,10 @@ set(lapack_sources
     external/lapack/SRC/iparmq.f
     external/lapack/SRC/dtrevc3.f
     external/lapack/SRC/dgetrf2.f
+    external/lapack/SRC/zgetrf.f
+    external/lapack/SRC/zgetf2.f
+    external/lapack/SRC/zlaswp.f
+    external/lapack/SRC/zgetrf2.f
 )
 
 # Define the QRUPDATE source files

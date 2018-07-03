@@ -41,6 +41,9 @@ program main
     
     rst = test_lu_solve()
     if (.not.rst) overall = .false.
+
+    rst = test_lu_factor_cmplx()
+    if (.not.rst) overall = .false.
     
 
     ! QR Factorization Tests

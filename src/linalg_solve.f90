@@ -19,8 +19,6 @@ contains
 
         ! Parameters
         character :: side, uplo, transa, diag
-        real(real64), parameter :: zero = 0.0d0
-        real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
         integer(int32) :: m, n, nrowa
@@ -68,6 +66,66 @@ contains
 
         ! Call DTRSM
         call DTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, b, m)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: lside, upper, trans, nounit
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        character :: side, uplo, transa, diag
+
+        ! Local Variables
+        integer(int32) :: m, n, nrowa
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(b, 1)
+        n = size(b, 2)
+        if (lside) then
+            nrowa = m
+            side = 'L'
+        else
+            nrowa = n
+            side = 'R'
+        end if
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+        if (trans) then
+            transa = 'C'
+        else
+            transa = 'N'
+        end if
+        if (nounit) then
+            diag = 'N'
+        else
+            diag = 'U'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check - matrix A must be square
+        if (size(a, 1) /= nrowa .or. size(a, 2) /= nrowa) then
+            ! ERROR: A must be square
+            call errmgr%report_error("solve_tri_mtx_cmplx", &
+                "The input matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZTRSM
+        call ZTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, b, m)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -128,6 +186,64 @@ contains
         call DTRSV(uplo, t, diag, n, a, n, x, 1)
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
+        ! Arguments
+        logical, intent(in) :: upper, trans, nounit
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: x
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        character :: uplo, t, diag
+        integer(int32) :: n
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(a, 1)
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+        if (trans) then
+            t = 'C'
+        else
+            t = 'N'
+        end if
+        if (nounit) then
+            diag = 'N'
+        else
+            diag = 'U'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            ! ERROR: A must be square
+            call errmgr%report_error("solve_tri_vec_cmplx", &
+                "The input matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        else if (size(x) /= n) then
+            ! ERROR: Inner matrix dimensions must agree
+            call errmgr%report_error("solve_tri_vec_cmplx", &
+                "The inner matrix dimensions must be equal.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZTRSV
+        call ZTRSV(uplo, t, diag, n, a, n, x, 1)
+    end subroutine
+
 ! ******************************************************************************
 ! LU SOLUTION
 ! ------------------------------------------------------------------------------
@@ -176,6 +292,51 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_lu_mtx_cmplx(a, ipvt, b, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: n, nrhs, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        nrhs = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 1
+        else if (size(ipvt) /= n) then
+            flag = 2
+        else if (size(b, 1) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lu_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGETRS
+        call ZGETRS("N", n, nrhs, a, n, ipvt, b, n, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_lu_vec(a, ipvt, b, err)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
@@ -217,6 +378,50 @@ contains
 
         ! Call DGETRS
         call DGETRS("N", n, 1, a, n, ipvt, b, n, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_lu_vec_cmplx(a, ipvt, b, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(inout), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 1
+        else if (size(ipvt) /= n) then
+            flag = 2
+        else if (size(b) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lu_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGETRS
+        call ZGETRS("N", n, 1, a, n, ipvt, b, n, flag)
     end subroutine
 
 ! ******************************************************************************

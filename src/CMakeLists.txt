@@ -223,6 +223,7 @@ set(lapack_sources
     external/lapack/SRC/zgetf2.f
     external/lapack/SRC/zlaswp.f
     external/lapack/SRC/zgetrf2.f
+    external/lapack/SRC/zgetrs.f
 )
 
 # Define the QRUPDATE source files

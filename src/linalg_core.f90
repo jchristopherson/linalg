@@ -1007,7 +1007,9 @@ end interface
 !! @endcode
 interface solve_triangular_system
     module procedure :: solve_tri_mtx
+    module procedure :: solve_tri_mtx_cmplx
     module procedure :: solve_tri_vec
+    module procedure :: solve_tri_vec_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -1069,7 +1071,9 @@ end interface
 !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
 interface solve_lu
     module procedure :: solve_lu_mtx
+    module procedure :: solve_lu_mtx_cmplx
     module procedure :: solve_lu_vec
+    module procedure :: solve_lu_vec_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -2800,6 +2804,42 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, or
+    !! X * op(A) = alpha * B, where A is a triangular matrix.
+    !!
+    !! @param[in] lside Set to true to solve op(A) * X = alpha * B; else, set to
+    !!  false to solve X * op(A) = alpha * B.
+    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
+    !!  set to false if A is a lower triangular matrix.
+    !! @param[in] trans Set to true if op(A) = A**H; else, set to false if
+    !!  op(A) = A.
+    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
+    !!  every diagonal element); else, set to false if A is a unit-diagonal
+    !!  matrix.
+    !! @param[in] alpha The scalar multiplier to B.
+    !! @param[in] a If @p lside is true, the M-by-M triangular matrix on which
+    !!  to operate; else, if @p lside is false, the N-by-N triangular matrix on
+    !!  which to operate.
+    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
+    !!  M-by-N solution.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
+    !!      @p a and @p b are not compatible.
+    !!
+    !! @par Notes
+    !! This routine is based upon the BLAS routine ZTRSM.
+    module subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)
+        logical, intent(in) :: lside, upper, trans, nounit
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Solves the system of equations: op(A) * X = B, where A is a
     !!  triangular matrix.
     !!
@@ -2851,6 +2891,57 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Solves the system of equations: op(A) * X = B, where A is a
+    !!  triangular matrix.
+    !!
+    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
+    !!  set to false if A is a lower triangular matrix.
+    !! @param[in] trans Set to true if op(A) = A**H; else, set to false if
+    !!  op(A) = A.
+    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
+    !!  every diagonal element); else, set to false if A is a unit-diagonal
+    !!  matrix.
+    !! @param[in] a The N-by-N triangular matrix.
+    !! @param[in,out] x On input, the N-element right-hand-side array.  On
+    !!  output, the N-element solution array.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square, or if the sizes of
+    !!      @p a and @p b are not compatible.
+    !!
+    !!
+    !! @par Usage
+    !! To solve a triangular system of N equations of N unknowns A*X = B, where
+    !! A is an N-by-N upper triangular matrix, and B and X are N-element
+    !! arrays, the following code will suffice.
+    !!
+    !! @code{.f90}
+    !! ! Solve the system: A*X = B, where A is an upper triangular N-by-N
+    !! ! matrix, and B and X are N-elements in size.
+    !!
+    !! ! Variables
+    !! integer(int32) :: info
+    !! real(real64), dimension(n, n) :: a
+    !! real(real64), dimension(n) :: b
+    !!
+    !! ! Initialize A and B...
+    !!
+    !! ! Solve A*X = B for X - Note: X overwrites B.
+    !! call solve_triangular_system(.true., .false., a, b)
+    !! @endcode
+    !!
+    !! @par Notes
+    !! This routine is based upon the BLAS routine ZTRSV.
+    module subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
+        logical, intent(in) :: upper, trans, nounit
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Solves a system of LU-factored equations.
     !!
     !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
@@ -2874,6 +2965,29 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Solves a system of complex-valued LU-factored equations.
+    !!
+    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
+    !! @param[in,out] b On input, the N-by-NRHS right-hand-side matrix.  On
+    !!  output, the N-by-NRHS solution matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!
+    !! @par Notes
+    !! The routine is based upon the LAPACK routine DGETRS.
+    module subroutine solve_lu_mtx_cmplx(a, ipvt, b, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Solves a system of LU-factored equations.
     !!
     !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
@@ -2894,6 +3008,29 @@ interface
         real(real64), intent(in), dimension(:,:) :: a
         integer(int32), intent(in), dimension(:) :: ipvt
         real(real64), intent(inout), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Solves a system of LU-factored equations.
+    !!
+    !! @param[in] a The N-by-N LU factored matrix as output by lu_factor.
+    !! @param[in] ipvt The N-element pivot array as output by lu_factor.
+    !! @param[in,out] b On input, the N-element right-hand-side array.  On
+    !!  output, the N-element solution array.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!
+    !! @par Notes
+    !! The routine is based upon the LAPACK routine DGETRS.
+    module subroutine solve_lu_vec_cmplx(a, ipvt, b, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(inout), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

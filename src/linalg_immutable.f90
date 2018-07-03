@@ -36,6 +36,7 @@ module linalg_immutable
     public :: mat_solve_lower_tri
     public :: mat_eigen
     public :: lu_results
+    public :: lu_results_cmplx
     public :: qr_results
     public :: svd_results
     public :: eigen_results
@@ -70,6 +71,8 @@ module linalg_immutable
     interface mat_solve_upper_tri
         module procedure :: mat_solve_upper_tri_1
         module procedure :: mat_solve_upper_tri_2
+        module procedure :: mat_solve_upper_tri_1_cmplx
+        module procedure :: mat_solve_upper_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -78,6 +81,16 @@ module linalg_immutable
     interface mat_solve_lower_tri
         module procedure :: mat_solve_lower_tri_1
         module procedure :: mat_solve_lower_tri_2
+        module procedure :: mat_solve_lower_tri_1_cmplx
+        module procedure :: mat_solve_lower_tri_2_cmplx
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of a square matrix.  Notice,
+    !! partial row pivoting is utilized.
+    interface mat_lu
+        module procedure :: mat_lu_dbl
+        module procedure :: mat_lu_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -95,6 +108,17 @@ module linalg_immutable
         real(real64), allocatable, dimension(:,:) :: l
         !> The upper triangular matrix U.
         real(real64), allocatable, dimension(:,:) :: u
+        !> The row pivot tracking matrix P where P A = L U.
+        real(real64), allocatable, dimension(:,:) :: p
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of an LU factorization.
+    type lu_results_cmplx
+        !> The lower triangular matrix L.
+        complex(real64), allocatable, dimension(:,:) :: l
+        !> The upper triangular matrix U.
+        complex(real64), allocatable, dimension(:,:) :: u
         !> The row pivot tracking matrix P where P A = L U.
         real(real64), allocatable, dimension(:,:) :: p
     end type
@@ -296,10 +320,40 @@ end function
     !!
     !! @param[in] a The N-by-N matrix to factor.
     !! @result The L, U, and P matrices resulting from the factorization.
-    function mat_lu(a) result(x)
+    function mat_lu_dbl(a) result(x)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
         type(lu_results) :: x
+
+        ! Local Variables
+        integer(int32) :: n
+        integer(int32), allocatable, dimension(:) :: ipvt
+
+        ! Memory Allocation
+        n = size(a, 1)
+        allocate(ipvt(n))
+        allocate(x%l(n,n))
+        allocate(x%u(n,n))
+        allocate(x%p(n,n))
+
+        ! Compute the factorization
+        x%l = a
+        call lu_factor(x%l, ipvt)
+
+        ! Form L, U, and P
+        call form_lu(x%l, ipvt, x%u, x%p)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of a square matrix.  Notice,
+    !! partial row pivoting is utilized.
+    !!
+    !! @param[in] a The N-by-N matrix to factor.
+    !! @result The L, U, and P matrices resulting from the factorization.
+    function mat_lu_cmplx(a) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        type(lu_results_cmplx) :: x
 
         ! Local Variables
         integer(int32) :: n
@@ -583,6 +637,42 @@ end function
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves the upper triangular system A X = B, where A is an
+    !! upper triangular matrix.
+    !!
+    !! @param[in] a The M-by-M upper triangluar matrix A.
+    !! @param[in] b The M-by-NRHS matrix B.
+    !! @return The M-by-NRHS solution matrix X.
+    function mat_solve_upper_tri_1_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(b, 1), size(b, 2)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .true., .false., .true., &
+            (1.0d0, 0.0d0), a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the upper triangular system A X = B, where A is an
+    !! upper triangular matrix.
+    !!
+    !! @param[in] a The M-by-M upper triangluar matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The M-element solution array X.
+    function mat_solve_upper_tri_2_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(b)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .false., .true., a, x)
+    end function
+
+! ------------------------------------------------------------------------------
     !> @brief Solves the lower triangular system A X = B, where A is a
     !! lower triangular matrix.
     !!
@@ -612,6 +702,42 @@ end function
         real(real64), intent(in), dimension(:,:) :: a
         real(real64), intent(in), dimension(:) :: b
         real(real64), dimension(size(b)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.false., .false., .true., a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the lower triangular system A X = B, where A is a
+    !! lower triangular matrix.
+    !!
+    !! @param[in] a The M-by-M lower triangluar matrix A.
+    !! @param[in] b The M-by-NRHS matrix B.
+    !! @return The M-by-NRHS solution matrix X.
+    function mat_solve_lower_tri_1_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(b, 1), size(b, 2)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .false., .false., .true., &
+            (1.0d0, 0.0d0), a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the lower triangular system A X = B, where A is a
+    !! lower triangular matrix.
+    !!
+    !! @param[in] a The M-by-M lower triangluar matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The M-element solution array X.
+    function mat_solve_lower_tri_2_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(b)) :: x
 
         ! Process
         x = b

@@ -47,6 +47,8 @@ module linalg_immutable
     interface mat_mult_diag
         module procedure :: mat_mult_diag_1
         module procedure :: mat_mult_diag_2
+        module procedure :: mat_mult_diag_1_cmplx
+        module procedure :: mat_mult_diag_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -55,6 +57,8 @@ module linalg_immutable
     interface mat_mult_upper_tri
         module procedure :: mat_mult_upper_tri_1
         module procedure :: mat_mult_upper_tri_2
+        module procedure :: mat_mult_upper_tri_1_cmplx
+        module procedure :: mat_mult_upper_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -63,6 +67,8 @@ module linalg_immutable
     interface mat_mult_lower_tri
         module procedure :: mat_mult_lower_tri_1
         module procedure :: mat_mult_lower_tri_2
+        module procedure :: mat_mult_lower_tri_1_cmplx
+        module procedure :: mat_mult_lower_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -225,6 +231,59 @@ function mat_mult_diag_2(a, b) result(c)
 end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-by-N matrix B where P is greater than or equal to M.
+    !! @return The resulting M-by-N matrix.
+    function mat_mult_diag_1_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), dimension(size(a), size(b, 2)) :: c
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Process
+        if (size(b, 1) > size(a)) then
+            call diag_mtx_mult(.true., .false., one, a, b(1:size(a),:), &
+                zero, c)
+        else
+            call diag_mtx_mult(.true., .false., one, a, b, zero, c)
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-element array B where P is greater than or equal to M.
+    !! @return The resulting M-element array.
+    function mat_mult_diag_2_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:) :: a, b
+        complex(real64), dimension(size(a)) :: c
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        complex(real64), dimension(size(a), 1) :: bc, cc
+
+        ! Process
+        bc(:,1) = b(1:min(size(a), size(b)))
+        call diag_mtx_mult(.true., .false., one, a, bc, zero, cc)
+        c = cc(:,1)
+    end function
+
+! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = A * B, where A is an upper
     !! triangular matrix.
     !!
@@ -294,6 +353,78 @@ end function
             ! Process
             c = b
             call DTRMV('L', 'N', 'N', size(a, 1), a, size(a, 1), c, 1)
+        end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation C = A * B, where A is an upper
+    !! triangular matrix.
+    !!
+    !! @param[in] a The M-by-M triangular matrix A.
+    !! @param[in] b The M-by-N matrix B.
+    !! @return The resulting M-by-N matrix.
+    function mat_mult_upper_tri_1_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(a, 1), size(b, 2)) :: c
+
+        ! Process
+        c = b
+        call ZTRMM('L', 'U', 'N', 'N', size(b, 1), size(b, 2), 1.0d0, &
+            a, size(a, 1), c, size(c, 1))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation C = A * B, where A is an upper
+    !! triangular matrix.
+    !!
+    !! @param[in] a The M-by-M triangular matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The resulting M-element array.
+    function mat_mult_upper_tri_2_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(a, 1)) :: c
+
+        ! Process
+        c = b
+        call ZTRMV('U', 'N', 'N', size(a, 1), a, size(a, 1), c, 1)
+    end function
+
+    ! ------------------------------------------------------------------------------
+        !> @brief Computes the matrix operation C = A * B, where A is a lower
+        !! triangular matrix.
+        !!
+        !! @param[in] a The M-by-M triangular matrix A.
+        !! @param[in] b The M-by-N matrix B.
+        !! @return The resulting M-by-N matrix.
+        function mat_mult_lower_tri_1_cmplx(a, b) result(c)
+            ! Arguments
+            complex(real64), intent(in), dimension(:,:) :: a, b
+            complex(real64), dimension(size(a, 1), size(b, 2)) :: c
+
+            ! Process
+            c = b
+            call ZTRMM('L', 'L', 'N', 'N', size(b, 1), size(b, 2), 1.0d0, &
+                a, size(a, 1), c, size(c, 1))
+        end function
+
+    ! ------------------------------------------------------------------------------
+        !> @brief Computes the matrix operation C = A * B, where A is a lower
+        !! triangular matrix.
+        !!
+        !! @param[in] a The M-by-M triangular matrix A.
+        !! @param[in] b The M-element array B.
+        !! @return The resulting M-element array.
+        function mat_mult_lower_tri_2_cmplx(a, b) result(c)
+            ! Arguments
+            complex(real64), intent(in), dimension(:,:) :: a
+            complex(real64), intent(in), dimension(:) :: b
+            complex(real64), dimension(size(a, 1)) :: c
+
+            ! Process
+            c = b
+            call ZTRMV('L', 'N', 'N', size(a, 1), a, size(a, 1), c, 1)
         end function
 
 ! ------------------------------------------------------------------------------

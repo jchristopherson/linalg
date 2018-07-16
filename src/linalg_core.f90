@@ -186,6 +186,7 @@ end interface
 !! where A is a triangular matrix.
 interface tri_mtx_mult
     module procedure :: tri_mtx_mult_dbl
+    module procedure :: tri_mtx_mult_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -2030,6 +2031,37 @@ interface
         real(real64), intent(in) :: alpha, beta
         real(real64), intent(in), dimension(:,:) :: a
         real(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Computes the triangular matrix operation:
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+    !! where A is a triangular matrix.
+    !!
+    !! @param[in] upper Set to true if matrix A is upper triangular, and
+    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+    !!  be computed.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
+    !!  only the upper triangular portion of this matrix is referenced; else,
+    !!  if @p upper is false, only the lower triangular portion of this matrix
+    !!  is referenced.
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
+    !!  solution matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    module subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
+        logical, intent(in) :: upper
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

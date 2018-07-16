@@ -1262,7 +1262,114 @@ contains
             write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
-            call errmgr%report_error("tri_mtx_mult", trim(errmsg), &
+            call errmgr%report_error("tri_mtx_mult_dbl", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        if (upper) then
+            ! Form: B = alpha * A**T * A + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(k,i) * a(k,j)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        if (i /= j) b(j,i) = temp
+                    end do
+                end do
+            else
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(k,i) * a(k,j)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
+            end if
+        else
+            ! Form: B = alpha * A * A**T + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        if (i /= j) b(j,i) = temp
+                    end do
+                end do
+            else
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
+            end if
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
+        ! Arguments
+        logical, intent(in) :: upper
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, j, k, n, d1, d2, flag
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        d1 = n
+        d2 = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 3
+            d2 = size(a, 2)
+        else if (size(b, 1) /= n .or. size(b, 2) /= n) then
+            flag = 5
+            d1 = size(b, 1)
+            d2 = size(b, 2)
+        end if
+        if (flag /= 0) then
+            ! ERROR: Incorrectly sized matrix
+            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+                " was not sized appropriately.  A matrix of ", n, "-by-", n, &
+                "was expected, but a matrix of ", d1, "-by-", d2, " was found."
+            call errmgr%report_error("tri_mtx_mult_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if

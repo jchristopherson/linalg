@@ -10,6 +10,7 @@ set(linalg_test_sources
     test_misc.f90
     test_lu.f90
     test_sort.f90
+    test_immutable.f90
 )
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)

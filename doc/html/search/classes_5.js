@@ -1,6 +1,7 @@
 var searchData=
 [
   ['mat_5feigen',['mat_eigen',['../interfacelinalg__immutable_1_1mat__eigen.html',1,'linalg_immutable']]],
+  ['mat_5flu',['mat_lu',['../interfacelinalg__immutable_1_1mat__lu.html',1,'linalg_immutable']]],
   ['mat_5fmult_5fdiag',['mat_mult_diag',['../interfacelinalg__immutable_1_1mat__mult__diag.html',1,'linalg_immutable']]],
   ['mat_5fmult_5flower_5ftri',['mat_mult_lower_tri',['../interfacelinalg__immutable_1_1mat__mult__lower__tri.html',1,'linalg_immutable']]],
   ['mat_5fmult_5fupper_5ftri',['mat_mult_upper_tri',['../interfacelinalg__immutable_1_1mat__mult__upper__tri.html',1,'linalg_immutable']]],

@@ -106,11 +106,17 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a9754468f10374e34e1a2fb40ce1206e0"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__lower__tri.html#a9754468f10374e34e1a2fb40ce1206e0">mat_mult_lower_tri_2</a> (a, b)</td></tr>
 <tr class="memdesc:a9754468f10374e34e1a2fb40ce1206e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="#a9754468f10374e34e1a2fb40ce1206e0">More...</a><br /></td></tr>
 <tr class="separator:a9754468f10374e34e1a2fb40ce1206e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace28e02e648b20c69f10919e0e9ab839"><td class="memItemLeft" align="right" valign="top">complex(real64) function, dimension(size(a, 1), size(b, 2))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__lower__tri.html#ace28e02e648b20c69f10919e0e9ab839">mat_mult_lower_tri_1_cmplx</a> (a, b)</td></tr>
+<tr class="memdesc:ace28e02e648b20c69f10919e0e9ab839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="#ace28e02e648b20c69f10919e0e9ab839">More...</a><br /></td></tr>
+<tr class="separator:ace28e02e648b20c69f10919e0e9ab839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1a3df11bc32e8f90d4f623620c7006f"><td class="memItemLeft" align="right" valign="top">complex(real64) function, dimension(size(a, 1))&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfacelinalg__immutable_1_1mat__mult__lower__tri.html#ac1a3df11bc32e8f90d4f623620c7006f">mat_mult_lower_tri_2_cmplx</a> (a, b)</td></tr>
+<tr class="memdesc:ac1a3df11bc32e8f90d4f623620c7006f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the matrix operation C = A * B, where A is a lower triangular matrix.  <a href="#ac1a3df11bc32e8f90d4f623620c7006f">More...</a><br /></td></tr>
+<tr class="separator:ac1a3df11bc32e8f90d4f623620c7006f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Computes the matrix operation C = A * B, where A is a lower triangular matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00062">62</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00070">70</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
 </div><h2 class="groupheader">Member Function/Subroutine Documentation</h2>
 <a id="a588ba3472cb80109671f756d611ed023"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a588ba3472cb80109671f756d611ed023">&#9670;&nbsp;</a></span>mat_mult_lower_tri_1()</h2>
@@ -156,7 +162,55 @@ Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00247">247</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00379">379</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a id="ace28e02e648b20c69f10919e0e9ab839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace28e02e648b20c69f10919e0e9ab839">&#9670;&nbsp;</a></span>mat_mult_lower_tri_1_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">complex(real64) function, dimension(size(a, 1), size(b, 2)) linalg_immutable::mat_mult_lower_tri::mat_mult_lower_tri_1_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">complex(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">complex(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-by-N matrix B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-by-N matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00451">451</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
 
 </div>
 </div>
@@ -204,7 +258,55 @@ Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting M-element array. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00265">265</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00397">397</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
+
+</div>
+</div>
+<a id="ac1a3df11bc32e8f90d4f623620c7006f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1a3df11bc32e8f90d4f623620c7006f">&#9670;&nbsp;</a></span>mat_mult_lower_tri_2_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">complex(real64) function, dimension(size(a, 1)) linalg_immutable::mat_mult_lower_tri::mat_mult_lower_tri_2_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">complex(real64), dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">complex(real64), dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the matrix operation C = A * B, where A is a lower triangular matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-M triangular matrix A. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The M-element array B. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting M-element array. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="linalg__immutable_8f90_source.html#l00469">469</a> of file <a class="el" href="linalg__immutable_8f90_source.html">linalg_immutable.f90</a>.</p>
 
 </div>
 </div>

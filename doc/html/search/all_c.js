@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['values',['values',['../structlinalg__immutable_1_1eigen__results.html#abb60901ab160c6fd232cfb46ed0bf3cc',1,'linalg_immutable::eigen_results']]],
-  ['vectors',['vectors',['../structlinalg__immutable_1_1eigen__results.html#a982607b9c3ff93504bb4524dcd31a442',1,'linalg_immutable::eigen_results']]],
-  ['vt',['vt',['../structlinalg__immutable_1_1svd__results.html#af5c35f3392431179a5cb15d1cddf7cb1',1,'linalg_immutable::svd_results']]]
+  ['u',['u',['../structlinalg__immutable_1_1lu__results.html#ab1af96c7808037f63563e1bf912c4dad',1,'linalg_immutable::lu_results::u()'],['../structlinalg__immutable_1_1lu__results__cmplx.html#a7488afe2004b11c8fed4c517400fde98',1,'linalg_immutable::lu_results_cmplx::u()'],['../structlinalg__immutable_1_1svd__results.html#a582822c9765048fcb8632d72a6ed506a',1,'linalg_immutable::svd_results::u()']]]
 ];

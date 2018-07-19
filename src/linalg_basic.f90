@@ -360,7 +360,7 @@ contains
         ! Input Check
         if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
             ! ERROR: One of the input arrays is not sized correctly
-            call errmgr%report_error("diag_mtx_mult_mtx", &
+            call errmgr%report_error("diag_mtx_mult_mtx2", &
                 "Input number 3 is not sized correctly.", &
                 LA_ARRAY_SIZE_ERROR)
             return
@@ -679,6 +679,211 @@ contains
                     c(:,k+1:m) = beta * c(:,k+1:m)
                 end if
             end if
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx_cmplx(lside, trans, alpha, a, b, beta, c, err)
+        ! Arguments
+        logical, intent(in) :: lside, trans
+        complex(real64) :: alpha, beta
+        complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(a)
+        nrowb = size(b, 1)
+        ncolb = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (lside) then
+            if (k > m) then
+                flag = 4
+            else
+                if (trans) then
+                    ! Compute C = alpha * A * B**T + beta * C
+                    if (nrowb /= n .or. ncolb < k) flag = 5
+                else
+                    ! Compute C = alpha * A * B + beta * C
+                    if (nrowb < k .or. ncolb /= n) flag = 5
+                end if
+            end if
+        else
+            if (k > n) then
+                flag = 4
+            else
+                if (trans) then
+                    ! Compute C = alpha * B**T * A + beta * C
+                    if (ncolb /= m .or. nrowb < k) flag = 5
+                else
+                    ! Compute C = alpha * B * A + beta * C
+                    if (nrowb /= m .or. ncolb < k) flag = 5
+                end if
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("diag_mtx_mult_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Deal with ALPHA == 0
+        if (alpha == 0) then
+            if (beta == zero) then
+                c = zero
+            else if (beta /= one) then
+                c = beta * c
+            end if
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            if (trans) then
+                ! Compute C = alpha * A * B**T + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else
+                ! Compute C = alpha * A * B + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                end do
+            end if
+
+            ! Handle extra rows
+            if (m > k) then
+                if (beta == zero) then
+                    c(k+1:m,:) = zero
+                else
+                    c(k+1:m,:) = beta * c(k+1:m,:)
+                end if
+            end if
+        else
+            if (trans) then
+                ! Compute C = alpha * B**T * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else
+                ! Compute C = alpha * B * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                end do
+            end if
+
+            ! Handle extra columns
+            if (n > k) then
+                if (beta == zero) then
+                    c(:,k+1:m) = zero
+                else if (beta /= one) then
+                    c(:,k+1:m) = beta * c(:,k+1:m)
+                end if
+            end if
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(b, 1)
+        n = size(b, 2)
+        k = size(a)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
+            ! ERROR: One of the input arrays is not sized correctly
+            call errmgr%report_error("diag_mtx_mult_mtx2_cmplx", &
+                "Input number 3 is not sized correctly.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            ! Compute B = alpha * A * B
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(i,:) = temp * b(i,:)
+            end do
+            if (m > k) b(k+1:m,:) = zero
+        else
+            ! Compute B = alpha * B * A
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(:,i) = temp * b(:,i)
+            end do
+            if (n > k) b(:,k+1:n) = zero
         end if
     end subroutine
 
@@ -1057,7 +1262,114 @@ contains
             write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
-            call errmgr%report_error("tri_mtx_mult", trim(errmsg), &
+            call errmgr%report_error("tri_mtx_mult_dbl", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        if (upper) then
+            ! Form: B = alpha * A**T * A + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(k,i) * a(k,j)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        if (i /= j) b(j,i) = temp
+                    end do
+                end do
+            else
+                do j = 1, n
+                    do i = 1, j
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(k,i) * a(k,j)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
+            end if
+        else
+            ! Form: B = alpha * A * A**T + beta * B
+            if (beta == zero) then
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp
+                        if (i /= j) b(j,i) = temp
+                    end do
+                end do
+            else
+                do j = 1, n
+                    do i = j, n
+                        temp = zero
+                        do k = 1, j
+                            temp = temp + a(i,k) * a(j,k)
+                        end do
+                        temp = alpha * temp
+                        b(i,j) = temp + beta * b(i,j)
+                        if (i /= j) b(j,i) = temp + beta * b(j,i)
+                    end do
+                end do
+            end if
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
+        ! Arguments
+        logical, intent(in) :: upper
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, j, k, n, d1, d2, flag
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        d1 = n
+        d2 = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 3
+            d2 = size(a, 2)
+        else if (size(b, 1) /= n .or. size(b, 2) /= n) then
+            flag = 5
+            d1 = size(b, 1)
+            d2 = size(b, 2)
+        end if
+        if (flag /= 0) then
+            ! ERROR: Incorrectly sized matrix
+            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+                " was not sized appropriately.  A matrix of ", n, "-by-", n, &
+                "was expected, but a matrix of ", d1, "-by-", d2, " was found."
+            call errmgr%report_error("tri_mtx_mult_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if

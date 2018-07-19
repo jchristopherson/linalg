@@ -36,9 +36,11 @@ module linalg_immutable
     public :: mat_solve_lower_tri
     public :: mat_eigen
     public :: lu_results
+    public :: lu_results_cmplx
     public :: qr_results
     public :: svd_results
     public :: eigen_results
+    public :: identity
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation: C = A * B, where A is a
@@ -46,6 +48,10 @@ module linalg_immutable
     interface mat_mult_diag
         module procedure :: mat_mult_diag_1
         module procedure :: mat_mult_diag_2
+        module procedure :: mat_mult_diag_3
+        module procedure :: mat_mult_diag_1_cmplx
+        module procedure :: mat_mult_diag_2_cmplx
+        module procedure :: mat_mult_diag_3_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -54,6 +60,8 @@ module linalg_immutable
     interface mat_mult_upper_tri
         module procedure :: mat_mult_upper_tri_1
         module procedure :: mat_mult_upper_tri_2
+        module procedure :: mat_mult_upper_tri_1_cmplx
+        module procedure :: mat_mult_upper_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -62,6 +70,8 @@ module linalg_immutable
     interface mat_mult_lower_tri
         module procedure :: mat_mult_lower_tri_1
         module procedure :: mat_mult_lower_tri_2
+        module procedure :: mat_mult_lower_tri_1_cmplx
+        module procedure :: mat_mult_lower_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -70,6 +80,8 @@ module linalg_immutable
     interface mat_solve_upper_tri
         module procedure :: mat_solve_upper_tri_1
         module procedure :: mat_solve_upper_tri_2
+        module procedure :: mat_solve_upper_tri_1_cmplx
+        module procedure :: mat_solve_upper_tri_2_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -78,6 +90,16 @@ module linalg_immutable
     interface mat_solve_lower_tri
         module procedure :: mat_solve_lower_tri_1
         module procedure :: mat_solve_lower_tri_2
+        module procedure :: mat_solve_lower_tri_1_cmplx
+        module procedure :: mat_solve_lower_tri_2_cmplx
+    end interface
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of a square matrix.  Notice,
+    !! partial row pivoting is utilized.
+    interface mat_lu
+        module procedure :: mat_lu_dbl
+        module procedure :: mat_lu_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -95,6 +117,17 @@ module linalg_immutable
         real(real64), allocatable, dimension(:,:) :: l
         !> The upper triangular matrix U.
         real(real64), allocatable, dimension(:,:) :: u
+        !> The row pivot tracking matrix P where P A = L U.
+        real(real64), allocatable, dimension(:,:) :: p
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of an LU factorization.
+    type lu_results_cmplx
+        !> The lower triangular matrix L.
+        complex(real64), allocatable, dimension(:,:) :: l
+        !> The upper triangular matrix U.
+        complex(real64), allocatable, dimension(:,:) :: u
         !> The row pivot tracking matrix P where P A = L U.
         real(real64), allocatable, dimension(:,:) :: p
     end type
@@ -179,26 +212,125 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-!> @brief Computes the matrix operation: C = A * B, where A is a
-!! diagonal matrix.
-!!
-!! @param[in] a The M-element array containing the diagonal elements of
-!!  the matrix A.
-!! @param[in] b The P-element array B where P is greater than or equal to M.
-!! @return The resulting M-element array.
-function mat_mult_diag_2(a, b) result(c)
-    ! Arguments
-    real(real64), intent(in), dimension(:) :: a, b
-    real(real64), dimension(size(a)) :: c
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-element array B where P is greater than or equal to M.
+    !! @return The resulting M-element array.
+    function mat_mult_diag_2(a, b) result(c)
+        ! Arguments
+        real(real64), intent(in), dimension(:) :: a, b
+        real(real64), dimension(size(a)) :: c
 
-    ! Local Variables
-    real(real64), dimension(size(a), 1) :: bc, cc
+        ! Local Variables
+        real(real64), dimension(size(a), 1) :: bc, cc
 
-    ! Process
-    bc(:,1) = b(1:min(size(a), size(b)))
-    call diag_mtx_mult(.true., .false., 1.0d0, a, bc, 0.0d0, cc)
-    c = cc(:,1)
-end function
+        ! Process
+        bc(:,1) = b(1:min(size(a), size(b)))
+        call diag_mtx_mult(.true., .false., 1.0d0, a, bc, 0.0d0, cc)
+        c = cc(:,1)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where B is a diagonal
+    !! matrix.
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The P-element array containing the diagonal matrix B where
+    !!  P is at least N.
+    !! @return The resulting M-by-P matrix.
+    function mat_mult_diag_3(a, b) result(c)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: b
+        real(real64), dimension(size(a, 1), size(b)) :: c
+
+        ! Process
+        if (size(a, 2) > size(b)) then
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a(:,1:size(b)), &
+                0.0d0, c)
+        else
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a, 0.0d0, c)
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-by-N matrix B where P is greater than or equal to M.
+    !! @return The resulting M-by-N matrix.
+    function mat_mult_diag_1_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), dimension(size(a), size(b, 2)) :: c
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Process
+        if (size(b, 1) > size(a)) then
+            call diag_mtx_mult(.true., .false., one, a, b(1:size(a),:), &
+                zero, c)
+        else
+            call diag_mtx_mult(.true., .false., one, a, b, zero, c)
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-element array B where P is greater than or equal to M.
+    !! @return The resulting M-element array.
+    function mat_mult_diag_2_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:) :: a, b
+        complex(real64), dimension(size(a)) :: c
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        complex(real64), dimension(size(a), 1) :: bc, cc
+
+        ! Process
+        bc(:,1) = b(1:min(size(a), size(b)))
+        call diag_mtx_mult(.true., .false., one, a, bc, zero, cc)
+        c = cc(:,1)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where B is a diagonal
+    !! matrix.
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The P-element array containing the diagonal matrix B where
+    !!  P is at least N.
+    !! @return The resulting M-by-P matrix.
+    function mat_mult_diag_3_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(a, 1), size(b)) :: c
+
+        ! Process
+        if (size(a, 2) > size(b)) then
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a(:,1:size(b)), &
+                0.0d0, c)
+        else
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a, 0.0d0, c)
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = A * B, where A is an upper
@@ -273,6 +405,78 @@ end function
         end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation C = A * B, where A is an upper
+    !! triangular matrix.
+    !!
+    !! @param[in] a The M-by-M triangular matrix A.
+    !! @param[in] b The M-by-N matrix B.
+    !! @return The resulting M-by-N matrix.
+    function mat_mult_upper_tri_1_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(a, 1), size(b, 2)) :: c
+
+        ! Process
+        c = b
+        call ZTRMM('L', 'U', 'N', 'N', size(b, 1), size(b, 2), 1.0d0, &
+            a, size(a, 1), c, size(c, 1))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation C = A * B, where A is an upper
+    !! triangular matrix.
+    !!
+    !! @param[in] a The M-by-M triangular matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The resulting M-element array.
+    function mat_mult_upper_tri_2_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(a, 1)) :: c
+
+        ! Process
+        c = b
+        call ZTRMV('U', 'N', 'N', size(a, 1), a, size(a, 1), c, 1)
+    end function
+
+    ! ------------------------------------------------------------------------------
+        !> @brief Computes the matrix operation C = A * B, where A is a lower
+        !! triangular matrix.
+        !!
+        !! @param[in] a The M-by-M triangular matrix A.
+        !! @param[in] b The M-by-N matrix B.
+        !! @return The resulting M-by-N matrix.
+        function mat_mult_lower_tri_1_cmplx(a, b) result(c)
+            ! Arguments
+            complex(real64), intent(in), dimension(:,:) :: a, b
+            complex(real64), dimension(size(a, 1), size(b, 2)) :: c
+
+            ! Process
+            c = b
+            call ZTRMM('L', 'L', 'N', 'N', size(b, 1), size(b, 2), 1.0d0, &
+                a, size(a, 1), c, size(c, 1))
+        end function
+
+    ! ------------------------------------------------------------------------------
+        !> @brief Computes the matrix operation C = A * B, where A is a lower
+        !! triangular matrix.
+        !!
+        !! @param[in] a The M-by-M triangular matrix A.
+        !! @param[in] b The M-element array B.
+        !! @return The resulting M-element array.
+        function mat_mult_lower_tri_2_cmplx(a, b) result(c)
+            ! Arguments
+            complex(real64), intent(in), dimension(:,:) :: a
+            complex(real64), intent(in), dimension(:) :: b
+            complex(real64), dimension(size(a, 1)) :: c
+
+            ! Process
+            c = b
+            call ZTRMV('L', 'N', 'N', size(a, 1), a, size(a, 1), c, 1)
+        end function
+
+! ------------------------------------------------------------------------------
     !> @brief Computes the determinant of a square matrix.
     !!
     !! @param[in] a The N-by-N matrix on which to operate.
@@ -296,10 +500,40 @@ end function
     !!
     !! @param[in] a The N-by-N matrix to factor.
     !! @result The L, U, and P matrices resulting from the factorization.
-    function mat_lu(a) result(x)
+    function mat_lu_dbl(a) result(x)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
         type(lu_results) :: x
+
+        ! Local Variables
+        integer(int32) :: n
+        integer(int32), allocatable, dimension(:) :: ipvt
+
+        ! Memory Allocation
+        n = size(a, 1)
+        allocate(ipvt(n))
+        allocate(x%l(n,n))
+        allocate(x%u(n,n))
+        allocate(x%p(n,n))
+
+        ! Compute the factorization
+        x%l = a
+        call lu_factor(x%l, ipvt)
+
+        ! Form L, U, and P
+        call form_lu(x%l, ipvt, x%u, x%p)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of a square matrix.  Notice,
+    !! partial row pivoting is utilized.
+    !!
+    !! @param[in] a The N-by-N matrix to factor.
+    !! @result The L, U, and P matrices resulting from the factorization.
+    function mat_lu_cmplx(a) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        type(lu_results_cmplx) :: x
 
         ! Local Variables
         integer(int32) :: n
@@ -450,9 +684,9 @@ end function
     !! @param[in] a The M-by-M positive definite matrix to factor.
     !! @param[in] upper An optional input that can be used to determine if the
     !!  upper triangular factorization should be computed such that
-    !! A = R**T * R, or if the lower triangular facotrization should be
-    !! computed such that A = L * L**T.  The default is true such that the
-    !! upper triangular form is computed.
+    !!  A = R**T * R, or if the lower triangular facotrization should be
+    !!  computed such that A = L * L**T.  The default is true such that the
+    !!  upper triangular form is computed.
     function mat_cholesky(a, upper) result(r)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
@@ -583,6 +817,42 @@ end function
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves the upper triangular system A X = B, where A is an
+    !! upper triangular matrix.
+    !!
+    !! @param[in] a The M-by-M upper triangluar matrix A.
+    !! @param[in] b The M-by-NRHS matrix B.
+    !! @return The M-by-NRHS solution matrix X.
+    function mat_solve_upper_tri_1_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(b, 1), size(b, 2)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .true., .false., .true., &
+            (1.0d0, 0.0d0), a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the upper triangular system A X = B, where A is an
+    !! upper triangular matrix.
+    !!
+    !! @param[in] a The M-by-M upper triangluar matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The M-element solution array X.
+    function mat_solve_upper_tri_2_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(b)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .false., .true., a, x)
+    end function
+
+! ------------------------------------------------------------------------------
     !> @brief Solves the lower triangular system A X = B, where A is a
     !! lower triangular matrix.
     !!
@@ -612,6 +882,42 @@ end function
         real(real64), intent(in), dimension(:,:) :: a
         real(real64), intent(in), dimension(:) :: b
         real(real64), dimension(size(b)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.false., .false., .true., a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the lower triangular system A X = B, where A is a
+    !! lower triangular matrix.
+    !!
+    !! @param[in] a The M-by-M lower triangluar matrix A.
+    !! @param[in] b The M-by-NRHS matrix B.
+    !! @return The M-by-NRHS solution matrix X.
+    function mat_solve_lower_tri_1_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), dimension(size(b, 1), size(b, 2)) :: x
+
+        ! Process
+        x = b
+        call solve_triangular_system(.true., .false., .false., .true., &
+            (1.0d0, 0.0d0), a, x)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the lower triangular system A X = B, where A is a
+    !! lower triangular matrix.
+    !!
+    !! @param[in] a The M-by-M lower triangluar matrix A.
+    !! @param[in] b The M-element array B.
+    !! @return The M-element solution array X.
+    function mat_solve_lower_tri_2_cmplx(a, b) result(x)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(b)) :: x
 
         ! Process
         x = b
@@ -684,4 +990,18 @@ end function
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Creates an N-by-N identity matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @return The N-by-N identity matrix.
+    pure function identity(n) result(x)
+        integer(int32), intent(in) :: n
+        real(real64), dimension(n, n) :: x
+        integer(int32) :: i
+        x = 0.0d0
+        do i = 1, n
+            x(i,i) = 1.0d0
+        end do
+    end function
+
 end module

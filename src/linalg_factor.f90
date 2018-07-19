@@ -15,9 +15,53 @@ contains
         integer(int32), intent(out), dimension(:) :: ipvt
         class(errors), intent(inout), optional, target :: err
 
-        ! Parameters
-        real(real64), parameter :: zero = 0.0d0
-        real(real64), parameter :: one = 1.0d0
+        ! Local Variables
+        integer(int32) :: m, n, mn, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(ipvt) /= mn) then
+            ! ERROR: IPVT not sized correctly
+            call errmgr%report_error("lu_factor_dbl", &
+                "Incorrectly sized input array IPVT, argument 2.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Compute the LU factorization by calling the LAPACK routine DGETRF
+        call DGETRF(m, n, a, m, ipvt, flag)
+
+        ! If flag > 0, the matrix is singular.  Notice, flag should not be
+        ! able to be < 0 as we've already verrified inputs prior to making the
+        ! call to LAPACK
+        if (flag > 0) then
+            ! WARNING: Singular matrix
+            write(errmsg, '(AI0A)') &
+                "Singular matrix encountered (row ", flag, ")"
+            call errmgr%report_warning("lu_factor_dbl", trim(errmsg), &
+                LA_SINGULAR_MATRIX_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine lu_factor_cmplx(a, ipvt, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), dimension(:) :: ipvt
+        class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
         integer(int32) :: m, n, mn, flag
@@ -39,14 +83,14 @@ contains
         flag = 0
         if (size(ipvt) /= mn) then
             ! ERROR: IPVT not sized correctly
-            call errmgr%report_error("lu_factor", &
+            call errmgr%report_error("lu_factor_cmplx", &
                 "Incorrectly sized input array IPVT, argument 2.", &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if
 
-        ! Compute the LU factorization by calling the LAPACK routine DGETRF
-        call DGETRF(m, n, a, m, ipvt, flag)
+        ! Compute the LU factorization by calling the LAPACK routine ZGETRF
+        call ZGETRF(m, n, a, m, ipvt, flag)
 
         ! If flag > 0, the matrix is singular.  Notice, flag should not be
         ! able to be < 0 as we've already verrified inputs prior to making the
@@ -55,7 +99,7 @@ contains
             ! WARNING: Singular matrix
             write(errmsg, '(AI0A)') &
                 "Singular matrix encountered (row ", flag, ")"
-            call errmgr%report_warning("lu_factor", trim(errmsg), &
+            call errmgr%report_warning("lu_factor_cmplx", trim(errmsg), &
                 LA_SINGULAR_MATRIX_ERROR)
         end if
     end subroutine
@@ -125,6 +169,73 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine form_lu_all_cmplx(lu, ipvt, u, p, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: lu
+        integer(int32), intent(in), dimension(:) :: ipvt
+        complex(real64), intent(out), dimension(:,:) :: u
+        real(real64), intent(out), dimension(:,:) :: p
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: j, jp, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
+        complex(real64), parameter :: c_zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: c_one = (1.0d0, 0.0d0)
+
+        ! Initialization
+        n = size(lu, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(lu, 2) /= n) then
+            flag = 1
+        else if (size(ipvt) /= n) then
+            flag = 2
+        else if (size(u, 1) /= n .or. size(u, 2) /= n) then
+            flag = 3
+        else if (size(p, 1) /= n .or. size(p, 2) /= n) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_all_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Ensure P starts off as an identity matrix
+        call DLASET('A', n, n, zero, one, p, n)
+
+        ! Process
+        do j = 1, n
+            ! Define the pivot matrix
+            jp = ipvt(j)
+            if (j /= jp) call swap(p(j,1:n), p(jp,1:n))
+
+            ! Build L and U
+            u(1:j,j) = lu(1:j,j)
+            u(j+1:n,j) = c_zero
+
+            if (j > 1) lu(1:j-1,j) = c_zero
+            lu(j,j) = c_one
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine form_lu_only(lu, u, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: lu
@@ -161,6 +272,58 @@ contains
             write(errmsg, '(AI0A)') "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_lu_only", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            ! Build L and U
+            u(1:j,j) = lu(1:j,j)
+            u(j+1:n,j) = zero
+
+            if (j > 1) lu(1:j-1,j) = zero
+            lu(j,j) = one
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine form_lu_only_cmplx(lu, u, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: lu
+        complex(real64), intent(out), dimension(:,:) :: u
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: j, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Initialization
+        n = size(lu, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(lu, 2) /= n) then
+            flag = 2
+        else if (size(u, 1) /= n .or. size(u, 2) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lu_only_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
             return
         end if

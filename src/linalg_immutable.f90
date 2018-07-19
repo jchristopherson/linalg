@@ -40,6 +40,7 @@ module linalg_immutable
     public :: qr_results
     public :: svd_results
     public :: eigen_results
+    public :: identity
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation: C = A * B, where A is a
@@ -941,4 +942,14 @@ end function
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Creates an N-by-N identity matrix.
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @return The N-by-N identity matrix.
+    pure function identity(n) result(x)
+        integer(int32), intent(in) :: n
+        real(real64), dimension(n, n) :: x
+        call DLASET('N', n, n, 0.0d0, 1.0d0, x, n)
+    end function
+
 end module

@@ -636,9 +636,9 @@ end function
     !! @param[in] a The M-by-M positive definite matrix to factor.
     !! @param[in] upper An optional input that can be used to determine if the
     !!  upper triangular factorization should be computed such that
-    !! A = R**T * R, or if the lower triangular facotrization should be
-    !! computed such that A = L * L**T.  The default is true such that the
-    !! upper triangular form is computed.
+    !!  A = R**T * R, or if the lower triangular facotrization should be
+    !!  computed such that A = L * L**T.  The default is true such that the
+    !!  upper triangular form is computed.
     function mat_cholesky(a, upper) result(r)
         ! Arguments
         real(real64), intent(in), dimension(:,:) :: a
@@ -949,7 +949,11 @@ end function
     pure function identity(n) result(x)
         integer(int32), intent(in) :: n
         real(real64), dimension(n, n) :: x
-        call DLASET('N', n, n, 0.0d0, 1.0d0, x, n)
+        integer(int32) :: i
+        x = 0.0d0
+        do i = 1, n
+            x(i,i) = 1.0d0
+        end do
     end function
 
 end module

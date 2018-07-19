@@ -67,4 +67,159 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_im_qr_factor() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(m, n)
+        type(qr_results) :: qr_rst
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Compute the factorization
+        qr_rst = mat_qr(a)
+
+        ! Test to see if A = Q * R
+        if (.not.is_mtx_equal(a, matmul(qr_rst%q, qr_rst%r), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable QR Factorization Test"
+        end if
+    end function 
+
+! ------------------------------------------------------------------------------
+    function test_im_qr_factor_pvt() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(m, n)
+        type(qr_results) :: qr_rst
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Compute the factorization
+        qr_rst = mat_qr(a, .true.)
+
+        ! Test to see if A * P = Q * R
+        if (.not.is_mtx_equal(matmul(a, qr_rst%p), matmul(qr_rst%q, qr_rst%r), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable QR Factorization Test with Pivoting"
+        end if
+    end function 
+
+! ------------------------------------------------------------------------------
+    function test_im_cholesky() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(n, n), r(n, n)
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Ensure A is positive definite
+        a = matmul(a, transpose(a))
+
+        ! Compute the factorization
+        r = mat_cholesky(a)
+
+        ! Ensure A = R**T * R
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable Cholesky Factorization"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_im_svd() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(m, n)
+        type(svd_results) :: x
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Compute the factorization
+        x = mat_svd(a)
+
+        ! Ensure U * S * V**T = A
+        if (.not.is_mtx_equal(matmul(x%u, matmul(x%s, x%vt)), a, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable SVD"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_im_inverse() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(n, n), i(n, n), ainv(n, n)
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a) 
+        i = identity(n)
+
+        ! Compute the inverse
+        ainv = mat_inverse(a)
+
+        ! Ensure ainv * a == I
+        if (.not.is_mtx_equal(matmul(ainv, a), i, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable Inverse"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_im_pinverse() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(m, n), ainv(n, m)
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Compute the inverse
+        ainv = mat_pinverse(a)
+
+        ! Ensure A * A+ * A = A
+        if (.not.is_mtx_equal(matmul(a, matmul(ainv, a)), a, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable Pseudo-Inverse"
+        end if
+    end function
+
 end module

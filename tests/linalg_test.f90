@@ -150,6 +150,24 @@ program main
     rst = test_im_lu_solve()
     if (.not.rst) overall = .false.
 
+    rst = test_im_qr_factor()
+    if (.not.rst) overall = .false.
+
+    rst = test_im_qr_factor_pvt()
+    if (.not.rst) overall = .false.
+
+    rst = test_im_cholesky()
+    if (.not.rst) overall = .false.
+
+    rst = test_im_svd()
+    if (.not.rst) overall = .false.
+
+    rst = test_im_inverse()
+    if (.not.rst) overall = .false.
+
+    rst = test_im_pinverse()
+    if (.not.rst) overall = .false.
+
     ! End
     if (overall) then
         print '(A)', "LINALG TEST STATUS: PASS"

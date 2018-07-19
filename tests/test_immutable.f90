@@ -222,4 +222,28 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_im_eigen() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        real(real64) :: a(n, n)
+        type(eigen_results) :: x
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+
+        ! Compute the eigenvalues and eigenvectors
+        x = mat_eigen(a)
+
+        ! Ensure A * v = lambda * v
+        if (.not.is_mtx_equal(matmul(a, x%vectors), mat_mult_diag(x%vectors, x%values), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Immutable Eigen Analysis"
+        end if
+    end function
 end module

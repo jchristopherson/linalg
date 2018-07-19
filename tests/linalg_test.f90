@@ -168,6 +168,9 @@ program main
     rst = test_im_pinverse()
     if (.not.rst) overall = .false.
 
+    rst = test_im_eigen()
+    if (.not.rst) overall = .false.
+
     ! End
     if (overall) then
         print '(A)', "LINALG TEST STATUS: PASS"

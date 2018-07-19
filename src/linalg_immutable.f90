@@ -48,8 +48,10 @@ module linalg_immutable
     interface mat_mult_diag
         module procedure :: mat_mult_diag_1
         module procedure :: mat_mult_diag_2
+        module procedure :: mat_mult_diag_3
         module procedure :: mat_mult_diag_1_cmplx
         module procedure :: mat_mult_diag_2_cmplx
+        module procedure :: mat_mult_diag_3_cmplx
     end interface
 
 ! ------------------------------------------------------------------------------
@@ -210,26 +212,49 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-!> @brief Computes the matrix operation: C = A * B, where A is a
-!! diagonal matrix.
-!!
-!! @param[in] a The M-element array containing the diagonal elements of
-!!  the matrix A.
-!! @param[in] b The P-element array B where P is greater than or equal to M.
-!! @return The resulting M-element array.
-function mat_mult_diag_2(a, b) result(c)
-    ! Arguments
-    real(real64), intent(in), dimension(:) :: a, b
-    real(real64), dimension(size(a)) :: c
+    !> @brief Computes the matrix operation: C = A * B, where A is a
+    !! diagonal matrix.
+    !!
+    !! @param[in] a The M-element array containing the diagonal elements of
+    !!  the matrix A.
+    !! @param[in] b The P-element array B where P is greater than or equal to M.
+    !! @return The resulting M-element array.
+    function mat_mult_diag_2(a, b) result(c)
+        ! Arguments
+        real(real64), intent(in), dimension(:) :: a, b
+        real(real64), dimension(size(a)) :: c
 
-    ! Local Variables
-    real(real64), dimension(size(a), 1) :: bc, cc
+        ! Local Variables
+        real(real64), dimension(size(a), 1) :: bc, cc
 
-    ! Process
-    bc(:,1) = b(1:min(size(a), size(b)))
-    call diag_mtx_mult(.true., .false., 1.0d0, a, bc, 0.0d0, cc)
-    c = cc(:,1)
-end function
+        ! Process
+        bc(:,1) = b(1:min(size(a), size(b)))
+        call diag_mtx_mult(.true., .false., 1.0d0, a, bc, 0.0d0, cc)
+        c = cc(:,1)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where B is a diagonal
+    !! matrix.
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The P-element array containing the diagonal matrix B where
+    !!  P is at least N.
+    !! @return The resulting M-by-P matrix.
+    function mat_mult_diag_3(a, b) result(c)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: b
+        real(real64), dimension(size(a, 1), size(b)) :: c
+
+        ! Process
+        if (size(a, 2) > size(b)) then
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a(:,1:size(b)), &
+                0.0d0, c)
+        else
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a, 0.0d0, c)
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation: C = A * B, where A is a
@@ -282,6 +307,29 @@ end function
         bc(:,1) = b(1:min(size(a), size(b)))
         call diag_mtx_mult(.true., .false., one, a, bc, zero, cc)
         c = cc(:,1)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = A * B, where B is a diagonal
+    !! matrix.
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The P-element array containing the diagonal matrix B where
+    !!  P is at least N.
+    !! @return The resulting M-by-P matrix.
+    function mat_mult_diag_3_cmplx(a, b) result(c)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), dimension(size(a, 1), size(b)) :: c
+
+        ! Process
+        if (size(a, 2) > size(b)) then
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a(:,1:size(b)), &
+                0.0d0, c)
+        else
+            call diag_mtx_mult(.false., .false., 1.0d0, b, a, 0.0d0, c)
+        end if
     end function
 
 ! ------------------------------------------------------------------------------

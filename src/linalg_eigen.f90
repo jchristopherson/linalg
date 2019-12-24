@@ -461,4 +461,133 @@ contains
         end if
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine eigen_cmplx(a, vals, vecs, work, olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: vals
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: jobvl, jobvr
+        character(len = 128) :: errmsg
+        integer(int32) :: n, flag, lwork, lrwork
+        real(real64) :: rdummy(1)
+        complex(real64) :: temp(1), dummy(1), dummy_mtx(1,1)
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        real(real64), pointer, dimension(:) :: rwptr
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        jobvl = 'N'
+        if (present(vecs)) then
+            jobvr = 'V'
+        else
+            jobvr = 'N'
+        end if
+        n = size(a, 1)
+        lrwork = 2 * n
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 1
+        else if (size(vals) /= n) then
+            flag = 2
+        else if (present(vecs)) then
+            if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
+                flag = 3
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("eigen_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGEEV(jobvl, jobvr, n, a, n, dummy, dummy_mtx, n, dummy_mtx, n, temp, &
+            -1, rdummy, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("eigen_cmplx", &
+                    "Incorrectly sized input array WORK.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work
+        else
+            allocate(wrk(lwork), stat = flag)
+            if (flag /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("eigen_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+        
+        if (present(rwork)) then
+            if (size(work) < lrwork) then
+                ! ERROR: RWORK not sized correctly
+                call errmgr%report_error("eigen_cmplx", &
+                    "Incorrectly sized input array RWORK.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork
+        else
+            allocate(rwrk(lrwork), stat = flag)
+            if (flag /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("eigen_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        if (present(vecs)) then
+            call ZGEEV(jobvl, jobvr, n, a, n, vals, dummy_mtx, n, vecs, n, &
+                wptr, lwork, rwptr, flag)
+        else
+            call ZGEEV(jobvl, jobvr, n, a, n, vals, dummy_mtx, n, dummy_mtx, n, &
+                wptr, lwork, rwptr, flag)
+        end if
+
+        if (flag > 0) then
+            call errmgr%report_error("eigen_cmplx", &
+                "The algorithm failed to converge.", &
+                LA_CONVERGENCE_ERROR)
+            return
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
 end submodule

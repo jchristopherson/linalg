@@ -1591,6 +1591,7 @@ interface eigen
     module procedure :: eigen_symm
     module procedure :: eigen_asymm
     module procedure :: eigen_gen
+    module procedure :: eigen_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -3821,6 +3822,45 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !! a square matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !!  output, the contents of this matrix are overwritten.
+    !! @param[out] vals An N-element array containing the eigenvalues of the
+    !!  matrix.  The eigenvalues are not sorted.
+    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
+    !!  compute the right eigenvectors (one per column).  If not provided, only
+    !!  the eigenvalues will be computed.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine ZGEEV.
+    module subroutine eigen_cmplx(a, vals, vecs, work, olwork, rwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: vals
+        complex(real64), intent(out), optional, dimension(:,:) :: vecs
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************

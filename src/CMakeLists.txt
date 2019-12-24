@@ -64,7 +64,7 @@ set_property(TARGET linalg APPEND PROPERTY COMPATIBLE_INTERFACE_STRING linalg_VE
 set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
 
 # Define the installation instructions
-install(TARGETS linalg ${BLAS_LIBRARY}
+install(TARGETS linalg blas lapack
     EXPORT linalgTargets
     RUNTIME DESTINATION linalg/bin
     LIBRARY DESTINATION linalg/lib

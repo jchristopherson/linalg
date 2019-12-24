@@ -224,6 +224,47 @@ set(lapack_sources
     external/lapack/SRC/zlaswp.f
     external/lapack/SRC/zgetrf2.f
     external/lapack/SRC/zgetrs.f
+
+    external/lapack/SRC/zgeev.f
+    external/lapack/SRC/zgebak.f
+    external/lapack/SRC/zgebal.f
+    external/lapack/SRC/zgehrd.f
+    external/lapack/SRC/zhseqr.f
+    external/lapack/SRC/zlacpy.f
+    external/lapack/SRC/zlascl.f
+    external/lapack/SRC/ztrevc3.f
+    external/lapack/SRC/zunghr.f
+    external/lapack/SRC/zlange.f
+    external/lapack/SRC/zlarfb.f
+    external/lapack/SRC/zlahr2.f
+    external/lapack/SRC/zgehd2.f
+    external/lapack/SRC/zlaqr0.f
+    external/lapack/SRC/zlaset.f
+    external/lapack/SRC/zlatrs.f
+    external/lapack/SRC/zungqr.f
+    external/lapack/SRC/zung2r.f
+    external/lapack/SRC/zlarft.f
+    external/lapack/SRC/zladiv.f
+    external/lapack/SRC/zlahqr.f
+    external/lapack/SRC/zlaqr2.f
+    external/lapack/SRC/zlaqr3.f
+    external/lapack/SRC/zlaqr4.f
+    external/lapack/SRC/zlaqr5.f
+    external/lapack/SRC/zlacgv.f
+    external/lapack/SRC/zlarfg.f
+    external/lapack/SRC/zlarf.f
+    external/lapack/SRC/zunmhr.f
+    external/lapack/SRC/ztrexc.f
+    external/lapack/SRC/zlassq.f
+    external/lapack/SRC/zlaqr1.f
+    external/lapack/SRC/ilazlc.f
+    external/lapack/SRC/ilazlr.f
+    external/lapack/SRC/zunmqr.f
+    external/lapack/SRC/zlartg.f
+    external/lapack/SRC/zrot.f
+    external/lapack/SRC/zunm2r.f
+
+    external/lapack/SRC/dcombssq.f
 )
 
 # Define the QRUPDATE source files

@@ -43,45 +43,7 @@ else()
 endif()
 set(FERROR_LIBRARIES ferror)
 # set(ferror_LibLocation ${ferror_BINARY_DIR})
-# include_directories(${ferror_INCLUDE_DIRS})
-
-# if (NOT ${ferror_FOUND})
-
-#     if (NOT TARGET ferror)
-
-#       message(STATUS "FERROR not found.  The default implementation will be used.")
-
-#       add_subdirectory(src/external/ferror)
-
-#       set(ferror_INCLUDE_DIRS src/external/ferror/include)
-
-#       include_directories(${ferror_INCLUDE_DIRS})
-
-#       set(FERROR_LIBRARIES ferror)
-
-#       set(ferror_LibLocation ${ferror_BINARY_DIR})
-
-#     else()
-
-#       include_directories(${ferror_INCLUDE_DIRS})
-
-#       set(FERROR_LIBRARIES ferror)
-
-#       set(ferror_LibLocation ${ferror_BINARY_DIR})
-
-#     endif()
-
-# else()
-
-#     message(STATUS "An acceptable version  of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
-
-#     include_directories(${ferror_INCLUDE_DIRS})
-
-#     set(FERROR_LIBRARIES ferror)
-
-#     get_target_property(ferror_LibLocation ferror LOCATION)
-
-# endif()
+include_directories(${ferror_INCLUDE_DIRS})
 
 # Build the library
 add_library(linalg ${linalg_sources})

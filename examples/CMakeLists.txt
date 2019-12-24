@@ -60,11 +60,21 @@ add_executable(lu_example_immutable linalg_lu_example_immutable.f90)
 target_link_libraries(lu_example_immutable linalg)
 
 # --------------------
-# Copy FERROR to the runtime directory
+# Copy FERROR, BLAS, and LAPACK to the runtime directory
 if (WIN32)
     add_custom_command(
         TARGET svd_example POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${ferror_LibLocation} $<TARGET_FILE_DIR:svd_example>
+    )
+    add_custom_command(
+        TARGET svd_example POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${blas_LibLocation} $<TARGET_FILE_DIR:svd_example>
+    )
+    add_custom_command(
+        TARGET svd_example POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${lapack_LibLocation} $<TARGET_FILE_DIR:svd_example>
     )
 endif()

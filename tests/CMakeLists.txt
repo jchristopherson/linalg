@@ -15,13 +15,24 @@ set(linalg_test_sources
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(linalg_test linalg)
 
-# Copy the FERROR shared object to the runtime directory on Windows
+# --------------------
+# Copy FERROR, BLAS, and LAPACK to the runtime directory
 if (WIN32)
     add_custom_command(
         TARGET linalg_test POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${ferror_LibLocation} $<TARGET_FILE_DIR:linalg_test>
     )
+    # add_custom_command(
+    #     TARGET linalg_test POST_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #     ${blas_LibLocation} $<TARGET_FILE_DIR:linalg_test>
+    # )
+    # add_custom_command(
+    #     TARGET linalg_test POST_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #     ${lapack_LibLocation} $<TARGET_FILE_DIR:linalg_test>
+    # )
 endif()
 
 # Run the tests

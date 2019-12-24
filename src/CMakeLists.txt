@@ -31,6 +31,7 @@ else()
   message(STATUS "Using the default LAPACK implementation.")
   add_subdirectory(external/lapack)
 endif()
+set(LAPACK_LIBRARY lapack)
 
 # Find FERROR
 option(USE_EXISTING_FERROR "Use an existing FERROR build?" OFF)
@@ -64,7 +65,7 @@ set_property(TARGET linalg APPEND PROPERTY COMPATIBLE_INTERFACE_STRING linalg_VE
 set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
 
 # Define the installation instructions
-install(TARGETS linalg blas lapack
+install(TARGETS linalg ${BLAS_LIBRARY}
     EXPORT linalgTargets
     RUNTIME DESTINATION linalg/bin
     LIBRARY DESTINATION linalg/lib

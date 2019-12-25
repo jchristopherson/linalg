@@ -43,12 +43,30 @@ else()
     set(ferror_INCLUDE_DIRS external/ferror/include)
 endif()
 set(FERROR_LIBRARIES ferror)
-# set(ferror_LibLocation ${ferror_BINARY_DIR})
 include_directories(${ferror_INCLUDE_DIRS})
 
 # Build the library
 add_library(linalg ${linalg_sources})
 target_link_libraries(linalg blas lapack ferror)
+
+# Copy dependencies into the appropriate directory if testing or running examples
+if (BUILD_LINALG_EXAMPLES OR BUILD_LINALG_TESTS)
+    add_custom_command(
+        TARGET linalg POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:ferror> $<TARGET_FILE_DIR:linalg>
+    )
+    add_custom_command(
+        TARGET linalg POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:blas> $<TARGET_FILE_DIR:linalg>
+    )
+    add_custom_command(
+        TARGET linalg POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:lapack> $<TARGET_FILE_DIR:linalg>
+    )
+endif()
 
 # https://stackoverflow.com/questions/30987311/exporting-an-imported-library
 

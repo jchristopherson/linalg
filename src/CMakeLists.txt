@@ -31,7 +31,6 @@ else()
   message(STATUS "Using the default LAPACK implementation.")
   add_subdirectory(external/lapack)
 endif()
-set(LAPACK_LIBRARY lapack)
 
 # Find FERROR
 option(USE_EXISTING_FERROR "Use an existing FERROR build?" OFF)

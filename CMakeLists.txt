@@ -10,8 +10,8 @@ set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERS
 
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  message(STATUS "Setting build type to 'Debug' as none was specified.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
@@ -95,6 +95,23 @@ endif()
 # What else to build
 option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
 option(BUILD_LINALG_TESTS "Build LINALG tests?" OFF)
+
+# Locate the dependencies
+find_package(BLAS)
+find_package(LAPACK)
+find_package(ferror 1.3.0)
+
+if (BLAS_FOUND)
+  message(STATUS "BLAS library found.")
+endif()
+
+if (LAPACK_FOUND)
+  message(STATUS "LAPACK library found.")
+endif()
+
+if (ferror_FOUND)
+  message(STATUS "FERROR library found.")
+endif()
 
 # Locate the files
 add_subdirectory(src)

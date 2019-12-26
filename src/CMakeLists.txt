@@ -23,49 +23,29 @@ set(linalg_sources
 )
 list(APPEND linalg_sources ${qrupdate_sources})
 
-# Find LAPACK
-option(USE_EXISTING_LAPACK "Use an existing LAPACK build?" OFF)
-if (USE_EXISTING_LAPACK)
-  find_package(lapack)
-else()
-  message(STATUS "Using the default LAPACK implementation.")
-  add_subdirectory(external/lapack)
-endif()
-
-# Find FERROR
-option(USE_EXISTING_FERROR "Use an existing FERROR build?" OFF)
-if (USE_EXISTING_FERROR)
-    find_package(ferror 1.3.0)
-else()
-    message(STATUS "Using the default FERROR implementation.")
+# If certain dependencies aren't available - fall back to the submodules
+if (NOT ferror_FOUND)
+    message(STATUS "FERROR not found.  The reference version will be utilized.")
     add_subdirectory(external/ferror)
-    set(ferror_INCLUDE_DIRS external/ferror/include)
 endif()
-set(FERROR_LIBRARIES ferror)
-include_directories(${ferror_INCLUDE_DIRS})
+if (NOT LAPACK_FOUND)
+    # LAPACK will handle our BLAS needs as well
+    message(STATUS "LAPACK not found.  The reference version will be utilized.")
+    add_subdirectory(external/lapack)
+endif()
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg blas lapack ferror)
+target_link_libraries(linalg ferror ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
-# Copy dependencies into the appropriate directory if testing or running examples
-if (BUILD_LINALG_EXAMPLES OR BUILD_LINALG_TESTS)
-    add_custom_command(
-        TARGET linalg POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:ferror> $<TARGET_FILE_DIR:linalg>
-    )
-    add_custom_command(
-        TARGET linalg POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:blas> $<TARGET_FILE_DIR:linalg>
-    )
-    add_custom_command(
-        TARGET linalg POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:lapack> $<TARGET_FILE_DIR:linalg>
-    )
-endif()
+# # Copy dependencies into the appropriate directory if testing or running examples
+# if (BUILD_LINALG_EXAMPLES OR BUILD_LINALG_TESTS)
+#     add_custom_command(
+#         TARGET linalg POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#         $<TARGET_FILE:ferror> $<TARGET_FILE_DIR:linalg>
+#     )
+# endif()
 
 # https://stackoverflow.com/questions/30987311/exporting-an-imported-library
 
@@ -82,10 +62,10 @@ set_property(TARGET linalg APPEND PROPERTY COMPATIBLE_INTERFACE_STRING linalg_VE
 set(linalg_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include)
 
 # Define the installation instructions
-install(TARGETS linalg ${BLAS_LIBRARY}
+install(TARGETS linalg
     EXPORT linalgTargets
     RUNTIME DESTINATION linalg/bin
-    LIBRARY DESTINATION linalg/lib
+    LIBRARY DESTINATION linalg/bin
     ARCHIVE DESTINATION linalg/lib
     CONFIGURATIONS Release
     INCLUDES DESTINATION linalg/include

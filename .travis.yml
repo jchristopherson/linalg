@@ -17,7 +17,9 @@ install:
   - sudo mkdir build
   - pushd build
   - sudo cmake -DCMAKE_INSTALL_LIBDIR=$HOME/.local/lapack ..
-  - sudo cmake --build -j . --target install
+  - cmake
+  - make
+  - sudo make install
   - popd
   - popd
   # - sudo git clone https://github.com/jchristopherson/ferror.git

@@ -11,15 +11,9 @@ install:
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
   - sudo apt install git
   - sudo git clone https://github.com/jchristopherson/ferror.git
-  - pushpd ferror && ./configure --prefix=/usr && make && sudo make install && popd
+  - pushd ferror && ./configure --prefix=/usr && make && sudo make install && popd
   - sudo git clone https://github.com/Reference-LAPACK/lapack.git
-  - pushpd lapack && ./configure --prefix=/usr && make && sudo make install && popd
-  # - sudo wget https://github.com/jchristopherson/ferror/archive/1.3.0.tar.gz
-  # - sudo tar -xzvf ferror-1.3.0.tar.gz
-  # - sudo pushpd ferror-1.3.0 && ./configure --prefix=/usr && make && sudo make install && popd
-  # - sudo wget https://github.com/Reference-LAPACK/lapack/archive/3.9.0.tar.gz
-  # - sudo tar -xzvf lapack-3.9.0.tar.gz
-  # - sudo pushpd lapack-3.9.0 && ./configure --prefix=/usr && make && sudo make install && popd
+  - pushd lapack && ./configure --prefix=/usr && make && sudo make install && popd
 
 before_script:  
     - mkdir build

@@ -9,11 +9,13 @@ before_install:
 install:
   - sudo apt-get install -qq gfortran-7
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
+  - sudo wget https://github.com/jchristopherson/ferror/archive/1.3.0.tar.gz
+  - sudo tar -xzvf ferror-1.3.0.tar.gz
+  - sudo pushpd ferror-1.3.0 && ./configure --prefix=/usr && make && sudo make install && popd
+  - sudo wget https://github.com/Reference-LAPACK/lapack/archive/3.9.0.tar.gz
+  - sudo tar -xzvf lapack-3.9.0.tar.gz
+  - sudo pushpd lapack-3.9.0 && ./configure --prefix=/usr && make && sudo make install && popd
 
-before_install:
-  - sudo ./install-ferror.sh
-  - sudo ./install-lapack.sh
-  
 before_script:  
     - mkdir build
     - cd build

@@ -27,7 +27,12 @@ list(APPEND linalg_sources ${qrupdate_sources})
 if (NOT ferror_FOUND)
     message(STATUS "FERROR not found.  The reference version will be utilized.")
     add_subdirectory(external/ferror)
+    set(ferror_INCLUDE_DIRS external/ferror/include)
 endif()
+set(ferror_LIBRARIES ferror)
+include_directories(${ferror_INCLUDE_DIRS})
+set(ferror_LibLocation ${ferror_BINARY_DIR})
+
 if (NOT LAPACK_FOUND)
     # LAPACK will handle our BLAS needs as well
     message(STATUS "LAPACK not found.  The reference version will be utilized.")
@@ -36,7 +41,7 @@ endif()
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg ferror ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(linalg ${ferror_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
 # # Copy dependencies into the appropriate directory if testing or running examples
 # if (BUILD_LINALG_EXAMPLES OR BUILD_LINALG_TESTS)

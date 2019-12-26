@@ -42,7 +42,7 @@ list(APPEND linalg_sources ${qrupdate_sources})
 
 # Build the library
 add_library(linalg ${linalg_sources})
-target_link_libraries(linalg ${ferror_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(linalg ferror ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
 # # Copy dependencies into the appropriate directory if testing or running examples
 # if (BUILD_LINALG_EXAMPLES OR BUILD_LINALG_TESTS)

@@ -11,8 +11,6 @@ install:
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
   - sudo apt install git
   - sudo apt install cmake
-  
-# Build LAPACK & BLAS
   - sudo git clone https://github.com/Reference-LAPACK/lapack.git
   - pushd lapack
   - sudo mkdir build
@@ -23,8 +21,6 @@ install:
   - sudo make install
   - popd
   - popd
-
-  # Build FERROR
   - sudo git clone https://github.com/jchristopherson/ferror.git
   - pushd ferror
   - sudo mkdir build

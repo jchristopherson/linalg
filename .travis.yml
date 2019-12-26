@@ -9,8 +9,10 @@ before_install:
 install:
   - sudo apt-get install -qq gfortran-7
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
-  - sudo ./install-ferror.sh
-  - sudo ./install-lapack.sh
+
+before_install:
+  - ./install-ferror.sh
+  - ./install-lapack.sh
   
 before_script:  
     - mkdir build

@@ -10,10 +10,10 @@ install:
   - sudo apt-get install -qq gfortran-7
   - sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 90
   - sudo apt install git
-  - sudo git clone https://github.com/jchristopherson/ferror.git
-  - pushd ferror && make && sudo make install && popd
   - sudo git clone https://github.com/Reference-LAPACK/lapack.git
   - pushd lapack && ./configure --prefix=/usr && make && sudo make install && popd
+  # - sudo git clone https://github.com/jchristopherson/ferror.git
+  # - pushd ferror && ./configure --prefix=/usr && make && sudo make install && popd
 
 before_script:  
     - mkdir build

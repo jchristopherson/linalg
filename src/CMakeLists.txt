@@ -23,15 +23,15 @@ set(linalg_sources
 )
 list(APPEND linalg_sources ${qrupdate_sources})
 
-# # If certain dependencies aren't available - fall back to the submodules
-# if (NOT ferror_FOUND)
-#     message(STATUS "FERROR not found.  The reference version will be utilized.")
-#     add_subdirectory(external/ferror)
-#     set(ferror_INCLUDE_DIRS external/ferror/include)
-# endif()
-# set(ferror_LIBRARIES ferror)
-# include_directories(${ferror_INCLUDE_DIRS})
-# set(ferror_LibLocation ${ferror_BINARY_DIR})
+# If certain dependencies aren't available - fall back to the submodules
+if (NOT ferror_FOUND)
+    message(STATUS "FERROR not found.  The reference version will be utilized.")
+    add_subdirectory(external/ferror)
+    set(ferror_INCLUDE_DIRS external/ferror/include)
+endif()
+set(ferror_LIBRARIES ferror)
+include_directories(${ferror_INCLUDE_DIRS})
+set(ferror_LibLocation ${ferror_BINARY_DIR})
 
 # if (NOT LAPACK_FOUND)
 #     # LAPACK will handle our BLAS needs as well

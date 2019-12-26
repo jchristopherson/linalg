@@ -111,6 +111,7 @@ endif()
 
 if (ferror_FOUND)
   message(STATUS "FERROR library found.")
+  set(ferror_LIBRARIES ferror)
 endif()
 
 # Locate the files

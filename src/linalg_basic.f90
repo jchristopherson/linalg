@@ -132,6 +132,136 @@ contains
         call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
     end subroutine
 
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+!                           COMPLEX VALUED VERSIONS                            !
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+    module subroutine cmtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
+        ! Arguments
+        logical, intent(in) :: transa, transb
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
+
+        ! Local Variables
+        character :: ta, tb
+        integer(int32) :: m, n, k, lda, ldb, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        if (transa) then ! K = # of columns in op(A) (# of rows in op(B))
+            k = size(a, 1)
+            ta = 'T'
+            lda = k
+        else
+            k = size(a, 2)
+            ta = 'N'
+            lda = m
+        end if
+        if (transb) then
+            tb = 'T'
+            ldb = n
+        else
+            tb = 'N'
+            ldb = k
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (transa) then
+            if (size(a, 2) /= m) flag = 4
+        else
+            if (size(a, 1) /= m) flag = 4
+        end if
+        if (transb) then
+            if (size(b, 2) /= k .or. size(b, 1) /= n) flag = 5
+        else
+            if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
+        end if
+        if (flag /= 0) then
+            ! ERROR: Matrix dimensions mismatch
+            write(errmsg, '(AI0A)') &
+                "Matrix dimension mismatch.  Input number ", flag, &
+                " was not sized correctly."
+            call errmgr%report_error("cmtx_mult_mtx", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGEMM
+        call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine cmtx_mult_vec(trans, alpha, a, b, beta, c, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), intent(inout), dimension(:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: t
+        integer(int32) :: m, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        t = 'N'
+        if (trans) t = 'T'
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (trans) then
+            if (size(b) /= m) then
+                flag = 4
+            else if (size(c) /= n) then
+                flag = 6
+            end if
+        else
+            if (size(b) /= n) then
+                flag = 4
+            else if (size(c) /= m) then
+                flag = 6
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: Matrix dimensions mismatch
+            write(errmsg, '(AI0A)') &
+                "Matrix dimension mismatch.  Input number ", flag, &
+                " was not sized correctly."
+            call errmgr%report_error("cmtx_mult_vec", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGEMV
+        call ZGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+    end subroutine
+
 ! ******************************************************************************
 ! RANK 1 UPDATE
 ! ------------------------------------------------------------------------------
@@ -163,7 +293,52 @@ contains
         ! Input Check
         if (size(a, 1) /= m .or. size(a, 2) /= n) then
             ! ERROR: Matrix dimension array
-            call errmgr%report_error("rank1_update", &
+            call errmgr%report_error("rank1_update_dbl", &
+                "Matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            if (y(j) /= zero) then
+                temp = alpha * y(j)
+                a(:,j) = a(:,j) + temp * x
+            end if
+        end do
+    end subroutine
+
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+!                           COMPLEX VALUED VERSIONS                            !
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+    module subroutine rank1_update_cmplx(alpha, x, y, a, err)
+        ! Arguments
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:) :: x, y
+        complex(real64), intent(inout), dimension(:,:) :: a
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: j, m, n
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(x)
+        n = size(y)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 1) /= m .or. size(a, 2) /= n) then
+            ! ERROR: Matrix dimension array
+            call errmgr%report_error("rank1_update_cmplx", &
                 "Matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
             return
         end if

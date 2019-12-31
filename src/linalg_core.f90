@@ -63,6 +63,8 @@ module linalg_core
 interface mtx_mult
     module procedure :: mtx_mult_mtx
     module procedure :: mtx_mult_vec
+    module procedure :: cmtx_mult_mtx
+    module procedure :: cmtx_mult_vec
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -71,6 +73,7 @@ end interface
 !! X is an M-element array, and N is an N-element array.
 interface rank1_update
     module procedure :: rank1_update_dbl
+    module procedure :: rank1_update_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -1675,6 +1678,71 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Performs the matrix operation: C = alpha * op(A) * op(B) +
+    !! beta * C.
+    !!
+    !! @param[in] transa Set to true if op(A) = A**T; else, set to false for
+    !!  op(A) = A.
+    !! @param[in] transb Set to true if op(B) = B**T; else, set to false for
+    !!  op(B) = B.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a If @p transa is set to true, an K-by-M matrix; else, if
+    !!  @p transa is set to false, an M-by-K matrix.
+    !! @param[in] b If @p transb is set to true, an N-by-K matrix; else, if
+    !!  @p transb is set to false, a K-by-N matrix.
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the M-by-N
+    !!  result.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!
+    !! @par Notes
+    !! This routine utilizes the BLAS routine ZGEMM.
+    module subroutine cmtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
+        logical, intent(in) :: transa, transb
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Performs the matrix-vector operation: c = alpha * op(A) * b +
+    !! beta * c.
+    !!
+    !! @param[in] trans Set to true if op(A) = A**T; else, set to false for
+    !!  op(A) = A.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b If @p trans is set to true, an M-element array; else, if
+    !!  @p trans is set to false, an N-element array.
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] c On input, if @p trans is set to true, an N-element
+    !!  array; else, if @p trans is set to false, an M-element array.  On
+    !!  output, the results of the operation.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!
+    !! @par Notes
+    !! This routine utilizes the BLAS routine ZGEMV.
+    module subroutine cmtx_mult_vec(trans, alpha, a, b, beta, c, err)
+        logical, intent(in) :: trans
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), intent(inout), dimension(:) :: c
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Performs the rank-1 update to matrix A such that:
     !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
     !! X is an M-element array, and N is an N-element array.
@@ -1698,6 +1766,32 @@ interface
         real(real64), intent(in) :: alpha
         real(real64), intent(in), dimension(:) :: x, y
         real(real64), intent(inout), dimension(:,:) :: a
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Performs the rank-1 update to matrix A such that:
+    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+    !! X is an M-element array, and N is an N-element array.
+    !!
+    !! @param[in] alpha The scalar multiplier.
+    !! @param[in] x An M-element array.
+    !! @param[in] y An N-element array.
+    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
+    !!  updated M-by-N matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with
+    !!      @p x and @p y.
+    !!
+    !! @par Notes
+    !! This routine is based upon the BLAS routine DGER.
+    module subroutine rank1_update_cmplx(alpha, x, y, a, err)
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:) :: x, y
+        complex(real64), intent(inout), dimension(:,:) :: a
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

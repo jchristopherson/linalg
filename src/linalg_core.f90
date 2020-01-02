@@ -155,24 +155,28 @@ end interface
 !! elements).
 interface trace
     module procedure :: trace_dbl
+    module procedure :: trace_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the rank of a matrix.
 interface mtx_rank
     module procedure :: mtx_rank_dbl
+    module procedure :: mtx_rank_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the determinant of a square matrix.
 interface det
     module procedure :: det_dbl
+    module procedure :: det_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Swaps the contents of two arrays.
 interface swap
     module procedure :: swap_dbl
+    module procedure :: swap_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -2007,6 +2011,17 @@ interface
         real(real64) :: y
     end function
 
+    !> @brief Computes the trace of a matrix (the sum of the main diagonal
+    !! elements).
+    !!
+    !! @param[in] x The matrix on which to operate.
+    !!
+    !! @return The trace of @p x.
+    pure module function trace_cmplx(x) result(y)
+        complex(real64), intent(in), dimension(:,:) :: x
+        complex(real64) :: y
+    end function
+
     !> @brief Computes the rank of a matrix.
     !!
     !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
@@ -2042,8 +2057,54 @@ interface
     module function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), optional :: tol
-        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: work
         integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+        integer(int32) :: rnk
+    end function
+
+    !> @brief Computes the rank of a matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
+    !!  contents of the matrix are overwritten.
+    !! @param[in] tol An optional input, that if supplied, overrides the default
+    !!  tolerance on singular values such that singular values less than this
+    !!  tolerance are treated as zero.  The default tolerance is:
+    !!  MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
+    !!  smallest value that causes an overflow if inverted, the tolerance
+    !!  reverts back to its default value, and the operation continues; however,
+    !!  a warning message is issued.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation for complex-valued workspace arrays.  If not provided,
+    !!  the memory required is allocated within.  If provided, the length of the 
+    !!  array must be at least @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] rwork An optional input, that if provided, prevents any
+    !!  local memory allocation for real-valued workspace arrays.  If not 
+    !!  provided, the memory required is allocated within.  If provided, the
+    !!  length of the array must be at least 6 * MIN(M, N).
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par See Also
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
+    module function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), optional :: tol
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
         class(errors), intent(inout), optional, target :: err
         integer(int32) :: rnk
     end function
@@ -2070,9 +2131,36 @@ interface
     !! @return The determinant of @p a.
     module function det_dbl(a, iwork, err) result(x)
         real(real64), intent(inout), dimension(:,:) :: a
-        integer(int32), intent(out), pointer, optional, dimension(:) :: iwork
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
         class(errors), intent(inout), optional, target :: err
         real(real64) :: x
+    end function
+
+    !> @brief Computes the determinant of a square matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !! output the contents are overwritten by the LU factorization of the
+    !! original matrix.
+    !! @param[out] iwork An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  N-elements.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @return The determinant of @p a.
+    module function det_cmplx(a, iwork, err) result(x)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
+        class(errors), intent(inout), optional, target :: err
+        complex(real64) :: x
     end function
 
     !> @brief Swaps the contents of two arrays.
@@ -2087,6 +2175,21 @@ interface
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
     module subroutine swap_dbl(x, y, err)
         real(real64), intent(inout), dimension(:) :: x, y
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Swaps the contents of two arrays.
+    !!
+    !! @param[in,out] x One of the N-element arrays.
+    !! @param[in,out] y The other N-element array.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
+    module subroutine swap_cmplx(x, y, err)
+        complex(real64), intent(inout), dimension(:) :: x, y
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

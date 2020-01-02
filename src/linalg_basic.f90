@@ -135,9 +135,9 @@ contains
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
 !                           COMPLEX VALUED VERSIONS                            !
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
-    module subroutine cmtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
+    module subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: transa, transb
+        integer(int32), intent(in) :: opa, opb
         complex(real64), intent(in) :: alpha, beta
         complex(real64), intent(in), dimension(:,:) :: a, b
         complex(real64), intent(inout), dimension(:,:) :: c
@@ -157,17 +157,24 @@ contains
         ! Initialization
         m = size(c, 1)
         n = size(c, 2)
-        if (transa) then ! K = # of columns in op(A) (# of rows in op(B))
+        if (opa == TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
             k = size(a, 1)
             ta = 'T'
+            lda = k
+        else if (opa == HERMITIAN_TRANSPOSE) then
+            k = size(a, 1)
+            ta = 'H'
             lda = k
         else
             k = size(a, 2)
             ta = 'N'
             lda = m
         end if
-        if (transb) then
+        if (opb == TRANSPOSE) then
             tb = 'T'
+            ldb = n
+        else if (opb == HERMITIAN_TRANSPOSE) then
+            tb = 'H'
             ldb = n
         else
             tb = 'N'
@@ -181,12 +188,12 @@ contains
 
         ! Input Check
         flag = 0
-        if (transa) then
+        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
             if (size(a, 2) /= m) flag = 4
         else
             if (size(a, 1) /= m) flag = 4
         end if
-        if (transb) then
+        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
             if (size(b, 2) /= k .or. size(b, 1) /= n) flag = 5
         else
             if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
@@ -206,9 +213,9 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine cmtx_mult_vec(trans, alpha, a, b, beta, c, err)
+    module subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: trans
+        integer(int32), intent(in) :: opa
         complex(real64), intent(in) :: alpha, beta
         complex(real64), intent(in), dimension(:,:) :: a
         complex(real64), intent(in), dimension(:) :: b
@@ -225,8 +232,13 @@ contains
         ! Initialization
         m = size(a, 1)
         n = size(a, 2)
-        t = 'N'
-        if (trans) t = 'T'
+        if (opa == TRANSPOSE) then
+            t = 'T'
+        else if (opa == HERMITIAN_TRANSPOSE) then
+            t = 'H'
+        else
+            t = 'N'
+        end if
         if (present(err)) then
             errmgr => err
         else
@@ -235,7 +247,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (trans) then
+        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
             if (size(b) /= m) then
                 flag = 4
             else if (size(c) /= n) then
@@ -346,7 +358,7 @@ contains
         ! Process
         do j = 1, n
             if (y(j) /= zero) then
-                temp = alpha * y(j)
+                temp = alpha * conjg(y(j))
                 a(:,j) = a(:,j) + temp * x
             end if
         end do
@@ -709,9 +721,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine diag_mtx_mult_mtx4(lside, trans, alpha, a, b, beta, c, err)
+    module subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: lside, trans
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         real(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -747,7 +760,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -759,7 +772,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -789,7 +802,7 @@ contains
 
         ! Process
         if (lside) then
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -799,6 +812,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -822,7 +846,7 @@ contains
                 end if
             end if
         else
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -832,6 +856,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -858,9 +893,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine diag_mtx_mult_mtx_cmplx(lside, trans, alpha, a, b, beta, c, err)
+    module subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: lside, trans
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         complex(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -896,7 +932,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -908,7 +944,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -938,7 +974,7 @@ contains
 
         ! Process
         if (lside) then
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -948,6 +984,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -971,7 +1018,7 @@ contains
                 end if
             end if
         else
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -981,6 +1028,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C

@@ -11,10 +11,7 @@
 !! @version 1.5.0
 
 
-!> @brief \b linalg_core
-!!
-!! @par Purpose
-!! Provides common "core" linear algebra routines.
+!> @brief Provides a set of common linear algebra routines.
 module linalg_core
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
@@ -70,7 +67,8 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Performs the rank-1 update to matrix A such that:
 !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
-!! X is an M-element array, and N is an N-element array.
+!! X is an M-element array, and N is an N-element array.  In the
+!! event that Y is complex, Y**H is used instead of Y**T.
 interface rank1_update
     module procedure :: rank1_update_dbl
     module procedure :: rank1_update_cmplx
@@ -1681,10 +1679,12 @@ interface
     !> @brief Performs the matrix operation: C = alpha * op(A) * op(B) +
     !! beta * C.
     !!
-    !! @param[in] transa Set to true if op(A) = A**T; else, set to false for
-    !!  op(A) = A.
-    !! @param[in] transb Set to true if op(B) = B**T; else, set to false for
-    !!  op(B) = B.
+    !! @param[in] opa Set to TRANSPOSE if op(A) = A**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(A) == A**H, otherwise set to 
+    !!  NO_OPERATION if op(A) == A.
+    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
+    !!  NO_OPERATION if op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a If @p transa is set to true, an K-by-M matrix; else, if
     !!  @p transa is set to false, an M-by-K matrix.
@@ -1703,8 +1703,8 @@ interface
     !!
     !! @par Notes
     !! This routine utilizes the BLAS routine ZGEMM.
-    module subroutine cmtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
-        logical, intent(in) :: transa, transb
+    module subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
+        integer(int32), intent(in) :: opa, opb
         complex(real64), intent(in) :: alpha, beta
         complex(real64), intent(in), dimension(:,:) :: a, b
         complex(real64), intent(inout), dimension(:,:) :: c
@@ -1714,8 +1714,9 @@ interface
     !> @brief Performs the matrix-vector operation: c = alpha * op(A) * b +
     !! beta * c.
     !!
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false for
-    !!  op(A) = A.
+    !! @param[in] trans opa Set to TRANSPOSE if op(A) = A**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(A) == A**H, otherwise set to 
+    !!  NO_OPERATION if op(A) == A.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a The M-by-N matrix A.
     !! @param[in] b If @p trans is set to true, an M-element array; else, if
@@ -1734,8 +1735,8 @@ interface
     !!
     !! @par Notes
     !! This routine utilizes the BLAS routine ZGEMV.
-    module subroutine cmtx_mult_vec(trans, alpha, a, b, beta, c, err)
-        logical, intent(in) :: trans
+    module subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
+        integer(int32), intent(in) :: opa
         complex(real64), intent(in) :: alpha, beta
         complex(real64), intent(in), dimension(:,:) :: a
         complex(real64), intent(in), dimension(:) :: b
@@ -1899,8 +1900,9 @@ interface
     !!
     !! @param[in] lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
+    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
+    !!  NO_OPERATION if op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
     !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
@@ -1920,8 +1922,9 @@ interface
     !!  warning messages that may be encountered are as follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
-    module subroutine diag_mtx_mult_mtx4(lside, trans, alpha, a, b, beta, c, err)
-        logical, intent(in) :: lside, trans
+    module subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         real(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -1934,8 +1937,9 @@ interface
     !!
     !! @param[in] lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
+    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
+    !!  NO_OPERATION if op(B) == B.
     !! @param[in] alpha A scalar multiplier.
     !! @param[in] a A K-element array containing the diagonal elements of A
     !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
@@ -1956,8 +1960,9 @@ interface
     !!  warning messages that may be encountered are as follows.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
-    module subroutine diag_mtx_mult_mtx_cmplx(lside, trans, alpha, a, b, beta, c, err)
-        logical, intent(in) :: lside, trans
+    module subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         complex(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -1965,8 +1970,8 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the matrix operation: B = alpha * A * op(B), or
-    !! B = alpha * op(B) * A.
+    !> @brief Computes the matrix operation: B = alpha * A * B, or
+    !! B = alpha * B * A.
     !!
     !! @param[in] lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.

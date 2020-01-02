@@ -9,6 +9,16 @@ module linalg_constants
     implicit none
 
 ! ******************************************************************************
+! CONSTANTS
+! ------------------------------------------------------------------------------
+    !> @brief Defines no operation should be performed on the matrix.
+    integer(int32), parameter :: NO_OPERATION = 0
+    !> @brief Defines a transpose operation.
+    integer(int32), parameter :: TRANSPOSE = 1
+    !> @brief Defines a Hermitian transpose operation for a complex-valued matrix.
+    integer(int32), parameter :: HERMITIAN_TRANSPOSE = 2
+
+! ******************************************************************************
 ! ERROR FLAGS
 ! ------------------------------------------------------------------------------
     !> An error flag denoting an invalid input.

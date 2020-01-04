@@ -650,6 +650,7 @@ end interface
 !! @endcode
 interface qr_rank1_update
     module procedure :: qr_rank1_update_dbl
+    module procedure :: qr_rank1_update_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -3016,6 +3017,54 @@ interface
         real(real64), intent(inout), dimension(:,:) :: q, r
         real(real64), intent(inout), dimension(:) :: u, v
         real(real64), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
+    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+    !!
+    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
+    !!  output, the updated matrix Q1.
+    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+    !!  matrix R1.
+    !! @param[in,out] u On input, the M-element U update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in,out] v On input, the N-element V update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least 2*K
+    !!  elements.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Remarks
+    !! @verbatim
+    !! Notice, K must either be equal to M, or to N.  In the event that K = N,
+    !! only the submatrix Qa is updated.  This is appropriate as the QR
+    !! factorization for an overdetermined system can be written as follows:
+    !!  A = Q * R = [Qa, Qb] * [Ra]
+    !!                         [0 ]
+    !!
+    !! Note: Ra is upper triangular of dimension N-by-N.
+    !! @endverbatim
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine ZQR1UP.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    module subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: q, r
+        complex(real64), intent(inout), dimension(:) :: u, v
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

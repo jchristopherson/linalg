@@ -1422,6 +1422,111 @@ contains
         if (allocated(wrk)) deallocate(wrk)
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: q, r
+        complex(real64), intent(inout), dimension(:) :: u, v
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        logical :: full
+        integer(int32) :: m, n, k, lwork, istat, flag, lrwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: rwptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(u, 1)
+        n = size(r, 2)
+        k = min(m, n)
+        full = size(q, 2) == m
+        lwork = k
+        lrwork = k
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m < n) then
+            flag = 1
+        else if (.not.full .and. size(q, 2) /= k) then
+            flag = 1
+        else if (size(r, 1) /= m) then
+            flag = 2
+        else if (size(u) /= m) then
+            flag = 3
+        else if (size(v) /= n) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("qr_rank1_update_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("qr_rank1_update_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("qr_rank1_update_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("qr_rank1_update_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("qr_rank1_update_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        call ZQR1UP(m, n, k, q, m, r, m, u, v, wptr, rwptr)
+
+        ! End
+        if (allocated(wrk)) deallocate(wrk)
+    end subroutine
+
 ! ******************************************************************************
 ! CHOLESKY FACTORIZATION
 ! ------------------------------------------------------------------------------

@@ -1069,10 +1069,9 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine mult_qr_mtx_cmplx(lside, opq, a, tau, c, work, olwork, err)
+    module subroutine mult_qr_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
         ! Arguments
-        logical, intent(in) :: lside
-        integer(int32), intent(in) :: opq
+        logical, intent(in) :: lside, trans
         complex(real64), intent(in), dimension(:) :: tau
         complex(real64), intent(inout), dimension(:,:) :: a, c
         complex(real64), intent(out), target, dimension(:), optional :: work
@@ -1103,10 +1102,8 @@ contains
             side = 'R'
             nrowa = n
         end if
-        if (opq == TRANSPOSE) then
-            t = 'T'
-        else if (opq == HERMITIAN_TRANSPOSE) then
-            t = 'H'
+        if (trans) then
+            t = 'C'
         else
             t = 'N'
         end if
@@ -1255,9 +1252,9 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine mult_qr_vec_cmplx(opq, a, tau, c, work, olwork, err)
+    module subroutine mult_qr_vec_cmplx(trans, a, tau, c, work, olwork, err)
         ! Arguments
-        integer(int32), intent(in) :: opq
+        logical, intent(in) :: trans
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(in), dimension(:) :: tau
         complex(real64), intent(inout), dimension(:) :: c
@@ -1283,10 +1280,8 @@ contains
         k = size(tau)
         side = 'L'
         nrowa = m
-        if (opq == TRANSPOSE) then
-            t = 'T'
-        else if (opq == HERMITIAN_TRANSPOSE) then
-            t = 'H'
+        if (trans) then
+            t = 'C'
         else
             t = 'N'
         end if
@@ -2021,6 +2016,81 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine rz_factor_cmplx(a, tau, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: tau
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, lwork, flag, istat
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(tau) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("rz_factor_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZTZRZF(m, n, a, m, tau, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("rz_factor_cmplx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("rz_factor_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZTZRZF
+        call ZTZRZF(m, n, a, m, tau, wptr, lwork, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
         ! Arguments
         logical, intent(in) :: lside, trans
@@ -2122,9 +2192,110 @@ contains
 
         ! Call DORMRZ
         call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+    end subroutine
 
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
+! ------------------------------------------------------------------------------
+    module subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: lside, trans
+        integer(int32), intent(in) :: l
+        complex(real64), intent(inout), dimension(:,:) :: a, c
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, n, k, lwork, flag, istat, lda
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(tau)
+        lda = size(a, 1)
+        if (lside) then
+            side = 'L'
+        else
+            side = 'R'
+        end if
+        if (trans) then
+            t = 'C'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (lside) then
+            if (l > m .or. l < 0) then
+               flag = 3
+            else if (k > m) then
+                flag = 5
+            else if (size(a, 1) < k .or. size(a, 2) /= m) then
+                flag = 4
+            end if
+        else
+            if (l > n .or. l < 0) then
+                flag = 3
+            else if (k > n) then
+                flag = 5
+            else if (size(a, 1) < k .or. size(a, 2) /= n) then
+                flag = 4
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_rz_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZUNMRZ(side, t, m, n, k, l, a, lda, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_rz_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_rz_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZUNMRZ
+        call ZUNMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2215,6 +2386,96 @@ contains
 
         ! Call DORMRZ
         call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        integer(int32), intent(in) :: l
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: c
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, k, lwork, flag, istat, lda
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c)
+        k = size(tau)
+        lda = size(a, 1)
+        side = 'L'
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (l > m .or. l < 0) then
+            flag = 2
+        else if (k > m) then
+            flag = 4
+        else if (size(a, 1) < k .or. size(a, 2) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_rz_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZUNMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_rz_vec_cmplx", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_rz_vec_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZUNMRZ
+        call ZUNMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
     end subroutine
 
 ! ******************************************************************************

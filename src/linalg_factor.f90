@@ -1596,6 +1596,72 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine cholesky_factor_cmplx(a, upper, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        logical, intent(in), optional :: upper
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        character :: uplo
+        integer(int32) :: i, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        if (present(upper)) then
+            if (upper) then
+                uplo = 'U'
+            else
+                uplo = 'L'
+            end if
+        else
+            uplo = 'U'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            ! ERROR: A must be square
+            call errmgr%report_error("cholesky_factor_cmplx", &
+                "The input matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        call ZPOTRF(uplo, n, a, n, flag)
+        if (flag > 0) then
+            ! ERROR: Matrix is not positive definite
+            write(errmsg, '(AI0A)') "The leading minor of order ", flag, &
+                " is not positive definite."
+            call errmgr%report_error("cholesky_factor_cmplx", trim(errmsg), &
+                LA_MATRIX_FORMAT_ERROR)
+        end if
+
+        ! Zero out the non-used upper or lower diagonal
+        if (uplo == 'U') then
+            ! Zero out the lower
+            do i = 1, n - 1
+                a(i+1:n,i) = zero
+            end do
+        else
+            ! Zero out the upper
+            do i = 2, n
+                a(1:i-1,i) = zero
+            end do
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine cholesky_rank1_update_dbl(r, u, work, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: r
@@ -1658,6 +1724,72 @@ contains
 
         ! Process
         call DCH1UP(n, r, n, u, wptr)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine cholesky_rank1_update_cmplx(r, u, work, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: r
+        complex(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: n, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(r, 1)
+        lwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(r, 2) /= n) then
+            flag = 1
+        else if (size(u) /= n) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("cholesky_rank1_update_cmplx", &
+                trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: Workspace array is not sized correctly
+                call errmgr%report_error("cholesky_rank1_update_cmplx", &
+                    "The workspace array is too short.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                call errmgr%report_error("cholesky_rank1_update", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call ZCH1UP(n, r, n, u, wptr)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1731,6 +1863,82 @@ contains
         else if (flag == 2) then
             ! ERROR: The matrix is singular
             call errmgr%report_error("cholesky_rank1_downdate", &
+                "The input matrix is singular.", LA_SINGULAR_MATRIX_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine cholesky_rank1_downdate_cmplx(r, u, work, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: r
+        complex(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: n, lwork, istat, flag
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(r, 1)
+        lwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(r, 2) /= n) then
+            flag = 1
+        else if (size(u) /= n) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
+                trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: Workspace array is not sized correctly
+                call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
+                    "The workspace array is too short.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call ZCH1DN(n, r, n, u, wptr, flag)
+        if (flag == 1) then
+            ! ERROR: The matrix is not positive definite
+            call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
+                "The downdated matrix is not positive definite.", &
+                LA_MATRIX_FORMAT_ERROR)
+        else if (flag == 2) then
+            ! ERROR: The matrix is singular
+            call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
                 "The input matrix is singular.", LA_SINGULAR_MATRIX_ERROR)
         end if
     end subroutine

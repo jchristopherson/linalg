@@ -725,6 +725,7 @@ end interface
 !! @endcode
 interface cholesky_factor
     module procedure :: cholesky_factor_dbl
+    module procedure :: cholesky_factor_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -792,6 +793,7 @@ end interface
 !! @endcode
 interface cholesky_rank1_update
     module procedure :: cholesky_rank1_update_dbl
+    module procedure :: cholesky_rank1_update_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -864,6 +866,7 @@ end interface
 !! @endcode
 interface cholesky_rank1_downdate
     module procedure :: cholesky_rank1_downdate_dbl
+    module procedure :: cholesky_rank1_downdate_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -3032,7 +3035,10 @@ interface
     !! @param[in,out] v On input, the N-element V update vector.  On output,
     !!  the original content of the array is overwritten.
     !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least 2*K
+    !!  memory allocation.  If provided, the array must have at least K
+    !!  elements.
+    !! @param[out] rwork An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least K
     !!  elements.
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
@@ -3094,6 +3100,32 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Computes the Cholesky factorization of a symmetric, positive
+    !! definite matrix.
+    !!
+    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+    !!  factored matrix is returned in either the upper or lower triangular
+    !!  portion of the matrix, dependent upon the value of @p upper.
+    !! @param[in] upper An optional input that, if specified, provides control
+    !!  over whether the factorization is computed as A = U**T * U (set to
+    !!  true), or as A = L * L**T (set to false).  The default value is true
+    !!  such that A = U**T * U.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine ZPOTRF.
+    module subroutine cholesky_factor_cmplx(a, upper, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        logical, intent(in), optional :: upper
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
     !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
     !! triangular).
     !!
@@ -3123,6 +3155,39 @@ interface
     module subroutine cholesky_rank1_update_dbl(r, u, work, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least N
+    !!  elements.  Additionally, this workspace array is used to contain the
+    !!  rotation cosines used to transform R to R1.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine ZCH1UP.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    module subroutine cholesky_rank1_update_cmplx(r, u, work, err)
+        complex(real64), intent(inout), dimension(:,:) :: r
+        complex(real64), intent(inout), dimension(:) :: u
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
@@ -3159,6 +3224,42 @@ interface
     module subroutine cholesky_rank1_downdate_dbl(r, u, work, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(inout), dimension(:) :: u
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !! @param[out] work An optional argument that if supplied prevents local
+    !!  memory allocation.  If provided, the array must have at least N
+    !!  elements.  Additionally, this workspace array is used to contain the
+    !!  rotation cosines used to transform R to R1.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+    !!      positive definite.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
+    !!
+    !! @par Notes
+    !! This routine utilizes the QRUPDATE routine ZCH1DN.
+    !!
+    !! @par See Also
+    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    module subroutine cholesky_rank1_downdate_cmplx(r, u, work, err)
+        complex(real64), intent(inout), dimension(:,:) :: r
+        complex(real64), intent(inout), dimension(:) :: u
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine

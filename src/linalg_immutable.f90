@@ -37,7 +37,9 @@ module linalg_immutable
     public :: lu_results
     public :: lu_results_cmplx
     public :: qr_results
+    public :: qr_results_cmplx
     public :: svd_results
+    public :: svd_results_cmplx
     public :: eigen_results
     public :: identity
 
@@ -144,6 +146,18 @@ module linalg_immutable
     end type
 
 ! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of a QR factorization.
+    type qr_results_cmplx
+        !> The M-by-M orthogonal matrix Q.
+        complex(real64), allocatable, dimension(:,:) :: q
+        !> The M-by-N upper trapezoidal matrix R.
+        complex(real64), allocatable, dimension(:,:) :: r
+        !> The N-by-N column pivot tracking matrix P where A P = Q R.  If no
+        !! column pivoting is utilized, this matrix is left unallocated.
+        complex(real64), allocatable, dimension(:,:) :: p
+    end type
+
+! ------------------------------------------------------------------------------
     !> @brief Defines a container for the output of a singular value
     !! decomposition of a matrix.
     type svd_results
@@ -153,6 +167,18 @@ module linalg_immutable
         real(real64), allocatable, dimension(:,:) :: s
         !> The N-by-N transpose of the matrix V.
         real(real64), allocatable, dimension(:,:) :: vt
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of a singular value
+    !! decomposition of a matrix.
+    type svd_results_cmplx
+        !> The M-by-M orthogonal matrix U.
+        complex(real64), allocatable, dimension(:,:) :: u
+        !> The M-by-N matrix containing the singular values on its diagonal.
+        real(real64), allocatable, dimension(:,:) :: s
+        !> The N-by-N conjugate transpose of the matrix V.
+        complex(real64), allocatable, dimension(:,:) :: vt
     end type
 
 ! ------------------------------------------------------------------------------

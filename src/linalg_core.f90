@@ -960,6 +960,7 @@ end interface
 !! @endcode
 interface svd
     module procedure :: svd_dbl
+    module procedure :: svd_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -1161,9 +1162,13 @@ end interface
 !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node39.html)
 interface solve_qr
     module procedure :: solve_qr_no_pivot_mtx
+    module procedure :: solve_qr_no_pivot_mtx_cmplx
     module procedure :: solve_qr_no_pivot_vec
+    module procedure :: solve_qr_no_pivot_vec_cmplx
     module procedure :: solve_qr_pivot_mtx
+    module procedure :: solve_qr_pivot_mtx_cmplx
     module procedure :: solve_qr_pivot_vec
+    module procedure :: solve_qr_pivot_vec_cmplx
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -3639,6 +3644,61 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    !> @brief Computes the singular value decomposition of a matrix A.  The
+    !!  SVD is defined as: A = U * S * V**H, where U is an M-by-M orthogonal
+    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+    !!  matrix.
+    !!
+    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+    !!  overwritten on output.
+    !! @param[out] s A MIN(M, N)-element array containing the singular values
+    !!  of @p a sorted in descending order.
+    !! @param[out] u An optional argument, that if supplied, is used to contain
+    !!  the orthogonal matrix U from the decomposition.  The matrix U contains
+    !!  the left singular vectors, and can be either M-by-M (all left singular
+    !!  vectors are computed), or M-by-MIN(M,N) (only the first MIN(M, N) left
+    !!  singular vectors are computed).
+    !! @param[out] vt An optional argument, that if supplied, is used to contain
+    !!  the conjugate transpose of the N-by-N orthogonal matrix V.  The matrix 
+    !!  V contains the right singular vectors.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation for complex-valued workspaces.  If not provided, the 
+    !!  memory required is allocated within.  If provided, the length of the 
+    !!  array must be at least @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] rwork An optional input, that if provided, prevents any local
+    !!  memory allocation for real-valued workspaces.  If not provided, the 
+    !!  memory required is allocated within.  If provided, the length of the 
+    !!  array must be at least 5 * MIN(M, N).
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    !!
+    !! @par Notes
+    !! This routine utilizes the LAPACK routine ZGESVD.
+    !!
+    !! @par See Also
+    !! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
+    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
+    module subroutine svd_cmplx(a, s, u, vt, work, olwork, rwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: s
+        complex(real64), intent(out), optional, dimension(:,:) :: u, vt
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************
@@ -3956,6 +4016,43 @@ interface
     !!  Notice, M must be greater than or equal to N.
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
+    !!  the first N columns are overwritten by the solution matrix X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine is based upon a subset of the LAPACK routine ZGELS.
+    module subroutine solve_qr_no_pivot_mtx_cmplx(a, tau, b, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a, b
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Solves a system of M QR-factored equations of N unknowns where
+    !! M >= N.
+    !!
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !!  Notice, M must be greater than or equal to N.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-element right-hand-side vector.  On output,
     !!  the first N elements are overwritten by the solution vector X.
     !! @param[out] work An optional input, that if provided, prevents any local
@@ -3982,6 +4079,44 @@ interface
         real(real64), intent(in), dimension(:) :: tau
         real(real64), intent(inout), dimension(:) :: b
         real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Solves a system of M QR-factored equations of N unknowns where
+    !! M >= N.
+    !!
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !!  Notice, M must be greater than or equal to N.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] b On input, the M-element right-hand-side vector.  On output,
+    !!  the first N elements are overwritten by the solution vector X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine is based upon a subset of the LAPACK routine ZGELS.
+    module subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
@@ -4036,6 +4171,47 @@ interface
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] jpvt An N-element array, as output by qr_factor, used to
     !!  track the column pivots.
+    !! @param[in] b On input, the MAX(M, N)-by-NRHS matrix where the first M
+    !!  rows contain the right-hand-side matrix B.  On output, the first N rows
+    !!  are overwritten by the solution matrix X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine is based upon a subset of the LAPACK routine ZGELSY.
+    module subroutine solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        complex(real64), intent(inout), dimension(:,:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Solves a system of M QR-factored equations of N unknowns where the
+    !! QR factorization made use of column pivoting.
+    !!
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are altered.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
+    !!  track the column pivots.
     !! @param[in] b On input, the MAX(M, N)-element array where the first M
     !!  elements contain the right-hand-side vector B.  On output, the first N
     !!  elements are overwritten by the solution vector X.
@@ -4064,6 +4240,47 @@ interface
         integer(int32), intent(in), dimension(:) :: jpvt
         real(real64), intent(inout), dimension(:) :: b
         real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Solves a system of M QR-factored equations of N unknowns where the
+    !! QR factorization made use of column pivoting.
+    !!
+    !! @param[in] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are altered.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt An N-element array, as output by qr_factor, used to
+    !!  track the column pivots.
+    !! @param[in] b On input, the MAX(M, N)-element array where the first M
+    !!  elements contain the right-hand-side vector B.  On output, the first N
+    !!  elements are overwritten by the solution vector X.
+    !! @param[out] work An optional input, that if provided, prevents any local
+    !!  memory allocation.  If not provided, the memory required is allocated
+    !!  within.  If provided, the length of the array must be at least
+    !!  @p olwork.
+    !! @param[out] olwork An optional output used to determine workspace size.
+    !!  If supplied, the routine determines the optimal size for @p work, and
+    !!  returns without performing any actual calculations.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!
+    !! @par Notes
+    !! This routine is based upon a subset of the LAPACK routine ZGELSY.
+    module subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine

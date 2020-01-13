@@ -513,6 +513,92 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_qr_no_pivot_mtx_cmplx(a, tau, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a, b
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: m, n, nrhs, k, lwork, flag, istat
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        nrhs = size(b, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m < n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b, 1) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_qr(.true., .true., a, tau, b, olwork = lwork)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Compute Q**T * B, and store in B
+        call mult_qr(.true., .true., a, tau, b, wptr)
+
+        ! Solve the triangular system: A(1:N,1:N)*X = B(1:N,:)
+        call solve_triangular_system(.true., .true., .false., .true., one, &
+            a(1:n,1:n), b(1:n,:))
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
@@ -580,6 +666,88 @@ contains
             if (istat /= 0) then
                 ! ERROR: Out of memory
                 call errmgr%report_error("solve_qr_no_pivot_vec", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Compute Q**T * B, and store in B
+        call mult_qr(.true., a, tau, b, work = wptr)
+
+        ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
+        call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, k, flag, lwork, istat
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m < n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b) /= m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_qr_no_pivot_vec_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_qr(.true., a, tau, b, olwork = lwork)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_vec_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_qr_no_pivot_vec_cmplx", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -751,6 +919,163 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        complex(real64), intent(inout), dimension(:,:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
+            rnk, maxmn, flag, istat, lwork1, lwork2, lwork3
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr
+        complex(real64) :: s1, c1, s2, c2
+        complex(real64), pointer, dimension(:) :: wptr, w, tau2
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        maxmn = max(m, n)
+        nrhs = size(b, 2)
+        ismin = mn + 1
+        ismax = 2 * mn + 1
+        rcond = epsilon(rcond)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(tau) /= mn) then
+            flag = 2
+        else if (size(jpvt) /= n) then
+            flag = 3
+        else if (size(b, 1) /= maxmn) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_qr_pivot_mtx_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call rz_factor(a(1:mn,:), a(1:mn,1), olwork = lwork1)
+        call mult_qr(.true., .true., a, tau, b(1:m,:), olwork = lwork2)
+        call mult_rz(.true., .true., n, a(1:mn,:), a(1:mn,1), b(1:n,:), &
+            olwork = lwork3)
+        lwork = max(lwork1, lwork2, lwork3, 2 * mn + 1) + mn
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_qr_pivot_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Determine the rank of R11 using an incremental condition estimation
+        wptr(ismin) = one
+        wptr(ismax) = one
+        smax = abs(a(1,1))
+        smin = smax
+        if (abs(a(1,1)) == zero) then
+            rnk = 0
+            b(1:maxmn,:) = zero
+            return
+        else
+            rnk = 1
+        end if
+        do
+            if (rnk < mn) then
+                i = rnk + 1
+                call ZLAIC1(imin, rnk, wptr(ismin:ismin+rnk-1), smin, &
+                    a(1:rnk-1,i), a(i,i), sminpr, s1, c1)
+                call ZLAIC1(imax, rnk, wptr(ismax:ismax+rnk-1), smax, &
+                    a(1:rnk-1,i), a(i,i), smaxpr, s2, c2)
+                if (smaxpr * rcond <= sminpr) then
+                    do i = 1, rnk
+                        wptr(ismin+i-1) = s1 * wptr(ismin+i-1)
+                        wptr(ismax+i-1) = s2 * wptr(ismax+i-1)
+                    end do
+                    wptr(ismin+rnk) = c1
+                    wptr(ismax+rnk) = c2
+                    smin = sminpr
+                    smax = smaxpr
+                    rnk = rnk + 1
+                    cycle
+                end if
+            end if
+            exit
+        end do
+
+        ! Partition R = [R11 R12]
+        !               [ 0  R22]
+        tau2 => wptr(1:rnk)
+        w => wptr(rnk+1:lwork)
+        if (rnk < n) call rz_factor(a(1:rnk,:), tau2, w)
+
+        ! Compute B(1:m,1:NRHS) = Q**T * B(1:M,1:NRHS)
+        call mult_qr(.true., .true., a, tau, b(1:m,:), w)
+
+        ! Solve the triangular system T11 * B(1:rnk,1:nrhs) = B(1:rnk,1:nrhs)
+        call solve_triangular_system(.true., .true., .false., .true., one, &
+            a(1:rnk,1:rnk), b(1:rnk,:))
+        if (n > rnk) b(rnk+1:n,:) = zero
+
+        ! Compute B(1:n,1:nrhs) = Y**T * B(1:n,1:nrhs)
+        if (rnk < n) then
+            call mult_rz(.true., .true., n - rnk, a(1:rnk,:), tau2, b(1:n,:), w)
+        end if
+
+        ! Apply the pivoting: B(1:N,1:NRHS) = P * B(1:N,1:NRHS)
+        do j = 1, nrhs
+            do i = 1, n
+                wptr(jpvt(i)) = b(i,j)
+            end do
+            b(:,j) = wptr(1:n)
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
@@ -858,6 +1183,158 @@ contains
                 call DLAIC1(imin, rnk, wptr(ismin:ismin+rnk-1), smin, &
                     a(1:rnk-1,i), a(i,i), sminpr, s1, c1)
                 call DLAIC1(imax, rnk, wptr(ismax:ismax+rnk-1), smax, &
+                    a(1:rnk-1,i), a(i,i), smaxpr, s2, c2)
+                if (smaxpr * rcond <= sminpr) then
+                    do i = 1, rnk
+                        wptr(ismin+i-1) = s1 * wptr(ismin+i-1)
+                        wptr(ismax+i-1) = s2 * wptr(ismax+i-1)
+                    end do
+                    wptr(ismin+rnk) = c1
+                    wptr(ismax+rnk) = c2
+                    smin = sminpr
+                    smax = smaxpr
+                    rnk = rnk + 1
+                    cycle
+                end if
+            end if
+            exit
+        end do
+
+        ! Partition R = [R11 R12]
+        !               [ 0  R22]
+        tau2 => wptr(1:rnk)
+        w => wptr(rnk+1:lwork)
+        if (rnk < n) call rz_factor(a(1:rnk,:), tau2, w)
+
+        ! Compute B(1:m,1:NRHS) = Q**T * B(1:M,1:NRHS)
+        call mult_qr(.true., a, tau, b(1:m))
+
+        ! Solve the triangular system T11 * B(1:rnk) = B(1:rnk)
+        call solve_triangular_system(.true., .false., .true., a(1:rnk,1:rnk), &
+            b(1:rnk))
+        if (n > rnk) b(rnk+1:n) = zero
+
+        ! Compute B(1:n) = Y**T * B(1:n)
+        if (rnk < n) then
+            call mult_rz(.true., n - rnk, a(1:rnk,:), tau2, b(1:n), w)
+        end if
+
+        ! Apply the pivoting: B(1:N) = P * B(1:N)
+        do i = 1, n
+            wptr(jpvt(i)) = b(i)
+        end do
+        b = wptr(1:n)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        integer(int32), intent(in), dimension(:) :: jpvt
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        integer(int32), parameter :: imin = 2
+        integer(int32), parameter :: imax = 1
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn, flag, &
+            istat, lwork1, lwork2
+        real(real64) :: rcond, smax, smin, smaxpr, sminpr
+        complex(real64) :: s1, c1, s2, c2
+        complex(real64), pointer, dimension(:) :: wptr, w, tau2
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        maxmn = max(m, n)
+        ismin = mn + 1
+        ismax = 2 * mn + 1
+        rcond = epsilon(rcond)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(tau) /= mn) then
+            flag = 2
+        else if (size(jpvt) /= n) then
+            flag = 3
+        else if (size(b) /= maxmn) then
+            flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_qr_pivot_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call rz_factor(a(1:mn,:), a(1:mn,1), olwork = lwork1)
+        call mult_rz(.true., n, a(1:mn,:), a(1:mn,1), b(1:n), olwork = lwork2)
+        lwork = max(lwork1, lwork2, 2 * mn + 1) + mn
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_qr_pivot_vec_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Determine the rank of R11 using an incremental condition estimation
+        wptr(ismin) = one
+        wptr(ismax) = one
+        smax = abs(a(1,1))
+        smin = smax
+        if (abs(a(1,1)) == zero) then
+            rnk = 0
+            b(maxmn) = zero
+            return
+        else
+            rnk = 1
+        end if
+        do
+            if (rnk < mn) then
+                i = rnk + 1
+                call ZLAIC1(imin, rnk, wptr(ismin:ismin+rnk-1), smin, &
+                    a(1:rnk-1,i), a(i,i), sminpr, s1, c1)
+                call ZLAIC1(imax, rnk, wptr(ismax:ismax+rnk-1), smax, &
                     a(1:rnk-1,i), a(i,i), smaxpr, s2, c2)
                 if (smaxpr * rcond <= sminpr) then
                     do i = 1, rnk

@@ -2597,4 +2597,147 @@ contains
         end if
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine svd_cmplx(a, s, u, vt, work, olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: s
+        complex(real64), intent(out), optional, dimension(:,:) :: u, vt
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: jobu, jobvt
+        integer(int32) :: m, n, mn, istat, lwork, flag, lrwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        real(real64), dimension(1) :: rtemp
+        real(real64), pointer, dimension(:) :: rwptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        lrwork = 5 * mn
+        if (present(u)) then
+            if (size(u, 2) == m) then
+                jobu = 'A'
+            else if (size(u, 2) == mn) then
+                jobu = 'S'
+            end if
+        else
+            jobu = 'N'
+        end if
+        if (present(vt)) then
+            jobvt = 'A'
+        else
+            jobvt = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(s) /= mn) then
+            flag = 2
+        else if (present(u)) then
+            if (size(u, 1) /= m) flag = 3
+            if (size(u, 2) /= m .and. size(u, 2) /= mn) flag = 3
+        else if (present(vt)) then
+            if (size(vt, 1) /= n .or. size(vt, 2) /= n) flag = 4
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("svd_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, temp, -1, &
+            rtemp, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("svd_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: RWORK not sized correctly
+                call errmgr%report_error("svd_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Call ZGESVD
+        if (present(u) .and. present(vt)) then
+            call ZGESVD(jobu, jobvt, m, n, a, m, s, u, m, vt, n, wptr, lwork, &
+                rwptr, flag)
+        else if (present(u) .and. .not.present(vt)) then
+            call ZGESVD(jobu, jobvt, m, n, a, m, s, u, m, temp, n, wptr, &
+                rwptr, lwork, flag)
+        else if (.not.present(u) .and. present(vt)) then
+            call ZGESVD(jobu, jobvt, m, n, a, m, s, temp, m, vt, n, wptr, &
+                rwptr, lwork, flag)
+        else
+            call ZGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, wptr, &
+                rwptr, lwork, flag)
+        end if
+
+        ! Check for convergence
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("svd_cmplx", errmsg, &
+                LA_CONVERGENCE_ERROR)
+        end if
+    end subroutine
+
 end submodule

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['s',['s',['../structlinalg__immutable_1_1svd__results.html#acbc05e1d170351bbfcd4cd1f089c81d8',1,'linalg_immutable::svd_results']]]
+  ['q_198',['q',['../structlinalg__immutable_1_1qr__results.html#a91547ec8def57c0cc59271ccf59b3a01',1,'linalg_immutable::qr_results']]]
 ];

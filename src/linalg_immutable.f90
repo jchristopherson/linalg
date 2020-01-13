@@ -1,8 +1,6 @@
 ! linalg_immutable.f90
 
-!> @brief \b linalg_immutable
-!! @par Purpose
-!! Provides an immutable interface to many of the core linear algebra routines
+!> @brief Provides an immutable interface to many of the core linear algebra routines
 !! in this library.  The intent is to allow for ease of use in situations
 !! where memory allocation, or absolute speed are of lesser importance to code
 !! readability.

@@ -1,9 +1,6 @@
 ! linalg_constants.f90
 
-!> @brief \b linalg_constants
-!!
-!! @par Purpose
-!! Provides a set of constants and error flags for the library.
+!> @brief Provides a set of constants and error flags for the library.
 module linalg_constants
     use, intrinsic :: iso_fortran_env, only : int32, real64
     implicit none

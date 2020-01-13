@@ -1429,6 +1429,54 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_cholesky_mtx_cmplx(upper, a, b, err)
+        ! Arguments
+        logical, intent(in) :: upper
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: uplo
+        integer(int32) :: n, nrhs, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        nrhs = size(b, 2)
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 2
+        else if (size(b, 1) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_cholesky_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        call ZPOTRS(uplo, n, nrhs, a, n, b, n, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_cholesky_vec(upper, a, b, err)
         ! Arguments
         logical, intent(in) :: upper
@@ -1473,6 +1521,53 @@ contains
 
         ! Process
         call DPOTRS(uplo, n, 1, a, n, b, n, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_cholesky_vec_cmplx(upper, a, b, err)
+        ! Arguments
+        logical, intent(in) :: upper
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: uplo
+        integer(int32) :: n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        n = size(a, 1)
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 2) /= n) then
+            flag = 2
+        else if (size(b) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_cholesky_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        call ZPOTRS(uplo, n, 1, a, n, b, n, flag)
     end subroutine
 
 ! ******************************************************************************
@@ -1524,7 +1619,7 @@ contains
         if (present(work)) then
             if (size(work) < lwork) then
                 ! ERROR: WORK not sized correctly
-                call errmgr%report_error("svd", &
+                call errmgr%report_error("mtx_inverse_dbl", &
                     "Incorrectly sized input array WORK, argument 3.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1534,7 +1629,7 @@ contains
             allocate(wrk(lwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("mtx_inverse", &
+                call errmgr%report_error("mtx_inverse_dbl", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -1546,7 +1641,7 @@ contains
         if (present(iwork)) then
             if (size(iwork) < liwork) then
                 ! ERROR: IWORK not sized correctly
-                call errmgr%report_error("svd", &
+                call errmgr%report_error("mtx_inverse_dbl", &
                     "Incorrectly sized input array IWORK, argument 2.", &
                     LA_ARRAY_SIZE_ERROR)
                 return
@@ -1556,7 +1651,7 @@ contains
             allocate(iwrk(liwork), stat = istat)
             if (istat /= 0) then
                 ! ERROR: Out of memory
-                call errmgr%report_error("mtx_inverse", &
+                call errmgr%report_error("mtx_inverse_dbl", &
                     "Insufficient memory available.", &
                     LA_OUT_OF_MEMORY_ERROR)
                 return
@@ -1572,7 +1667,108 @@ contains
 
         ! Check for a singular matrix
         if (flag > 0) then
-            call errmgr%report_error("mtx_inverse", &
+            call errmgr%report_error("mtx_inverse_dbl", &
+                "The matrix is singular; therefore, the inverse could " // &
+                "not be computed.", LA_SINGULAR_MATRIX_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mtx_inverse_cmplx(a, iwork, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: n, liwork, lwork, istat, flag
+        integer(int32), pointer, dimension(:) :: iptr
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(a, 1)
+        liwork = n
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            call errmgr%report_error("mtx_inverse_cmplx", &
+                "The matrix must be squre to invert.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGETRI(n, a, n, istat, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Workspace Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_inverse_cmplx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_inverse_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Integer Workspace Allocation
+        if (present(iwork)) then
+            if (size(iwork) < liwork) then
+                ! ERROR: IWORK not sized correctly
+                call errmgr%report_error("mtx_inverse_cmplx", &
+                    "Incorrectly sized input array IWORK, argument 2.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            iptr => iwork(1:liwork)
+        else
+            allocate(iwrk(liwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_inverse_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+        end if
+
+        ! Compute the LU factorization of A
+        call ZGETRF(n, n, a, n, iptr, flag)
+
+        ! Compute the inverse of the LU factored matrix
+        call ZGETRI(n, a, n, iptr, wptr, lwork, flag)
+
+        ! Check for a singular matrix
+        if (flag > 0) then
+            call errmgr%report_error("mtx_inverse_cmplx", &
                 "The matrix is singular; therefore, the inverse could " // &
                 "not be computed.", LA_SINGULAR_MATRIX_ERROR)
         end if
@@ -1722,6 +1918,177 @@ contains
         call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine mtx_pinverse_cmplx(a, ainv, tol, work, olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:,:) :: ainv
+        real(real64), intent(in), optional :: tol
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, dimension(:), optional :: rwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3, &
+            lrwork
+        real(real64), pointer, dimension(:) :: s, rwptr, rw
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        complex(real64), pointer, dimension(:) :: wptr, w
+        complex(real64), pointer, dimension(:,:) :: u, vt
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64) :: temp(1)
+        real(real64) :: t, tref, tolcheck, rtemp(1)
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        lrwork = 6 * mn
+        i1 = m * mn
+        i2a = i1 + 1
+        i2b = i2a + n * n - 1
+        i3 = i2b + 1
+        tolcheck = dlamch('s')
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
+            write(errmsg, '(AI0AI0A)') &
+                "The output matrix AINV is not sized appropriately.  " // &
+                "It is expected to be ", n, "-by-", m, "."
+            call errmgr%report_error("mtx_pinverse_cmplx", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, &
+            rtemp, flag)
+        lwork = int(temp(1), int32)
+        lwork = lwork + m * mn + n * n
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_pinverse_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_pinverse_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_pinverse_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_pinverse_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+        u(1:m,1:mn) => wptr(1:i1)
+        vt(1:n,1:n) => wptr(i2a:i2b)
+        w => wptr(i3:lwork)
+        s => rwptr(1:mn)
+        rw => rwptr(mn+1:lrwork)
+
+        ! Compute the SVD of A
+        call ZGESVD('S', 'A', m, n, a, m, s, u, m, vt, n, w, size(w), rw, flag)
+
+        ! Check for convergence
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("mtx_pinverse_cmplx", errmsg, &
+                LA_CONVERGENCE_ERROR)
+            return
+        end if
+
+        ! Determine the threshold tolerance for the singular values such that
+        ! singular values less than the threshold result in zero when inverted.
+        tref = max(m, n) * epsilon(t) * s(1)
+        if (present(tol)) then
+            t = tol
+        else
+            t = tref
+        end if
+        !if (t < safe_denom(t)) then
+        if (t < tolcheck) then
+            ! The supplied tolerance is too small, simply fall back to the
+            ! default, but issue a warning to the user
+            t = tref
+            ! call errmgr%report_warning("pinverse_1", "The supplied tolerance was " // &
+            !     "smaller than a value that would result in an overflow " // &
+            !     "condition, or is negative; therefore, the tolerance has " // &
+            !     "been reset to its default value.")
+        end if
+
+        ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**T by
+        ! first computing V * inv(S) (result is N-by-M), and store in the first
+        ! MN rows of VT in a transposed manner.
+        do i = 1, mn
+            ! Apply 1 / S(I) to VT(I,:)
+            if (s(i) < t) then
+                vt(i,:) = zero
+            else
+                ! call recip_mult_array(s(i), vt(i,1:n))
+                vt(i,1:n) = vt(i,1:n) / s(i)
+            end if
+        end do
+
+        ! Compute (VT**H * inv(S)) * U**H
+        call mtx_mult(HERMITIAN_TRANSPOSE, HERMITIAN_TRANSPOSE, one, &
+            vt(1:mn,:), u, zero, ainv)
+    end subroutine
+
 ! ******************************************************************************
 ! LEAST SQUARES SOLUTION ROUTINES
 ! ------------------------------------------------------------------------------
@@ -1800,6 +2167,81 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_mtx_cmplx(a, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a, b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        nrhs = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(b, 1) /= maxmn) then
+            call errmgr%report_error("solve_least_squares_mtx_cmplx", &
+                "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELS('N', m, n, nrhs, a, m, b, maxmn, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call ZGELS('N', m, n, nrhs, a, m, b, maxmn, wptr, lwork, flag)
+        if (flag > 0) then
+            call errmgr%report_error("solve_least_squares_mtx_cmplx", &
+                "The supplied matrix is not of full rank; therefore, " // &
+                "the solution could not be computed via this routine.  " // &
+                "Try a routine that utilizes column pivoting.", &
+                LA_INVALID_OPERATION_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_least_squares_vec(a, b, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
@@ -1867,6 +2309,81 @@ contains
         call DGELS('N', m, n, 1, a, m, b, maxmn, wptr, lwork, flag)
         if (flag > 0) then
             call errmgr%report_error("solve_least_squares_mtx", &
+                "The supplied matrix is not of full rank; therefore, " // &
+                "the solution could not be computed via this routine.  " // &
+                "Try a routine that utilizes column pivoting.", &
+                LA_INVALID_OPERATION_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_vec_cmplx(a, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, maxmn, lwork, istat, flag
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(b) /= maxmn) then
+            call errmgr%report_error("solve_least_squares_vec_cmplx", &
+                "Input 2 is not sized correctly.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELS('N', m, n, 1, a, m, b, maxmn, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_cmplx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Process
+        call ZGELS('N', m, n, 1, a, m, b, maxmn, wptr, lwork, flag)
+        if (flag > 0) then
+            call errmgr%report_error("solve_least_squares_mtx_cmplx", &
                 "The supplied matrix is not of full rank; therefore, " // &
                 "the solution could not be computed via this routine.  " // &
                 "Try a routine that utilizes column pivoting.", &
@@ -1982,6 +2499,141 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_mtx_pvt_cmplx(a, b, ipvt, arnk, &
+            work, olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a, b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, maxmn, nrhs, lwork, istat, flag, rnk, lrwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: rwptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        complex(real64), dimension(1) :: temp
+        real(real64), dimension(1) :: rtemp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        nrhs = size(b, 2)
+        lrwork = 2 * n
+        rc = epsilon(rc)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_least_squares_mtx_pvt_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELSY(m, n, nrhs, a, m, b, maxmn, itemp, rc, rnk, temp, -1, &
+            rtemp, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(ipvt)) then
+            if (size(ipvt) < n) then
+                ! ERROR: IPVT is not big enough
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Incorrectly sized pivot array, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            iptr => ipvt(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+            iptr = 0
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: RWORK not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_pvt_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_pvt_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        call ZGELSY(m, n, nrhs, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
+            rwptr, flag)
+        if (present(arnk)) arnk = rnk
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_least_squares_vec_pvt(a, b, ipvt, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
@@ -2084,6 +2736,141 @@ contains
 
         ! Process
         call DGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, flag)
+        if (present(arnk)) arnk = rnk
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_vec_pvt_cmplx(a, b, ipvt, arnk, &
+            work, olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: b
+        integer(int32), intent(inout), target, optional, dimension(:) :: ipvt
+        integer(int32), intent(out), optional :: arnk
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, maxmn, lwork, istat, flag, rnk
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: rwptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        integer(int32), pointer, dimension(:) :: iptr
+        complex(real64), dimension(1) :: temp
+        real(real64), dimension(1) :: rtemp
+        integer(int32), dimension(1) :: itemp
+        real(real64) :: rc
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        maxmn = max(m, n)
+        lrwork = 2 * n
+        rc = epsilon(rc)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELSY(m, n, 1, a, m, b, maxmn, itemp, rc, rnk, temp, -1, rtemp, &
+            flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(ipvt)) then
+            if (size(ipvt) < n) then
+                ! ERROR: IPVT is not big enough
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Incorrectly sized pivot array, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            iptr => ipvt(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_pvt", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            iptr => iwrk
+            iptr = 0
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        call ZGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
+            rwptr, flag)
         if (present(arnk)) arnk = rnk
     end subroutine
 
@@ -2199,6 +2986,144 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_mtx_svd_cmplx(a, b, s, arnk, work, &
+            olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a, b
+        integer(int32), intent(out), optional :: arnk
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: s, rwork
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, nrhs, mn, maxmn, istat, flag, lwork, rnk, lrwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: rwptr, sptr
+        real(real64), allocatable, target, dimension(:) :: rwrk, sing
+        complex(real64), dimension(1) :: temp
+        real(real64), dimension(1) :: rtemp
+        real(real64) :: rcond
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        nrhs = size(b, 2)
+        mn = min(m, n)
+        lrwork = 5 * mn
+        maxmn = max(m, n)
+        rcond = epsilon(rcond)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b, 1) /= maxmn) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELSS(m, n, nrhs, a, m, b, maxmn, rtemp, rcond, rnk, temp, -1, &
+            rtemp, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        call ZGELSS(m, n, nrhs, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
+            rwptr, flag)
+        if (present(arnk)) arnk = rnk
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("solve_least_squares_mtx_svd_cmplx", &
+                errmsg, LA_CONVERGENCE_ERROR)
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
     module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
@@ -2308,5 +3233,142 @@ contains
         end if
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine solve_least_squares_vec_svd_cmplx(a, b, s, arnk, work, &
+            olwork, rwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(inout), dimension(:) :: b
+        integer(int32), intent(out), optional :: arnk
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: rwork, s
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, mn, maxmn, istat, flag, lwork, rnk, lrwork
+        real(real64), pointer, dimension(:) :: rwptr, sptr
+        real(real64), allocatable, target, dimension(:) :: rwrk, sing
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        real(real64), dimension(1) :: rtemp
+        real(real64) :: rcond
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        lrwork = 5 * mn
+        maxmn = max(m, n)
+        rcond = epsilon(rcond)
+        if (present(arnk)) arnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(b) /= maxmn) then
+            flag = 2
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                trim(errmsg), LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELSS(m, n, 1, a, m, b, maxmn, rtemp, rcond, rnk, temp, -1, &
+            rtemp, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(s)) then
+            if (size(s) < mn) then
+                ! ERROR: S not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Incorrectly sized input array S, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            sptr => s(1:mn)
+        else
+            allocate(sing(mn), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            sptr => sing
+        end if
+
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 7.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rwptr => rwrk
+        end if
+
+        ! Process
+        call ZGELSS(m, n, 1, a, m, b, maxmn, sptr, rcond, rnk, wptr, lwork, &
+            rwptr, flag)
+        if (present(arnk)) arnk = rnk
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("solve_least_squares_vec_svd_cmplx", &
+                errmsg, LA_CONVERGENCE_ERROR)
+        end if
+    end subroutine
 
 end submodule

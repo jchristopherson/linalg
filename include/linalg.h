@@ -108,8 +108,15 @@ int la_mtx_mult_cmplx(int opa, int opb, int m, int n, int k,
  * @param beta A scalar multiplier.
  * @param c The @p m by @p n matrix C.
  * @param ldc The leading dimension of matrix C.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+ *      correct.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+ *      incorrect.
  */
-void la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k, 
+int la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k, 
     double alpha, const double *a, const double *b, int ldb, double beta, 
     double *c, int ldc);
 
@@ -139,8 +146,15 @@ void la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k,
  * @param beta A scalar multiplier.
  * @param c The @p m by @p n matrix C.
  * @param ldc The leading dimension of matrix C.
+ * 
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+ *      correct.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+ *      incorrect.
  */
-void la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k, 
+int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k, 
     double complex alpha, const double complex *a, const double complex *b, 
     int ldb, double complex beta, double complex *c, int ldc);
 

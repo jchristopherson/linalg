@@ -6,7 +6,9 @@ module linalg_c_api
     use iso_c_binding
     use linalg_core
     use linalg_constants
+    use ferror
     implicit none
+
 contains
 ! ------------------------------------------------------------------------------
     !!@brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
@@ -182,20 +184,31 @@ contains
     !! @param beta A scalar multiplier.
     !! @param c The @p m by @p n matrix C.
     !! @param ldc The leading dimension of matrix C.
-    subroutine la_diag_mtx_mult(lside, transb, m, n, k, alpha, a, b, ldb, &
-            beta, c, ldc) bind(C, name="la_diag_mtx_mult")
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+    !!      correct.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    function la_diag_mtx_mult(lside, transb, m, n, k, alpha, a, b, ldb, &
+            beta, c, ldc) bind(C, name="la_diag_mtx_mult") result(flag)
         ! Arguments
         logical(c_bool), intent(in), value :: lside, transb
         integer(c_int), intent(in), value :: m, n, k, ldb, ldc
         real(c_double), intent(in), value :: alpha, beta
         real(c_double), intent(in) :: a(*), b(ldb,*)
         real(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
 
         ! Local Variabes
         integer(c_int) :: nrows, ncols, p
         logical :: ls, tb
+        type(errors) :: err
 
         ! Initialization
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
         if (lside .and. transb) then
             nrows = n
             ncols = k
@@ -222,10 +235,17 @@ contains
             tb = .false.
         end if
 
+        ! Error Checking
+        if (ldb < nrows .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
         ! Process
         call diag_mtx_mult(ls, tb, alpha, a(1:p), b(1:nrows,1:ncols), &
-            beta, c(1:m,1:n))
-    end subroutine
+            beta, c(1:m,1:n), err)
+        if (err%has_error_occurred()) flag = err%get_error_flag()
+    end function
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
@@ -253,20 +273,32 @@ contains
     !! @param beta A scalar multiplier.
     !! @param c The @p m by @p n matrix C.
     !! @param ldc The leading dimension of matrix C.
-    subroutine la_diag_mtx_mult_cmplx(lside, opb, m, n, k, alpha, a, b, &
-            ldb, beta, c, ldc) bind(C, name="la_diag_mtx_mult_cmplx")
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+    !!      correct.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    function la_diag_mtx_mult_cmplx(lside, opb, m, n, k, alpha, a, b, &
+            ldb, beta, c, ldc) bind(C, name="la_diag_mtx_mult_cmplx") &
+            result(flag)
         ! Arguments
         logical(c_bool), intent(in), value :: lside
         integer(c_int), intent(in), value :: opb, m, n, k, ldb, ldc
         complex(c_double), intent(in), value :: alpha, beta
         complex(c_double), intent(in) :: a(*), b(ldb,*)
         complex(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
 
         ! Local Variabes
         integer(c_int) :: nrows, ncols, p
         logical :: ls, tb
+        type(errors) :: err
 
         ! Initialization
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
         tb = .false.
         if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
         if (lside .and. tb) then
@@ -291,10 +323,17 @@ contains
             ls = .false.
         end if
 
+        ! Error Checking
+        if (ldb < nrows .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
         ! Process
         call diag_mtx_mult(ls, opb, alpha, a(1:p), b(1:nrows,1:ncols), &
             beta, c(1:m,1:n))
-    end subroutine
+        if (err%has_error_occurred()) flag = err%get_error_flag()
+    end function
 
 ! ------------------------------------------------------------------------------
 

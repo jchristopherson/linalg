@@ -370,8 +370,8 @@ contains
         end if
 
         ! Process
-        rnk = mtx_rank(a(1:m,1:n), err)
-        if (err%has_error_occurred) flag = err%get_error_flag()
+        rnk = mtx_rank(a(1:m,1:n), err =err)
+        if (err%has_error_occurred()) flag = err%get_error_flag()
     end function
 
 ! ------------------------------------------------------------------------------
@@ -410,8 +410,8 @@ contains
         end if
 
         ! Process
-        rnk = mtx_rank(a(1:m,1:n), err)
-        if (err%has_error_occurred) flag = err%get_error_flag()
+        rnk = mtx_rank(a(1:m,1:n), err = err)
+        if (err%has_error_occurred()) flag = err%get_error_flag()
     end function
 
 ! ------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ contains
 
         ! Process
         d = det(a(1:m,1:n), err = err)
-        if (err%has_error_occurred) flag = err%get_error_flag()
+        if (err%has_error_occurred()) flag = err%get_error_flag()
     end function
 
 ! ------------------------------------------------------------------------------

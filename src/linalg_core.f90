@@ -1818,7 +1818,7 @@ interface
     !!      @p x and @p y.
     !!
     !! @par Notes
-    !! This routine is based upon the BLAS routine DGER.
+    !! This routine is based upon the BLAS routine ZGER.
     module subroutine rank1_update_cmplx(alpha, x, y, a, err)
         complex(real64), intent(in) :: alpha
         complex(real64), intent(in), dimension(:) :: x, y

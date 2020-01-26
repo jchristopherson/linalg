@@ -28,28 +28,54 @@ contains
     !! @param beta A scalar multiplier.
     !! @param c The @p m by @p n matrix C.
     !! @param ldc The leading dimension of matrix @p c.
-    subroutine la_mtx_mult(transa, transb, m, n, k, alpha, a, lda, b, ldb, &
-            beta, c, ldc) bind(C, name="la_mtx_mult")
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldb, or @p ldc are not
+    !!      correct.
+    function la_mtx_mult(transa, transb, m, n, k, alpha, a, lda, b, ldb, &
+            beta, c, ldc) bind(C, name="la_mtx_mult") result(flag)
         ! Arugments
         logical(c_bool), intent(in), value :: transa, transb
         integer(c_int), intent(in), value :: m, n, k, lda, ldb, ldc
         real(c_double), intent(in), value :: alpha, beta
         real(c_double), intent(in) :: a(lda,*), b(ldb,*)
-        real(c_double), intent(out) :: c(ldc,*)
+        real(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
 
         ! Local Variables
         character :: ta, tb
+        integer(c_int) :: nrowa, nrowb
 
         ! Initialization
+        flag = LA_NO_ERROR
         ta = "N"
         if (transa) ta = "T"
 
         tb = "N"
         if (transb) tb = "N"
 
+        if (transa) then
+            nrowa = k
+        else
+            nrowa = m
+        end if
+
+        if (transb) then
+            nrowb = n
+        else
+            nrowb = k
+        end if
+
+        ! Input Checking
+        if (lda < nrowa .or. ldb < nrowb .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
         ! Call DGEMM directly
         call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
-    end subroutine
+    end function
 
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
@@ -73,18 +99,26 @@ contains
     !! @param beta A scalar multiplier.
     !! @param c The @p m by @p n matrix C.
     !! @param ldc The leading dimension of matrix @p c.
-    subroutine la_mtx_mult_cmplx(opa, opb, m, n, k, alpha, a, lda, b, ldb, &
-            beta, c, ldc) bind(C, name="la_mtx_mult_cmplx")
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldb, or @p ldc are not
+    !!      correct.
+    function la_mtx_mult_cmplx(opa, opb, m, n, k, alpha, a, lda, b, ldb, &
+            beta, c, ldc) bind(C, name="la_mtx_mult_cmplx") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: opa, opb, m, n, k, lda, ldb, ldc
         complex(c_double), intent(in), value :: alpha, beta
         complex(c_double), intent(in) :: a(lda,*), b(ldb,*)
-        complex(c_double), intent(out) :: c(ldc,*)
+        complex(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
 
         ! Local Variables
         character :: ta, tb
+        integer(c_int) :: nrowa, nrowb
 
         ! Initialization
+        flag = LA_NO_ERROR
         if (opa == TRANSPOSE) then
             ta = "T"
         else if (opa == HERMITIAN_TRANSPOSE) then
@@ -100,14 +134,167 @@ contains
         else
             tb = "N"
         end if
+
+        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+            nrowa = k
+        else
+            nrowa = m
+        end if
+
+        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+            nrowb = n
+        else
+            nrowb = k
+        end if
+
+        ! Input Checking
+        if (lda < nrowa .or. ldb < nrowb .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
         
         ! Call ZGEMM directly
         call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !! or C = alpha * op(B) * A + beta * C.
+    !!
+    !! @param lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param trans Set to true if op(B) == B**T; else, set to false if
+    !!  op(B) == B.
+    !! @param m The number of rows in the matrix C.
+    !! @param n The number of columns in the matrix C.
+    !! @param k The inner dimension of the matrix product A * op(B).
+    !! @param alpha A scalar multiplier.
+    !! @param a A P-element array containing the diagonal elements of matrix A
+    !!  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+    !!  if @p lside is false.
+    !! @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+    !!  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+    !!  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+    !!  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+    !! @param ldb The leading dimension of matrix B.
+    !! @param beta A scalar multiplier.
+    !! @param c The @p m by @p n matrix C.
+    !! @param ldc The leading dimension of matrix C.
+    subroutine la_diag_mtx_mult(lside, transb, m, n, k, alpha, a, b, ldb, &
+            beta, c, ldc) bind(C, name="la_diag_mtx_mult")
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside, transb
+        integer(c_int), intent(in), value :: m, n, k, ldb, ldc
+        real(c_double), intent(in), value :: alpha, beta
+        real(c_double), intent(in) :: a(*), b(ldb,*)
+        real(c_double), intent(inout) :: c(ldc,*)
+
+        ! Local Variabes
+        integer(c_int) :: nrows, ncols, p
+        logical :: ls, tb
+
+        ! Initialization
+        if (lside .and. transb) then
+            nrows = n
+            ncols = k
+            p = min(k, m)
+            ls = .true.
+            tb = .true.
+        else if (lside .and. .not. transb) then
+            nrows = k
+            ncols = n
+            p = min(k, m)
+            ls = .true.
+            tb = .false.
+        else if (.not. lside .and. transb) then
+            nrows = k
+            ncols = m
+            p = min(k, n)
+            ls = .false.
+            tb = .true.
+        else
+            nrows = m
+            ncols = k
+            p = min(k, n)
+            ls = .false.
+            tb = .false.
+        end if
+
+        ! Process
+        call diag_mtx_mult(ls, tb, alpha, a(1:p), b(1:nrows,1:ncols), &
+            beta, c(1:m,1:n))
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !! or C = alpha * op(B) * A + beta * C.
+    !!
+    !! @param lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
+    !! @param m The number of rows in the matrix C.
+    !! @param n The number of columns in the matrix C.
+    !! @param k The inner dimension of the matrix product A * op(B).
+    !! @param alpha A scalar multiplier.
+    !! @param a A P-element array containing the diagonal elements of matrix A
+    !!  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+    !!  if @p lside is false.
+    !! @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+    !!  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+    !!  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+    !!  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+    !! @param ldb The leading dimension of matrix B.
+    !! @param beta A scalar multiplier.
+    !! @param c The @p m by @p n matrix C.
+    !! @param ldc The leading dimension of matrix C.
+    subroutine la_diag_mtx_mult_cmplx(lside, opb, m, n, k, alpha, a, b, &
+            ldb, beta, c, ldc) bind(C, name="la_diag_mtx_mult_cmplx")
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside
+        integer(c_int), intent(in), value :: opb, m, n, k, ldb, ldc
+        complex(c_double), intent(in), value :: alpha, beta
+        complex(c_double), intent(in) :: a(*), b(ldb,*)
+        complex(c_double), intent(inout) :: c(ldc,*)
 
-! ------------------------------------------------------------------------------
+        ! Local Variabes
+        integer(c_int) :: nrows, ncols, p
+        logical :: ls, tb
+
+        ! Initialization
+        tb = .false.
+        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
+        if (lside .and. tb) then
+            nrows = n
+            ncols = k
+            p = min(k, m)
+            ls = .true.
+        else if (lside .and. .not. tb) then
+            nrows = k
+            ncols = n
+            p = min(k, m)
+            ls = .true.
+        else if (.not. lside .and. tb) then
+            nrows = k
+            ncols = m
+            p = min(k, n)
+            ls = .false.
+        else
+            nrows = m
+            ncols = k
+            p = min(k, n)
+            ls = .false.
+        end if
+
+        ! Process
+        call diag_mtx_mult(ls, opb, alpha, a(1:p), b(1:nrows,1:ncols), &
+            beta, c(1:m,1:n))
+    end subroutine
 
 ! ------------------------------------------------------------------------------
 

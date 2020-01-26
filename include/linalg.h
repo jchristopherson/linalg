@@ -4,9 +4,17 @@
 #include <stdbool.h>
 #include <complex.h>
 
-#define LA_NO_OPERATION 0
-#define LA_TRANSPOSE 1
-#define LA_HERMITIAN_TRANSPOSE 2
+#define LA_NO_OPERATION             0
+#define LA_TRANSPOSE                1
+#define LA_HERMITIAN_TRANSPOSE      2
+#define LA_NO_ERROR                 0
+#define LA_INVALID_INPUT_ERROR      101
+#define LA_ARRAY_SIZE_ERROR         102
+#define LA_SINGULAR_MATRIX_ERROR    103
+#define LA_MATRIX_FORMAT_ERROR      104
+#define LA_OUT_OF_MEMORY_ERROR      105
+#define LA_CONVERGENCE_ERROR        106
+#define LA_INVALID_OPERATION_ERROR  107
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,8 +40,13 @@ extern "C" {
  * @param beta A scalar multiplier.
  * @param c The @p m by @p n matrix C.
  * @param ldc The leading dimension of matrix @p c.
+ * 
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldb, or @p ldc are not
+ *      correct.
  */
-void la_mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
+int la_mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
     const double *a, int lda, const double *b, int ldb, double beta, 
     double *c, int ldc);
 
@@ -59,11 +72,77 @@ void la_mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
  * @param beta A scalar multiplier.
  * @param c The @p m by @p n matrix C.
  * @param ldc The leading dimension of matrix @p c.
+ * 
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldb, or @p ldc are not
+ *      correct.
  */
-void la_mtx_mult_cmplx(int opa, int opb, int m, int n, int k, 
+int la_mtx_mult_cmplx(int opa, int opb, int m, int n, int k, 
     double complex alpha, const double complex *a, int lda,
     const double complex *b, int ldb, double complex beta, double complex *c,
     int ldc);
+
+/**
+ * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+ * or C = alpha * op(B) * A + beta * C.
+ *
+ * @param lside Set to true to apply matrix A from the left; else, set
+ *  to false to apply matrix A from the left.
+ * @param trans Set to true if op(B) == B**T; else, set to false if
+ *  op(B) == B.
+ * @param m The number of rows in the matrix C.
+ * @param n The number of columns in the matrix C.
+ * @param k The inner dimension of the matrix product A * op(B).
+ * @param alpha A scalar multiplier.
+ * @param a A P-element array containing the diagonal elements of matrix A
+ *  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+ *  if @p lside is false.
+ * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+ *  and TDB = trailing dimension of B):
+ *  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+ *  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+ *  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+ *  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+ * @param ldb The leading dimension of matrix B.
+ * @param beta A scalar multiplier.
+ * @param c The @p m by @p n matrix C.
+ * @param ldc The leading dimension of matrix C.
+ */
+void la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k, 
+    double alpha, const double *a, const double *b, int ldb, double beta, 
+    double *c, int ldc);
+
+/**
+ * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+ * or C = alpha * op(B) * A + beta * C.
+ *
+ * @param lside Set to true to apply matrix A from the left; else, set
+ *  to false to apply matrix A from the left.
+ * @param opb Set to TLA_RANSPOSE to compute op(B) as a direct transpose of B,
+ *  set to LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+ *  of B, otherwise, set to LA_NO_OPERATION to compute op(B) as B.
+ * @param m The number of rows in the matrix C.
+ * @param n The number of columns in the matrix C.
+ * @param k The inner dimension of the matrix product A * op(B).
+ * @param alpha A scalar multiplier.
+ * @param a A P-element array containing the diagonal elements of matrix A
+ *  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+ *  if @p lside is false.
+ * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+ *  and TDB = trailing dimension of B):
+ *  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+ *  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+ *  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+ *  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+ * @param ldb The leading dimension of matrix B.
+ * @param beta A scalar multiplier.
+ * @param c The @p m by @p n matrix C.
+ * @param ldc The leading dimension of matrix C.
+ */
+void la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k, 
+    double complex alpha, const double complex *a, const double complex *b, 
+    int ldb, double complex beta, double complex *c, int ldc);
 
 #ifdef __cplusplus
 }

@@ -336,6 +336,124 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the rank of a matrix.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param a The M-by-N matrix.  The matrix is overwritten as part of this
+    !!  operation.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] rnk The rank of @p a.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    function la_rank(m, n, a, lda, rnk) bind(C, name="la_rank") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        integer(c_int), intent(out) :: rnk
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Input Check
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        rnk = mtx_rank(a(1:m,1:n), err)
+        if (err%has_error_occurred) flag = err%get_error_flag()
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank of a matrix.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param a The M-by-N matrix.  The matrix is overwritten as part of this
+    !!  operation.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] rnk The rank of @p a.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    function la_rank_cmplx(m, n, a, lda, rnk) bind(C, name="la_rank_cmplx") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        integer(c_int), intent(out) :: rnk
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Input Check
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        rnk = mtx_rank(a(1:m,1:n), err)
+        if (err%has_error_occurred) flag = err%get_error_flag()
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the determinant of a matrix.
+    function la_det(m, n, a, lda, d) bind(C, name="la_det") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: d
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        d = det(a(1:m,1:n), err = err)
+        if (err%has_error_occurred) flag = err%get_error_flag()
+    end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

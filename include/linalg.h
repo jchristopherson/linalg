@@ -158,6 +158,46 @@ int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k,
     double complex alpha, const double complex *a, const double complex *b, 
     int ldb, double complex beta, double complex *c, int ldc);
 
+/**
+ * Computes the rank of a matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a The M-by-N matrix.  The matrix is overwritten as part of this
+ *  operation.
+ * @param lda The leading dimension of matrix A.
+ * @param[out] rnk The rank of @p a.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+ *      could not converge to a zero value.
+ */
+int la_rank(int m, int n, double *a, int lda, int *rnk);
+
+/**
+ * Computes the rank of a matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a The M-by-N matrix.  The matrix is overwritten as part of this
+ *  operation.
+ * @param lda The leading dimension of matrix A.
+ * @param[out] rnk The rank of @p a.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+ *      could not converge to a zero value.
+ */
+int la_rank_cmplx(int m, int n, double complex *a, int lda, int *rnk);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

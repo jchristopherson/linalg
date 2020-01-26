@@ -86,6 +86,7 @@ set(linalg_sources
     linalg_sorting.f90
     linalg_basic.f90
     linalg_immutable.f90
+    linalg_c_api.f90
 )
 list(APPEND linalg_sources ${qrupdate_sources})
 

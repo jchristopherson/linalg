@@ -198,6 +198,40 @@ int la_rank(int m, int n, double *a, int lda, int *rnk);
  */
 int la_rank_cmplx(int m, int n, double complex *a, int lda, int *rnk);
 
+/**
+ * Computes the determinant of a square matrix.
+ *
+ * @param n The dimension of the matrix.
+ * @param a The N-by-N matrix.  The matrix is overwritten on output.
+ * @param lda The leading dimension of the matrix.
+ * @param[out] d The determinant of @p a.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_det(int n, double *a, int lda, double *d);
+
+/**
+ * Computes the determinant of a square matrix.
+ *
+ * @param n The dimension of the matrix.
+ * @param a The N-by-N matrix.  The matrix is overwritten on output.
+ * @param lda The leading dimension of the matrix.
+ * @param[out] d The determinant of @p a.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_det_cmplx(int n, double complex *a, int lda, double complex *d);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

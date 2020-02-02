@@ -346,6 +346,7 @@ contains
     !! @param[out] rnk The rank of @p a.
     !!
     !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
     !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -385,6 +386,7 @@ contains
     !! @param[out] rnk The rank of @p a.
     !!
     !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
     !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
     !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
     !!      there is insufficient memory available.
@@ -415,10 +417,22 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    !> @brief Computes the determinant of a matrix.
-    function la_det(m, n, a, lda, d) bind(C, name="la_det") result(flag)
+    !> @brief Computes the determinant of a square matrix.
+    !!
+    !! @param n The dimension of the matrix.
+    !! @param a The N-by-N matrix.  The matrix is overwritten on output.
+    !! @param lda The leading dimension of the matrix.
+    !! @param[out] d The determinant of @p a.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_det(n, a, lda, d) bind(C, name="la_det") result(flag)
         ! Arguments
-        integer(c_int), intent(in), value :: m, n, lda
+        integer(c_int), intent(in), value :: n, lda
         real(c_double), intent(inout) :: a(lda,*)
         real(c_double), intent(out) :: d
         integer(c_int) :: flag
@@ -429,19 +443,65 @@ contains
         ! Error Checking
         call err%set_exit_on_error(.false.)
         flag = LA_NO_ERROR
-        if (lda < m) then
+        if (lda < n) then
             flag = LA_INVALID_INPUT_ERROR
             return
         end if
 
         ! Process
-        d = det(a(1:m,1:n), err = err)
+        d = det(a(1:n,1:n), err = err)
         if (err%has_error_occurred()) flag = err%get_error_flag()
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the determinant of a square matrix.
+    !!
+    !! @param n The dimension of the matrix.
+    !! @param a The N-by-N matrix.  The matrix is overwritten on output.
+    !! @param lda The leading dimension of the matrix.
+    !! @param[out] d The determinant of @p a.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+    !!      appropriately.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_det_cmplx(n, a, lda, d) bind(C, name="la_det_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: d
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        d = det(a(1:n,1:n), err = err)
+        if (err%has_error_occurred()) flag = err%get_error_flag()
+    end function
 
 ! ------------------------------------------------------------------------------
+    !
+    function la_tri_mtx_mult(upper, alpha, m, n, a, lda, beta, b, ldb) &
+            bind(C, name = "la_tri_mtx_mult") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        real(c_double), intent(in), value :: alpha, beta
+        real(c_double), intent(in) :: a(lda,*)
+        real(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+    end function
 
 ! ------------------------------------------------------------------------------
 

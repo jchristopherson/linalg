@@ -491,7 +491,21 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    !
+    !> @brief Computes the triangular matrix operation:
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+    !! where A is a triangular matrix.
+    !!
+    !! @param upper
+    !! @param alpha
+    !! @param m
+    !! @param n
+    !! @param a
+    !! @param lda
+    !! @param beta
+    !! @param b
+    !! @param ldb
+    !!
+    !! @return
     function la_tri_mtx_mult(upper, alpha, m, n, a, lda, beta, b, ldb) &
             bind(C, name = "la_tri_mtx_mult") result(flag)
         ! Arguments

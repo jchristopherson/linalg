@@ -495,29 +495,90 @@ contains
     !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
     !! where A is a triangular matrix.
     !!
-    !! @param upper
-    !! @param alpha
-    !! @param m
-    !! @param n
-    !! @param a
-    !! @param lda
-    !! @param beta
-    !! @param b
-    !! @param ldb
+    !! @param upper Set to true if matrix A is upper triangular, and
+    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+    !!  be computed.
+    !! @param alpha A scalar multiplier.
+    !! @param n The dimension of the matrix.
+    !! @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
+    !!  true, only the upper triangular portion of this matrix is referenced;
+    !!  else, if @p upper is false, only the lower triangular portion of this
+    !!  matrix is referenced.
+    !! @param lda The leading dimension of matrix A.
+    !! @param beta A scalar multiplier.
+    !! @param b On input, the @p n by @p n matrix B.  On output, the @p n by
+    !!  @p n resulting matrix.
+    !! @param ldb The leading dimension of matrix B.
     !!
-    !! @return
-    function la_tri_mtx_mult(upper, alpha, m, n, a, lda, beta, b, ldb) &
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldb are not correct.
+    function la_tri_mtx_mult(upper, alpha, n, a, lda, beta, b, ldb) &
             bind(C, name = "la_tri_mtx_mult") result(flag)
         ! Arguments
         logical(c_bool), intent(in), value :: upper
-        integer(c_int), intent(in), value :: m, n, lda, ldb
+        integer(c_int), intent(in), value :: n, lda, ldb
         real(c_double), intent(in), value :: alpha, beta
         real(c_double), intent(in) :: a(lda,*)
         real(c_double), intent(inout) :: b(ldb,*)
         integer(c_int) :: flag
+
+        ! Error Checking
+        flag = LA_NO_ERROR
+        if (lda < n .or. ldb < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call tri_mtx_mult(logical(upper), alpha, a(1:n,1:n), beta, b(1:n,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the triangular matrix operation:
+    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+    !! where A is a triangular matrix.
+    !!
+    !! @param upper Set to true if matrix A is upper triangular, and
+    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+    !!  be computed.
+    !! @param alpha A scalar multiplier.
+    !! @param n The dimension of the matrix.
+    !! @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
+    !!  true, only the upper triangular portion of this matrix is referenced;
+    !!  else, if @p upper is false, only the lower triangular portion of this
+    !!  matrix is referenced.
+    !! @param lda The leading dimension of matrix A.
+    !! @param beta A scalar multiplier.
+    !! @param b On input, the @p n by @p n matrix B.  On output, the @p n by
+    !!  @p n resulting matrix.
+    !! @param ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldb are not correct.
+    function la_tri_mtx_mult_cmplx(upper, alpha, n, a, lda, beta, b, ldb) &
+            bind(C, name = "la_tri_mtx_mult_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: n, lda, ldb
+        complex(c_double), intent(in), value :: alpha, beta
+        complex(c_double), intent(in) :: a(lda,*)
+        complex(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Error Checking
+        flag = LA_NO_ERROR
+        if (lda < n .or. ldb < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call tri_mtx_mult(logical(upper), alpha, a(1:n,1:n), beta, b(1:n,1:n))
+    end function
 
 ! ------------------------------------------------------------------------------
 

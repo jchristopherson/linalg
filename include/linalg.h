@@ -232,6 +232,63 @@ int la_det(int n, double *a, int lda, double *d);
  */
 int la_det_cmplx(int n, double complex *a, int lda, double complex *d);
 
+/**
+ * Computes the triangular matrix operation:
+ * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+ * where A is a triangular matrix.
+ *
+ * @param upper Set to true if matrix A is upper triangular, and
+ *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+ *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+ *  be computed.
+ * @param alpha A scalar multiplier.
+ * @param n The dimension of the matrix.
+ * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
+ *  true, only the upper triangular portion of this matrix is referenced;
+ *  else, if @p upper is false, only the lower triangular portion of this
+ *  matrix is referenced.
+ * @param lda The leading dimension of matrix A.
+ * @param beta A scalar multiplier.
+ * @param b On input, the @p n by @p n matrix B.  On output, the @p n by
+ *  @p n resulting matrix.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldb are not correct.
+ */
+int la_tri_mtx_mult(bool upper, double alpha, int n, const double *a, int lda,
+    double beta, double *b, int ldb);
+
+/**
+ * Computes the triangular matrix operation:
+ * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+ * where A is a triangular matrix.
+ *
+ * @param upper Set to true if matrix A is upper triangular, and
+ *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
+ *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
+ *  be computed.
+ * @param alpha A scalar multiplier.
+ * @param n The dimension of the matrix.
+ * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
+ *  true, only the upper triangular portion of this matrix is referenced;
+ *  else, if @p upper is false, only the lower triangular portion of this
+ *  matrix is referenced.
+ * @param lda The leading dimension of matrix A.
+ * @param beta A scalar multiplier.
+ * @param b On input, the @p n by @p n matrix B.  On output, the @p n by
+ *  @p n resulting matrix.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldb are not correct.
+ */
+int la_tri_mtx_mult_cmplx(bool upper, double complex alpha, int n, 
+    const double complex *a, int lda, double complex beta, 
+    double complex *b, int ldb);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

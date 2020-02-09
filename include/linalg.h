@@ -331,6 +331,100 @@ int la_lu_factor(int m, int n, double *a, int lda, int *ipvt);
  */
 int la_lu_factor_cmplx(int m, int n, double complex *a, int lda, int *ipvt);
 
+/**
+ * Extracts the L, U, and P matrices from the LU factorization
+ * output from la_lu_factor.
+ *
+ * @param n The dimension of the input matrix.
+ * @param a On input, the N-by-N matrix as output by
+ *  @ref la_lu_factor.  On output, the N-by-N lower triangular matrix L.
+ * @param lda The leading dimension of @p a.
+ * @param ipvt The N-element pivot array as output by
+ *  @ref la_lu_factor.
+ * @param u An N-by-N matrix where the U matrix will be written.
+ * @param ldu The leading dimension of @p u.
+ * @param p An N-by-N matrix where the row permutation matrix will be
+ *  written.
+ * @param ldp The leading dimension of @p p.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
+ *      correct.
+ */
+int la_form_lu(int n, double *a, int *ipvt, double *u, int ldu, double *p, 
+    int ldp);
+
+/**
+ * Extracts the L, U, and P matrices from the LU factorization
+ * output from la_lu_factor_cmplx.
+ *
+ * @param n The dimension of the input matrix.
+ * @param a On input, the N-by-N matrix as output by
+ *  @ref la_lu_factor_cmplx.  On output, the N-by-N lower triangular matrix L.
+ * @param lda The leading dimension of @p a.
+ * @param ipvt The N-element pivot array as output by
+ *  @ref la_lu_factor_cmplx.
+ * @param u An N-by-N matrix where the U matrix will be written.
+ * @param ldu The leading dimension of @p u.
+ * @param p An N-by-N matrix where the row permutation matrix will be
+ *  written.
+ * @param ldp The leading dimension of @p p.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
+ *      correct.
+ */
+int la_form_lu_cmplx(int n, double complex *a, int *ipvt, double complex *u, 
+    int ldu, double *p, int ldp);
+
+/**
+ * Computes the QR factorization of an M-by-N matrix without
+ * pivoting.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_qr_factor(int m, int n, double *a, int lda, double *tau);
+
+/**
+ * Computes the QR factorization of an M-by-N matrix without
+ * pivoting.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_qr_factor_cmplx(int m, int n, double complex *a, int lda, 
+    double complex *tau);
 
 #ifdef __cplusplus
 }

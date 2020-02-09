@@ -428,8 +428,8 @@ contains
     !!  - LA_NO_ERROR: No error occurred.  Successful operation.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
     function la_det(n, a, lda, d) bind(C, name="la_det") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: n, lda
@@ -465,8 +465,8 @@ contains
     !!  - LA_NO_ERROR: No error occurred.  Successful operation.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
     !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
     function la_det_cmplx(n, a, lda, d) bind(C, name="la_det_cmplx") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: n, lda
@@ -673,6 +673,206 @@ contains
             return
         end if
     end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L, U, and P matrices from the LU factorization
+    !! output from la_lu_factor.
+    !!
+    !! @param n The dimension of the input matrix.
+    !! @param[in,out] a On input, the N-by-N matrix as output by
+    !!  @ref la_lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param lda The leading dimension of @p a.
+    !! @param ipvt The N-element pivot array as output by
+    !!  @ref la_lu_factor.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param ldu The leading dimension of @p u.
+    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
+    !!  written.
+    !! @param ldp The leading dimension of @p p.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
+    !!      correct.
+    function la_form_lu(n, a, lda, ipvt, u, ldu, p, ldp) &
+            bind(C, name = "la_form_lu") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, lda, ldu, ldp
+        real(c_double), intent(inout) :: a(n,*)
+        real(c_double), intent(out) :: u(n,*), p(n,*)
+        integer(c_int), intent(in) :: ipvt(n)
+        integer(c_int) :: flag
+
+        ! Input Checking
+        flag = LA_NO_ERROR
+        if (lda < n .or. ldu < n .or. ldp < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call form_lu(a(1:n,1:n), ipvt(1:n), u(1:n,1:n), p(1:n,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Extracts the L, U, and P matrices from the LU factorization
+    !! output from la_lu_factor.
+    !!
+    !! @param n The dimension of the input matrix.
+    !! @param[in,out] a On input, the N-by-N matrix as output by
+    !!  @ref la_lu_factor.  On output, the N-by-N lower triangular matrix L.
+    !! @param lda The leading dimension of @p a.
+    !! @param ipvt The N-element pivot array as output by
+    !!  @ref la_lu_factor.
+    !! @param[out] u An N-by-N matrix where the U matrix will be written.
+    !! @param ldu The leading dimension of @p u.
+    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
+    !!  written.
+    !! @param ldp The leading dimension of @p p.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
+    !!      correct.
+    function la_form_lu_cmplx(n, a, lda, ipvt, u, ldu, p, ldp) &
+            bind(C, name = "la_form_lu_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, lda, ldu, ldp
+        complex(c_double), intent(inout) :: a(n,*)
+        complex(c_double), intent(out) :: u(n,*)
+        real(c_double), intent(out) :: p(n,*)
+        integer(c_int), intent(in) :: ipvt(n)
+        integer(c_int) :: flag
+
+        ! Input Checking
+        flag = LA_NO_ERROR
+        if (lda < n .or. ldu < n .or. ldp < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call form_lu(a(1:n,1:n), ipvt(1:n), u(1:n,1:n), p(1:n,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the QR factorization of an M-by-N matrix without
+    !! pivoting.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a  On input, the M-by-N matrix to factor.  On output, the
+    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+    !!  below the diagonal, along with the array @p tau, represent the
+    !!  orthogonal matrix Q as a product of elementary reflectors.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
+    !!  factors of the elementary reflectors.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_factor(m, n, a, lda, tau) bind(C, name = "la_qr_factor") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the QR factorization of an M-by-N matrix without
+    !! pivoting.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a  On input, the M-by-N matrix to factor.  On output, the
+    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+    !!  below the diagonal, along with the array @p tau, represent the
+    !!  orthogonal matrix Q as a product of elementary reflectors.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
+    !!  factors of the elementary reflectors.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_factor_cmplx(m, n, a, lda, tau) &
+            bind(C, name = "la_qr_factor_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    ! !
+    ! function la_qr_factor_pvt(m, n, a, lda, tau, jpvt, ldj) &
+    !         bind(C, name = "la_qr_factor_pvt") result(flag)
+    !     !
+    ! end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

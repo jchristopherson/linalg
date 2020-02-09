@@ -166,7 +166,7 @@ int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k,
  * @param a The M-by-N matrix.  The matrix is overwritten as part of this
  *  operation.
  * @param lda The leading dimension of matrix A.
- * @param[out] rnk The rank of @p a.
+ * @param rnk The rank of @p a.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -186,7 +186,7 @@ int la_rank(int m, int n, double *a, int lda, int *rnk);
  * @param a The M-by-N matrix.  The matrix is overwritten as part of this
  *  operation.
  * @param lda The leading dimension of matrix A.
- * @param[out] rnk The rank of @p a.
+ * @param rnk The rank of @p a.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -204,7 +204,7 @@ int la_rank_cmplx(int m, int n, double complex *a, int lda, int *rnk);
  * @param n The dimension of the matrix.
  * @param a The N-by-N matrix.  The matrix is overwritten on output.
  * @param lda The leading dimension of the matrix.
- * @param[out] d The determinant of @p a.
+ * @param d The determinant of @p a.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -221,7 +221,7 @@ int la_det(int n, double *a, int lda, double *d);
  * @param n The dimension of the matrix.
  * @param a The N-by-N matrix.  The matrix is overwritten on output.
  * @param lda The leading dimension of the matrix.
- * @param[out] d The determinant of @p a.
+ * @param d The determinant of @p a.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -288,6 +288,49 @@ int la_tri_mtx_mult(bool upper, double alpha, int n, const double *a, int lda,
 int la_tri_mtx_mult_cmplx(bool upper, double complex alpha, int n, 
     const double complex *a, int lda, double complex beta, 
     double complex *b, int ldb);
+
+/**
+ * Computes the LU factorization of an M-by-N matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix on which to operate.  On
+ * output, the LU factored matrix in the form [L\\U] where the unit diagonal
+ * elements of L are not stored.
+ * @param lda The leading dimension of matrix A.
+ * @param ipvt An MIN(M, N)-element array used to track row-pivot
+ *  operations.  The array stored pivot information such that row I is
+ *  interchanged with row IPVT(I).
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+ *      singular.
+ */
+int la_lu_factor(int m, int n, double *a, int lda, int *ipvt);
+
+/**
+ * Computes the LU factorization of an M-by-N matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix on which to operate.  On
+ * output, the LU factored matrix in the form [L\\U] where the unit diagonal
+ * elements of L are not stored.
+ * @param lda The leading dimension of matrix A.
+ * @param ipvt An MIN(M, N)-element array used to track row-pivot
+ *  operations.  The array stored pivot information such that row I is
+ *  interchanged with row IPVT(I).
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+ *      singular.
+ */
+int la_lu_factor_cmplx(int m, int n, double complex *a, int lda, int *ipvt);
+
 
 #ifdef __cplusplus
 }

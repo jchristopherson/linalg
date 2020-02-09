@@ -581,8 +581,98 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of an M-by-N matrix.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+    !! elements of L are not stored.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+    !!  operations.  The array stored pivot information such that row I is
+    !!  interchanged with row IPVT(I).
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
+    function la_lu_factor(m, n, a, lda, ipvt) bind(C, name = "la_lu_factor") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        integer(c_int), intent(out) :: ipvt(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call lu_factor(a(1:m,1:n), ipvt(1:mn), err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the LU factorization of an M-by-N matrix.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+    !! elements of L are not stored.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+    !!  operations.  The array stored pivot information such that row I is
+    !!  interchanged with row IPVT(I).
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+    !!      singular.
+    function la_lu_factor_cmplx(m, n, a, lda, ipvt) &
+            bind(C, name = "la_lu_factor_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        integer(c_int), intent(out) :: ipvt(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call lu_factor(a(1:m,1:n), ipvt(1:mn), err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
 

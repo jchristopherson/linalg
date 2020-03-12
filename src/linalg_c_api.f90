@@ -854,13 +854,65 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    ! !
-    ! function la_qr_factor_pvt(m, n, a, lda, tau, jpvt, ldj) &
-    !         bind(C, name = "la_qr_factor_pvt") result(flag)
-    !     !
-    ! end function
+    !> @brief Computes the QR factorization of an M-by-N matrix with column
+    !! pivoting.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a  On input, the M-by-N matrix to factor.  On output, the
+    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+    !!  below the diagonal, along with the array @p tau, represent the
+    !!  orthogonal matrix Q as a product of elementary reflectors.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
+    !!  factors of the elementary reflectors.
+    !! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
+    !!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
+    !!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
+    !!  the I-th column of A * P was the K-th column of A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_factor_pvt(m, n, a, lda, tau, jpvt) &
+            bind(C, name = "la_qr_factor_pvt") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: tau(*)
+        integer(c_int), intent(inout) :: jpvt(n)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_factor(a(1:m,1:n), tau(1:mn), jpvt(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    ! !
+    ! function la_form_qr(m, n, r,, ldr, tau, q, ldq) &
+    !         bind(C, name = "la_form_qr") result(flag)
+    !     !
+    ! end function
 
 ! ------------------------------------------------------------------------------
 

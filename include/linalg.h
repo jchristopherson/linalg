@@ -426,6 +426,33 @@ int la_qr_factor(int m, int n, double *a, int lda, double *tau);
 int la_qr_factor_cmplx(int m, int n, double complex *a, int lda, 
     double complex *tau);
 
+/**
+ * Computes the QR factorization of an M-by-N matrix with column pivoting.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ * @param jpvt On input, an N-element array that if JPVT(I) .ne. 0,
+ *  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
+ *  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
+ *  the I-th column of A * P was the K-th column of A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_qr_factor_pvt(int m, int n, double complex *a, int lda,
+    double complex *tau, int *jpvt);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

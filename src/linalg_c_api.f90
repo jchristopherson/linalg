@@ -881,6 +881,60 @@ contains
             bind(C, name = "la_qr_factor_pvt") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: tau(*)
+        integer(c_int), intent(inout) :: jpvt(n)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_factor(a(1:m,1:n), tau(1:mn), jpvt(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the QR factorization of an M-by-N matrix with column
+    !! pivoting.
+    !!
+    !! @param m The number of rows in the matrix.
+    !! @param n The number of columns in the matrix.
+    !! @param[in,out] a  On input, the M-by-N matrix to factor.  On output, the
+    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+    !!  below the diagonal, along with the array @p tau, represent the
+    !!  orthogonal matrix Q as a product of elementary reflectors.
+    !! @param lda The leading dimension of matrix A.
+    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
+    !!  factors of the elementary reflectors.
+    !! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
+    !!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
+    !!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
+    !!  the I-th column of A * P was the K-th column of A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_factor_cmplx_pvt(m, n, a, lda, tau, jpvt) &
+            bind(C, name = "la_qr_factor_cmplx_pvt") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
         complex(c_double), intent(inout) :: a(lda,*)
         complex(c_double), intent(out) :: tau(*)
         integer(c_int), intent(inout) :: jpvt(n)
@@ -908,23 +962,444 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    ! !
-    ! function la_form_qr(m, n, r,, ldr, tau, q, ldq) &
-    !         bind(C, name = "la_form_qr") result(flag)
-    !     !
-    ! end function
+    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
+    !! reflectors returned by the base QR factorization algorithm.
+    !!
+    !! @param[in] fullq Set to true to always return the full Q matrix; else,
+    !!  set to false, and in the event that M > N, Q may be supplied as M-by-N,
+    !!  and therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] r On input, the M-by-N factored matrix as returned by the
+    !!  QR factorization routine.  On output, the upper triangular matrix R.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  each elementary reflector defined in @p r.
+    !! @param[out] q An M-by-M matrix where the full Q matrix will be written.
+    !!  In the event that @p fullq is set to false, and M > N, this matrix need
+    !!  only by M-by-N.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_form_qr(fullq, m, n, r, ldr, tau, q, ldq) &
+            bind(C, name = "la_form_qr") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: fullq
+        integer(c_int), intent(in), value :: m, n, ldr, ldq
+        real(c_double), intent(inout) :: r(ldr,*)
+        real(c_double), intent(in) :: tau(*)
+        real(c_double), intent(out) :: q(ldq,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn, nq
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < m .or. ldq < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        nq = m
+        if (.not.fullq) nq = n
+        call form_qr(r(1:m,1:n), tau(1:mn), q(1:m,1:nq), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
+    !! reflectors returned by the base QR factorization algorithm.
+    !!
+    !! @param[in] fullq Set to true to always return the full Q matrix; else,
+    !!  set to false, and in the event that M > N, Q may be supplied as M-by-N,
+    !!  and therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] r On input, the M-by-N factored matrix as returned by the
+    !!  QR factorization routine.  On output, the upper triangular matrix R.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  each elementary reflector defined in @p r.
+    !! @param[out] q An M-by-M matrix where the full Q matrix will be written.
+    !!  In the event that @p fullq is set to false, and M > N, this matrix need
+    !!  only by M-by-N.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_form_qr_cmplx(fullq, m, n, r, ldr, tau, q, ldq) &
+            bind(C, name = "la_form_qr_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: fullq
+        integer(c_int), intent(in), value :: m, n, ldr, ldq
+        complex(c_double), intent(inout) :: r(ldr,*)
+        complex(c_double), intent(in) :: tau(*)
+        complex(c_double), intent(out) :: q(ldq,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn, nq
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < m .or. ldq < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        nq = m
+        if (.not.fullq) nq = n
+        call form_qr(r(1:m,1:n), tau(1:mn), q(1:m,1:nq), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
+    !! reflectors returned by the base QR factorization algorithm.  This
+    !! routine also inflates the pivot array into an N-by-N matrix P such
+    !! that A * P = Q * R.
+    !!
+    !! @param[in] fullq Set to true to always return the full Q matrix; else,
+    !!  set to false, and in the event that M > N, Q may be supplied as M-by-N,
+    !!  and therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] r On input, the M-by-N factored matrix as returned by the
+    !!  QR factorization routine.  On output, the upper triangular matrix R.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  each elementary reflector defined in @p r.
+    !! @param[in] pvt An N-element array containing the pivot information from
+    !!  the QR factorization.
+    !! @param[out] q An M-by-M matrix where the full Q matrix will be written.
+    !!  In the event that @p fullq is set to false, and M > N, this matrix need
+    !!  only by M-by-N.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !! @param[out] p An N-by-N matrix where the pivot matrix P will be written.
+    !! @param[in] ldp The leading dimension of matrix P.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_form_qr_pvt(fullq, m, n, r, ldr, tau, pvt, q, ldq, p, ldp) &
+            bind(C, name = "la_form_qr_pvt") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: fullq
+        integer(c_int), intent(in), value :: m, n, ldr, ldq, ldp
+        real(c_double), intent(inout) :: r(ldr,*)
+        real(c_double), intent(in) :: tau(*)
+        integer(c_int), intent(in) :: pvt(*)
+        real(c_double), intent(out) :: q(ldq,*), p(ldp,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn, nq
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < m .or. ldq < m .or. ldp < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        nq = m
+        if (.not.fullq) nq = n
+        call form_qr(r(1:m,1:n), tau(1:mn), pvt(1:n), q(1:m,1:nq), p(1:n,1:n), &
+            err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
+    !! reflectors returned by the base QR factorization algorithm.  This
+    !! routine also inflates the pivot array into an N-by-N matrix P such
+    !! that A * P = Q * R.
+    !!
+    !! @param[in] fullq Set to true to always return the full Q matrix; else,
+    !!  set to false, and in the event that M > N, Q may be supplied as M-by-N,
+    !!  and therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] r On input, the M-by-N factored matrix as returned by the
+    !!  QR factorization routine.  On output, the upper triangular matrix R.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  each elementary reflector defined in @p r.
+    !! @param[in] pvt An N-element array containing the pivot information from
+    !!  the QR factorization.
+    !! @param[out] q An M-by-M matrix where the full Q matrix will be written.
+    !!  In the event that @p fullq is set to false, and M > N, this matrix need
+    !!  only by M-by-N.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !! @param[out] p An N-by-N matrix where the pivot matrix P will be written.
+    !! @param[in] ldp The leading dimension of matrix P.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_form_qr_cmplx_pvt(fullq, m, n, r, ldr, tau, pvt, q, ldq, p, &
+            ldp) bind(C, name = "la_form_qr_cmplx_pvt") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: fullq
+        integer(c_int), intent(in), value :: m, n, ldr, ldq, ldp
+        complex(c_double), intent(inout) :: r(ldr,*)
+        complex(c_double), intent(in) :: tau(*)
+        integer(c_int), intent(in) :: pvt(*)
+        complex(c_double), intent(out) :: q(ldq,*), p(ldp,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn, nq
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < m .or. ldq < m .or. ldp < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        nq = m
+        if (.not.fullq) nq = n
+        call form_qr(r(1:m,1:n), tau(1:mn), pvt(1:n), q(1:m,1:nq), p(1:n,1:n), &
+            err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
+    !! factorization such that: C = op(Q) * C, or C = C * op(Q).
+    !!
+    !! @param[in] lside Set to true to apply Q or Q**T from the left; else, set
+    !!  to false to apply Q or Q**T from the right.
+    !! @param[in] trans Set to true to apply Q**T; else, set to false.
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of elementary reflectors whose product defines 
+    !!  the matrix Q.
+    !! @param[in] a On input, an LDA-by-K matrix containing the elementary
+    !!  reflectors output from the QR factorization.  If @p lside is set to
+    !!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
+    !!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
+    !!  restored on exit.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A K-element array containing the scalar factors of each
+    !!  elementary reflector defined in @p a.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+    !!  of the orthogonal matrix Q and the original matrix C.
+    !! @param[in] ldc THe leading dimension of matrix C.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_mult_qr(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+            bind(C, name = "la_mult_qr") result(flag)
+        ! Local Variables
+        logical(c_bool), intent(in), value :: lside, trans
+        integer(c_int), intent(in), value :: m, n, k, lda, ldc
+        real(c_double), intent(inout) :: a(lda,*), c(ldc,*)
+        real(c_double), intent(in) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: ma, na
+
+        ! Initialization
+        if (lside) then
+            ma = m
+            na = m
+        else
+            ma = n
+            na = n
+        end if
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < ma .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+        if (k > na .or. k < 0) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mult_qr(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+            c(1:m,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
+    !! factorization such that: C = op(Q) * C, or C = C * op(Q).
+    !!
+    !! @param[in] lside Set to true to apply Q or Q**H from the left; else, set
+    !!  to false to apply Q or Q**H from the right.
+    !! @param[in] trans Set to true to apply Q**H; else, set to false.
+    !! @param[in] m The number of rows in matrix C.
+    !! @param[in] n The number of columns in matrix C.
+    !! @param[in] k The number of elementary reflectors whose product defines 
+    !!  the matrix Q.
+    !! @param[in] a On input, an LDA-by-K matrix containing the elementary
+    !!  reflectors output from the QR factorization.  If @p lside is set to
+    !!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
+    !!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
+    !!  restored on exit.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A K-element array containing the scalar factors of each
+    !!  elementary reflector defined in @p a.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+    !!  of the orthogonal matrix Q and the original matrix C.
+    !! @param[in] ldc THe leading dimension of matrix C.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_mult_qr_cmplx(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+            bind(C, name = "la_mult_qr_cmplx") result(flag)
+        ! Local Variables
+        logical(c_bool), intent(in), value :: lside, trans
+        integer(c_int), intent(in), value :: m, n, k, lda, ldc
+        complex(c_double), intent(inout) :: a(lda,*), c(ldc,*)
+        complex(c_double), intent(in) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: ma, na
+
+        ! Initialization
+        if (lside) then
+            ma = m
+            na = m
+        else
+            ma = n
+            na = n
+        end if
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < ma .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+        if (k > na .or. k < 0) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mult_qr(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+            c(1:m,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
+    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+    !!
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
+    !!  output, the updated matrix Q1.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+    !!  matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the M-element U update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in,out] v On input, the N-element V update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldq or @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_rank1_update(m, n, q, ldq, r, ldr, u, v) &
+            bind(C, name = "la_qr_rank1_update") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, ldq, ldr
+        real(c_double), intent(inout) :: q(ldq,*), r(ldr,*), u(*), v(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldq < m .or. ldr < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_rank1_update(q(1:m,1:mn), r(1:m,1:n), u(1:m), v(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
 

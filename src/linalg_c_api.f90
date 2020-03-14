@@ -1712,8 +1712,119 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the singular value decomposition of a matrix A.  The
+    !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+    !!  matrix.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+    !!  overwritten on output.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] s A MIN(M, N)-element array containing the singular values
+    !!  of @p a sorted in descending order.
+    !! @param[out] u An M-by-M matrix where the orthogonal U matrix will be
+    !!  written.
+    !! @param[in] ldu The leading dimension of matrix U.
+    !! @param[out] vt An N-by-N matrix where the transpose of the right 
+    !!  singular vector matrix V.
+    !! @param[in] ldv The leading dimension of matrix V.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldv is not 
+    !!      correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    function la_svd(m, n, a, lda, s, u, ldu, vt, ldv) &
+            bind(C, name = "la_svd") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldu, ldv
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: s(*), u(ldu,*), vt(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldu < m .or. ldv < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call svd(a(1:m,1:n), s(1:mn), u(1:m,1:m), vt(1:n,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the singular value decomposition of a matrix A.  The
+    !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+    !!  matrix.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+    !!  overwritten on output.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] s A MIN(M, N)-element array containing the singular values
+    !!  of @p a sorted in descending order.
+    !! @param[out] u An M-by-M matrix where the orthogonal U matrix will be
+    !!  written.
+    !! @param[in] ldu The leading dimension of matrix U.
+    !! @param[out] vt An N-by-N matrix where the transpose of the right 
+    !!  singular vector matrix V.
+    !! @param[in] ldv The leading dimension of matrix V.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldv is not 
+    !!      correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+    !!      could not converge to a zero value.
+    function la_svd_cmplx(m, n, a, lda, s, u, ldu, vt, ldv) &
+            bind(C, name = "la_svd_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldu, ldv
+        complex(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: s(*)
+        complex(c_double), intent(out) :: u(ldu,*), vt(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldu < m .or. ldv < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call svd(a(1:m,1:n), s(1:mn), u(1:m,1:m), vt(1:n,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
 

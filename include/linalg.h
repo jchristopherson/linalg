@@ -847,6 +847,70 @@ int la_cholesky_rank1_downdate(int n, double *r, int ldr, double *u);
 int la_cholesky_rank1_downdate_cmplx(int n, double complex *r, int ldr,
     double complex *u);
 
+/**
+ * Computes the singular value decomposition of a matrix A.  The
+ *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+ *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+ *  matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix to factor.  The matrix is
+ *  overwritten on output.
+ * @param lda The leading dimension of matrix A.
+ * @param s A MIN(M, N)-element array containing the singular values
+ *  of @p a sorted in descending order.
+ * @param u An M-by-M matrix where the orthogonal U matrix will be
+ *  written.
+ * @param ldu The leading dimension of matrix U.
+ * @param vt An N-by-N matrix where the transpose of the right 
+ *  singular vector matrix V.
+ * @param ldv The leading dimension of matrix V.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldv is not 
+ *      correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+ *      could not converge to a zero value.
+ */
+int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
+    double *vt, int ldv);
+
+/**
+ * Computes the singular value decomposition of a matrix A.  The
+ *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
+ *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
+ *  matrix.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix to factor.  The matrix is
+ *  overwritten on output.
+ * @param lda The leading dimension of matrix A.
+ * @param s A MIN(M, N)-element array containing the singular values
+ *  of @p a sorted in descending order.
+ * @param u An M-by-M matrix where the orthogonal U matrix will be
+ *  written.
+ * @param ldu The leading dimension of matrix U.
+ * @param vt An N-by-N matrix where the transpose of the right 
+ *  singular vector matrix V.
+ * @param ldv The leading dimension of matrix V.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldv is not 
+ *      correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+ *      could not converge to a zero value.
+ */
+int la_svd_cmplx(int m, int n, double complex *a, int lda, double *x,
+    double complex *u, int ldu, double complex *vt, int ldv);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

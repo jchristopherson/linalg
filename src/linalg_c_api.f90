@@ -1402,6 +1402,322 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
+    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+    !!
+    !! @param[in] m The number of rows in R.
+    !! @param[in] n The number of columns in R.
+    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
+    !!  output, the updated matrix Q1.
+    !! @param[in] ldq The leading dimension of matrix Q.
+    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+    !!  matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the M-element U update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !! @param[in,out] v On input, the N-element V update vector.  On output,
+    !!  the original content of the array is overwritten.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldq or @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+    !!      available.
+    function la_qr_rank1_update_cmplx(m, n, q, ldq, r, ldr, u, v) &
+            bind(C, name = "la_qr_rank1_update_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, ldq, ldr
+        complex(c_double), intent(inout) :: q(ldq,*), r(ldr,*), u(*), v(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: mn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldq < m .or. ldr < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        mn = min(m, n)
+        call qr_rank1_update(q(1:m,1:mn), r(1:m,1:n), u(1:m), v(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Cholesky factorization of a symmetric, positive
+    !! definite matrix.
+    !!
+    !! @param[in] upper Set to true to compute the upper triangular factoriztion
+    !!  A = U**T * U; else, set to false to compute the lower triangular
+    !!  factorzation A = L * L**T.
+    !! @param[in] n The dimension of matrix A.
+    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+    !!  factored matrix is returned in either the upper or lower triangular
+    !!  portion of the matrix, dependent upon the value of @p upper.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+    function la_cholesky_factor(upper, n, a, lda) &
+            bind(C, name = "la_cholesky_factor") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_factor(a(1:n,1:n), logical(upper), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Cholesky factorization of a symmetric, positive
+    !! definite matrix.
+    !!
+    !! @param[in] upper Set to true to compute the upper triangular factoriztion
+    !!  A = U**H * U; else, set to false to compute the lower triangular
+    !!  factorzation A = L * L**H.
+    !! @param[in] n The dimension of matrix A.
+    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+    !!  factored matrix is returned in either the upper or lower triangular
+    !!  portion of the matrix, dependent upon the value of @p upper.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+    function la_cholesky_factor_cmplx(upper, n, a, lda) &
+            bind(C, name = "la_cholesky_factor_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_factor(a(1:n,1:n), logical(upper), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_cholesky_rank1_update(n, r, ldr, u) &
+            bind(C, name = "la_cholesky_rank1_update") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, ldr
+        real(c_double), intent(inout) :: r(ldr,*), u(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_rank1_update(r(1:n,1:n), u(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_cholesky_rank1_update_cmplx(n, r, ldr, u) &
+            bind(C, name = "la_cholesky_rank1_update_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, ldr
+        complex(c_double), intent(inout) :: r(ldr,*), u(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_rank1_update(r(1:n,1:n), u(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+    !!      positive definite.
+    function la_cholesky_rank1_downdate(n, r, ldr, u) &
+            bind(C, name = "la_cholesky_rank1_downdate") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, ldr
+        real(c_double), intent(inout) :: r(ldr,*), u(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
+    !! triangular).
+    !!
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+    !!  output, the updated matrix R1.
+    !! @param[in] ldr The leading dimension of matrix R.
+    !! @param[in,out] u On input, the N-element update vector U.  On output,
+    !!  the rotation sines used to transform R to R1.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+    !!      positive definite.
+    function la_cholesky_rank1_downdate_cmplx(n, r, ldr, u) &
+            bind(C, name = "la_cholesky_rank1_downdate_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, ldr
+        complex(c_double), intent(inout) :: r(ldr,*), u(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldr < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 

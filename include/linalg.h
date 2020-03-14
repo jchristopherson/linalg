@@ -699,6 +699,154 @@ int la_mult_qr_cmplx(bool lside, bool trans, int m, int n, int k,
 int la_qr_rank1_update(int m, int n, double *q, int ldq, double *r, int ldr,
     double *u, double *v);
 
+/**
+ * Computes the rank 1 update to an M-by-N QR factored matrix A
+ * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+ *
+ * @param m The number of rows in R.
+ * @param n The number of columns in R.
+ * @param q On input, the original M-by-K orthogonal matrix Q.  On
+ *  output, the updated matrix Q1.
+ * @param ldq The leading dimension of matrix Q.
+ * @param r On input, the M-by-N matrix R.  On output, the updated
+ *  matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the M-element U update vector.  On output,
+ *  the original content of the array is overwritten.
+ * @param v On input, the N-element V update vector.  On output,
+ *  the original content of the array is overwritten.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldq or @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_qr_rank1_update_cmplx(int m, int n, double complex *q, int ldq,
+    double complex *r, int ldr, double complex *u, double complex *v);
+
+/**
+ * Computes the Cholesky factorization of a symmetric, positive
+ * definite matrix.
+ *
+ * @param upper Set to true to compute the upper triangular factoriztion
+ *  A = U**T * U; else, set to false to compute the lower triangular
+ *  factorzation A = L * L**T.
+ * @param n The dimension of matrix A.
+ * @param a On input, the N-by-N matrix to factor.  On output, the
+ *  factored matrix is returned in either the upper or lower triangular
+ *  portion of the matrix, dependent upon the value of @p upper.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+ */
+int la_cholesky_factor(bool upper, int n, double *a, int lda);
+
+/**
+ * Computes the Cholesky factorization of a symmetric, positive
+ * definite matrix.
+ *
+ * @param upper Set to true to compute the upper triangular factoriztion
+ *  A = U**T * U; else, set to false to compute the lower triangular
+ *  factorzation A = L * L**T.
+ * @param n The dimension of matrix A.
+ * @param a On input, the N-by-N matrix to factor.  On output, the
+ *  factored matrix is returned in either the upper or lower triangular
+ *  portion of the matrix, dependent upon the value of @p upper.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+ */
+int la_cholesky_factor_cmplx(bool upper, int n, double complex *a, int lda);
+
+/**
+ * Computes the rank 1 update to a Cholesky factored matrix (upper
+ * triangular).
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_cholesky_rank1_update(int n, double *r, int ldr, double *u);
+
+/**
+ * Computes the rank 1 update to a Cholesky factored matrix (upper
+ * triangular).
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_cholesky_rank1_update_cmplx(int n, double complex *r, int ldr, 
+    double complex *u);
+
+/**
+ * Computes the rank 1 downdate to a Cholesky factored matrix (upper
+ * triangular).
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+ *      positive definite.
+ */
+int la_cholesky_rank1_downdate(int n, double *r, int ldr, double *u);
+
+/**
+ * Computes the rank 1 downdate to a Cholesky factored matrix (upper
+ * triangular).
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+ *      positive definite.
+ */
+int la_cholesky_rank1_downdate_cmplx(int n, double complex *r, int ldr,
+    double complex *u);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

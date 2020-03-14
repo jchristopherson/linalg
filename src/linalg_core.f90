@@ -3118,9 +3118,9 @@ interface
     !!  factored matrix is returned in either the upper or lower triangular
     !!  portion of the matrix, dependent upon the value of @p upper.
     !! @param[in] upper An optional input that, if specified, provides control
-    !!  over whether the factorization is computed as A = U**T * U (set to
-    !!  true), or as A = L * L**T (set to false).  The default value is true
-    !!  such that A = U**T * U.
+    !!  over whether the factorization is computed as A = U**H * U (set to
+    !!  true), or as A = L * L**H (set to false).  The default value is true
+    !!  such that A = U**H * U.
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors

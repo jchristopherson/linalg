@@ -1827,12 +1827,205 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, or
+    !! X * op(A) = alpha * B, where A is a triangular matrix.
+    !!
+    !! @param[in] lside Set to true to solve op(A) * X = alpha * B; else, set to
+    !!  false to solve X * op(A) = alpha * B.
+    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
+    !!  set to false if A is a lower triangular matrix.
+    !! @param[in] trans Set to true if op(A) = A**T; else, set to false if
+    !!  op(A) = A.
+    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
+    !!  every diagonal element); else, set to false if A is a unit-diagonal
+    !!  matrix.
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] alpha The scalar multiplier to B.
+    !! @param[in] a If @p lside is true, the M-by-M triangular matrix on which
+    !!  to operate; else, if @p lside is false, the N-by-N triangular matrix on
+    !!  which to operate.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
+    !!  M-by-N solution.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_tri_mtx(lside, upper, trans, nounit, m, n, alpha, a, &
+            lda, b, ldb) bind(C, name = "la_solve_tri_mtx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside, upper, trans, nounit
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        real(c_double), intent(in), value :: alpha
+        real(c_double), intent(in) :: a(lda,*)
+        real(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: ma
+
+        ! Initialization
+        if (lside) then
+            ma = m
+        else
+            ma = n
+        end if
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < ma .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_triangular_system(logical(lside), logical(upper), &
+            logical(trans), logical(nounit), alpha, a(1:ma,1:ma), b(1:m,1:n))
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves one of the matrix equations: op(A) * X = alpha * B, or
+    !! X * op(A) = alpha * B, where A is a triangular matrix.
+    !!
+    !! @param[in] lside Set to true to solve op(A) * X = alpha * B; else, set to
+    !!  false to solve X * op(A) = alpha * B.
+    !! @param[in] upper Set to true if A is an upper triangular matrix; else,
+    !!  set to false if A is a lower triangular matrix.
+    !! @param[in] trans Set to true if op(A) = A**H; else, set to false if
+    !!  op(A) = A.
+    !! @param[in] nounit Set to true if A is not a unit-diagonal matrix (ones on
+    !!  every diagonal element); else, set to false if A is a unit-diagonal
+    !!  matrix.
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] alpha The scalar multiplier to B.
+    !! @param[in] a If @p lside is true, the M-by-M triangular matrix on which
+    !!  to operate; else, if @p lside is false, the N-by-N triangular matrix on
+    !!  which to operate.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
+    !!  M-by-N solution.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_tri_mtx_cmplx(lside, upper, trans, nounit, m, n, &
+            alpha, a, lda, b, ldb) &
+            bind(C, name = "la_solve_tri_mtx_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside, upper, trans, nounit
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        complex(c_double), intent(in), value :: alpha
+        complex(c_double), intent(in) :: a(lda,*)
+        complex(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: ma
+
+        ! Initialization
+        if (lside) then
+            ma = m
+        else
+            ma = n
+        end if
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < ma .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_triangular_system(logical(lside), logical(upper), &
+            logical(trans), logical(nounit), alpha, a(1:ma,1:ma), b(1:m,1:n))
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of LU-factored equations.
+    !!
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] a The M-by-M LU factored matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] ipvt The M-element pivot array from the LU factorization.
+    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
+    !!  M-by-N solution.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_lu(m, n, a, lda, ipvt, b, ldb) &
+            bind(C, name = "la_solve_lu") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        real(c_double), intent(in) :: a(lda,*)
+        integer(c_int), intent(in) :: ipvt(*)
+        real(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_lu(a(1:m,1:m), ipvt(1:m), b(1:m,1:n))
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of LU-factored equations.
+    !!
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] a The M-by-M LU factored matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] ipvt The M-element pivot array from the LU factorization.
+    !! @param[in,out] b On input, the M-by-N right-hand-side.  On output, the
+    !!  M-by-N solution.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_lu_cmplx(m, n, a, lda, ipvt, b, ldb) &
+            bind(C, name = "la_solve_lu_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        complex(c_double), intent(in) :: a(lda,*)
+        integer(c_int), intent(in) :: ipvt(*)
+        complex(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_lu(a(1:m,1:m), ipvt(1:m), b(1:m,1:n))
+    end function
 
 ! ------------------------------------------------------------------------------
 

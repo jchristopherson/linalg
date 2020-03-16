@@ -908,8 +908,109 @@ int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
  *  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
  *      could not converge to a zero value.
  */
-int la_svd_cmplx(int m, int n, double complex *a, int lda, double *x,
+int la_svd_cmplx(int m, int n, double complex *a, int lda, double *s,
     double complex *u, int ldu, double complex *vt, int ldv);
+
+/**
+ * Solves one of the matrix equations: op(A) * X = alpha * B, or
+ * X * op(A) = alpha * B, where A is a triangular matrix.
+ *
+ * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
+ *  false to solve X * op(A) = alpha * B.
+ * @param upper Set to true if A is an upper triangular matrix; else,
+ *  set to false if A is a lower triangular matrix.
+ * @param trans Set to true if op(A) = A**T; else, set to false if
+ *  op(A) = A.
+ * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
+ *  every diagonal element); else, set to false if A is a unit-diagonal
+ *  matrix.
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param alpha The scalar multiplier to B.
+ * @param a If @p lside is true, the M-by-M triangular matrix on which
+ *  to operate; else, if @p lside is false, the N-by-N triangular matrix on
+ *  which to operate.
+ * @param lda The leading dimension of matrix A.
+ * @param b On input, the M-by-N right-hand-side.  On output, the
+ *  M-by-N solution.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_tri_mtx(bool lside, bool upper, bool trans, bool nounit, int m,
+    int n, double alpha, const double *a, int lda, double *b, int ldb);
+
+/**
+ * Solves one of the matrix equations: op(A) * X = alpha * B, or
+ * X * op(A) = alpha * B, where A is a triangular matrix.
+ *
+ * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
+ *  false to solve X * op(A) = alpha * B.
+ * @param upper Set to true if A is an upper triangular matrix; else,
+ *  set to false if A is a lower triangular matrix.
+ * @param trans Set to true if op(A) = A**H; else, set to false if
+ *  op(A) = A.
+ * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
+ *  every diagonal element); else, set to false if A is a unit-diagonal
+ *  matrix.
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param alpha The scalar multiplier to B.
+ * @param a If @p lside is true, the M-by-M triangular matrix on which
+ *  to operate; else, if @p lside is false, the N-by-N triangular matrix on
+ *  which to operate.
+ * @param lda The leading dimension of matrix A.
+ * @param b On input, the M-by-N right-hand-side.  On output, the
+ *  M-by-N solution.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_tri_mtx_cmplx(bool lside, bool upper, bool trans, bool nounit,
+    int m, int n, double complex alpha, const double complex *a, int lda,
+    double complex *b, int ldb);
+
+/**
+ * Solves a system of LU-factored equations.
+ *
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param a The M-by-M LU factored matrix.
+ * @param lda The leading dimension of matrix A.
+ * @param ipvt The M-element pivot array from the LU factorization.
+ * @param b On input, the M-by-N right-hand-side.  On output, the
+ *  M-by-N solution.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_lu(int m, int n, const double *a, int lda, const int *ipvt,
+    double *b, int ldb);
+
+/**
+ * Solves a system of LU-factored equations.
+ *
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param a The M-by-M LU factored matrix.
+ * @param lda The leading dimension of matrix A.
+ * @param ipvt The M-element pivot array from the LU factorization.
+ * @param b On input, the M-by-N right-hand-side.  On output, the
+ *  M-by-N solution.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_lu_cmplx(int m, int n, const double complex *a, int lda,
+    const int *ipvt, double complex *b, int ldb);
 
 #ifdef __cplusplus
 }

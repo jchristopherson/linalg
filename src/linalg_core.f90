@@ -3988,7 +3988,7 @@ interface
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
-    !!  the first N columns are overwritten by the solution matrix X.
+    !!  the first N rows are overwritten by the solution matrix X.
     !! @param[out] work An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least
@@ -4025,7 +4025,7 @@ interface
     !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
     !!  the elementary reflectors as returned by qr_factor.
     !! @param[in] b On input, the M-by-NRHS right-hand-side matrix.  On output,
-    !!  the first N columns are overwritten by the solution matrix X.
+    !!  the first N rows are overwritten by the solution matrix X.
     !! @param[out] work An optional input, that if provided, prevents any local
     !!  memory allocation.  If not provided, the memory required is allocated
     !!  within.  If provided, the length of the array must be at least

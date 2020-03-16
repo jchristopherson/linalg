@@ -2028,12 +2028,561 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns where
+    !! M >= N.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in,out] b On input, the M-by-K right-hand-side matrix.  On output,
+    !!  the first N rows are overwritten by the solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+    !!      if @p m is less than @p n.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_solve_qr(m, n, k, a, lda, tau, b, ldb) &
+            bind(C, name = "la_solve_qr") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        real(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        real(c_double), intent(in) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: minmn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m .or. m < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        minmn = min(m, n)
+        call solve_qr(a(1:m,1:n), tau(1:minmn), b(1:m,1:k), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns where
+    !! M >= N.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in,out] b On input, the M-by-K right-hand-side matrix.  On output,
+    !!  the first N rows are overwritten by the solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+    !!      if @p m is less than @p n.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_solve_qr_cmplx(m, n, k, a, lda, tau, b, ldb) &
+            bind(C, name = "la_solve_qr_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        complex(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        complex(c_double), intent(in) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: minmn
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m .or. m < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        minmn = min(m, n)
+        call solve_qr(a(1:m,1:n), tau(1:minmn), b(1:m,1:k), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt The N-element array that was used to track the column
+    !!  pivoting operations in the QR factorization.
+    !! @param[in,out] b On input, the M-by-K right-hand-side matrix.  On output,
+    !!  the first N rows are overwritten by the solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_solve_qr_pvt(m, n, k, a, lda, tau, jpvt, b, ldb) &
+            bind(C, name = "la_solve_qr_pvt") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        real(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        real(c_double), intent(in) :: tau(*)
+        integer(c_int), intent(in) :: jpvt(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: minmn, maxmn
+
+        ! Error Checking
+        minmn = min(m, n)
+        maxmn = max(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < maxmn) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_qr(a(1:m,1:n), tau(1:minmn), jpvt(1:n), b(1:maxmn,1:k), &
+            err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Solves a system of M QR-factored equations of N unknowns.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N QR factored matrix as returned by
+    !!  qr_factor.  On output, the contents of this matrix are restored.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+    !!  the elementary reflectors as returned by qr_factor.
+    !! @param[in] jpvt The N-element array that was used to track the column
+    !!  pivoting operations in the QR factorization.
+    !! @param[in,out] b On input, the M-by-K right-hand-side matrix.  On output,
+    !!  the first N rows are overwritten by the solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_solve_qr_cmplx_pvt(m, n, k, a, lda, tau, jpvt, b, ldb) &
+            bind(C, name = "la_solve_qr_cmplx_pvt") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        complex(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        complex(c_double), intent(in) :: tau(*)
+        integer(c_int), intent(in) :: jpvt(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: minmn, maxmn
+
+        ! Error Checking
+        minmn = min(m, n)
+        maxmn = max(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < maxmn) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_qr(a(1:m,1:n), tau(1:minmn), jpvt(1:n), b(1:maxmn,1:k), &
+            err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves a system of Cholesky factored equations.
+    !!
+    !! @param[in] upper Set to true if the original matrix A was factored such
+    !!  that A = U**T * U; else, set to false if the factorization of A was
+    !!  A = L**T * L.
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] a The M-by-M Cholesky factored matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b On input, the M-by-N right-hand-side matrix B.  On
+    !!  output, the M-by-N solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_cholesky(upper, m, n, a, lda, b, ldb) &
+            bind(C, name = "la_solve_cholesky") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        real(c_double), intent(in) :: a(lda,*)
+        real(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves a system of Cholesky factored equations.
+    !!
+    !! @param[in] upper Set to true if the original matrix A was factored such
+    !!  that A = U**T * U; else, set to false if the factorization of A was
+    !!  A = L**T * L.
+    !! @param[in] m The number of rows in matrix B.
+    !! @param[in] n The number of columns in matrix B.
+    !! @param[in] a The M-by-M Cholesky factored matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b On input, the M-by-N right-hand-side matrix B.  On
+    !!  output, the M-by-N solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    function la_solve_cholesky_cmplx(upper, m, n, a, lda, b, ldb) &
+            bind(C, name = "la_solve_cholesky_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: upper
+        integer(c_int), intent(in), value :: m, n, lda, ldb
+        complex(c_double), intent(in) :: a(lda,*)
+        complex(c_double), intent(inout) :: b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
+    !! Notice, it is assumed that matrix A has full rank.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
+    !!  the QR factorization of A in the form as output by qr_factor; else,
+    !!  if M < N, the LQ factorization of A.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+    function la_solve_least_squares(m, n, k, a, lda, b, ldb) &
+            bind(C, name = "la_solve_least_squares") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        real(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: maxmn
+
+        ! Error Checking
+        maxmn = max(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < maxmn) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_least_squares(a(1:m,1:n), b(1:maxmn,1:k), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Solves the overdetermined or underdetermined system (A*X = B) of
+    !! M equations of N unknowns using a QR or LQ factorization of the matrix A.
+    !! Notice, it is assumed that matrix A has full rank.
+    !!
+    !! @param[in] m The number of equations (rows in matrix A).
+    !! @param[in] n The number of unknowns (columns in matrix A).
+    !! @param[in] k The number of columns in the right-hand-side matrix.
+    !! @param[in,out] a On input, the M-by-N matrix A.  On output, if M >= N,
+    !!  the QR factorization of A in the form as output by qr_factor; else,
+    !!  if M < N, the LQ factorization of A.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b If M >= N, the M-by-NRHS matrix B.  On output, the first
+    !!  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+    !!  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+    !!  output, the N-by-NRHS solution matrix X.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+    function la_solve_least_squares_cmplx(m, n, k, a, lda, b, ldb) &
+            bind(C, name = "la_solve_least_squares_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, k, lda, ldb
+        complex(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+        integer(c_int) :: maxmn
+
+        ! Error Checking
+        maxmn = max(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldb < maxmn) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call solve_least_squares(a(1:m,1:n), b(1:maxmn,1:k), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the inverse of a square matrix.
+    !!
+    !! @param[in] n The dimension of matrix A.
+    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
+    !!  inverted matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+    function la_inverse(n, a, lda) bind(C, name = "la_inverse") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mtx_inverse(a(1:n,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the inverse of a square matrix.
+    !!
+    !! @param[in] n The dimension of matrix A.
+    !! @param[in,out] a On input, the N-by-N matrix to invert.  On output, the
+    !!  inverted matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+    function la_inverse_cmplx(n, a, lda) bind(C, name = "la_inverse_cmplx") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mtx_inverse(a(1:n,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Moore-Penrose pseudo-inverse of an M-by-N matrix by
+    !! means of singular value decomposition.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @parma[in] n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
+    !!  overwritten on output.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
+    !!  will be written.
+    !! @param[in] ldai The leading dimension of matrix AINV.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldai is not correct.
+    function la_pinverse(m, n, a, lda, ainv, ldai) &
+            bind(C, name = "la_pinverse") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldai
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: ainv(ldai,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldai < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mtx_pinverse(a(1:m,1:n), ainv(1:n,1:m), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the Moore-Penrose pseudo-inverse of an M-by-N matrix by
+    !! means of singular value decomposition.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @parma[in] n The number of columns in the matrix.
+    !! @param[in,out] a On input, the M-by-N matrix to invert.  The matrix is
+    !!  overwritten on output.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] ainv The N-by-M matrix where the pseudo-inverse of @p a
+    !!  will be written.
+    !! @param[in] ldai The leading dimension of matrix AINV.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldai is not correct.
+    function la_pinverse_cmplx(m, n, a, lda, ainv, ldai) &
+            bind(C, name = "la_pinverse_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda, ldai
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: ainv(ldai,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m .or. ldai < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call mtx_pinverse(a(1:m,1:n), ainv(1:n,1:m), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
 end module

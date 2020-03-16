@@ -1012,6 +1012,277 @@ int la_solve_lu(int m, int n, const double *a, int lda, const int *ipvt,
 int la_solve_lu_cmplx(int m, int n, const double complex *a, int lda,
     const int *ipvt, double complex *b, int ldb);
 
+/*
+ * Solves a system of M QR-factored equations of N unknowns where
+ * M >= N.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  qr_factor.  On output, the contents of this matrix are restored.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by qr_factor.
+ * @param b On input, the M-by-K right-hand-side matrix.  On output,
+ *  the first N rows are overwritten by the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+ *      if @p m is less than @p n.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_qr(int m, int n, int k, double *a, int lda, const double *tau,
+    double *b, int ldb);
+
+/*
+ * Solves a system of M QR-factored equations of N unknowns where
+ * M >= N.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  qr_factor.  On output, the contents of this matrix are restored.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by qr_factor.
+ * @param b On input, the M-by-K right-hand-side matrix.  On output,
+ *  the first N rows are overwritten by the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+ *      if @p m is less than @p n.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_qr_cmplx(int m, int n, int k, double complex *a, int lda, 
+    const double complex *tau, double complex *b, int ldb);
+
+/**
+ * Solves a system of M QR-factored equations of N unknowns.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  qr_factor.  On output, the contents of this matrix are restored.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by qr_factor.
+ * @param jpvt The N-element array that was used to track the column
+ *  pivoting operations in the QR factorization.
+ * @param b On input, the M-by-K right-hand-side matrix.  On output,
+ *  the first N rows are overwritten by the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_qr_pvt(int m, int n, int k, double *a, int lda, const double *tau,
+    const int *jpvt, double *b, int ldb);
+
+/**
+ * Solves a system of M QR-factored equations of N unknowns.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  qr_factor.  On output, the contents of this matrix are restored.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by qr_factor.
+ * @param jpvt The N-element array that was used to track the column
+ *  pivoting operations in the QR factorization.
+ * @param b On input, the M-by-K right-hand-side matrix.  On output,
+ *  the first N rows are overwritten by the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_qr_cmplx_pvt(int m, int n, int k, double complex *a, int lda,
+    const double complex *tau, const int *jpvt, double complex *b, int ldb);
+
+/**
+ * Solves a system of Cholesky factored equations.
+ *
+ * @param upper Set to true if the original matrix A was factored such
+ *  that A = U**T * U; else, set to false if the factorization of A was
+ *  A = L**T * L.
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param a The M-by-M Cholesky factored matrix.
+ * @param lda The leading dimension of matrix A.
+ * @param b On input, the M-by-N right-hand-side matrix B.  On
+ *  output, the M-by-N solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_cholesky(bool upper, int m, int n, const double *a, int lda,
+    double *b, int ldb);
+
+/**
+ * Solves a system of Cholesky factored equations.
+ *
+ * @param upper Set to true if the original matrix A was factored such
+ *  that A = U**T * U; else, set to false if the factorization of A was
+ *  A = L**T * L.
+ * @param m The number of rows in matrix B.
+ * @param n The number of columns in matrix B.
+ * @param a The M-by-M Cholesky factored matrix.
+ * @param lda The leading dimension of matrix A.
+ * @param b On input, the M-by-N right-hand-side matrix B.  On
+ *  output, the M-by-N solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ */
+int la_solve_cholesky_cmplx(bool upper, int m, int n, const double complex *a,
+    int lda, double complex *b, int ldb);
+
+/**
+ * Solves the overdetermined or underdetermined system (A*X = B) of
+ * M equations of N unknowns using a QR or LQ factorization of the matrix A.
+ * Notice, it is assumed that matrix A has full rank.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N matrix A.  On output, if M >= N,
+ *  the QR factorization of A in the form as output by qr_factor; else,
+ *  if M < N, the LQ factorization of A.
+ * @param lda The leading dimension of matrix A.
+ * @param b If M >= N, the M-by-NRHS matrix B.  On output, the first
+ *  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+ *  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+ *  output, the N-by-NRHS solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+ */
+int la_solve_least_squares(int m, int n, int k, double *a, int lda, double *b, 
+    int ldb);
+
+/**
+ * Solves the overdetermined or underdetermined system (A*X = B) of
+ * M equations of N unknowns using a QR or LQ factorization of the matrix A.
+ * Notice, it is assumed that matrix A has full rank.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N matrix A.  On output, if M >= N,
+ *  the QR factorization of A in the form as output by qr_factor; else,
+ *  if M < N, the LQ factorization of A.
+ * @param lda The leading dimension of matrix A.
+ * @param b If M >= N, the M-by-NRHS matrix B.  On output, the first
+ *  N rows contain the N-by-NRHS solution matrix X.  If M < N, an
+ *  N-by-NRHS matrix with the first M rows containing the matrix B.  On
+ *  output, the N-by-NRHS solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_INVALID_OPERATION_ERROR: Occurs if @p a is not of full rank.
+ */
+int la_solve_least_squares_cmplx(int m, int n, int k, double complex *a,
+    int lda, double complex *b, int ldb);
+
+/**
+ * Computes the inverse of a square matrix.
+ *
+ * @param n The dimension of matrix A.
+ * @param a On input, the N-by-N matrix to invert.  On output, the
+ *  inverted matrix.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+ */
+int la_inverse(int n, double *a);
+
+/**
+ * Computes the inverse of a square matrix.
+ *
+ * @param n The dimension of matrix A.
+ * @param a On input, the N-by-N matrix to invert.  On output, the
+ *  inverted matrix.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
+ */
+int la_inverse_cmplx(int n, double complex *a);
+
+/**
+ * Computes the Moore-Penrose pseudo-inverse of an M-by-N matrix by
+ * means of singular value decomposition.
+ *
+ * @param m The number of rows in the matrix.
+ * @parma n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix to invert.  The matrix is
+ *  overwritten on output.
+ * @param lda The leading dimension of matrix A.
+ * @param ainv The N-by-M matrix where the pseudo-inverse of @p a
+ *  will be written.
+ * @param ldai The leading dimension of matrix AINV.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldai is not correct.
+ */
+int la_pinverse(int m, int n, double *a, int lda, double *ainv, int ldai);
+
+/**
+ * Computes the Moore-Penrose pseudo-inverse of an M-by-N matrix by
+ * means of singular value decomposition.
+ *
+ * @param m The number of rows in the matrix.
+ * @parma n The number of columns in the matrix.
+ * @param a On input, the M-by-N matrix to invert.  The matrix is
+ *  overwritten on output.
+ * @param lda The leading dimension of matrix A.
+ * @param ainv The N-by-M matrix where the pseudo-inverse of @p a
+ *  will be written.
+ * @param ldai The leading dimension of matrix AINV.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldai is not correct.
+ */
+int la_pinverse_cmplx(int m, int n, double complex *a, int lda,
+    double complex *ainv, int ldai);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

@@ -1283,6 +1283,31 @@ int la_pinverse(int m, int n, double *a, int lda, double *ainv, int ldai);
 int la_pinverse_cmplx(int m, int n, double complex *a, int lda,
     double complex *ainv, int ldai);
 
+/**
+ * Computes the eigenvalues, and optionally the eigenvectors of a
+ * real, symmetric matrix.
+ *
+ * @param vecs Set to true to compute the eigenvectors as well as the
+ *  eigenvalues; else, set to false to just compute the eigenvalues.
+ * @param n The dimension of the matrix.
+ * @param a On input, the N-by-N symmetric matrix on which to
+ *  operate.  On output, and if @p vecs is set to true, the matrix will
+ *  contain the eigenvectors (one per column) corresponding to each
+ *  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
+ *  portion of the matrix is overwritten.
+ * @param lda The leading dimension of matrix A.
+ * @param vals An N-element array that will contain the eigenvalues
+ *  sorted into ascending order.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+ */
+int la_eigen_symm(bool vecs, int n, double *a, int lda, double *vals);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

@@ -2585,4 +2585,68 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and optionally the eigenvectors of a
+    !! real, symmetric matrix.
+    !!
+    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
+    !!  eigenvalues; else, set to false to just compute the eigenvalues.
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N symmetric matrix on which to
+    !!  operate.  On output, and if @p vecs is set to true, the matrix will
+    !!  contain the eigenvectors (one per column) corresponding to each
+    !!  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
+    !!  portion of the matrix is overwritten.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] vals An N-element array that will contain the eigenvalues
+    !!  sorted into ascending order.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    function la_eigen_symm(vecs, n, a, lda, vals) &
+            bind(C, name = "la_eigen_symm") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: vecs
+        integer(c_int), intent(in), value :: n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: vals(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call eigen(logical(vecs), a(1:n,1:n), vals(1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 end module

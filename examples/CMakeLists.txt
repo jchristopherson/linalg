@@ -59,3 +59,9 @@ target_link_libraries(svd_example linalg)
 add_executable(lu_example_immutable linalg_lu_example_immutable.f90)
 target_link_libraries(lu_example_immutable linalg)
 
+
+# --------------------
+# C API Eigenvalue Example
+include_directories(${PROJECT_SOURCE_DIR}/include)
+add_executable(c_eigen_example c_linalg_eigen_example.c)
+target_link_libraries(c_eigen_example linalg)

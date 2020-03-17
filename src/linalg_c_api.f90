@@ -2635,14 +2635,289 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !! a square matrix.
+    !!
+    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
+    !!  eigenvalues; else, set to false to just compute the eigenvalues.
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !!  output, the contents of this matrix are overwritten.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] vals An N-element array containing the eigenvalues of the
+    !!  matrix.  The eigenvalues are not sorted.
+    !! @param[out] v An N-by-N matrix where the right eigenvectors will be
+    !!  written (one per column).
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    function la_eigen_asymm(vecs, n, a, lda, vals, v, ldv) &
+            bind(C, name = "la_eigen_asymm") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: vecs
+        integer(c_int), intent(in), value :: n, lda, ldv
+        real(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: vals(*), v(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (vecs) then
+            if (lda < n .or. ldv < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        else
+            if (lda < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        end if
+
+        ! Process
+        if (vecs) then
+            call eigen(a(1:n,1:n), vals(1:n), v(1:n,1:n), err = err)
+        else
+            call eigen(a(1:n,1:n), vals(1:n))
+        end if
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !! a square matrix assuming the structure of the eigenvalue problem is
+    !! A*X = lambda*B*X.
+    !!
+    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
+    !!  eigenvalues; else, set to false to just compute the eigenvalues.
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
+    !!  of this matrix are overwritten.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
+    !!  of this matrix are overwritten.
+    !! @param[in] ldb The leading dimension of matrix B.
+    !! @param[out] alpha An N-element array that, if @p beta is not supplied,
+    !!  contains the eigenvalues.  If @p beta is supplied however, the
+    !!  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
+    !!  trivial as it seems as it is entirely possible, and likely, that
+    !!  ALPHA / BETA can overflow or underflow.  With that said, the values in
+    !!  ALPHA will always be less than and usually comparable with the NORM(A).
+    !! @param[out] beta An optional N-element array that if provided forces
+    !!  @p alpha to return the numerator, and this array contains the
+    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
+    !!  the values in this array will always be less than and usually comparable
+    !!  with the NORM(B).
+    !! @param[out] v An N-by-N matrix where the right eigenvectors will be
+    !!  written (one per column).
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    function la_eigen_gen(vecs, n, a, lda, b, ldb, alpha, beta, v, ldv) &
+            bind(C, name = "la_eigen_gen") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: vecs
+        integer(c_int), intent(in), value :: n, lda, ldb, ldv
+        real(c_double), intent(inout) :: a(lda,*), b(ldb,*)
+        real(c_double), intent(out) :: beta(*)
+        complex(c_double), intent(out) :: alpha(*), v(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (vecs) then
+            if (lda < n .or. ldb < n .or. ldv < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        else
+            if (lda < n .or. ldb < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        end if
+
+        ! Process
+        if (vecs) then
+            call eigen(a(1:n,1:n), b(1:n,1:n), alpha(1:n), beta(1:n), &
+                v(1:n,1:n), err = err)
+        else
+            call eigen(a(1:n,1:n), b(1:n,1:n), alpha(1:n), beta(1:n), err = err)
+        end if
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+    
+! ------------------------------------------------------------------------------
+    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
+    !! a square matrix.
+    !!
+    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
+    !!  eigenvalues; else, set to false to just compute the eigenvalues.
+    !! @param[in] n The dimension of the matrix.
+    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+    !!  output, the contents of this matrix are overwritten.
+    !! @param[in] lda The leading dimension of matrix A.
+    !! @param[out] vals An N-element array containing the eigenvalues of the
+    !!  matrix.  The eigenvalues are not sorted.
+    !! @param[out] v An N-by-N matrix where the right eigenvectors will be
+    !!  written (one per column).
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+    function la_eigen_cmplx(vecs, n, a, lda, vals, v, ldv) &
+            bind(C, name = "la_eigen_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: vecs
+        integer(c_int), intent(in), value :: n, lda, ldv
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: vals(*), v(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (vecs) then
+            if (lda < n .or. ldv < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        else
+            if (lda < n) then
+                flag = LA_INVALID_INPUT_ERROR
+                return
+            end if
+        end if
+
+        ! Process
+        if (vecs) then
+            call eigen(a(1:n,1:n), vals(1:n), v(1:n,1:n), err = err)
+        else
+            call eigen(a(1:n,1:n), vals(1:n))
+        end if
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in] ascend
+    !! @param[in] n The number of eigenvalues.
+    !! @param[in,out] vals On input, an N-element array containing the
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
+    !!  output, the sorted eigenvector matrix.
+    !! @param[in] ldv The leading dimension of @p vecs.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldv is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_sort_eigen(ascend, n, vals, vecs, ldv) &
+            bind(C, name = "la_sort_eigen") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(c_int), intent(in), value :: n, ldv
+        real(c_double), intent(inout) :: vals(*), vecs(ldv,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldv < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call sort(vals(1:n), vecs(1:n,1:n), logical(ascend), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
+    !! and their associated eigenvectors using a quick-sort approach.
+    !!
+    !! @param[in] ascend
+    !! @param[in] n The number of eigenvalues.
+    !! @param[in,out] vals On input, an N-element array containing the
+    !!  eigenvalues.  On output, the sorted eigenvalues.
+    !! @param[in,out] vecs On input, an N-by-N matrix containing the
+    !!  eigenvectors associated with @p vals (one vector per column).  On
+    !!  output, the sorted eigenvector matrix.
+    !! @param[in] ldv The leading dimension of @p vecs.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldv is not correct.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+    !!      there is insufficient memory available.
+    function la_sort_eigen_cmplx(ascend, n, vals, vecs, ldv) &
+            bind(C, name = "la_sort_eigen_cmplx") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: ascend
+        integer(c_int), intent(in), value :: n, ldv
+        complex(c_double), intent(inout) :: vals(*), vecs(ldv,*)
+        integer(c_int) :: flag
 
-! ------------------------------------------------------------------------------
+        ! Local Variables
+        type(errors) :: err
+
+        ! Error Checking
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (ldv < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call sort(vals(1:n), vecs(1:n,1:n), logical(ascend), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
 

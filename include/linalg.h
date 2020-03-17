@@ -1308,6 +1308,137 @@ int la_pinverse_cmplx(int m, int n, double complex *a, int lda,
  */
 int la_eigen_symm(bool vecs, int n, double *a, int lda, double *vals);
 
+/**
+ * Computes the eigenvalues, and optionally the right eigenvectors of
+ * a square matrix.
+ *
+ * @param vecs Set to true to compute the eigenvectors as well as the
+ *  eigenvalues; else, set to false to just compute the eigenvalues.
+ * @param n The dimension of the matrix.
+ * @param a On input, the N-by-N matrix on which to operate.  On
+ *  output, the contents of this matrix are overwritten.
+ * @param lda The leading dimension of matrix A.
+ * @param vals An N-element array containing the eigenvalues of the
+ *  matrix.  The eigenvalues are not sorted.
+ * @param v An N-by-N matrix where the right eigenvectors will be
+ *  written (one per column).
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+ */
+int la_eigen_asymm(bool vecs, int n, double *a, int lda,
+    double complex *vals, double complex *v, int ldv);
+
+/**
+ * Computes the eigenvalues, and optionally the right eigenvectors of
+ * a square matrix assuming the structure of the eigenvalue problem is
+ * A*X = lambda*B*X.
+ *
+ * @param vecs Set to true to compute the eigenvectors as well as the
+ *  eigenvalues; else, set to false to just compute the eigenvalues.
+ * @param n The dimension of the matrix.
+ * @param a On input, the N-by-N matrix A.  On output, the contents
+ *  of this matrix are overwritten.
+ * @param lda The leading dimension of matrix A.
+ * @param b On input, the N-by-N matrix B.  On output, the contents
+ *  of this matrix are overwritten.
+ * @param ldb The leading dimension of matrix B.
+ * @param alpha An N-element array that, if @p beta is not supplied,
+ *  contains the eigenvalues.  If @p beta is supplied however, the
+ *  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
+ *  trivial as it seems as it is entirely possible, and likely, that
+ *  ALPHA / BETA can overflow or underflow.  With that said, the values in
+ *  ALPHA will always be less than and usually comparable with the NORM(A).
+ * @param beta An optional N-element array that if provided forces
+ *  @p alpha to return the numerator, and this array contains the
+ *  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
+ *  the values in this array will always be less than and usually comparable
+ *  with the NORM(B).
+ * @param v An N-by-N matrix where the right eigenvectors will be
+ *  written (one per column).
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+ */
+int la_eigen_gen(bool vecs, int n, double *a, int lda, double *b, int ldb,
+    real complex *alpha, double *beta, real complex *v, int ldv);
+
+/**
+ * Computes the eigenvalues, and optionally the right eigenvectors of
+ * a square matrix.
+ *
+ * @param vecs Set to true to compute the eigenvectors as well as the
+ *  eigenvalues; else, set to false to just compute the eigenvalues.
+ * @param n The dimension of the matrix.
+ * @param a On input, the N-by-N matrix on which to operate.  On
+ *  output, the contents of this matrix are overwritten.
+ * @param lda The leading dimension of matrix A.
+ * @param vals An N-element array containing the eigenvalues of the
+ *  matrix.  The eigenvalues are not sorted.
+ * @param v An N-by-N matrix where the right eigenvectors will be
+ *  written (one per column).
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldv is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+ */
+int la_eigen_cmplx(bool vecs, int n, double complex *a, int lda,
+    double complex *vals, double complex *v, int ldv);
+
+/**
+ * A sorting routine specifically tailored for sorting of eigenvalues
+ * and their associated eigenvectors using a quick-sort approach.
+ *
+ * @param ascend
+ * @param n The number of eigenvalues.
+ * @param vals On input, an N-element array containing the
+ *  eigenvalues.  On output, the sorted eigenvalues.
+ * @param vecs On input, an N-by-N matrix containing the
+ *  eigenvectors associated with @p vals (one vector per column).  On
+ *  output, the sorted eigenvector matrix.
+ * @param ldv The leading dimension of @p vecs.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldv is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_sort_eigen(bool ascend, int n, double *vals, double *vecs, int ldv);
+
+/**
+ * A sorting routine specifically tailored for sorting of eigenvalues
+ * and their associated eigenvectors using a quick-sort approach.
+ *
+ * @param ascend
+ * @param n The number of eigenvalues.
+ * @param vals On input, an N-element array containing the
+ *  eigenvalues.  On output, the sorted eigenvalues.
+ * @param vecs On input, an N-by-N matrix containing the
+ *  eigenvectors associated with @p vals (one vector per column).  On
+ *  output, the sorted eigenvector matrix.
+ * @param ldv The leading dimension of @p vecs.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldv is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_sort_eigen_cmplx(bool ascend, int n, double complex *vals,
+    double complex *vecs, int ldv);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

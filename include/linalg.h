@@ -1369,7 +1369,7 @@ int la_eigen_asymm(bool vecs, int n, double *a, int lda,
  *  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
  */
 int la_eigen_gen(bool vecs, int n, double *a, int lda, double *b, int ldb,
-    real complex *alpha, double *beta, real complex *v, int ldv);
+    double complex *alpha, double *beta, double complex *v, int ldv);
 
 /**
  * Computes the eigenvalues, and optionally the right eigenvectors of

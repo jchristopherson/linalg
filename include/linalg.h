@@ -1012,7 +1012,7 @@ int la_solve_lu(int m, int n, const double *a, int lda, const int *ipvt,
 int la_solve_lu_cmplx(int m, int n, const double complex *a, int lda,
     const int *ipvt, double complex *b, int ldb);
 
-/*
+/**
  * Solves a system of M QR-factored equations of N unknowns where
  * M >= N.
  *
@@ -1038,7 +1038,7 @@ int la_solve_lu_cmplx(int m, int n, const double complex *a, int lda,
 int la_solve_qr(int m, int n, int k, double *a, int lda, const double *tau,
     double *b, int ldb);
 
-/*
+/**
  * Solves a system of M QR-factored equations of N unknowns where
  * M >= N.
  *

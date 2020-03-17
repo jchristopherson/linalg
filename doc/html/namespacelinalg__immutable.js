@@ -11,5 +11,7 @@ var namespacelinalg__immutable =
     [ "mat_solve_lower_tri", "interfacelinalg__immutable_1_1mat__solve__lower__tri.html", "interfacelinalg__immutable_1_1mat__solve__lower__tri" ],
     [ "mat_solve_upper_tri", "interfacelinalg__immutable_1_1mat__solve__upper__tri.html", "interfacelinalg__immutable_1_1mat__solve__upper__tri" ],
     [ "qr_results", "structlinalg__immutable_1_1qr__results.html", "structlinalg__immutable_1_1qr__results" ],
-    [ "svd_results", "structlinalg__immutable_1_1svd__results.html", "structlinalg__immutable_1_1svd__results" ]
+    [ "qr_results_cmplx", "structlinalg__immutable_1_1qr__results__cmplx.html", "structlinalg__immutable_1_1qr__results__cmplx" ],
+    [ "svd_results", "structlinalg__immutable_1_1svd__results.html", "structlinalg__immutable_1_1svd__results" ],
+    [ "svd_results_cmplx", "structlinalg__immutable_1_1svd__results__cmplx.html", "structlinalg__immutable_1_1svd__results__cmplx" ]
 ];

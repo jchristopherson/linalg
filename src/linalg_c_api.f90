@@ -11,7 +11,7 @@ module linalg_c_api
 
 contains
 ! ------------------------------------------------------------------------------
-    !!@brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
+    !> @brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
     !!
     !! @param transa Set to true to compute op(A) as the transpose of A; else,
     !!  set to false to compute op(A) as A.

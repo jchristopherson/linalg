@@ -34,6 +34,7 @@ var menudata={children:[
 {text:"t",url:"namespacemembers.html#index_t"}]},
 {text:"Functions/Subroutines",url:"namespacemembers_func.html",children:[
 {text:"i",url:"namespacemembers_func.html#index_i"},
+{text:"l",url:"namespacemembers_func.html#index_l"},
 {text:"m",url:"namespacemembers_func.html#index_m"}]},
 {text:"Variables",url:"namespacemembers_vars.html"}]}]},
 {text:"Data Types List",url:"annotated.html",children:[

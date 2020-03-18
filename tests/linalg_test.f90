@@ -34,6 +34,9 @@ program main
     
     rst = test_tri_mtx_mult_2()
     if (.not.rst) overall = .false.
+
+    rst = test_mtx_mult_1()
+    if (.not.rst) overall = .false.
     
 
     ! LU Factorization Tests

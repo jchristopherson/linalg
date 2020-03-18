@@ -211,4 +211,39 @@ contains
         end if
     end function
 
+! ******************************************************************************
+! TEST MATRIX MULTIPLICATION
+! ------------------------------------------------------------------------------
+    !
+    function test_mtx_mult_1() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Local Variables
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 20
+        integer(int32), parameter :: k = 30
+        real(real64), parameter :: alpha = 1.0d0
+        real(real64), parameter :: beta = 0.0d0
+        real(real64), parameter :: tol = 1.0d-8
+        real(real64) :: a(m, k), b(n, k), c(m, n), ans(m, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+        call random_number(b)
+        call random_number(c)
+
+        ! Compute the solution
+        ans = alpha * matmul(a, transpose(b)) + beta * c
+
+        ! Test
+        call mtx_mult(.false., .true., alpha, a, b, beta, c)
+        if (.not.is_mtx_equal(c, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Matrix Multiplication - Test 1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

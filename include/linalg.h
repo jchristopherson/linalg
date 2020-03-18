@@ -352,8 +352,8 @@ int la_lu_factor_cmplx(int m, int n, double complex *a, int lda, int *ipvt);
  *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
  *      correct.
  */
-int la_form_lu(int n, double *a, int *ipvt, double *u, int ldu, double *p, 
-    int ldp);
+int la_form_lu(int n, double *a, int lda, int *ipvt, double *u, int ldu, 
+    double *p, int ldp);
 
 /**
  * Extracts the L, U, and P matrices from the LU factorization
@@ -376,8 +376,8 @@ int la_form_lu(int n, double *a, int *ipvt, double *u, int ldu, double *p,
  *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, @p ldu, or @p ldp is not 
  *      correct.
  */
-int la_form_lu_cmplx(int n, double complex *a, int *ipvt, double complex *u, 
-    int ldu, double *p, int ldp);
+int la_form_lu_cmplx(int n, double complex *a, int lda, int *ipvt, 
+    double complex *u, int ldu, double *p, int ldp);
 
 /**
  * Computes the QR factorization of an M-by-N matrix without

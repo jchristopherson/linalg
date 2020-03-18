@@ -698,9 +698,9 @@ contains
             bind(C, name = "la_form_lu") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: n, lda, ldu, ldp
-        real(c_double), intent(inout) :: a(n,*)
-        real(c_double), intent(out) :: u(n,*), p(n,*)
-        integer(c_int), intent(in) :: ipvt(n)
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: u(ldu,*), p(ldp,*)
+        integer(c_int), intent(in) :: ipvt(*)
         integer(c_int) :: flag
 
         ! Input Checking
@@ -738,10 +738,10 @@ contains
             bind(C, name = "la_form_lu_cmplx") result(flag)
         ! Arguments
         integer(c_int), intent(in), value :: n, lda, ldu, ldp
-        complex(c_double), intent(inout) :: a(n,*)
-        complex(c_double), intent(out) :: u(n,*)
-        real(c_double), intent(out) :: p(n,*)
-        integer(c_int), intent(in) :: ipvt(n)
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: u(ldu,*)
+        real(c_double), intent(out) :: p(ldp,*)
+        integer(c_int), intent(in) :: ipvt(*)
         integer(c_int) :: flag
 
         ! Input Checking
@@ -883,7 +883,7 @@ contains
         integer(c_int), intent(in), value :: m, n, lda
         real(c_double), intent(inout) :: a(lda,*)
         real(c_double), intent(out) :: tau(*)
-        integer(c_int), intent(inout) :: jpvt(n)
+        integer(c_int), intent(inout) :: jpvt(*)
         integer(c_int) :: flag
 
         ! Local Variables
@@ -937,7 +937,7 @@ contains
         integer(c_int), intent(in), value :: m, n, lda
         complex(c_double), intent(inout) :: a(lda,*)
         complex(c_double), intent(out) :: tau(*)
-        integer(c_int), intent(inout) :: jpvt(n)
+        integer(c_int), intent(inout) :: jpvt(*)
         integer(c_int) :: flag
 
         ! Local Variables

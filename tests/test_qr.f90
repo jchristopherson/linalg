@@ -138,6 +138,57 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_qr_factor_od_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        integer(int32) :: i, j
+        real(real64), dimension(m, n) :: ar, ai
+        complex(real64), dimension(m, n) :: a, r1, r2
+        complex(real64), dimension(m, m) :: q1, q2
+        complex(real64), dimension(n, n) :: p2
+        complex(real64), dimension(n) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        do j = 1, n
+            do i = 1, m
+                a = cmplx(ar(i,j), ai(i,j), real64)
+            end do
+        end do
+        r1 = a
+        r2 = a
+
+        ! Compute the QR factorization of A
+        call qr_factor(r1, tau1)
+
+        ! Extract Q and R, and then check that Q * R = A
+        call form_qr(r1, tau1, q1)
+        if (.not.is_mtx_equal(a, matmul(q1, r1), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
+        end if
+
+        ! Compute the QR factorization of A with pivoting
+        pvt2 = 0
+        call qr_factor(r2, tau2, pvt2)
+
+        ! Extract Q, R, and P, and then check that Q * R = A * P
+        call form_qr(r2, tau2, pvt2, q2, p2)
+        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
+        end if
+    end function
+
 ! ******************************************************************************
 ! QR MULTIPLICATION TEST
 ! ------------------------------------------------------------------------------

@@ -564,13 +564,15 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, err)
+    module subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, rwork, &
+            err)
         ! Arguments
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: tau
         integer(int32), intent(inout), dimension(:) :: jpvt
         complex(real64), intent(out), target, dimension(:), optional :: work
         integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, dimension(:), optional :: rwork
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
@@ -578,6 +580,8 @@ contains
         complex(real64), dimension(1) :: temp
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), pointer, dimension(:) :: rptr
+        real(real64), allocatable, target, dimension(:) :: rwrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = 128) :: errmsg
@@ -607,9 +611,27 @@ contains
                 LA_ARRAY_SIZE_ERROR)
             return
         end if
+        if (present(rwork)) then
+            if (size(rwork) < 2 * n) then
+                call errmgr%report_error("qr_factor_pivot_cmplx", &
+                    "Incorrectly sized input array RWORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rptr => rwork(1:2*n)
+        else
+            allocate(rwrk(2 * n), stat = flag)
+            if (flag /= 0) then
+                call errmgr%report_error("qr_factor_pivot_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            rptr => rwrk
+        end if
 
         ! Workspace Query
-        call ZGEQP3(m, n, a, m, jpvt, tau, temp, -1, flag)
+        call ZGEQP3(m, n, a, m, jpvt, tau, temp, -1, rptr, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -639,7 +661,7 @@ contains
         end if
 
         ! Call ZGEQP3
-        call ZGEQP3(m, n, a, m, jpvt, tau, wptr, lwork, flag)
+        call ZGEQP3(m, n, a, m, jpvt, tau, wptr, lwork, rptr, flag)
 
         ! End
         if (allocated(wrk)) deallocate(wrk)

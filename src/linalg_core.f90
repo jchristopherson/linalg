@@ -2624,6 +2624,10 @@ interface
     !! @param[out] olwork An optional output used to determine workspace size.
     !!  If supplied, the routine determines the optimal size for @p work, and
     !!  returns without performing any actual calculations.
+    !! @param[out] rwork An optional input, that if provided, prevents any local
+    !!  allocate of real-valued memory.  If not provided, the memory required
+    !!  is allocated within.  If provided, the length of the array must be at
+    !!  least 2*N.
     !! @param[out] err An optional errors-based object that if provided can be
     !!  used to retrieve information relating to any errors encountered during
     !!  execution.  If not provided, a default implementation of the errors
@@ -2636,12 +2640,14 @@ interface
     !!
     !! @par Notes
     !! This routine utilizes the LAPACK routine ZGEQP3.
-    module subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, err)
+    module subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, rwork, &
+            err)
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: tau
         integer(int32), intent(inout), dimension(:) :: jpvt
         complex(real64), intent(out), target, dimension(:), optional :: work
         integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, dimension(:), optional :: rwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
 

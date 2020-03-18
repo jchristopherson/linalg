@@ -62,6 +62,9 @@ program main
     
     rst = test_qr_factor_ud()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_factor_od_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult()
     if (.not.rst) overall = .false.

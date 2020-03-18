@@ -55,7 +55,7 @@ contains
         if (transa) ta = "T"
 
         tb = "N"
-        if (transb) tb = "N"
+        if (transb) tb = "T"
 
         if (transa) then
             nrowa = k

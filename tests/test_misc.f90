@@ -245,5 +245,48 @@ contains
         end if
     end function
 
+! ******************************************************************************
+! TEST TRIANGULAR SYSTEM SOLUTIONS
+! ------------------------------------------------------------------------------
+    function test_tri_mtx_solve_1() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Local Variables
+        integer(int32), parameter :: n = 200
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: alpha = 1.0d0
+        real(real64), parameter :: tol = 1.0d-8
+        integer(int32) :: j
+        real(real64) :: a(n,n), b1(n,nrhs), x1(n,nrhs), check1(n,nrhs)
+
+        ! Initialization - upper triangular systems
+        rst = .true.
+        call random_number(a)
+        do j = 1, n
+            a(j+1:n,j) = 0.0d0
+            a(j,j) = 2.0d0  ! Make sure we don't have too small of diagonal
+        end do
+        call random_number(b1)
+        x1 = b1
+
+        ! Compute the solution to A * X1 = B1
+        call solve_triangular_system(.true., .true., .false., .true., &
+            alpha, a, x1)
+
+        ! Verify that A * X1 = B1
+        check1 = matmul(a, x1)
+        if (.not.is_mtx_equal(b1, check1, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Tri Matrix Solve - Test 1A"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
 ! ------------------------------------------------------------------------------
 end module

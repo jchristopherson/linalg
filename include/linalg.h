@@ -21,6 +21,82 @@ extern "C" {
 #endif
 
 /**
+ * Performs the rank-1 update to matrix A such that:
+ * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+ * X is an M-element array, and N is an N-element array.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param alpha The scalar multiplier.
+ * @param x An M-element array.
+ * @param y An N-element array.
+ * @param a On input, the M-by-N matrix to update.  On output, the
+ *  updated M-by-N matrix.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ */
+int la_rank1_update(int m, int n, double alpha, const double *x, 
+    const double *y, double *a, int lda);
+
+/**
+ * Performs the rank-1 update to matrix A such that:
+ * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+ * X is an M-element array, and N is an N-element array.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param alpha The scalar multiplier.
+ * @param x An M-element array.
+ * @param y An N-element array.
+ * @param a On input, the M-by-N matrix to update.  On output, the
+ *  updated M-by-N matrix.
+ * @param lda The leading dimension of matrix A.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ */
+int la_rank1_update_cmplx(int m, int n, double complex alpha,
+    const double complex *x, const double complex *y, double complex *a,
+    int lda);
+
+/**
+ * Computes the trace of a matrix (the sum of the main diagonal
+ * elements).
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a The M-by-N matrix on which to operate.
+ * @param lda The leading dimension of the matrix.
+ * @param rst The results of the operation.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ */
+int la_trace(int m, int n, const double *a, int lda, double *rst);
+
+/**
+ * Computes the trace of a matrix (the sum of the main diagonal
+ * elements).
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a The M-by-N matrix on which to operate.
+ * @param lda The leading dimension of the matrix.
+ * @param rst The results of the operation.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ */
+int la_trace_cmplx(int m, int n, const double complex *a, int lda,
+    double complex *rst);
+
+/**
  * Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
  * 
  * @param transa Set to true to compute op(A) as the transpose of A; else,

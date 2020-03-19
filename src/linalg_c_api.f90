@@ -11,6 +11,152 @@ module linalg_c_api
 
 contains
 ! ------------------------------------------------------------------------------
+    !> @brief Performs the rank-1 update to matrix A such that:
+    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+    !! X is an M-element array, and N is an N-element array.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in] alpha The scalar multiplier.
+    !! @param[in] x An M-element array.
+    !! @param[in] y An N-element array.
+    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
+    !!  updated M-by-N matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    function la_rank1_update(m, n, alpha, x, y, a, lda) &
+            bind(C, name = "la_rank1_update") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(in), value :: alpha
+        real(c_double), intent(in) :: x(*), y(*)
+        real(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Initialization
+        flag = LA_NO_ERROR
+
+        ! Input Checking
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call rank1_update(alpha, x(1:m), y(1:n), a(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Performs the rank-1 update to matrix A such that:
+    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
+    !! X is an M-element array, and N is an N-element array.
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in] alpha The scalar multiplier.
+    !! @param[in] x An M-element array.
+    !! @param[in] y An N-element array.
+    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
+    !!  updated M-by-N matrix.
+    !! @param[in] lda The leading dimension of matrix A.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    function la_rank1_update_cmplx(m, n, alpha, x, y, a, lda) &
+            bind(C, name = "la_rank1_update_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(in), value :: alpha
+        complex(c_double), intent(in) :: x(*), y(*)
+        complex(c_double), intent(inout) :: a(lda,*)
+        integer(c_int) :: flag
+
+        ! Initialization
+        flag = LA_NO_ERROR
+
+        ! Input Checking
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call rank1_update(alpha, x(1:m), y(1:n), a(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the trace of a matrix (the sum of the main diagonal
+    !! elements).
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in] a The M-by-N matrix on which to operate.
+    !! @param[in] lda The leading dimension of the matrix.
+    !! @param[out] rst The results of the operation.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    function la_trace(m, n, a, lda, rst) bind(C, name = "la_trace") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(in) :: a(lda,*)
+        real(c_double), intent(out) :: rst
+        integer(c_int) :: flag
+
+        ! Initialization
+        flag = LA_NO_ERROR
+
+        ! Input Checking
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        rst = trace(a(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the trace of a matrix (the sum of the main diagonal
+    !! elements).
+    !!
+    !! @param[in] m The number of rows in the matrix.
+    !! @param[in] n The number of columns in the matrix.
+    !! @param[in] a The M-by-N matrix on which to operate.
+    !! @param[in] lda The leading dimension of the matrix.
+    !! @param[out] rst The results of the operation.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+    function la_trace_cmplx(m, n, a, lda, rst) &
+            bind(C, name = "la_trace_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(in) :: a(lda,*)
+        complex(c_double), intent(out) :: rst
+        integer(c_int) :: flag
+
+        ! Initialization
+        flag = LA_NO_ERROR
+
+        ! Input Checking
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        rst = trace(a(1:m,1:n))
+    end function
+
+! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
     !!
     !! @param transa Set to true to compute op(A) as the transpose of A; else,

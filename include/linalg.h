@@ -1303,7 +1303,7 @@ int la_solve_least_squares_cmplx(int m, int n, int k, double complex *a,
  *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
  */
-int la_inverse(int n, double *a);
+int la_inverse(int n, double *a, int lda);
 
 /**
  * Computes the inverse of a square matrix.
@@ -1318,7 +1318,7 @@ int la_inverse(int n, double *a);
  *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
  *  - LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular.
  */
-int la_inverse_cmplx(int n, double complex *a);
+int la_inverse_cmplx(int n, double complex *a, int lda);
 
 /**
  * Computes the Moore-Penrose pseudo-inverse of an M-by-N matrix by

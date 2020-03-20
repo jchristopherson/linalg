@@ -107,6 +107,47 @@ contains
             print '(A)', "Test Failed: Matrix Inverse Test 1"
         end if
     end function
+! ------------------------------------------------------------------------------
+    function test_pinv_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+        integer(int32), parameter :: nrhs = 20
+        real(real64), parameter :: tol = 1.0d-8
 
+        ! Local Variables
+        real(real64), dimension(m, n) :: ar, ai
+        real(real64), dimension(m, nrhs) :: br, bi
+        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(n, m) :: ainv
+        complex(real64), dimension(m, nrhs) :: b
+        complex(real64), dimension(n, nrhs) :: x
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        a = cmplx(ar, ai, real64)
+        a1 = a
+
+        call random_number(br)
+        call random_number(bi)
+        b = cmplx(br, bi, real64)
+
+        ! Compute the inverse
+        call mtx_pinverse(a1, ainv)
+
+        ! Compute X = inv(A) * B
+        x = matmul(ainv, b)
+
+        ! Test: A * X = B
+        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Pseudo-Inverse Test 1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 
 end module

@@ -149,5 +149,88 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_pinv_od_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 80
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
 
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        real(real64), dimension(m, n) :: ar, ai
+        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(n, m) :: ainv
+        complex(real64), dimension(n, n) :: identity, check
+        logical :: rst
+        integer(int32) :: i
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        a = cmplx(ar, ai, real64)
+        a1 = a
+
+        identity = zero
+        do i = 1, size(identity, 1)
+            identity(i,i) = one
+        end do
+        
+        ! Compute the inverse
+        call mtx_pinverse(a1, ainv)
+
+        ! Compute A+ * A - should = I
+        check = matmul(ainv, a)
+        if (.not.is_mtx_equal(check, identity, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Pseudo-Inverse Test 2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_pinv_ud_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 80
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        real(real64), dimension(m, n) :: ar, ai
+        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(n, m) :: ainv
+        complex(real64), dimension(m, m) :: identity, check
+        logical :: rst
+        integer(int32) :: i
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        a = cmplx(ar, ai, real64)
+        a1 = a
+
+        identity = zero
+        do i = 1, size(identity, 1)
+            identity(i,i) = one
+        end do
+        
+        ! Compute the inverse
+        call mtx_pinverse(a1, ainv)
+
+        ! Compute A * A+ - should = I
+        check = matmul(a, ainv)
+        if (.not.is_mtx_equal(check, identity, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Pseudo-Inverse Test 3"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

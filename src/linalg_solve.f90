@@ -1944,13 +1944,13 @@ contains
 
         ! Local Variables
         integer(int32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3, &
-            lrwork
+            lrwork, j, k
         real(real64), pointer, dimension(:) :: s, rwptr, rw
         real(real64), allocatable, target, dimension(:) :: rwrk
         complex(real64), pointer, dimension(:) :: wptr, w
         complex(real64), pointer, dimension(:,:) :: u, vt
         complex(real64), allocatable, target, dimension(:) :: wrk
-        complex(real64) :: temp(1)
+        complex(real64) :: temp(1), val
         real(real64) :: t, tref, tolcheck, rtemp(1)
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
@@ -2080,13 +2080,24 @@ contains
                 vt(i,:) = zero
             else
                 ! call recip_mult_array(s(i), vt(i,1:n))
-                vt(i,1:n) = vt(i,1:n) / s(i)
+                vt(i,1:n) = conjg(vt(i,1:n)) / s(i)
             end if
         end do
 
-        ! Compute (VT**H * inv(S)) * U**H
-        call mtx_mult(HERMITIAN_TRANSPOSE, HERMITIAN_TRANSPOSE, one, &
-            vt(1:mn,:), u, zero, ainv)
+        ! Compute (VT**T * inv(S)) * U**H
+        ! ainv = n-by-m
+        ! vt is n-by-n
+        ! u is m-by-mn such that u**H = mn-by-m
+        ! Compute ainv = vt**T * u**H
+        do j = 1, m
+            do i = 1, n
+                val = zero
+                do k = 1, mn
+                    val = val + vt(k,i) * conjg(u(j,k))
+                end do
+                ainv(i,j) = val
+            end do
+        end do
     end subroutine
 
 ! ******************************************************************************

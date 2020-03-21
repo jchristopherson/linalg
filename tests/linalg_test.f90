@@ -127,6 +127,12 @@ program main
 
     rst = test_pinv_cmplx()
     if (.not.rst) overall = .false.
+
+    rst = test_pinv_od_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_pinv_ud_cmplx()
+    if (.not.rst) overall = .false.
     
     ! Cholesky Factorization Tests
     rst =  test_cholesky_factor()

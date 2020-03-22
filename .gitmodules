@@ -1,6 +1,0 @@
-[submodule "src/external/ferror"]
-	path = src/external/ferror
-	url = https://github.com/jchristopherson/ferror.git
-[submodule "src/external/lapack"]
-	path = src/external/lapack
-	url = https://github.com/Reference-LAPACK/lapack.git

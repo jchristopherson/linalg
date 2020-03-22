@@ -132,6 +132,148 @@ contains
         call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
     end subroutine
 
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+!                           COMPLEX VALUED VERSIONS                            !
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+    module subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
+        ! Arguments
+        integer(int32), intent(in) :: opa, opb
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a, b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+        real(real64), parameter :: one = 1.0d0
+
+        ! Local Variables
+        character :: ta, tb
+        integer(int32) :: m, n, k, lda, ldb, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        if (opa == TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
+            k = size(a, 1)
+            ta = 'T'
+            lda = k
+        else if (opa == HERMITIAN_TRANSPOSE) then
+            k = size(a, 1)
+            ta = 'H'
+            lda = k
+        else
+            k = size(a, 2)
+            ta = 'N'
+            lda = m
+        end if
+        if (opb == TRANSPOSE) then
+            tb = 'T'
+            ldb = n
+        else if (opb == HERMITIAN_TRANSPOSE) then
+            tb = 'H'
+            ldb = n
+        else
+            tb = 'N'
+            ldb = k
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+            if (size(a, 2) /= m) flag = 4
+        else
+            if (size(a, 1) /= m) flag = 4
+        end if
+        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+            if (size(b, 2) /= k .or. size(b, 1) /= n) flag = 5
+        else
+            if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
+        end if
+        if (flag /= 0) then
+            ! ERROR: Matrix dimensions mismatch
+            write(errmsg, '(AI0A)') &
+                "Matrix dimension mismatch.  Input number ", flag, &
+                " was not sized correctly."
+            call errmgr%report_error("cmtx_mult_mtx", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGEMM
+        call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
+        ! Arguments
+        integer(int32), intent(in) :: opa
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        complex(real64), intent(inout), dimension(:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: t
+        integer(int32) :: m, n, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        if (opa == TRANSPOSE) then
+            t = 'T'
+        else if (opa == HERMITIAN_TRANSPOSE) then
+            t = 'H'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+            if (size(b) /= m) then
+                flag = 4
+            else if (size(c) /= n) then
+                flag = 6
+            end if
+        else
+            if (size(b) /= n) then
+                flag = 4
+            else if (size(c) /= m) then
+                flag = 6
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: Matrix dimensions mismatch
+            write(errmsg, '(AI0A)') &
+                "Matrix dimension mismatch.  Input number ", flag, &
+                " was not sized correctly."
+            call errmgr%report_error("cmtx_mult_vec", errmsg, &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Call ZGEMV
+        call ZGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+    end subroutine
+
 ! ******************************************************************************
 ! RANK 1 UPDATE
 ! ------------------------------------------------------------------------------
@@ -163,7 +305,7 @@ contains
         ! Input Check
         if (size(a, 1) /= m .or. size(a, 2) /= n) then
             ! ERROR: Matrix dimension array
-            call errmgr%report_error("rank1_update", &
+            call errmgr%report_error("rank1_update_dbl", &
                 "Matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
             return
         end if
@@ -172,6 +314,51 @@ contains
         do j = 1, n
             if (y(j) /= zero) then
                 temp = alpha * y(j)
+                a(:,j) = a(:,j) + temp * x
+            end if
+        end do
+    end subroutine
+
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+!                           COMPLEX VALUED VERSIONS                            !
+! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
+    module subroutine rank1_update_cmplx(alpha, x, y, a, err)
+        ! Arguments
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(in), dimension(:) :: x, y
+        complex(real64), intent(inout), dimension(:,:) :: a
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: j, m, n
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(x)
+        n = size(y)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 1) /= m .or. size(a, 2) /= n) then
+            ! ERROR: Matrix dimension array
+            call errmgr%report_error("rank1_update_cmplx", &
+                "Matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            if (y(j) /= zero) then
+                temp = alpha * conjg(y(j))
                 a(:,j) = a(:,j) + temp * x
             end if
         end do
@@ -534,9 +721,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine diag_mtx_mult_mtx4(lside, trans, alpha, a, b, beta, c, err)
+    module subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: lside, trans
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         real(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -572,7 +760,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -584,7 +772,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -614,7 +802,7 @@ contains
 
         ! Process
         if (lside) then
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -624,6 +812,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -647,7 +846,7 @@ contains
                 end if
             end if
         else
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -657,6 +856,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -683,9 +893,10 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
-    module subroutine diag_mtx_mult_mtx_cmplx(lside, trans, alpha, a, b, beta, c, err)
+    module subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
         ! Arguments
-        logical, intent(in) :: lside, trans
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
         complex(real64) :: alpha, beta
         complex(real64), intent(in), dimension(:) :: a
         complex(real64), intent(in), dimension(:,:) :: b
@@ -721,7 +932,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -733,7 +944,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (trans) then
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -763,7 +974,7 @@ contains
 
         ! Process
         if (lside) then
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -773,6 +984,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -796,7 +1018,7 @@ contains
                 end if
             end if
         else
-            if (trans) then
+            if (opb == TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -806,6 +1028,17 @@ contains
                     end if
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -914,11 +1147,35 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    pure module function trace_cmplx(x) result(y)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: x
+        complex(real64) :: y
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn
+
+        ! Initialization
+        y = zero
+        m = size(x, 1)
+        n = size(x, 2)
+        mn = min(m, n)
+
+        ! Process
+        do i = 1, mn
+            y = y + x(i,i)
+        end do
+    end function
+
+! ------------------------------------------------------------------------------
     module function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), optional :: tol
-        real(real64), intent(out), pointer, optional, dimension(:) :: work
+        real(real64), intent(out), target, optional, dimension(:) :: work
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
         integer(int32) :: rnk
@@ -1023,10 +1280,139 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    module function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), optional :: tol
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        real(real64), intent(out), target, optional, dimension(:) :: rwork
+        class(errors), intent(inout), optional, target :: err
+        integer(int32) :: rnk
+
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn, istat, lwork, flag, lrwork
+        real(real64), pointer, dimension(:) :: s, rwptr, rw
+        real(real64), allocatable, target, dimension(:) :: rwrk
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), pointer, dimension(:) :: wptr
+        real(real64) :: t, tref, smlnum
+        real(real64), dimension(1) :: dummy
+        complex(real64), dimension(1) :: cdummy, temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        lrwork = 6 * mn
+        smlnum = DLAMCH('s')
+        rnk = 0
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Workspace Query
+        call ZGESVD('N', 'N', m, n, a, m, dummy, cdummy, m, cdummy, n, temp, &
+            -1, dummy, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mtx_rank_cmplx", &
+                    "Incorrectly sized input array WORK, argument 5.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mtx_rank_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        if (present(rwork)) then
+            if (size(rwork) < lrwork) then
+                ! ERROR: RWORK not sized correctly
+                call errmgr%report_error("mtx_rank_cmplx", &
+                    "Incorrectly sized input array RWORK.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            rwptr => rwork(1:lrwork)
+        else
+            allocate(rwrk(lrwork), stat = istat)
+            if (istat /= 0) then
+            end if
+            rwptr => rwrk
+        end if
+        s => rwptr(1:mn)
+        rw => rwptr(mn+1:lrwork)
+
+        ! Compute the singular values of A
+        call ZGESVD('N', 'N', m, n, a, m, s, cdummy, m, cdummy, n, wptr, &
+            lwork - mn, rw, flag)
+        if (flag > 0) then
+            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+                "converge to zero as part of the QR iteration process."
+            call errmgr%report_warning("mtx_rank_cmplx", errmsg, LA_CONVERGENCE_ERROR)
+        end if
+
+        ! Determine the threshold tolerance for the singular values such that
+        ! singular values less than the threshold result in zero when inverted.
+        tref = max(m, n) * epsilon(t) * s(1)
+        if (present(tol)) then
+            t = tol
+        else
+            t = tref
+        end if
+        if (t < smlnum) then
+            ! ! The supplied tolerance is too small, simply fall back to the
+            ! ! default, but issue a warning to the user
+            ! t = tref
+            ! call report_warning("mtx_rank", "The supplied tolerance was " // &
+            !     "smaller than a value that would result in an overflow " // &
+            !     "condition, or is negative; therefore, the tolerance has " // &
+            !     "been reset to its default value.")
+        end if
+
+        ! Count the singular values that are larger than the tolerance value
+        do i = 1, mn
+            if (s(i) < t) exit
+            rnk = rnk + 1
+        end do
+    end function
+
+! ------------------------------------------------------------------------------
     module function det_dbl(a, iwork, err) result(x)
         ! Arguments
         real(real64), intent(inout), dimension(:,:) :: a
-        integer(int32), intent(out), pointer, optional, dimension(:) :: iwork
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
         class(errors), intent(inout), optional, target :: err
         real(real64) :: x
 
@@ -1115,6 +1501,101 @@ contains
         x = temp * ten**ep
     end function
 
+! ------------------------------------------------------------------------------
+    module function det_cmplx(a, iwork, err) result(x)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        integer(int32), intent(out), target, optional, dimension(:) :: iwork
+        class(errors), intent(inout), optional, target :: err
+        complex(real64) :: x
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+        complex(real64), parameter :: ten = (1.0d1, 0.0d0)
+        complex(real64), parameter :: p1 = (1.0d-1, 0.0d0)
+        real(real64), parameter :: real_one = 1.0d0
+        real(real64), parameter :: real_ten = 1.0d1
+
+        ! Local Variables
+        integer(int32) :: i, ep, n, istat, flag
+        integer(int32), pointer, dimension(:) :: ipvt
+        integer(int32), allocatable, target, dimension(:) :: iwrk
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(a, 1)
+        x = zero
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(a, 2) /= n) then
+            call errmgr%report_error("det_cmplx", &
+                "The supplied matrix must be square.", LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(iwork)) then
+            if (size(iwork) < n) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("det_cmplx", &
+                    "Incorrectly sized input array IWORK, argument 2.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            ipvt => iwork(1:n)
+        else
+            allocate(iwrk(n), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("det_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            ipvt => iwrk
+        end if
+
+        ! Compute the LU factorization of A
+        call ZGETRF(n, n, a, n, ipvt, flag)
+        if (flag > 0) then
+            ! A singular matrix has a determinant of zero
+            x = zero
+            return
+        end if
+
+        ! Compute the product of the diagonal of A
+        temp = one
+        ep = 0
+        do i = 1, n
+            if (ipvt(i) /= i) temp = -temp
+
+            temp = a(i,i) * temp
+            if (temp == zero) then
+                x = zero
+                exit
+            end if
+
+            do while (abs(temp) < real_one)
+                temp = ten * temp
+                ep = ep - 1
+            end do
+
+            do while (abs(temp) > real_ten)
+                temp = p1 * temp
+                ep = ep + 1
+            end do
+        end do
+        x = temp * ten**ep
+    end function
+
 ! ******************************************************************************
 ! ARRAY SWAPPING ROUTINE
 ! ------------------------------------------------------------------------------
@@ -1140,6 +1621,42 @@ contains
         ! Input Check
         if (size(y) /= n) then
             call errmgr%report_error("swap", &
+                "The input arrays are not the same size.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do i = 1, n
+            temp = x(i)
+            x(i) = y(i)
+            y(i) = temp
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine swap_cmplx(x, y, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:) :: x, y
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: i, n
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        n = size(x)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(y) /= n) then
+            call errmgr%report_error("swap_cmplx", &
                 "The input arrays are not the same size.", &
                 LA_ARRAY_SIZE_ERROR)
             return

@@ -34,6 +34,12 @@ program main
     
     rst = test_tri_mtx_mult_2()
     if (.not.rst) overall = .false.
+
+    rst = test_mtx_mult_1()
+    if (.not.rst) overall = .false.
+
+    rst = test_tri_mtx_solve_1()
+    if (.not.rst) overall = .false.
     
 
     ! LU Factorization Tests
@@ -58,6 +64,9 @@ program main
     if (.not.rst) overall = .false.
     
     rst = test_qr_factor_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_factor_od_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult()
@@ -114,6 +123,15 @@ program main
     if (.not.rst) overall = .false.
     
     rst = test_inv()
+    if (.not.rst) overall = .false.
+
+    rst = test_pinv_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_pinv_od_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_pinv_ud_cmplx()
     if (.not.rst) overall = .false.
     
     ! Cholesky Factorization Tests

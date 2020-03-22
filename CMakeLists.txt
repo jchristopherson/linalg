@@ -4,47 +4,23 @@ project(linalg C CXX Fortran)
 
 # Define version information
 set(linalg_VERSION_MAJOR 1)
-set(linalg_VERSION_MINOR 5)
+set(linalg_VERSION_MINOR 6)
 set(linalg_VERSION_PATCH 0)
 set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERSION_PATCH})
 
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to 'Release' as none was specified.")
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  message(STATUS "Setting build type to 'Debug' as none was specified.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
 
 # By default, shared library
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Get compiler info
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-
-# Locate Dependencies
-find_package(ferror 1.3.0)
-
-# If FERROR is not installed on the system, build the default implementation
-if (NOT ${ferror_FOUND})
-    if (NOT TARGET ferror)
-      message(STATUS "FERROR not found.  The default implementation will be used.")
-      add_subdirectory(src/external/ferror)
-      set(ferror_INCLUDE_DIRS src/external/ferror/include)
-      include_directories(${ferror_INCLUDE_DIRS})
-      set(FERROR_LIBRARIES ferror)
-      set(ferror_LibLocation ${ferror_BINARY_DIR})
-    else()
-      include_directories(${ferror_INCLUDE_DIRS})
-      set(FERROR_LIBRARIES ferror)
-      set(ferror_LibLocation ${ferror_BINARY_DIR})
-    endif()
-else()
-    message(STATUS "An acceptable version  of FERROR (v" ${ferror_VERSION} ") was found, and will be utilized.")
-    include_directories(${ferror_INCLUDE_DIRS})
-    set(FERROR_LIBRARIES ferror)
-    get_target_property(ferror_LibLocation ferror LOCATION)
-endif()
 
 # Export all symbols on Windows when building shared libraries
 SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -102,8 +78,8 @@ endif()
 # FFLAGS depend on the compiler
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
     # gfortran
-    set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
-    set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall -Wno-c-binding-type")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3 -Wl,--allow-multiple-definition")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g -Wall -Wno-c-binding-type -Wl,--allow-multiple-definition")
 elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
     # ifort (untested)
     set(CMAKE_Fortran_FLAGS_RELEASE "-f77rtl -O3")
@@ -112,26 +88,40 @@ else (Fortran_COMPILER_NAME MATCHES "gfortran.*")
     message ("CMAKE_Fortran_COMPILER full path: " ${CMAKE_Fortran_COMPILER})
     message ("Fortran compiler: " ${Fortran_COMPILER_NAME})
     message ("No optimized Fortran compiler flags are known, we just try -O2...")
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
-    set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -Wl,--allow-multiple-definition")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -Wall -Wl,--allow-multiple-definition")
+endif()
+
+# What else to build
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
+option(BUILD_LINALG_TESTS "Build LINALG tests?" OFF)
+
+# Locate the dependencies
+find_package(BLAS)
+find_package(LAPACK)
+find_package(ferror 1.3.0)
+
+if (BLAS_FOUND)
+  message(STATUS "BLAS library found.")
+endif()
+
+if (LAPACK_FOUND)
+  message(STATUS "LAPACK library found.")
+endif()
+
+if (ferror_FOUND)
+  message(STATUS "FERROR library found.")
+  set(ferror_LIBRARIES ferror)
 endif()
 
 # Locate the files
 add_subdirectory(src)
 
-# ------------------------------------------------------------------------------
-# EXAMPLES
-# ------------------------------------------------------------------------------
-option(BUILD_LINALG_EXAMPLES "Build LINALG examples?" OFF)
 if (BUILD_LINALG_EXAMPLES)
   message(STATUS "Building LINALG examples.")
   add_subdirectory(examples)
 endif()
 
-# ------------------------------------------------------------------------------
-# TESTS
-# ------------------------------------------------------------------------------
-option(BUILD_LINALG_TESTS "Build LINALG tests?" OFF)
 if (BUILD_LINALG_TESTS)
   message(STATUS "Building LINALG tests.")
   add_subdirectory(tests)

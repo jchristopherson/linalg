@@ -1,8 +1,6 @@
 ! linalg_immutable.f90
 
-!> @brief \b linalg_immutable
-!! @par Purpose
-!! Provides an immutable interface to many of the core linear algebra routines
+!> @brief Provides an immutable interface to many of the core linear algebra routines
 !! in this library.  The intent is to allow for ease of use in situations
 !! where memory allocation, or absolute speed are of lesser importance to code
 !! readability.
@@ -16,6 +14,7 @@
 module linalg_immutable
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg_core
+    use linalg_constants
     implicit none
     private
     public :: mat_rank1_update
@@ -38,7 +37,9 @@ module linalg_immutable
     public :: lu_results
     public :: lu_results_cmplx
     public :: qr_results
+    public :: qr_results_cmplx
     public :: svd_results
+    public :: svd_results_cmplx
     public :: eigen_results
     public :: identity
 
@@ -145,6 +146,18 @@ module linalg_immutable
     end type
 
 ! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of a QR factorization.
+    type qr_results_cmplx
+        !> The M-by-M orthogonal matrix Q.
+        complex(real64), allocatable, dimension(:,:) :: q
+        !> The M-by-N upper trapezoidal matrix R.
+        complex(real64), allocatable, dimension(:,:) :: r
+        !> The N-by-N column pivot tracking matrix P where A P = Q R.  If no
+        !! column pivoting is utilized, this matrix is left unallocated.
+        complex(real64), allocatable, dimension(:,:) :: p
+    end type
+
+! ------------------------------------------------------------------------------
     !> @brief Defines a container for the output of a singular value
     !! decomposition of a matrix.
     type svd_results
@@ -154,6 +167,18 @@ module linalg_immutable
         real(real64), allocatable, dimension(:,:) :: s
         !> The N-by-N transpose of the matrix V.
         real(real64), allocatable, dimension(:,:) :: vt
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief Defines a container for the output of a singular value
+    !! decomposition of a matrix.
+    type svd_results_cmplx
+        !> The M-by-M orthogonal matrix U.
+        complex(real64), allocatable, dimension(:,:) :: u
+        !> The M-by-N matrix containing the singular values on its diagonal.
+        real(real64), allocatable, dimension(:,:) :: s
+        !> The N-by-N conjugate transpose of the matrix V.
+        complex(real64), allocatable, dimension(:,:) :: vt
     end type
 
 ! ------------------------------------------------------------------------------
@@ -276,10 +301,10 @@ contains
 
         ! Process
         if (size(b, 1) > size(a)) then
-            call diag_mtx_mult(.true., .false., one, a, b(1:size(a),:), &
+            call diag_mtx_mult(.true., NO_OPERATION, one, a, b(1:size(a),:), &
                 zero, c)
         else
-            call diag_mtx_mult(.true., .false., one, a, b, zero, c)
+            call diag_mtx_mult(.true., NO_OPERATION, one, a, b, zero, c)
         end if
     end function
 
@@ -305,7 +330,7 @@ contains
 
         ! Process
         bc(:,1) = b(1:min(size(a), size(b)))
-        call diag_mtx_mult(.true., .false., one, a, bc, zero, cc)
+        call diag_mtx_mult(.true., NO_OPERATION, one, a, bc, zero, cc)
         c = cc(:,1)
     end function
 
@@ -325,10 +350,10 @@ contains
 
         ! Process
         if (size(a, 2) > size(b)) then
-            call diag_mtx_mult(.false., .false., 1.0d0, b, a(:,1:size(b)), &
+            call diag_mtx_mult(.false., NO_OPERATION, 1.0d0, b, a(:,1:size(b)), &
                 0.0d0, c)
         else
-            call diag_mtx_mult(.false., .false., 1.0d0, b, a, 0.0d0, c)
+            call diag_mtx_mult(.false., NO_OPERATION, 1.0d0, b, a, 0.0d0, c)
         end if
     end function
 

@@ -5,7 +5,7 @@ project(linalg C CXX Fortran)
 # Define version information
 set(linalg_VERSION_MAJOR 1)
 set(linalg_VERSION_MINOR 6)
-set(linalg_VERSION_PATCH 0)
+set(linalg_VERSION_PATCH 1)
 set(linalg_VERSION ${linalg_VERSION_MAJOR}.${linalg_VERSION_MINOR}.${linalg_VERSION_PATCH})
 
 # Set a default build type if none was specified

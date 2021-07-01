@@ -190,7 +190,8 @@ Documentation can be found [here](http://htmlpreview.github.io/?https://github.c
 Here is a list of external code libraries utilized by this library.
 - [BLAS](http://www.netlib.org/blas/)
 - [LAPACK](http://www.netlib.org/lapack/)
-- [QRUpdate](https://sourceforge.net/projects/qrupdate/)
+- [FERROR](https://github.com/jchristopherson/ferror)
+- [QRUpdate](https://sourceforge.net/projects/qrupdate/): Source code included and built with this library.
 
 ## TO DO
 Additional items to accomplish:

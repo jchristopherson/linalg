@@ -13,7 +13,7 @@ contains
 ! ------------------------------------------------------------------------------
 function test_dbl_ascend_sort() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer(int32), parameter :: n = 2000000
     real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
@@ -58,7 +58,7 @@ end function
 ! ------------------------------------------------------------------------------
 function test_dbl_descend_sort() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer(int32), parameter :: n = 2000000
     real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables

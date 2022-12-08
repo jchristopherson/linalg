@@ -39,5 +39,12 @@ link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 # Installation
 
 # Testing
+option(BUILD_TESTING "Build tests")
+include(CTest)
+message(STATUS "Build tests: ${BUILD_TESTING}")
+if (BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 # Examples

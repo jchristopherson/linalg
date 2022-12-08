@@ -23,3 +23,7 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     COMMAND $<TARGET_FILE:linalg_test>
 )
+
+
+# C API tests
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})

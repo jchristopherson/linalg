@@ -5,6 +5,7 @@
 #include <complex.h>
 
 #define INDEX(i, j, lda) ((lda) * (j) + (i))
+#define MIN(a, b)((a) < (b) ? (a) : (b))
 
 // Tests to see if two matrices are equal within the specified tolerance.
 bool is_mtx_equal(int m, int n, const double *x, const double *y, double tol);
@@ -80,5 +81,12 @@ double complex cmplx_product(int n, const double complex * x);
 // Computes the sum of the elements in an array.
 double sum(int n, const double *x);
 double complex cmplx_sum(int n, const double complex *x);
+
+// Creates a triangular matrix.
+void create_triangular_matrix(bool upper, int n, double *x);
+void cmplx_create_triangular_matrix(bool upper, int n, double complex *x);
+
+// Zeros an array
+void zero_int_array(int n, int *x);
 
 #endif

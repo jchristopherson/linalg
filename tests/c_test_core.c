@@ -381,3 +381,66 @@ double complex cmplx_sum(int n, const double complex *x)
     for (i = 0; i < n; ++i) ans += x[i];
     return ans;
 }
+
+
+
+
+void create_triangular_matrix(bool upper, int n, double *x)
+{
+    int i, j;
+    if (upper)
+    {
+        for (j = 0; j < n; ++j)
+        {
+            for (i = 0; i < n; ++i)
+            {
+                x[INDEX(i,j,n)] = i <= j ? drand(-1.0, 1.0) : 0.0;
+            }
+        }
+    }
+    else
+    {
+        for (j = 0; j < n; ++j)
+        {
+            for (i = 0; i < n; ++i)
+            {
+                x[INDEX(i,j,n)] = i >= j ? drand(-1.0, 1.0) : 0.0;
+            }
+        }
+    }
+}
+
+void cmplx_create_triangular_matrix(bool upper, int n, double complex *x)
+{
+    int i, j;
+    if (upper)
+    {
+        for (j = 0; j < n; ++j)
+        {
+            for (i = 0; i < n; ++i)
+            {
+                x[INDEX(i,j,n)] = i <= j ? dcrand(-1.0, 1.0) : 0.0;
+            }
+        }
+    }
+    else
+    {
+        for (j = 0; j < n; ++j)
+        {
+            for (i = 0; i < n; ++i)
+            {
+                x[INDEX(i,j,n)] = i >= j ? dcrand(-1.0, 1.0) : 0.0;
+            }
+        }
+    }
+}
+
+
+
+
+
+void zero_int_array(int n, int *x)
+{
+    int i;
+    for (i = 0; i < n; ++i) x[i] = 0;
+}

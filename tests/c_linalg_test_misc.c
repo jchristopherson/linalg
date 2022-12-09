@@ -200,3 +200,133 @@ bool test_cmplx_trace()
     return rst;
 }
 
+
+bool test_matrix_mulitply()
+{
+    // Variables
+    const int m = 40;
+    const int n = 20;
+    const int p = 30;
+    const int mn = m * n;
+    const int mp = m * p;
+    const int pn = p * n;
+    const double tol = 1.0e-8;
+    const double alpha = 1.0;
+    const double beta = 0.0;
+    double x[mp], y[pn], z[mn], ans[mn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    create_matrix(m, p, x);
+    create_matrix(p, n, y);
+    mtx_mult(m, n, p, x, y, ans);
+
+    // Test
+    flag = la_mtx_mult(false, false, m, n, p, alpha, x, m, y, p, beta, z, m);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_mtx_equal(m, n, ans, z, tol)) rst = false;
+
+    // End
+    return rst;
+}
+
+bool test_cmplx_matrix_mulitply()
+{
+    // Variables
+    const int m = 40;
+    const int n = 20;
+    const int p = 30;
+    const int mn = m * n;
+    const int mp = m * p;
+    const int pn = p * n;
+    const double tol = 1.0e-8;
+    const double complex alpha = 1.0 + 0.0 * I;
+    const double complex beta = 0.0 + 0.0 * I;
+    double complex x[mp], y[pn], z[mn], ans[mn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    cmplx_create_matrix(m, p, x);
+    cmplx_create_matrix(p, n, y);
+    cmplx_mtx_mult(m, n, p, x, y, ans);
+
+    // Test
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, n, p, alpha, 
+        x, m, y, p, beta, z, m);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_cmplx_mtx_equal(m, n, ans, z, tol)) rst = false;
+
+    // End
+    return rst;
+}
+
+
+
+
+bool test_triangular_matrix_multiply()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    const double alpha = 0.5;
+    const double beta = -1.0;
+    double x[nn], y[nn], y1[nn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    create_triangular_matrix(true, n, x);
+    create_matrix(n, n, y);
+    copy_matrix(n, n, y, y1);
+
+    // Compute the solution (Y = alpha * X**T * X + beta * Y)
+    flag = la_mtx_mult(true, false, n, n, n, alpha, x, n, x, n, beta, y1, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    flag = la_tri_mtx_mult(true, alpha, n, x, n, beta, y, n);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_mtx_equal(n, n, y, y1, tol)) rst = false;
+
+    // End
+    return rst;
+}
+
+bool test_cmplx_triangular_matrix_multiply()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    const double complex alpha = 0.5 + 0.0 * I;
+    const double complex beta = -1.0 + 0.0 * I;
+    double complex x[nn], y[nn], y1[nn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    cmplx_create_triangular_matrix(true, n, x);
+    cmplx_create_matrix(n, n, y);
+    cmplx_copy_matrix(n, n, y, y1);
+
+    // Compute the solution (Y = alpha * X**T * X + beta * Y)
+    flag = la_mtx_mult_cmplx(LA_TRANSPOSE, LA_NO_OPERATION, n, n, n, alpha, x, 
+        n, x, n, beta, y1, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    flag = la_tri_mtx_mult_cmplx(true, alpha, n, x, n, beta, y, n);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, y, y1, tol)) rst = false;
+
+    // End
+    return rst;
+}
+

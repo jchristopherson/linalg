@@ -202,7 +202,7 @@ int la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k,
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
- * @param opb Set to TLA_RANSPOSE to compute op(B) as a direct transpose of B,
+ * @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
  *  set to LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
  *  of B, otherwise, set to LA_NO_OPERATION to compute op(B) as B.
  * @param m The number of rows in the matrix C.

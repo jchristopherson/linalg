@@ -316,3 +316,68 @@ void cmplx_scale_matrix(int m, int n, double complex x, double complex *y)
     int i;
     for (i = 0; i < m * n; ++i) y[i] *= x;
 }
+
+
+
+void rank1_update(int m, int n, const double *x, const double *y, double *z)
+{
+    int i, j;
+    for (j = 0; j < n; ++j)
+    {
+        for (i = 0; i < m; ++i)
+        {
+            z[INDEX(i,j,m)] = x[i] * y[j];
+        }
+    }
+}
+
+void cmplx_rank1_update(int m, int n, const double complex *x, 
+    const double complex *y, double complex *z)
+{
+    int i, j;
+    for (j = 0; j < n; ++j)
+    {
+        for (i = 0; i < m; ++i)
+        {
+            z[INDEX(i,j,m)] = x[i] * conj(y[j]);
+        }
+    }
+}
+
+
+
+double product(int n, const double *x)
+{
+    double ans = 1.0;
+    int i;
+    for (i = 0; i < n; ++i) ans *= x[i];
+    return ans;
+}
+
+double complex cmplx_product(int n, const double complex * x)
+{
+    double complex ans = 1.0;
+    int i;
+    for (i = 0; i < n; ++i) ans *= x[i];
+    return ans;
+}
+
+
+
+
+
+double sum(int n, const double *x)
+{
+    double ans = 0.0;
+    int i;
+    for (i = 0; i < n; ++i) ans += x[i];
+    return ans;
+}
+
+double complex cmplx_sum(int n, const double complex *x)
+{
+    double complex ans = 0.0 + 0.0 * I;
+    int i;
+    for (i = 0; i < n; ++i) ans += x[i];
+    return ans;
+}

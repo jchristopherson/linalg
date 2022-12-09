@@ -5,6 +5,10 @@
 #include <complex.h>
 
 bool test_diagonal_mtx_mult();
+bool test_cmplx_diagonal_mtx_mult();
 bool test_rank1_update();
+bool test_cmplx_rank1_update();
+bool test_trace();
+bool test_cmplx_trace();
 
 #endif

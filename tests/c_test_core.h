@@ -66,4 +66,19 @@ void cmplx_add_matrix(int m, int n, double complex alpha,
 void scale_matrix(int m, int n, double x, double *y);
 void cmplx_scale_matrix(int m, int n, double complex x, double complex *y);
 
+// Performs a rank 1 update X * Y**T where X is an M-element array and 
+// Y is an N-element array.  The complex-valued case uses a conjugate
+// transpose.
+void rank1_update(int m, int n, const double *x, const double *y, double *z);
+void cmplx_rank1_update(int m, int n, const double complex *x, 
+    const double complex *y, double complex *z);
+
+// Computes the product of the elements in an array.
+double product(int n, const double *x);
+double complex cmplx_product(int n, const double complex * x);
+
+// Computes the sum of the elements in an array.
+double sum(int n, const double *x);
+double complex cmplx_sum(int n, const double complex *x);
+
 #endif

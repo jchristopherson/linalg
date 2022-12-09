@@ -47,4 +47,23 @@ void copy_matrix(int m, int n, const double *src, double *dst);
 void cmplx_copy_matrix(int m, int n, const double complex *src, 
     double complex *dst);
 
+// Create an N-element array.
+void create_array(int n, double *x);
+void cmplx_create_array(int n, double complex *x);
+
+// Copy an N-element array.
+void copy_array(int n, const double *src, double *dst);
+void cmplx_copy_array(int n, const double complex *src, double complex *dst);
+
+// Adds two M-by-N matrices: Z = alpha * A + beta * C
+void add_matrix(int m, int n, double alpha, const double *x, double beta,
+    const double *y, double *z);
+void cmplx_add_matrix(int m, int n, double complex alpha, 
+    const double complex *x, double complex beta, const double complex *y,
+    double complex *z);
+
+// Scales a matrix by a scalar.
+void scale_matrix(int m, int n, double x, double *y);
+void cmplx_scale_matrix(int m, int n, double complex x, double complex *y);
+
 #endif

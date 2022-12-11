@@ -148,6 +148,8 @@ interface diag_mtx_mult
     module procedure :: diag_mtx_mult_mtx4
     module procedure :: diag_mtx_mult_mtx_cmplx
     module procedure :: diag_mtx_mult_mtx2_cmplx
+    module procedure :: diag_mtx_mult_mtx_mix
+    module procedure :: diag_mtx_mult_mtx2_mix
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -2025,6 +2027,71 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
+
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !! or C = alpha * op(B) * A + beta * C.
+    !!
+    !! @param[in] lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
+    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
+    !!  NO_OPERATION if op(B) == B.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a A K-element array containing the diagonal elements of A
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
+    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
+    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
+    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
+    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
+    !! @param[in] beta A scalar multiplier.
+    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
+    !!  M-by-N matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    module subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
+        complex(real64) :: alpha, beta
+        real(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    !> @brief Computes the matrix operation: B = alpha * A * B, or
+    !! B = alpha * B * A.
+    !!
+    !! @param[in] lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param[in] alpha A scalar multiplier.
+    !! @param[in] a A K-element array containing the diagonal elements of A
+    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+    !!  false, K = MIN(N,P).
+    !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
+    !!  M-by-N matrix.
+    !! @param[out] err An optional errors-based object that if provided can be
+    !!  used to retrieve information relating to any errors encountered during
+    !!  execution.  If not provided, a default implementation of the errors
+    !!  class is used internally to provide error handling.  Possible errors and
+    !!  warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    module subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
+        logical, intent(in) :: lside
+        complex(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
 
     !> @brief Computes the trace of a matrix (the sum of the main diagonal
     !! elements).

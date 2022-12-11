@@ -1120,6 +1120,234 @@ contains
         end if
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
+        complex(real64) :: alpha, beta
+        real(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(a)
+        nrowb = size(b, 1)
+        ncolb = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (lside) then
+            if (k > m) then
+                flag = 4
+            else
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                    ! Compute C = alpha * A * B**T + beta * C
+                    if (nrowb /= n .or. ncolb < k) flag = 5
+                else
+                    ! Compute C = alpha * A * B + beta * C
+                    if (nrowb < k .or. ncolb /= n) flag = 5
+                end if
+            end if
+        else
+            if (k > n) then
+                flag = 4
+            else
+                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                    ! Compute C = alpha * B**T * A + beta * C
+                    if (ncolb /= m .or. nrowb < k) flag = 5
+                else
+                    ! Compute C = alpha * B * A + beta * C
+                    if (nrowb /= m .or. ncolb < k) flag = 5
+                end if
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, '(AI0A)') "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("diag_mtx_mult_mtx_mix", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Deal with ALPHA == 0
+        if (alpha == 0) then
+            if (beta == zero) then
+                c = zero
+            else if (beta /= one) then
+                c = beta * c
+            end if
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            if (opb == TRANSPOSE) then
+                ! Compute C = alpha * A * B**T + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
+                end do
+            else
+                ! Compute C = alpha * A * B + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                end do
+            end if
+
+            ! Handle extra rows
+            if (m > k) then
+                if (beta == zero) then
+                    c(k+1:m,:) = zero
+                else
+                    c(k+1:m,:) = beta * c(k+1:m,:)
+                end if
+            end if
+        else
+            if (opb == TRANSPOSE) then
+                ! Compute C = alpha * B**T * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb == HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
+                end do
+            else
+                ! Compute C = alpha * B * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                end do
+            end if
+
+            ! Handle extra columns
+            if (n > k) then
+                if (beta == zero) then
+                    c(:,k+1:m) = zero
+                else if (beta /= one) then
+                    c(:,k+1:m) = beta * c(:,k+1:m)
+                end if
+            end if
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        complex(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(b, 1)
+        n = size(b, 2)
+        k = size(a)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
+            ! ERROR: One of the input arrays is not sized correctly
+            call errmgr%report_error("diag_mtx_mult_mtx2_cmplx", &
+                "Input number 3 is not sized correctly.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            ! Compute B = alpha * A * B
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(i,:) = temp * b(i,:)
+            end do
+            if (m > k) b(k+1:m,:) = zero
+        else
+            ! Compute B = alpha * B * A
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(:,i) = temp * b(:,i)
+            end do
+            if (n > k) b(:,k+1:n) = zero
+        end if
+    end subroutine
+
 ! ******************************************************************************
 ! BASIC OPERATION ROUTINES
 ! ------------------------------------------------------------------------------

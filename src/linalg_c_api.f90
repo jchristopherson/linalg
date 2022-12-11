@@ -426,6 +426,94 @@ contains
     !!      correct.
     !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
     !!      incorrect.
+    function la_diag_mtx_mult_mixed(lside, opb, m, n, k, alpha, a, b, ldb, &
+            beta, c, ldc) bind(C, name = "la_diag_mtx_mult_mixed") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside
+        integer(c_int), intent(in), value :: opb, m, n, k, ldb, ldc
+        complex(c_double), intent(in), value :: alpha, beta
+        real(c_double), intent(in) :: a(*)
+        complex(c_double), intent(in) :: b(ldb,*)
+        complex(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
+
+        ! Local Variabes
+        integer(c_int) :: nrows, ncols, p
+        logical :: ls, tb
+        type(errors) :: err
+
+        ! Initialization
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        tb = .false.
+        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
+        if (lside .and. tb) then
+            nrows = n
+            ncols = k
+            p = min(k, m)
+            ls = .true.
+        else if (lside .and. .not. tb) then
+            nrows = k
+            ncols = n
+            p = min(k, m)
+            ls = .true.
+        else if (.not. lside .and. tb) then
+            nrows = k
+            ncols = m
+            p = min(k, n)
+            ls = .false.
+        else
+            nrows = m
+            ncols = k
+            p = min(k, n)
+            ls = .false.
+        end if
+
+        ! Error Checking
+        if (ldb < nrows .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call diag_mtx_mult(ls, opb, alpha, a(1:p), b(1:nrows,1:ncols), &
+            beta, c(1:m,1:n))
+        if (err%has_error_occurred()) flag = err%get_error_flag()
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !! or C = alpha * op(B) * A + beta * C.
+    !!
+    !! @param lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
+    !! @param m The number of rows in the matrix C.
+    !! @param n The number of columns in the matrix C.
+    !! @param k The inner dimension of the matrix product A * op(B).
+    !! @param alpha A scalar multiplier.
+    !! @param a A P-element array containing the diagonal elements of matrix A
+    !!  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+    !!  if @p lside is false.
+    !! @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+    !!  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+    !!  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+    !!  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+    !! @param ldb The leading dimension of matrix B.
+    !! @param beta A scalar multiplier.
+    !! @param c The @p m by @p n matrix C.
+    !! @param ldc The leading dimension of matrix C.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+    !!      correct.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
     function la_diag_mtx_mult_cmplx(lside, opb, m, n, k, alpha, a, b, &
             ldb, beta, c, ldc) bind(C, name="la_diag_mtx_mult_cmplx") &
             result(flag)

@@ -235,6 +235,44 @@ int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k,
     int ldb, double complex beta, double complex *c, int ldc);
 
 /**
+ * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+ * or C = alpha * op(B) * A + beta * C.
+ *
+ * @param lside Set to true to apply matrix A from the left; else, set
+ *  to false to apply matrix A from the left.
+ * @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+ *  set to LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+ *  of B, otherwise, set to LA_NO_OPERATION to compute op(B) as B.
+ * @param m The number of rows in the matrix C.
+ * @param n The number of columns in the matrix C.
+ * @param k The inner dimension of the matrix product A * op(B).
+ * @param alpha A scalar multiplier.
+ * @param a A P-element array containing the diagonal elements of matrix A
+ *  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+ *  if @p lside is false.
+ * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+ *  and TDB = trailing dimension of B):
+ *  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+ *  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+ *  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+ *  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+ * @param ldb The leading dimension of matrix B.
+ * @param beta A scalar multiplier.
+ * @param c The @p m by @p n matrix C.
+ * @param ldc The leading dimension of matrix C.
+ * 
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+ *      correct.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+ *      incorrect.
+ */
+int la_diag_mtx_mult_mixed(bool lside, int opb, int m, int n, int k, 
+    double complex alpha, const double *a, const double complex *b, 
+    int ldb, double complex beta, double complex *c, int ldc);
+
+/**
  * Computes the rank of a matrix.
  *
  * @param m The number of rows in the matrix.

@@ -114,3 +114,47 @@ bool test_cmplx_eigen_asymm()
 
 
 
+bool test_eigen_gen()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    const double complex zero = 0.0 + 0.0 * I;
+    const double complex one = 1.0 + 0.0 * I;
+    double a[nn], b[nn], beta[n];
+    double complex alpha[n], vecs[nn], vals[n], ac[nn], bc[nn], av[nn], bv[nn],
+        bvn[nn];
+    bool rst;
+    int i, flag;
+
+    // Initialization
+    rst = true;
+    create_matrix(n, n, a);
+    create_matrix(n, n, b);
+    to_complex(nn, a, ac);
+    to_complex(nn, b, bc);
+
+    // Compute the eigenvalues and eigenvectors
+    flag = la_eigen_gen(true, n, a, n, b, n, alpha, beta, vecs, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Compute alpha / beta - may over or underflow
+    for (i = 0; i < n; ++i) vals[i] = alpha[i] / beta[i];
+
+    // Compute A * VECS = B * VECS * VALS
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, n, n, n, one,
+        ac, n, vecs, n, zero, av, n);
+    if (flag != LA_NO_ERROR) rst = false;
+    
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, n, n, n, one,
+        bc, n, vecs, n, zero, bv, n);
+    if (flag != LA_NO_ERROR) rst = false;
+    flag = la_diag_mtx_mult_cmplx(false, LA_NO_OPERATION, n, n, n, one, vals,
+        bv, n, zero, bvn, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    if (!is_cmplx_mtx_equal(n, n, av, bvn, tol)) rst = false;
+    return rst;
+}

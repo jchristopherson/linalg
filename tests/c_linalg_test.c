@@ -76,6 +76,9 @@ int main()
     check = test_cmplx_eigen_asymm();
     if (!check) flag = -14;
 
+    check = test_eigen_gen();
+    if (!check) flag = 15;
+
     // End
     return flag;
 }

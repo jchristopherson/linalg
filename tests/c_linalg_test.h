@@ -38,5 +38,6 @@ bool test_cmplx_inverse();
 bool test_eigen_symm();
 bool test_eigen_asymm();
 bool test_cmplx_eigen_asymm();
+bool test_eigen_gen();
 
 #endif

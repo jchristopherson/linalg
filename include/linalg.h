@@ -1461,17 +1461,14 @@ int la_eigen_asymm(bool vecs, int n, double *a, int lda,
  * @param b On input, the N-by-N matrix B.  On output, the contents
  *  of this matrix are overwritten.
  * @param ldb The leading dimension of matrix B.
- * @param alpha An N-element array that, if @p beta is not supplied,
- *  contains the eigenvalues.  If @p beta is supplied however, the
+ * @param alpha An N-element array a factor of the eigenvalues.  The 
  *  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
  *  trivial as it seems as it is entirely possible, and likely, that
  *  ALPHA / BETA can overflow or underflow.  With that said, the values in
  *  ALPHA will always be less than and usually comparable with the NORM(A).
- * @param beta An optional N-element array that if provided forces
- *  @p alpha to return the numerator, and this array contains the
- *  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
- *  the values in this array will always be less than and usually comparable
- *  with the NORM(B).
+ * @param beta An N-element array that contains the denominator used to 
+ *  determine the eigenvalues as ALPHA / BETA.  If used, the values in this 
+ *  array will always be less than and usually comparable with the NORM(B).
  * @param v An N-by-N matrix where the right eigenvectors will be
  *  written (one per column).
  *

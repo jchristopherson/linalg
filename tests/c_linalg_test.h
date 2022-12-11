@@ -26,5 +26,17 @@ bool test_cmplx_qr_pivot();
 bool test_qr_rank1_update();
 bool test_cmplx_qr_rank1_update();
 bool test_cholesky();
+bool test_cmplx_cholesky();
+bool test_cholesky_rank1_update();
+bool test_cmplx_cholesky_rank1_update();
+bool test_svd();
+bool test_cmplx_svd();
+bool test_inverse();
+bool test_cmplx_inverse();
+
+// c_linalg_test_eigen.c
+bool test_eigen_symm();
+bool test_eigen_asymm();
+bool test_cmplx_eigen_asymm();
 
 #endif

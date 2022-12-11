@@ -188,7 +188,7 @@ void cmplx_create_symmetric_matrix(int n, double complex *x)
     temp2 = (double complex*)malloc((size_t)(n * n * sizeof(double complex)));
     if (!temp2) return;
     cmplx_create_matrix(n, n, temp1);
-    cmplx_transpose(n, n, temp1, temp2);
+    conj_transpose(n, n, temp1, temp2);
     cmplx_mtx_mult(n, n, n, temp1, temp2, x);
     free(temp1);
     free(temp2);
@@ -443,4 +443,15 @@ void zero_int_array(int n, int *x)
 {
     int i;
     for (i = 0; i < n; ++i) x[i] = 0;
+}
+
+
+
+
+
+
+void to_complex(int n, const double *src, double complex *dst)
+{
+    int i;
+    for (i = 0; i < n; ++i) dst[i] = src[i] + 0.0 * I;
 }

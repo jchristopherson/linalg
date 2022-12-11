@@ -89,4 +89,7 @@ void cmplx_create_triangular_matrix(bool upper, int n, double complex *x);
 // Zeros an array
 void zero_int_array(int n, int *x);
 
+// Convert from double to complex
+void to_complex(int n, const double *src, double complex *dst);
+
 #endif

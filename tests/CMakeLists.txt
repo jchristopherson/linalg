@@ -36,6 +36,7 @@ set(linalg_c_test_sources
     c_test_core.c
     c_linalg_test_misc.c
     c_linalg_test_factor.c
+    c_linalg_test_eigen.c
 )
 
 # Build the C API tests

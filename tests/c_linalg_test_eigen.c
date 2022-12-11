@@ -1,0 +1,116 @@
+#include "linalg.h"
+#include "c_linalg_test.h"
+#include "c_test_core.h"
+
+
+bool test_eigen_symm()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    double zero = 0.0;
+    double one = 1.0;
+    double a[nn], a1[nn], vals[n], t[nn], t1[nn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    create_symmetric_matrix(n, a);
+    copy_matrix(n, n, a, a1);
+
+    // Compute the eigenvalues and eigenvectors
+    flag = la_eigen_symm(true, n, a, n, vals);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Compute A1 * VECS = VECS * VALS
+    flag = la_mtx_mult(false, false, n, n, n, one, a1, n, a, n, zero, t, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    flag = la_diag_mtx_mult(false, false, n, n, n, one, vals, a, n, zero, t1, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    if (!is_mtx_equal(n, n, t, t1, tol)) rst = false;
+    return rst;
+}
+
+
+
+
+
+bool test_eigen_asymm()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    const double zero = 0.0;
+    const double one = 1.0;
+    double a[nn];
+    double complex a1[nn], vals[n], vecs[nn], t[nn], t1[nn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    create_matrix(n, n, a);
+    to_complex(nn, a, a1);
+
+    // Compute the eigenvalues and eigenvectors
+    flag = la_eigen_asymm(true, n, a, n, vals, vecs, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Compute A1 * VECS = VECS * VALS
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, n, n, n, one, 
+        a1, n, vecs, n, zero, t, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    flag = la_diag_mtx_mult_cmplx(false, LA_NO_OPERATION, n, n, n, one, vals, 
+        vecs, n, zero, t1, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    if (!is_cmplx_mtx_equal(n, n, t, t1, tol)) rst = false;
+    return rst;
+}
+
+bool test_cmplx_eigen_asymm()
+{
+    // Variables
+    const int n = 50;
+    const int nn = n * n;
+    const double tol = 1.0e-8;
+    const double complex zero = 0.0 + 0.0 * I;
+    const double complex one = 1.0 + 0.0 * I;
+    double complex a[nn], a1[nn], vals[n], vecs[nn], t[nn], t1[nn];
+    bool rst;
+    int flag;
+
+    // Initialization
+    rst = true;
+    cmplx_create_matrix(n, n, a);
+    cmplx_copy_matrix(n, n, a, a1);
+
+    // Compute the eigenvalues and eigenvectors
+    flag = la_eigen_cmplx(true, n, a, n, vals, vecs, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Compute A1 * VECS = VECS * VALS
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, n, n, n, one, 
+        a1, n, vecs, n, zero, t, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    flag = la_diag_mtx_mult_cmplx(false, LA_NO_OPERATION, n, n, n, one, vals, 
+        vecs, n, zero, t1, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test
+    if (!is_cmplx_mtx_equal(n, n, t, t1, tol)) rst = false;
+    return rst;
+}
+
+
+
+

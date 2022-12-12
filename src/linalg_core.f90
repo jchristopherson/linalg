@@ -8,7 +8,7 @@
 !! to several BLAS and LAPACK routines.
 !!
 !! @author Jason Christopherson
-!! @version 1.6.0
+!! @version 1.6.1
 
 
 !> @brief Provides a set of common linear algebra routines.
@@ -56,7 +56,66 @@ module linalg_core
 ! INTERFACES
 ! ------------------------------------------------------------------------------
 !> @brief Performs the matrix operation:
-!!  C = alpha * op(A) * op(B) + beta * C.
+!!  \f$ C = \alpha op(A) op(B) + \beta C \f$.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine mtx_mult(logical transa, logical transb, real(real64) alpha, real(real64) a(:,:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)
+!! subroutine mtx_mult(integer(int32) transa, integer(int32) transb, complex(real64) alpha, complex(real64) a(:,:), complex(real64) b(:,:), complex(real64) beta, complex(real64) c(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] transa Set to true if \f$ op(A) = A^T \f$; else, set to false for
+!!  \f$ op(A) = A\f$.  In the complex case set to LA_TRANSPOSE if 
+!!  \f$ op(A) = A^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(A) = A^H \f$, 
+!!  otherwise set to LA_NO_OPERATION if \f$ op(A) = A \f$.
+!! @param[in] transb Set to true if \f$ op(B) = B^T \f$; else, set to false for
+!!  \f$ op(B) = B\f$.  In the complex case set to LA_TRANSPOSE if 
+!!  \f$ op(B) = B^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(B) = B^H \f$, 
+!!  otherwise set to LA_NO_OPERATION if \f$ op(B) = B \f$.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a If @p transa is set to true, an K-by-M matrix; else, if
+!!  @p transa is set to false, an M-by-K matrix.
+!! @param[in] b If @p transb is set to true, an N-by-K matrix; else, if
+!!  @p transb is set to false, a K-by-N matrix.
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] c On input, the M-by-N matrix C.  On output, the M-by-N
+!!  result.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine mtx_mult(logical trans, real(real64) alpha, real(real64) a(:,:), real(real64) b(:), real(real64) beta, real(real64) c(:))
+!! subroutine mtx_mult(logical trans, complex(real64) alpha, complex(real64) a(:,:), complex(real64) b(:), complex(real64) beta, complex(real64) c(:))
+!! @endcode
+!!
+!! @param[in] trans Set to true if \f$ op(A) = A^T \f$; else, set to false for
+!!  \f$ op(A) = A\f$.  In the complex case set to LA_TRANSPOSE if 
+!!  \f$ op(A) = A^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(A) = A^H \f$, 
+!!  otherwise set to LA_NO_OPERATION if \f$ op(A) = A \f$.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a The M-by-N matrix A.
+!! @param[in] b If @p trans is set to true, an M-element array; else, if
+!!  @p trans is set to false, an N-element array.
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] c On input, if @p trans is set to true, an N-element
+!!  array; else, if @p trans is set to false, an M-element array.  On
+!!  output, the results of the operation.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Notes
+!! This routine utilizes the BLAS routines DGEMM, ZGEMM, DGEMV, or ZGEMV.
 interface mtx_mult
     module procedure :: mtx_mult_mtx
     module procedure :: mtx_mult_vec
@@ -66,9 +125,32 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Performs the rank-1 update to matrix A such that:
-!! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
-!! X is an M-element array, and N is an N-element array.  In the
-!! event that Y is complex, Y**H is used instead of Y**T.
+!! \f$ A = \alpha X Y^T + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+!!  \f$ \alpha \f$is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
+!!  is an N-element array.  In the event that \f$ Y \f$ is complex, \f$ Y^H \f$
+!!  is used instead of \f$ Y^T \f$.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine rank1_update(real(real64) alpha, real(real64) x(:), real(real64) y(:), real(real64) a(:,:), class(errors) err)
+!! subroutine rank1_update(complex(real64) alpha, complex(real64) x(:), complex(real64) y(:), complex(real64) a(:,:), class(errors) err)
+!! @endcode
+!!
+!! @param[in] alpha The scalar multiplier.
+!! @param[in] x An M-element array.
+!! @param[in] y An N-element array.
+!! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
+!!  updated M-by-N matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with
+!!      @p x and @p y.
+!!
+!! @par Notes
+!! This routine is based upon the BLAS routine DGER or ZGER.
 interface rank1_update
     module procedure :: rank1_update_dbl
     module procedure :: rank1_update_cmplx
@@ -76,6 +158,69 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Multiplies a diagonal matrix with another matrix or array.
+!!
+!! @par Syntax 1
+!! Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+!! or \f$ C = \alpha op(B) A + \beta C \f$.
+!! @code{.f90}
+!! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), real(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, logical trans, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), complex(real64) beta, complex(real64) c(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, logical trans, complex(real64) alpha, real(real64) a(:), complex(real64) b(:,:), complex(real64) beta, complex(real64) c(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lside Set to true to apply matrix A from the left; else, set
+!!  to false to apply matrix A from the left.
+!! @param[in] trans Set to true if \f$ op(B) = B^T \f$; else, set to false for
+!!  \f$ op(B) = B\f$.  In the complex case set to LA_TRANSPOSE if 
+!!  \f$ op(B) = B^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(B) = B^H \f$, 
+!!  otherwise set to LA_NO_OPERATION if \f$ op(B) = B \f$.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a A K-element array containing the diagonal elements of A
+!!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+!!  false, K = MIN(N,P).
+!! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+!!  and TDB = trailing dimension of B):
+!!  - @p lside == true & @p trans == true: LDB = N, TDB = P
+!!  - @p lside == true & @p trans == false: LDB = P, TDB = N
+!!  - @p lside == false & @p trans == true: LDB = P, TDB = M
+!!  - @p lside == false & @p trans == false: LDB = M, TDB = P
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
+!!  M-by-N matrix.
+!! @param[out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Syntax 2
+!! Computes the matrix operation: \f$ B = \alpha A op(B) \f$, or
+!! \f$ B = \alpha op(B) * A \f$.
+!! @code{.f90}
+!! subroutine diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
+!! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, real(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lside Set to true to apply matrix A from the left; else, set
+!!  to false to apply matrix A from the left.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a A K-element array containing the diagonal elements of A
+!!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+!!  false, K = MIN(N,P).
+!! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
+!!  M-by-N matrix.
+!! @param[out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
 !!
 !! @par Usage
 !! The following example illustrates the use of the diagonal matrix
@@ -1643,31 +1788,6 @@ end interface
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
 interface
-    !> @brief Performs the matrix operation: C = alpha * op(A) * op(B) +
-    !! beta * C.
-    !!
-    !! @param[in] transa Set to true if op(A) = A**T; else, set to false for
-    !!  op(A) = A.
-    !! @param[in] transb Set to true if op(B) = B**T; else, set to false for
-    !!  op(B) = B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a If @p transa is set to true, an K-by-M matrix; else, if
-    !!  @p transa is set to false, an M-by-K matrix.
-    !! @param[in] b If @p transb is set to true, an N-by-K matrix; else, if
-    !!  @p transb is set to false, a K-by-N matrix.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the M-by-N
-    !!  result.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the BLAS routine DGEMM.
     module subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
         logical, intent(in) :: transa, transb
         real(real64), intent(in) :: alpha, beta
@@ -1675,30 +1795,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Performs the matrix-vector operation: c = alpha * op(A) * b +
-    !! beta * c.
-    !!
-    !! @param[in] trans Set to true if op(A) = A**T; else, set to false for
-    !!  op(A) = A.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a The M-by-N matrix A.
-    !! @param[in] b If @p trans is set to true, an M-element array; else, if
-    !!  @p trans is set to false, an N-element array.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, if @p trans is set to true, an N-element
-    !!  array; else, if @p trans is set to false, an M-element array.  On
-    !!  output, the results of the operation.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the BLAS routine DGEMV.
+    
     module subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: trans
         real(real64), intent(in) :: alpha, beta
@@ -1707,34 +1804,7 @@ interface
         real(real64), intent(inout), dimension(:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Performs the matrix operation: C = alpha * op(A) * op(B) +
-    !! beta * C.
-    !!
-    !! @param[in] opa Set to TRANSPOSE if op(A) = A**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(A) == A**H, otherwise set to 
-    !!  NO_OPERATION if op(A) == A.
-    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
-    !!  NO_OPERATION if op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a If @p transa is set to true, an K-by-M matrix; else, if
-    !!  @p transa is set to false, an M-by-K matrix.
-    !! @param[in] b If @p transb is set to true, an N-by-K matrix; else, if
-    !!  @p transb is set to false, a K-by-N matrix.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the M-by-N
-    !!  result.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the BLAS routine ZGEMM.
+    
     module subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
         integer(int32), intent(in) :: opa, opb
         complex(real64), intent(in) :: alpha, beta
@@ -1743,30 +1813,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Performs the matrix-vector operation: c = alpha * op(A) * b +
-    !! beta * c.
-    !!
-    !! @param[in] trans opa Set to TRANSPOSE if op(A) = A**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(A) == A**H, otherwise set to 
-    !!  NO_OPERATION if op(A) == A.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a The M-by-N matrix A.
-    !! @param[in] b If @p trans is set to true, an M-element array; else, if
-    !!  @p trans is set to false, an N-element array.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, if @p trans is set to true, an N-element
-    !!  array; else, if @p trans is set to false, an M-element array.  On
-    !!  output, the results of the operation.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Notes
-    !! This routine utilizes the BLAS routine ZGEMV.
     module subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
         integer(int32), intent(in) :: opa
         complex(real64), intent(in) :: alpha, beta
@@ -1775,86 +1821,21 @@ interface
         complex(real64), intent(inout), dimension(:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Performs the rank-1 update to matrix A such that:
-    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
-    !! X is an M-element array, and N is an N-element array.
-    !!
-    !! @param[in] alpha The scalar multiplier.
-    !! @param[in] x An M-element array.
-    !! @param[in] y An N-element array.
-    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
-    !!  updated M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with
-    !!      @p x and @p y.
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine DGER.
+    
     module subroutine rank1_update_dbl(alpha, x, y, a, err)
         real(real64), intent(in) :: alpha
         real(real64), intent(in), dimension(:) :: x, y
         real(real64), intent(inout), dimension(:,:) :: a
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Performs the rank-1 update to matrix A such that:
-    !! A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
-    !! X is an M-element array, and N is an N-element array.
-    !!
-    !! @param[in] alpha The scalar multiplier.
-    !! @param[in] x An M-element array.
-    !! @param[in] y An N-element array.
-    !! @param[in,out] a On input, the M-by-N matrix to update.  On output, the
-    !!  updated M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if the size of @p a does not match with
-    !!      @p x and @p y.
-    !!
-    !! @par Notes
-    !! This routine is based upon the BLAS routine ZGER.
+    
     module subroutine rank1_update_cmplx(alpha, x, y, a, err)
         complex(real64), intent(in) :: alpha
         complex(real64), intent(in), dimension(:) :: x, y
         complex(real64), intent(inout), dimension(:,:) :: a
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !! or C = alpha * op(B) * A + beta * C.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside, trans
         real(real64) :: alpha, beta
@@ -1864,24 +1845,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the matrix operation: B = alpha * A * op(B), or
-    !! B = alpha * op(B) * A.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
     module subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
         logical, intent(in) :: lside
         real(real64), intent(in) :: alpha
@@ -1889,34 +1852,7 @@ interface
         real(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !! or C = alpha * op(B) * A + beta * C, where A and C are complex-valued.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] trans Set to true if op(B) == B**T; else, set to false if
-    !!  op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside, trans
         real(real64) :: alpha, beta
@@ -1925,35 +1861,7 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !! or C = alpha * op(B) * A + beta * C, where A, B,  and C are
-    !! complex-valued.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
-    !!  NO_OPERATION if op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b The LDB-by-TDB matrix B where:
-    !!  - @p lside == true & @p trans == true: LDA = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDA = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDA = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDA = M, TDB = P
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside
         integer(int32), intent(in) :: opb
@@ -1964,34 +1872,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !! or C = alpha * op(B) * A + beta * C.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
-    !!  NO_OPERATION if op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
     module subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside
         integer(int32), intent(in) :: opb
@@ -2002,24 +1882,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the matrix operation: B = alpha * A * B, or
-    !! B = alpha * B * A.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
     module subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
         logical, intent(in) :: lside
         complex(real64), intent(in) :: alpha
@@ -2027,35 +1889,7 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
-    !! or C = alpha * op(B) * A + beta * C.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] opb Set to TRANSPOSE if op(B) = B**T, set to 
-    !!  HERMITIAN_TRANSPOSE if op(B) == B**H, otherwise set to 
-    !!  NO_OPERATION if op(B) == B.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
-    !!  and TDB = trailing dimension of B):
-    !!  - @p lside == true & @p trans == true: LDB = N, TDB = P
-    !!  - @p lside == true & @p trans == false: LDB = P, TDB = N
-    !!  - @p lside == false & @p trans == true: LDB = P, TDB = M
-    !!  - @p lside == false & @p trans == false: LDB = M, TDB = P
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
         logical, intent(in) :: lside
         integer(int32), intent(in) :: opb
@@ -2065,25 +1899,7 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: c
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the matrix operation: B = alpha * A * B, or
-    !! B = alpha * B * A.
-    !!
-    !! @param[in] lside Set to true to apply matrix A from the left; else, set
-    !!  to false to apply matrix A from the left.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a A K-element array containing the diagonal elements of A
-    !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
-    !!  false, K = MIN(N,P).
-    !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
-    !!  M-by-N matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
         logical, intent(in) :: lside
         complex(real64), intent(in) :: alpha

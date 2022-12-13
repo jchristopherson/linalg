@@ -107,6 +107,47 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1form__lu.html
  <a href="interfacelinalg__core_1_1form__lu.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Extracts the L and U matrices from the condensed [L\U] storage format used by the <a class="el" href="interfacelinalg__core_1_1lu__factor.html">lu_factor</a>. </p>
+<dl class="section user"><dt>Syntax 1</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>form_lu(real(real64) lu(:,:), integer(int32) ipvt(:), real(real64) u(:,:), real(real64) p(:,:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>form_lu(complex(real64) lu(:,:), integer(int32) ipvt(:), complex(real64) u(:,:), real(real64) p(:,:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">lu</td><td>On input, the N-by-N matrix as output by <a class="el" href="interfacelinalg__core_1_1lu__factor.html">lu_factor</a>. On output, the N-by-N lower triangular matrix L. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ipvt</td><td>The N-element pivot array as output by <a class="el" href="interfacelinalg__core_1_1lu__factor.html">lu_factor</a>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">u</td><td>An N-by-N matrix where the U matrix will be written. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">p</td><td>An N-by-N matrix where the row permutation matrix will be written. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Syntax 2</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>form_lu(real(real64) lu(:,:), real(real64) u(:,:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>form_lu(complex(real64) lu(:,:), complex(real64) u(:,:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">lu</td><td>On input, the N-by-N matrix as output by <a class="el" href="interfacelinalg__core_1_1lu__factor.html">lu_factor</a>. On output, the N-by-N lower triangular matrix L. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">u</td><td>An N-by-N matrix where the U matrix will be written. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Remarks</dt><dd>This routine allows extraction of the actual "L", "U", and "P" matrices of the decomposition. To use these matrices to solve the system \( A X = B \), the following approach is used.</dd></dl>
+<ol type="1">
+<li>First, solve the linear system: \( L Y = P B \) for \( Y \).</li>
+<li>Second, solve the linear system: \( U X = Y \) for \( X \).</li>
+</ol>
+<p >Notice, as both L and U are triangular in structure, the above equations can be solved by forward and backward substitution.</p>
+<dl class="section user"><dt>See Also</dt><dd><ul>
+<li><a href="https://en.wikipedia.org/wiki/LU_decomposition">Wikipedia</a></li>
+<li><a href="http://mathworld.wolfram.com/LUDecomposition.html">Wolfram MathWorld</a></li>
+</ul>
+</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates how to extract the L, U, and P matrices in order to solve a system of LU factored equations. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
 <div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg__core.html">linalg_core</a></div>
@@ -156,9 +197,9 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1form__lu.html
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1form__lu_html"><div class="ttname"><a href="interfacelinalg__core_1_1form__lu.html">linalg_core::form_lu</a></div><div class="ttdoc">Extracts the L and U matrices from the condensed [L\U] storage format used by the lu_factor.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00450">linalg_core.f90:450</a></div></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg__core_1_1lu__factor.html">linalg_core::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00381">linalg_core.f90:381</a></div></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__triangular__system.html">linalg_core::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01161">linalg_core.f90:1161</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1form__lu_html"><div class="ttname"><a href="interfacelinalg__core_1_1form__lu.html">linalg_core::form_lu</a></div><div class="ttdoc">Extracts the L and U matrices from the condensed [L\U] storage format used by the lu_factor.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00677">linalg_core.f90:677</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg__core_1_1lu__factor.html">linalg_core::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00555">linalg_core.f90:555</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__triangular__system.html">linalg_core::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01388">linalg_core.f90:1388</a></div></div>
 <div class="ttc" id="anamespacelinalg__core_html"><div class="ttname"><a href="namespacelinalg__core.html">linalg_core</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00015">linalg_core.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line">0.3333</div>
@@ -166,7 +207,7 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1form__lu.html
 <div class="line">0.0000</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00450">450</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00677">677</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

@@ -107,8 +107,22 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1swap.html',''
  <a href="interfacelinalg__core_1_1swap.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Swaps the contents of two arrays. </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>swap(real(real64) x(:), real(real64) y(:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>swap(complex(real64) x(:), complex(real64) y(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>One of the N-element arrays. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">y</td><td>The other N-element array. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if <code>x</code> and <code>y</code> are not the same size. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00308">308</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00416">416</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

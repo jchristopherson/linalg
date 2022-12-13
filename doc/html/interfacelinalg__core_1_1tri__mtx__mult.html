@@ -103,12 +103,29 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1tri__mtx__mul
 </div><!--header-->
 <div class="contents">
 
-<p>Computes the triangular matrix operation: B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, where A is a triangular matrix.  
+<p>Computes the triangular matrix operation: \( B = \alpha A^T A + \beta B \), or \( B = \alpha A A^T + \beta B \), where A is a triangular matrix.  
  <a href="interfacelinalg__core_1_1tri__mtx__mult.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Computes the triangular matrix operation: B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B, where A is a triangular matrix. </p>
+<div class="textblock"><p >Computes the triangular matrix operation: \( B = \alpha A^T A + \beta B \), or \( B = \alpha A A^T + \beta B \), where A is a triangular matrix. </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>tri_mtx_mult(logical upper, real(real64) alpha, real(real64) a(:,:), real(real64) beta, real(real64) b(:,:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>tri_mtx_mult(logical upper, complex(real64) alpha, complex(real64) a(:,:), complex(real64) beta, complex(real64) b(:,:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">upper</td><td>Set to true if matrix A is upper triangular, and \( B = \alpha A^T A + \beta B \) is to be calculated; else, set to false if A is lower triangular, and \( B = \alpha A A^T + \beta B \) is to be computed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>A scalar multiplier. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N triangular matrix. Notice, if <code>upper</code> is true only the upper triangular portion of this matrix is referenced; else, if <code>upper</code> is false, only the lower triangular portion of this matrix is referenced. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>A scalar multiplier. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">b</td><td>On input, the N-by-N matrix B. On output, the N-by-N solution matrix. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00323">323</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00469">469</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

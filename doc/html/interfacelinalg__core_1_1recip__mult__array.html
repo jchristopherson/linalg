@@ -107,8 +107,18 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1recip__mult__
  <a href="interfacelinalg__core_1_1recip__mult__array.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Multiplies a vector by the reciprocal of a real scalar. </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>recip_mult_array(real(real64) a, real(real64) x(:))</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The scalar which is used to divide each component of <code>X</code>. The value must be &gt;= 0, or the subroutine will divide by zero. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>The vector.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine is based upon the LAPACK routine DRSCL. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00315">315</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l00435">435</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

@@ -189,7 +189,7 @@ end interface
 !! @param[in] beta A scalar multiplier.
 !! @param[in,out] c On input, the M-by-N matrix C.  On output, the resulting
 !!  M-by-N matrix.
-!! @param[out] err An optional errors-based object that if provided can be
+!! @param[in,out] err An optional errors-based object that if provided can be
 !!  used to retrieve information relating to any errors encountered during
 !!  execution.  If not provided, a default implementation of the errors
 !!  class is used internally to provide error handling.  Possible errors and
@@ -214,7 +214,7 @@ end interface
 !!  false, K = MIN(N,P).
 !! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
 !!  M-by-N matrix.
-!! @param[out] err An optional errors-based object that if provided can be
+!! @param[in,out] err An optional errors-based object that if provided can be
 !!  used to retrieve information relating to any errors encountered during
 !!  execution.  If not provided, a default implementation of the errors
 !!  class is used internally to provide error handling.  Possible errors and
@@ -260,7 +260,7 @@ end interface
 !!         print *, vt(i,:)
 !!     end do
 !!
-!!     ! Compute U * S * V**T, but first establish S in full form
+!!     ! Compute U * S * V**T
 !!     call diag_mtx_mult(.true., 1.0d0, s, vt) ! Compute: VT = S * V**T
 !!     ac = matmul(u(:,1:2), vt)
 !!     print '(A)', "U * S * V**T ="
@@ -300,6 +300,16 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Computes the trace of a matrix (the sum of the main diagonal
 !! elements).
+!!
+!! @par Syntax
+!! @code{.f90}
+!! real(real64) function trace(real(real64) x(:,:))
+!! complex(real64) function trace(complex(real64) x(:,:))
+!! @endcode
+!!
+!! @param[in] x The matrix on which to operate.
+!!
+!! @return The trace of @p x.
 interface trace
     module procedure :: trace_dbl
     module procedure :: trace_cmplx
@@ -307,6 +317,47 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the rank of a matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! integer(int32) function mtx_rank(real(real64) a(:,:), optional real(real64) tol, optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! integer(int32) function mtx_rank(complex(real64) a(:,:), optional real(real64) tol, optional complex(real64) work(:), optional integer(int32) olwork, optional real(real64) rwork(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
+!!  contents of the matrix are overwritten.
+!! @param[in] tol An optional input, that if supplied, overrides the default
+!!  tolerance on singular values such that singular values less than this
+!!  tolerance are treated as zero.  The default tolerance is:
+!!  MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
+!!  smallest value that causes an overflow if inverted, the tolerance
+!!  reverts back to its default value, and the operation continues; however,
+!!  a warning message is issued.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[out] rwork An optional input, that if provided, prevents any
+!!  local memory allocation for real-valued workspace arrays.  If not 
+!!  provided, the memory required is allocated within.  If provided, the
+!!  length of the array must be at least 6 * MIN(M, N).
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+!!      could not converge to a zero value.
+!!
+!! @par See Also
+!! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
 interface mtx_rank
     module procedure :: mtx_rank_dbl
     module procedure :: mtx_rank_cmplx
@@ -314,6 +365,32 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the determinant of a square matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! real(real64) function det(real(real64) a(:,:), optional integer(int32) iwork(:), optional class(errors) err)
+!! complex(real64) function det(complex(real64) a(:,:), optional integer(int32) iwork(:), optional class(errors) err)
+!! @endcode
+!!
+!!
+!! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+!! output the contents are overwritten by the LU factorization of the
+!! original matrix.
+!! @param[out] iwork An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  N-elements.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @return The determinant of @p a.
 interface det
     module procedure :: det_dbl
     module procedure :: det_cmplx
@@ -321,6 +398,21 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Swaps the contents of two arrays.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine swap(real(real64) x(:), real(real64) y(:), optional class(errors) err)
+!! subroutine swap(complex(real64) x(:), complex(real64) y(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] x One of the N-element arrays.
+!! @param[in,out] y The other N-element array.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
 interface swap
     module procedure :: swap_dbl
     module procedure :: swap_cmplx
@@ -328,14 +420,52 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Multiplies a vector by the reciprocal of a real scalar.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine recip_mult_array(real(real64) a, real(real64) x(:))
+!! @endcode
+!!
+!! @param[in] a The scalar which is used to divide each component of @p X.
+!!  The value must be >= 0, or the subroutine will divide by zero.
+!! @param[in,out] x The vector.
+!!
+!! @par Notes
+!! This routine is based upon the LAPACK routine DRSCL.
 interface recip_mult_array
     module procedure :: recip_mult_array_dbl
 end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the triangular matrix operation:
-!! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
+!! \f$ B = \alpha A^T A + \beta B \f$, or \f$ B = \alpha A A^T + \beta B \f$,
 !! where A is a triangular matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine tri_mtx_mult(logical upper, real(real64) alpha, real(real64) a(:,:), real(real64) beta, real(real64) b(:,:), optional class(errors) err)
+!! subroutine tri_mtx_mult(logical upper, complex(real64) alpha, complex(real64) a(:,:), complex(real64) beta, complex(real64) b(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] upper Set to true if matrix A is upper triangular, and
+!!  \f$ B = \alpha A^T A + \beta B \f$ is to be calculated; else, set to false
+!!  if A is lower triangular, and \f$ B = \alpha A A^T + \beta B \f$ is to
+!!  be computed.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
+!!  only the upper triangular portion of this matrix is referenced; else,
+!!  if @p upper is false, only the lower triangular portion of this matrix
+!!  is referenced.
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
+!!  solution matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
 interface tri_mtx_mult
     module procedure :: tri_mtx_mult_dbl
     module procedure :: tri_mtx_mult_cmplx
@@ -343,6 +473,34 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the LU factorization of an M-by-N matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine lu_factor(real(real64) a(:,:), integer(int32) ipvt(:), optional class(errors))
+!! subroutine lu_factor(complex(real64) a(:,:), integer(int32) ipvt(:), optional class(errors))
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
+!! output, the LU factored matrix in the form [L\\U] where the unit diagonal
+!! elements of L are not stored.
+!! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
+!!  operations.  The array stored pivot information such that row I is
+!!  interchanged with row IPVT(I).
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
+!!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
+!!      singular.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGETRF.
+!!
+!! @par See Also
+!! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+!! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
 !!
 !! @par Usage
 !! To solve a system of 3 equations of 3 unknowns using LU factorization,
@@ -401,6 +559,59 @@ end interface
 
 !> @brief Extracts the L and U matrices from the condensed [L\\U] storage
 !! format used by the @ref lu_factor.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine form_lu(real(real64) lu(:,:), integer(int32) ipvt(:), real(real64) u(:,:), real(real64) p(:,:), optional class(errors) err)
+!! subroutine form_lu(complex(real64) lu(:,:), integer(int32) ipvt(:), complex(real64) u(:,:), real(real64) p(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] lu On input, the N-by-N matrix as output by
+!!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+!! @param[in] ipvt The N-element pivot array as output by
+!!  @ref lu_factor.
+!! @param[out] u An N-by-N matrix where the U matrix will be written.
+!! @param[out] p An N-by-N matrix where the row permutation matrix will be
+!!  written.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine form_lu(real(real64) lu(:,:), real(real64) u(:,:), optional class(errors) err)
+!! subroutine form_lu(complex(real64) lu(:,:), complex(real64) u(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] lu On input, the N-by-N matrix as output by
+!!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
+!! @param[out] u An N-by-N matrix where the U matrix will be written.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Remarks
+!! This routine allows extraction of the actual "L", "U", and "P" matrices
+!! of the decomposition.  To use these matrices to solve the system 
+!! \f$ A X = B \f$, the following approach is used.
+!!
+!! 1. First, solve the linear system: \f$ L Y = P B \f$ for \f$ Y \f$.
+!! 2. Second, solve the linear system: \f$ U X = Y \f$ for \f$ X \f$.
+!!
+!! Notice, as both L and U are triangular in structure, the above equations
+!! can be solved by forward and backward substitution.
+!!
+!! @par See Also
+!! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
+!! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
 !!
 !! @par Usage
 !! The following example illustrates how to extract the L, U, and P matrices
@@ -1907,62 +2118,17 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-
-    !> @brief Computes the trace of a matrix (the sum of the main diagonal
-    !! elements).
-    !!
-    !! @param[in] x The matrix on which to operate.
-    !!
-    !! @return The trace of @p x.
+    
     pure module function trace_dbl(x) result(y)
         real(real64), intent(in), dimension(:,:) :: x
         real(real64) :: y
     end function
-
-    !> @brief Computes the trace of a matrix (the sum of the main diagonal
-    !! elements).
-    !!
-    !! @param[in] x The matrix on which to operate.
-    !!
-    !! @return The trace of @p x.
+    
     pure module function trace_cmplx(x) result(y)
         complex(real64), intent(in), dimension(:,:) :: x
         complex(real64) :: y
     end function
-
-    !> @brief Computes the rank of a matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
-    !!  contents of the matrix are overwritten.
-    !! @param[in] tol An optional input, that if supplied, overrides the default
-    !!  tolerance on singular values such that singular values less than this
-    !!  tolerance are treated as zero.  The default tolerance is:
-    !!  MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
-    !!  smallest value that causes an overflow if inverted, the tolerance
-    !!  reverts back to its default value, and the operation continues; however,
-    !!  a warning message is issued.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par See Also
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
+    
     module function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), optional :: tol
@@ -1972,42 +2138,6 @@ interface
         integer(int32) :: rnk
     end function
 
-    !> @brief Computes the rank of a matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix of interest.  On output, the
-    !!  contents of the matrix are overwritten.
-    !! @param[in] tol An optional input, that if supplied, overrides the default
-    !!  tolerance on singular values such that singular values less than this
-    !!  tolerance are treated as zero.  The default tolerance is:
-    !!  MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
-    !!  smallest value that causes an overflow if inverted, the tolerance
-    !!  reverts back to its default value, and the operation continues; however,
-    !!  a warning message is issued.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation for complex-valued workspace arrays.  If not provided,
-    !!  the memory required is allocated within.  If provided, the length of the 
-    !!  array must be at least @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] rwork An optional input, that if provided, prevents any
-    !!  local memory allocation for real-valued workspace arrays.  If not 
-    !!  provided, the memory required is allocated within.  If provided, the
-    !!  length of the array must be at least 6 * MIN(M, N).
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par See Also
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/MatrixRank.html)
     module function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
         complex(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(in), optional :: tol
@@ -2017,127 +2147,36 @@ interface
         class(errors), intent(inout), optional, target :: err
         integer(int32) :: rnk
     end function
-
-    !> @brief Computes the determinant of a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
-    !! output the contents are overwritten by the LU factorization of the
-    !! original matrix.
-    !! @param[out] iwork An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  N-elements.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @return The determinant of @p a.
+    
     module function det_dbl(a, iwork, err) result(x)
         real(real64), intent(inout), dimension(:,:) :: a
         integer(int32), intent(out), target, optional, dimension(:) :: iwork
         class(errors), intent(inout), optional, target :: err
         real(real64) :: x
     end function
-
-    !> @brief Computes the determinant of a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
-    !! output the contents are overwritten by the LU factorization of the
-    !! original matrix.
-    !! @param[out] iwork An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  N-elements.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @return The determinant of @p a.
+    
     module function det_cmplx(a, iwork, err) result(x)
         complex(real64), intent(inout), dimension(:,:) :: a
         integer(int32), intent(out), target, optional, dimension(:) :: iwork
         class(errors), intent(inout), optional, target :: err
         complex(real64) :: x
     end function
-
-    !> @brief Swaps the contents of two arrays.
-    !!
-    !! @param[in,out] x One of the N-element arrays.
-    !! @param[in,out] y The other N-element array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
+    
     module subroutine swap_dbl(x, y, err)
         real(real64), intent(inout), dimension(:) :: x, y
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Swaps the contents of two arrays.
-    !!
-    !! @param[in,out] x One of the N-element arrays.
-    !! @param[in,out] y The other N-element array.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x and @p y are not the same size.
+    
     module subroutine swap_cmplx(x, y, err)
         complex(real64), intent(inout), dimension(:) :: x, y
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a vector by the reciprocal of a real scalar.
-    !!
-    !! @param[in] a The scalar which is used to divide each component of @p X.
-    !!  The value must be >= 0, or the subroutine will divide by zero.
-    !! @param[in,out] x The vector.
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine DRSCL.
+    
     module subroutine recip_mult_array_dbl(a, x)
         real(real64), intent(in) :: a
         real(real64), intent(inout), dimension(:) :: x
     end subroutine
-
-    !> @brief Computes the triangular matrix operation:
-    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
-    !! where A is a triangular matrix.
-    !!
-    !! @param[in] upper Set to true if matrix A is upper triangular, and
-    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
-    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
-    !!  be computed.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
-    !!  only the upper triangular portion of this matrix is referenced; else,
-    !!  if @p upper is false, only the lower triangular portion of this matrix
-    !!  is referenced.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
-    !!  solution matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
+    
     module subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b, err)
         logical, intent(in) :: upper
         real(real64), intent(in) :: alpha, beta
@@ -2146,29 +2185,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the triangular matrix operation:
-    !! B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
-    !! where A is a triangular matrix.
-    !!
-    !! @param[in] upper Set to true if matrix A is upper triangular, and
-    !!  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
-    !!  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
-    !!  be computed.
-    !! @param[in] alpha A scalar multiplier.
-    !! @param[in] a The N-by-N triangular matrix.  Notice, if @p upper is true
-    !!  only the upper triangular portion of this matrix is referenced; else,
-    !!  if @p upper is false, only the lower triangular portion of this matrix
-    !!  is referenced.
-    !! @param[in] beta A scalar multiplier.
-    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the N-by-N
-    !!  solution matrix.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
     module subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
         logical, intent(in) :: upper
         complex(real64), intent(in) :: alpha, beta
@@ -2183,135 +2199,25 @@ end interface
 ! LINALG_FACTOR.F90
 ! ------------------------------------------------------------------------------
 interface
-    !> @brief Computes the LU factorization of an M-by-N matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
-    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
-    !! elements of L are not stored.
-    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
-    !!  operations.  The array stored pivot information such that row I is
-    !!  interchanged with row IPVT(I).
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
-    !!      singular.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGETRF.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
     module subroutine lu_factor_dbl(a, ipvt, err)
         real(real64), intent(inout), dimension(:,:) :: a
         integer(int32), intent(out), dimension(:) :: ipvt
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the LU factorization of a complex-valued M-by-N matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix on which to operate.  On
-    !! output, the LU factored matrix in the form [L\\U] where the unit diagonal
-    !! elements of L are not stored.
-    !! @param[out] ipvt An MIN(M, N)-element array used to track row-pivot
-    !!  operations.  The array stored pivot information such that row I is
-    !!  interchanged with row IPVT(I).
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ipvt is not sized appropriately.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
-    !!      singular.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZGETRF.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    
     module subroutine lu_factor_cmplx(a, ipvt, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         integer(int32), intent(out), dimension(:) :: ipvt
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Extracts the L, U, and P matrices from the output of the
-    !! @ref lu_factor routine.
-    !!
-    !! @param[in,out] lu On input, the N-by-N matrix as output by
-    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
-    !! @param[in] ipvt The N-element pivot array as output by
-    !!  @ref lu_factor.
-    !! @param[out] u An N-by-N matrix where the U matrix will be written.
-    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
-    !!  written.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Remarks
-    !! This routine allows extraction of the actual "L", "U", and "P" matrices
-    !! of the decomposition.  To use these matrices to solve the system A*X = B,
-    !! the following approach is used.
-    !!
-    !! 1. First, solve the linear system: L*Y = P*B for Y.
-    !! 2. Second, solve the linear system: U*X = Y for X.
-    !!
-    !! Notice, as both L and U are triangular in structure, the above equations
-    !! can be solved by forward and backward substitution.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
     module subroutine form_lu_all(lu, ipvt, u, p, err)
         real(real64), intent(inout), dimension(:,:) :: lu
         integer(int32), intent(in), dimension(:) :: ipvt
         real(real64), intent(out), dimension(:,:) :: u, p
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Extracts the L, U, and P matrices from the output of the
-    !! @ref lu_factor routine.
-    !!
-    !! @param[in,out] lu On input, the N-by-N matrix as output by
-    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
-    !! @param[in] ipvt The N-element pivot array as output by
-    !!  @ref lu_factor.
-    !! @param[out] u An N-by-N matrix where the U matrix will be written.
-    !! @param[out] p An N-by-N matrix where the row permutation matrix will be
-    !!  written.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!
-    !! @par Remarks
-    !! This routine allows extraction of the actual "L", "U", and "P" matrices
-    !! of the decomposition.  To use these matrices to solve the system A*X = B,
-    !! the following approach is used.
-    !!
-    !! 1. First, solve the linear system: L*Y = P*B for Y.
-    !! 2. Second, solve the linear system: U*X = Y for X.
-    !!
-    !! Notice, as both L and U are triangular in structure, the above equations
-    !! can be solved by forward and backward substitution.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/LUDecomposition.html)
+    
     module subroutine form_lu_all_cmplx(lu, ipvt, u, p, err)
         complex(real64), intent(inout), dimension(:,:) :: lu
         integer(int32), intent(in), dimension(:) :: ipvt
@@ -2319,39 +2225,13 @@ interface
         real(real64), intent(out), dimension(:,:) :: p
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Extracts the L, and U matrices from the output of the
-    !! @ref lu_factor routine.
-    !!
-    !! @param[in,out] lu On input, the N-by-N matrix as output by
-    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
-    !! @param[out] u An N-by-N matrix where the U matrix will be written.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine form_lu_only(lu, u, err)
         real(real64), intent(inout), dimension(:,:) :: lu
         real(real64), intent(out), dimension(:,:) :: u
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Extracts the L, and U matrices from the output of the
-    !! @ref lu_factor routine.
-    !!
-    !! @param[in,out] lu On input, the N-by-N matrix as output by
-    !!  @ref lu_factor.  On output, the N-by-N lower triangular matrix L.
-    !! @param[out] u An N-by-N matrix where the U matrix will be written.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
+    
     module subroutine form_lu_only_cmplx(lu, u, err)
         complex(real64), intent(inout), dimension(:,:) :: lu
         complex(real64), intent(out), dimension(:,:) :: u

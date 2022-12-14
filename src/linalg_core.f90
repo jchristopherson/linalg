@@ -684,6 +684,90 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Computes the QR factorization of an M-by-N matrix.
 !!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine qr_factor(real(real64) a(:,:), real(real64) tau(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine qr_factor(complex(real64) a(:,:), complex(real64) tau(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
+!!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+!!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+!!  below the diagonal, along with the array @p tau, represent the
+!!  orthogonal matrix Q as a product of elementary reflectors.
+!! @param[out] tau A MIN(M, N)-element array used to store the scalar
+!!  factors of the elementary reflectors.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @remarks
+!! QR factorization without pivoting is best suited to solving an
+!! overdetermined system in least-squares terms, or to solve a normally
+!! defined system.  To solve an underdetermined system, it is recommended to
+!! use either LQ factorization, or a column-pivoting based QR factorization.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGEQRF (ZGEQRF for the complex 
+!! case).
+!!
+!! @par Syntax 2
+!! Computes the QR factorization of an M-by-N matrix with column
+!! pivoting such that \f$ A P = Q R \f$.
+!! @code{.f90}
+!! subroutine qr_factor(real(real64) a(:,:), real(real64) tau(:), integer(int32) jpvt(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine qr_factor(complex(real64) a(:,:), complex(real64) tau(:), integer(int32) jpvt(:), optional complex(real64) work(:), optional integer(int32) olwork, optional real(real64) rwork(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
+!!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+!!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+!!  below the diagonal, along with the array @p tau, represent the
+!!  orthogonal matrix Q as a product of elementary reflectors.
+!! @param[out] tau A MIN(M, N)-element array used to store the scalar
+!!  factors of the elementary reflectors.
+!! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
+!!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
+!!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
+!!  the I-th column of A * P was the K-th column of A.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[out] rwork An optional input, that if provided, prevents any local
+!!  allocate of real-valued memory.  If not provided, the memory required
+!!  is allocated within.  If provided, the length of the array must be at
+!!  least 2*N.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGEQP3 (ZGEQP3 for the complex
+!! case).
+!!
 !! @par Usage
 !! The following example illustrates the solution of a system of equations
 !! using QR factorization.
@@ -2237,42 +2321,7 @@ interface
         complex(real64), intent(out), dimension(:,:) :: u
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the QR factorization of an M-by-N matrix without
-    !! pivoting.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
-    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
-    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
-    !!  below the diagonal, along with the array @p tau, represent the
-    !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @remarks
-    !! QR factorization without pivoting is best suited to solving an
-    !! overdetermined system in least-squares terms, or to solve a normally
-    !! defined system.  To solve an underdetermined system, it is recommended to
-    !! use either LQ factorization, or a column-pivoting based QR factorization.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGEQRF.
+    
     module subroutine qr_factor_no_pivot(a, tau, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: tau
@@ -2281,41 +2330,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the QR factorization of an M-by-N matrix without
-    !! pivoting.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
-    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
-    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
-    !!  below the diagonal, along with the array @p tau, represent the
-    !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @remarks
-    !! QR factorization without pivoting is best suited to solving an
-    !! overdetermined system in least-squares terms, or to solve a normally
-    !! defined system.  To solve an underdetermined system, it is recommended to
-    !! use either LQ factorization, or a column-pivoting based QR factorization.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZGEQRF.
     module subroutine qr_factor_no_pivot_cmplx(a, tau, work, olwork, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: tau
@@ -2323,40 +2337,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the QR factorization of an M-by-N matrix with column
-    !! pivoting such that A * P = Q * R.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
-    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
-    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
-    !!  below the diagonal, along with the array @p tau, represent the
-    !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
-    !!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
-    !!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
-    !!  the I-th column of A * P was the K-th column of A.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGEQP3.
+    
     module subroutine qr_factor_pivot(a, tau, jpvt, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: tau
@@ -2365,44 +2346,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the QR factorization of an M-by-N matrix with column
-    !! pivoting such that A * P = Q * R.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
-    !!  elements on and above the diagonal contain the MIN(M, N)-by-N upper
-    !!  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
-    !!  below the diagonal, along with the array @p tau, represent the
-    !!  orthogonal matrix Q as a product of elementary reflectors.
-    !! @param[out] tau A MIN(M, N)-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[in,out] jpvt On input, an N-element array that if JPVT(I) .ne. 0,
-    !!  the I-th column of A is permuted to the front of A * P; if JPVT(I) = 0,
-    !!  the I-th column of A is a free column.  On output, if JPVT(I) = K, then
-    !!  the I-th column of A * P was the K-th column of A.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] rwork An optional input, that if provided, prevents any local
-    !!  allocate of real-valued memory.  If not provided, the memory required
-    !!  is allocated within.  If provided, the length of the array must be at
-    !!  least 2*N.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZGEQP3.
+    
     module subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, rwork, &
             err)
         complex(real64), intent(inout), dimension(:,:) :: a

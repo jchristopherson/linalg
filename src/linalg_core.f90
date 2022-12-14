@@ -224,7 +224,7 @@ end interface
 !!
 !! @par Usage
 !! The following example illustrates the use of the diagonal matrix
-!! multiplication routine to compute the S * V**T component of a singular
+!! multiplication routine to compute the \f$ S V^T \f$ component of a singular
 !! value decomposition.
 !! @code{.f90}
 !! program example
@@ -839,6 +839,83 @@ end interface
 !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
 !! reflectors returned by the base QR factorization algorithm.
 !!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine form_qr(real(real64) r(:,:), real(real64) tau(:), real(real64) q(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine form_qr(complex(real64) r(:,:), complex(real64) tau(:), complex(real64) q(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] r On input, an M-by-N matrix where the elements below the
+!!  diagonal contain the elementary reflectors generated from the QR
+!!  factorization.  On and above the diagonal, the matrix contains the
+!!  matrix R.  On output, the elements below the diagonal are zeroed such
+!!  that the remaining matrix is simply the M-by-N matrix R.
+!! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+!!  each elementary reflector defined in @p r.
+!! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
+!!  written.  In the event that M > N, Q may be supplied as M-by-N, and
+!!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+!!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORGQR (ZUNQR in the complex case).
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine form_qr(real(real64) r(:,:), real(real64) tau(:), integer(int32) pvt(:), real(real64) q(:,:), real(real64) p(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine form_qr(complex(real64) r(:,:), complex(real64) tau(:), integer(int32) pvt(:), complex(real64) q(:,:), complex(real64) p(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] r On input, an M-by-N matrix where the elements below the
+!!  diagonal contain the elementary reflectors generated from the QR
+!!  factorization.  On and above the diagonal, the matrix contains the
+!!  matrix R.  On output, the elements below the diagonal are zeroed such
+!!  that the remaining matrix is simply the M-by-N matrix R.
+!! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+!!  each elementary reflector defined in @p r.
+!! @param[in] pvt An N-element column pivot array as returned by the QR
+!!  factorization.
+!! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
+!!  written.  In the event that M > N, Q may be supplied as M-by-N, and
+!!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
+!!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
+!! @param[out] p An N-by-N matrix where the pivot matrix will be written.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORGQR (ZUNQR in the complex case).
+!!
 !! @par Usage
 !! The following example illustrates how to explicitly form the Q and R
 !! matrices from the output of qr_factor, and then use the resulting
@@ -922,10 +999,87 @@ end interface
 !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
 !! factorization.
 !!
+!! @par Syntax 1
+!! Multiplies a general matrix by the orthogonal matrix \f$ Q \f$ from a QR
+!! factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
+!! @code{.f90}
+!! subroutine mult_qr(logical lside, logical trans, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_qr(logical lside, logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!!
+!! @param[in] lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left;
+!!  else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.
+!! @param[in] a On input, an LDA-by-K matrix containing the elementary
+!!  reflectors output from the QR factorization.  If @p lside is set to
+!!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
+!!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
+!!  restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of each
+!!  elementary reflector defined in @p a.
+!! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+!!  of the orthogonal matrix Q and the original matrix C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[in,out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORMQR (ZUNMQR in the complex case).
+!!
+!! @par Syntax 2
+!! Multiplies a vector by the orthogonal matrix \f$ Q \f$ from a QR
+!! factorization such that: \f$ C = op(Q) C\f$.
+!! @code{.f90}
+!! subroutine mult_qr(logical trans, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_qr(logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.
+!! @param[in] a On input, an M-by-K matrix containing the elementary
+!!  reflectors output from the QR factorization.  Notice, the contents of
+!!  this matrix are restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of each
+!!  elementary reflector defined in @p a.
+!! @param[in,out] c On input, the M-element vector C.  On output, the
+!!  product of the orthogonal matrix Q and the original vector C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORMQR (ZUNMQR in the complex case).
+!!
 !! @par Usage
 !! The following example illustrates how to perform the multiplication
-!! Q**T * B when solving a system of QR factored equations without
-!! explicitly forming the matrix Q.
+!! \f$ Q^T B \f$ when solving a system of QR factored equations without
+!! explicitly forming the matrix \f$ Q \f$.
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
@@ -2357,40 +2511,7 @@ interface
         real(real64), intent(out), target, dimension(:), optional :: rwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
-    !! reflectors returned by the base QR factorization algorithm.
-    !!
-    !! @param[in,out] r On input, an M-by-N matrix where the elements below the
-    !!  diagonal contain the elementary reflectors generated from the QR
-    !!  factorization.  On and above the diagonal, the matrix contains the
-    !!  matrix R.  On output, the elements below the diagonal are zeroed such
-    !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p r.
-    !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
-    !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
-    !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
-    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DORGQR.
+    
     module subroutine form_qr_no_pivot(r, tau, q, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(in), dimension(:) :: tau
@@ -2399,40 +2520,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
-    !! reflectors returned by the base QR factorization algorithm.
-    !!
-    !! @param[in,out] r On input, an M-by-N matrix where the elements below the
-    !!  diagonal contain the elementary reflectors generated from the QR
-    !!  factorization.  On and above the diagonal, the matrix contains the
-    !!  matrix R.  On output, the elements below the diagonal are zeroed such
-    !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p r.
-    !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
-    !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
-    !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
-    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZUNGQR.
+    
     module subroutine form_qr_no_pivot_cmplx(r, tau, q, work, olwork, err)
         complex(real64), intent(inout), dimension(:,:) :: r
         complex(real64), intent(in), dimension(:) :: tau
@@ -2441,43 +2529,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
-    !! reflectors returned by the base QR factorization algorithm.
-    !!
-    !! @param[in,out] r On input, an M-by-N matrix where the elements below the
-    !!  diagonal contain the elementary reflectors generated from the QR
-    !!  factorization.  On and above the diagonal, the matrix contains the
-    !!  matrix R.  On output, the elements below the diagonal are zeroed such
-    !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p r.
-    !! @param[in] pvt An N-element column pivot array as returned by the QR
-    !!  factorization.
-    !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
-    !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
-    !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
-    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
-    !! @param[out] p An N-by-N matrix where the pivot matrix will be written.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DORGQR.
+    
     module subroutine form_qr_pivot(r, tau, pvt, q, p, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(in), dimension(:) :: tau
@@ -2488,42 +2540,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Forms the full M-by-M orthogonal matrix Q from the elementary
-    !! reflectors returned by the base QR factorization algorithm.
-    !!
-    !! @param[in,out] r On input, an M-by-N matrix where the elements below the
-    !!  diagonal contain the elementary reflectors generated from the QR
-    !!  factorization.  On and above the diagonal, the matrix contains the
-    !!  matrix R.  On output, the elements below the diagonal are zeroed such
-    !!  that the remaining matrix is simply the M-by-N matrix R.
-    !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
-    !!  each elementary reflector defined in @p r.
-    !! @param[in] pvt An N-element column pivot array as returned by the QR
-    !!  factorization.
-    !! @param[out] q An M-by-M matrix where the full orthogonal matrix Q will be
-    !!  written.  In the event that M > N, Q may be supplied as M-by-N, and
-    !!  therefore only return the useful submatrix Q1 (Q = [Q1, Q2]) as the
-    !!  factorization can be written as Q * R = [Q1, Q2] * [R1; 0].
-    !! @param[out] p An N-by-N matrix where the pivot matrix will be written.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZUNGQR.
     module subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p, work, olwork, err)
         complex(real64), intent(inout), dimension(:,:) :: r
         complex(real64), intent(in), dimension(:) :: tau
@@ -2533,41 +2549,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
-    !! factorization such that: C = op(Q) * C, or C = C * op(Q).
-    !!
-    !! @param[in] lside Set to true to apply Q or Q**T from the left; else, set
-    !!  to false to apply Q or Q**T from the right.
-    !! @param[in] trans Set to true to apply Q**T; else, set to false.
-    !! @param[in] a On input, an LDA-by-K matrix containing the elementary
-    !!  reflectors output from the QR factorization.  If @p lside is set to
-    !!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
-    !!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
-    !!  restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of each
-    !!  elementary reflector defined in @p a.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
-    !!  of the orthogonal matrix Q and the original matrix C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DORMQR.
+    
     module subroutine mult_qr_mtx(lside, trans, a, tau, c, work, olwork, err)
         logical, intent(in) :: lside, trans
         real(real64), intent(in), dimension(:) :: tau
@@ -2576,41 +2558,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a general matrix by the orthogonal matrix Q from a QR
-    !! factorization such that: C = op(Q) * C, or C = C * op(Q).
-    !!
-    !! @param[in] lside Set to true to apply Q or Q**T from the left; else, set
-    !!  to false to apply Q or Q**T from the right.
-    !! @param[in] trans Set to true to apply Q**H; else, set to false.
-    !! @param[in] a On input, an LDA-by-K matrix containing the elementary
-    !!  reflectors output from the QR factorization.  If @p lside is set to
-    !!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
-    !!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
-    !!  restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of each
-    !!  elementary reflector defined in @p a.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
-    !!  of the orthogonal matrix Q and the original matrix C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZUNMQR.
+    
     module subroutine mult_qr_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
         logical, intent(in) :: lside, trans
         complex(real64), intent(in), dimension(:) :: tau
@@ -2619,37 +2567,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a vector by the orthogonal matrix Q from a QR
-    !! factorization such that: C = op(Q) * C.
-    !!
-    !! @param[in] trans Set to true to apply Q**T; else, set to false.
-    !! @param[in] a On input, an M-by-K matrix containing the elementary
-    !!  reflectors output from the QR factorization.  Notice, the contents of
-    !!  this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of each
-    !!  elementary reflector defined in @p a.
-    !! @param[in,out] c On input, the M-element vector C.  On output, the
-    !!  product of the orthogonal matrix Q and the original vector C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine DORMQR.
+    
     module subroutine mult_qr_vec(trans, a, tau, c, work, olwork, err)
         logical, intent(in) :: trans
         real(real64), intent(inout), dimension(:,:) :: a
@@ -2659,37 +2577,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a vector by the orthogonal matrix Q from a QR
-    !! factorization such that: C = op(Q) * C.
-    !!
-    !! @param[in] trans Set to true to apply Q**H; else, set to false.
-    !! @param[in] a On input, an M-by-K matrix containing the elementary
-    !!  reflectors output from the QR factorization.  Notice, the contents of
-    !!  this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of each
-    !!  elementary reflector defined in @p a.
-    !! @param[in,out] c On input, the M-element vector C.  On output, the
-    !!  product of the orthogonal matrix Q and the original vector C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine DORMQR.
+    
     module subroutine mult_qr_vec_cmplx(trans, a, tau, c, work, olwork, err)
         logical, intent(in) :: trans
         complex(real64), intent(inout), dimension(:,:) :: a

@@ -107,8 +107,50 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1mult__rz.html
  <a href="interfacelinalg__core_1_1mult__rz.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Multiplies a general matrix by the orthogonal matrix Z from an RZ factorization. </p>
+<dl class="section user"><dt>Syntax 1</dt><dd>Multiplies a general matrix by the orthogonal matrix Z from an RZ factorization such that: \( C = op(Z) C \) , or \( C = C op(Z) \). <div class="fragment"><div class="line"><span class="keyword">subroutine </span>mult_rz(logical lside, logical trans, integer(int32) l, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>mult_rz(logical lside, logical trans, integer(int32) l, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lside</td><td>Set to true to apply \( Z \) or \( Z^T \) from the left; else, set to false to apply \( Z \) or \( Z^T \) from the right. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">trans</td><td>Set to true to apply \( Z^T \) ( \( Z^H \) in the complex case); else, set to false. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">l</td><td>The number of columns in matrix <code>a</code> containing the meaningful part of the Householder vectors. If <code>lside</code> is true, M &gt;= L &gt;= 0; else, if <code>lside</code> is false, N &gt;= L &gt;= 0. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input the K-by-LTA matrix Z, where LTA = M if <code>lside</code> is true; else, LTA = N if <code>lside</code> is false. The I-th row must contain the Householder vector in the last k rows. Notice, the contents of this matrix are restored on exit. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tau</td><td>A K-element array containing the scalar factors of the elementary reflectors, where M &gt;= K &gt;= 0 if <code>lside</code> is true; else, N &gt;= K &gt;= 0 if <code>lside</code> is false. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Z and the original matrix C. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Syntax 2</dt><dd>Multiplies a general matrix by the orthogonal matrix Z from an RZ factorization such that: \( C = op(Z) C \), or \( C = C op(Z) \). <div class="fragment"><div class="line"><span class="keyword">subroutine </span>mult_rz(logical trans, integer(int32) l, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>mult_rz(logical trans, integer(int32) l, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">trans</td><td>Set to true to apply \( Z^T \) ( \( Z^H \) in the complex case); else, set to false. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">l</td><td>The number of columns in matrix <code>a</code> containing the meaningful part of the Householder vectors. If <code>lside</code> is true, M &gt;= L &gt;= 0; else, if <code>lside</code> is false, N &gt;= L &gt;= 0. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input the K-by-LTA matrix Z, where LTA = M if <code>lside</code> is true; else, LTA = N if <code>lside</code> is false. The I-th row must contain the Householder vector in the last k rows. Notice, the contents of this matrix are restored on exit. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tau</td><td>A K-element array containing the scalar factors of the elementary reflectors, where M &gt;= K &gt;= 0 if <code>lside</code> is true; else, N &gt;= K &gt;= 0 if <code>lside</code> is false. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">c</td><td>On input, the M-element array C. On output, the product of the orthogonal matrix Z and the original array C. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DORMRZ (ZUNMRZ in the complex case). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l01617">1617</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l01763">1763</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

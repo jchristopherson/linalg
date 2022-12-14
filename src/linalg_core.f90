@@ -1603,9 +1603,72 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Factors an upper trapezoidal matrix by means of orthogonal
-!! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
+!! transformations such that \f$ A = R Z = (R 0) Z \f$. Z is an orthogonal
 !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
 !! matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine rz_factor(real(real64) a(:,:), real(real64) tau(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine rz_factor(complex(real64) a(:,:), complex(real64) tau(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
+!!  On output, the leading M-by-M upper triangular part of the matrix
+!!  contains the upper triangular matrix R, and elements N-L+1 to N of the
+!!  first M rows of A, with the array @p tau, represent the orthogonal
+!!  matrix Z as a product of M elementary reflectors.
+!! @param[out] tau An M-element array used to store the scalar
+!!  factors of the elementary reflectors.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Further Details
+!!  The factorization is obtained by Householder's method.  The kth
+!!  transformation matrix, Z( k ), which is used to introduce zeros into
+!!  the ( m - k + 1 )th row of A, is given in the form
+!! @verbatim
+!!     Z( k ) = ( I     0   ),
+!!              ( 0  T( k ) )
+!! @endverbatim
+!!  where
+!! @verbatim
+!!     T( k ) = I - tau*u( k )*u( k )**T,   u( k ) = (   1    ),
+!!                                                   (   0    )
+!!                                                   ( z( k ) )
+!! @endverbatim
+!!  tau is a scalar and z( k ) is an l element vector. tau and z( k )
+!!  are chosen to annihilate the elements of the kth row of A2.
+!!
+!!  The scalar tau is returned in the kth element of TAU and the vector
+!!  u( k ) in the kth row of A2, such that the elements of z( k ) are
+!!  in  a( k, l + 1 ), ..., a( k, n ). The elements of R are returned in
+!!  the upper triangular part of A1.
+!!
+!!  Z is given by
+!! @verbatim
+!!     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
+!! @endverbatim
+!!
+!! @par Notes
+!! This routine is based upon the LAPACK routine DTZRZF.
+!!
+!! @par See Also
+!! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node44.html)
 interface rz_factor
     module procedure :: rz_factor_dbl
     module procedure :: rz_factor_cmplx
@@ -1614,6 +1677,89 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
 !! RZ factorization.
+!!
+!! @par Syntax 1
+!! Multiplies a general matrix by the orthogonal matrix Z from an
+!! RZ factorization such that: \f$ C = op(Z) C \f$ , or \f$ C = C op(Z) \f$.
+!! @code{.f90}
+!! subroutine mult_rz(logical lside, logical trans, integer(int32) l, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_rz(logical lside, logical trans, integer(int32) l, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lside Set to true to apply \f$ Z \f$ or \f$ Z^T \f$ from the left;
+!!  else, set to false to apply \f$ Z \f$ or \f$ Z^T \f$ from the right.
+!! @param[in] trans Set to true to apply \f$ Z^T \f$ (\f$ Z^H \f$ in the 
+!!  complex case); else, set to false.
+!! @param[in] l The number of columns in matrix @p a containing the
+!!  meaningful part of the Householder vectors.  If @p lside is true,
+!!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
+!! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
+!!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
+!!  contain the Householder vector in the last k rows. Notice, the contents
+!!  of this matrix are restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of the
+!!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
+!!  N >= K >= 0 if @p lside is false.
+!! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+!!  of the orthogonal matrix Z and the original matrix C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Syntax 2
+!! Multiplies a general matrix by the orthogonal matrix Z from an
+!! RZ factorization such that: \f$ C = op(Z) C \f$, or \f$ C = C op(Z) \f$.
+!! @code{.f90}
+!! subroutine mult_rz(logical trans, integer(int32) l, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_rz(logical trans, integer(int32) l, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] trans Set to true to apply \f$ Z^T \f$ (\f$ Z^H \f$ in the 
+!!  complex case); else, set to false.
+!! @param[in] l The number of columns in matrix @p a containing the
+!!  meaningful part of the Householder vectors.  If @p lside is true,
+!!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
+!! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
+!!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
+!!  contain the Householder vector in the last k rows. Notice, the contents
+!!  of this matrix are restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of the
+!!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
+!!  N >= K >= 0 if @p lside is false.
+!! @param[in,out] c On input, the M-element array C.  On output, the product
+!!  of the orthogonal matrix Z and the original array C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORMRZ (ZUNMRZ in the complex case).
 interface mult_rz
     module procedure :: mult_rz_mtx
     module procedure :: mult_rz_mtx_cmplx
@@ -1623,9 +1769,57 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the singular value decomposition of a matrix A.  The
-!!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
-!!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
-!!  matrix.
+!!  SVD is defined as: \f$ A = U S V^T \f$, where \f$ U \f$ is an M-by-M 
+!!  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is 
+!!  an N-by-N orthogonal matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine svd(real(real64) a(:,:), real(real64) s(:), optional real(real64) u(:,:), optional real(real64) vt(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine svd(complex(real64) a(:,:), real(real64) s(:), optional complex(real64) u(:,:), optional complex(real64) vt(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional real(real64) rwork(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
+!!  overwritten on output.
+!! @param[out] s A MIN(M, N)-element array containing the singular values
+!!  of @p a sorted in descending order.
+!! @param[out] u An optional argument, that if supplied, is used to contain
+!!  the orthogonal matrix U from the decomposition.  The matrix U contains
+!!  the left singular vectors, and can be either M-by-M (all left singular
+!!  vectors are computed), or M-by-MIN(M,N) (only the first MIN(M, N) left
+!!  singular vectors are computed).
+!! @param[out] vt An optional argument, that if supplied, is used to contain
+!!  the conjugate transpose of the N-by-N orthogonal matrix V.  The matrix 
+!!  V contains the right singular vectors.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation for complex-valued workspaces.  If not provided, the 
+!!  memory required is allocated within.  If provided, the length of the 
+!!  array must be at least @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[out] rwork An optional input, that if provided, prevents any local
+!!  memory allocation for real-valued workspaces.  If not provided, the 
+!!  memory required is allocated within.  If provided, the length of the 
+!!  array must be at least 5 * MIN(M, N).
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
+!!      could not converge to a zero value.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGESVD (ZGESVD in the complex case).
+!!
+!! @par See Also
+!! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
+!! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
 !!
 !! @par Usage
 !! The following example illustrates the calculation of the singular value
@@ -1664,7 +1858,7 @@ end interface
 !!         print *, vt(i,:)
 !!     end do
 !!
-!!     ! Compute U * S * V**T, but first establish S in full form
+!!     ! Compute U * S * V**T
 !!     call diag_mtx_mult(.true., 1.0d0, s, vt) ! Compute: VT = S * V**T
 !!     ac = matmul(u(:,1:2), vt)
 !!     print '(A)', "U * S * V**T ="
@@ -2778,69 +2972,7 @@ interface
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Factors an upper trapezoidal matrix by means of orthogonal
-    !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
-    !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
-    !! matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
-    !!  On output, the leading M-by-M upper triangular part of the matrix
-    !!  contains the upper triangular matrix R, and elements N-L+1 to N of the
-    !!  first M rows of A, with the array @p tau, represent the orthogonal
-    !!  matrix Z as a product of M elementary reflectors.
-    !! @param[out] tau An M-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Further Details
-    !! @verbatim
-    !!  The factorization is obtained by Householder's method.  The kth
-    !!  transformation matrix, Z( k ), which is used to introduce zeros into
-    !!  the ( m - k + 1 )th row of A, is given in the form
-    !!
-    !!     Z( k ) = ( I     0   ),
-    !!              ( 0  T( k ) )
-    !!
-    !!  where
-    !!
-    !!     T( k ) = I - tau*u( k )*u( k )**T,   u( k ) = (   1    ),
-    !!                                                   (   0    )
-    !!                                                   ( z( k ) )
-    !!
-    !!  tau is a scalar and z( k ) is an l element vector. tau and z( k )
-    !!  are chosen to annihilate the elements of the kth row of A2.
-    !!
-    !!  The scalar tau is returned in the kth element of TAU and the vector
-    !!  u( k ) in the kth row of A2, such that the elements of z( k ) are
-    !!  in  a( k, l + 1 ), ..., a( k, n ). The elements of R are returned in
-    !!  the upper triangular part of A1.
-    !!
-    !!  Z is given by
-    !!
-    !!     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
-    !! @endverbatim
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine DTZRZF.
-    !!
-    !! @par See Also
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node44.html)
+    
     module subroutine rz_factor_dbl(a, tau, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: tau
@@ -2848,69 +2980,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Factors an upper trapezoidal matrix by means of orthogonal
-    !! transformations such that A = R * Z = (R 0) * Z.  Z is an orthogonal
-    !! matrix of dimension N-by-N, and R is an M-by-M upper triangular
-    !! matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N upper trapezoidal matrix to factor.
-    !!  On output, the leading M-by-M upper triangular part of the matrix
-    !!  contains the upper triangular matrix R, and elements N-L+1 to N of the
-    !!  first M rows of A, with the array @p tau, represent the orthogonal
-    !!  matrix Z as a product of M elementary reflectors.
-    !! @param[out] tau An M-element array used to store the scalar
-    !!  factors of the elementary reflectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Further Details
-    !! @verbatim
-    !!  The factorization is obtained by Householder's method.  The kth
-    !!  transformation matrix, Z( k ), which is used to introduce zeros into
-    !!  the ( m - k + 1 )th row of A, is given in the form
-    !!
-    !!     Z( k ) = ( I     0   ),
-    !!              ( 0  T( k ) )
-    !!
-    !!  where
-    !!
-    !!     T( k ) = I - tau*u( k )*u( k )**T,   u( k ) = (   1    ),
-    !!                                                   (   0    )
-    !!                                                   ( z( k ) )
-    !!
-    !!  tau is a scalar and z( k ) is an l element vector. tau and z( k )
-    !!  are chosen to annihilate the elements of the kth row of A2.
-    !!
-    !!  The scalar tau is returned in the kth element of TAU and the vector
-    !!  u( k ) in the kth row of A2, such that the elements of z( k ) are
-    !!  in  a( k, l + 1 ), ..., a( k, n ). The elements of R are returned in
-    !!  the upper triangular part of A1.
-    !!
-    !!  Z is given by
-    !!
-    !!     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
-    !! @endverbatim
-    !!
-    !! @par Notes
-    !! This routine is based upon the LAPACK routine ZTZRZF.
-    !!
-    !! @par See Also
-    !! - [LAPACK Users Manual](http://netlib.org/lapack/lug/node44.html)
+    
     module subroutine rz_factor_cmplx(a, tau, work, olwork, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: tau
@@ -2918,44 +2988,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
-    !! RZ factorization such that: C = op(Z) * C, or C = C * op(Z).
-    !!
-    !! @param[in] lside Set to true to apply Z or Z**T from the left; else, set
-    !!  to false to apply Z or Z**T from the right.
-    !! @param[in] trans Set to true to apply Z**T; else, set to false.
-    !! @param[in] l The number of columns in matrix @p a containing the
-    !!  meaningful part of the Householder vectors.  If @p lside is true,
-    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
-    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
-    !!  contain the Householder vector in the last k rows. Notice, the contents
-    !!  of this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of the
-    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
-    !!  N >= K >= 0 if @p lside is false.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
-    !!  of the orthogonal matrix Z and the original matrix C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DORMRZ.
+    
     module subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
         logical, intent(in) :: lside, trans
         integer(int32), intent(in) :: l
@@ -2965,44 +2998,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a general matrix by the orthogonal matrix Z from an
-    !! RZ factorization such that: C = op(Z) * C, or C = C * op(Z).
-    !!
-    !! @param[in] lside Set to true to apply Z or Z**T from the left; else, set
-    !!  to false to apply Z or Z**T from the right.
-    !! @param[in] trans Set to true to apply Z**H; else, set to false.
-    !! @param[in] l The number of columns in matrix @p a containing the
-    !!  meaningful part of the Householder vectors.  If @p lside is true,
-    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
-    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
-    !!  contain the Householder vector in the last k rows. Notice, the contents
-    !!  of this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of the
-    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
-    !!  N >= K >= 0 if @p lside is false.
-    !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
-    !!  of the orthogonal matrix Z and the original matrix C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZUNMRZ.
+    
     module subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
         logical, intent(in) :: lside, trans
         integer(int32), intent(in) :: l
@@ -3012,42 +3008,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a vector by the orthogonal matrix Z from an
-    !! RZ factorization such that: C = op(Z) * C.
-    !!
-    !! @param[in] trans Set to true to apply Z**T; else, set to false.
-    !! @param[in] l The number of columns in matrix @p a containing the
-    !!  meaningful part of the Householder vectors.  If @p lside is true,
-    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
-    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
-    !!  contain the Householder vector in the last k rows. Notice, the contents
-    !!  of this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of the
-    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
-    !!  N >= K >= 0 if @p lside is false.
-    !! @param[in,out] c On input, the M-element array C.  On output, the product
-    !!  of the orthogonal matrix Z and the original array C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DORMRZ.
+    
     module subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
         logical, intent(in) :: trans
         integer(int32), intent(in) :: l
@@ -3058,42 +3019,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Multiplies a vector by the orthogonal matrix Z from an
-    !! RZ factorization such that: C = op(Z) * C.
-    !!
-    !! @param[in] trans Set to true to apply Z**T; else, set to false.
-    !! @param[in] l The number of columns in matrix @p a containing the
-    !!  meaningful part of the Householder vectors.  If @p lside is true,
-    !!  M >= L >= 0; else, if @p lside is false, N >= L >= 0.
-    !! @param[in,out] a On input the K-by-LTA matrix Z, where LTA = M if
-    !!  @p lside is true; else, LTA = N if @p lside is false.  The I-th row must
-    !!  contain the Householder vector in the last k rows. Notice, the contents
-    !!  of this matrix are restored on exit.
-    !! @param[in] tau A K-element array containing the scalar factors of the
-    !!  elementary reflectors, where M >= K >= 0 if @p lside is true; else,
-    !!  N >= K >= 0 if @p lside is false.
-    !! @param[in,out] c On input, the M-element array C.  On output, the product
-    !!  of the orthogonal matrix Z and the original array C.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZUNMRZ.
+    
     module subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
         logical, intent(in) :: trans
         integer(int32), intent(in) :: l

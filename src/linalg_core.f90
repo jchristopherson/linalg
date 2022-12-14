@@ -3030,49 +3030,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the singular value decomposition of a matrix A.  The
-    !!  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
-    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
-    !!  matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
-    !!  overwritten on output.
-    !! @param[out] s A MIN(M, N)-element array containing the singular values
-    !!  of @p a sorted in descending order.
-    !! @param[out] u An optional argument, that if supplied, is used to contain
-    !!  the orthogonal matrix U from the decomposition.  The matrix U contains
-    !!  the left singular vectors, and can be either M-by-M (all left singular
-    !!  vectors are computed), or M-by-MIN(M,N) (only the first MIN(M, N) left
-    !!  singular vectors are computed).
-    !! @param[out] vt An optional argument, that if supplied, is used to contain
-    !!  the transpose of the N-by-N orthogonal matrix V.  The matrix V contains
-    !!  the right singular vectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGESVD.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
+    
     module subroutine svd_dbl(a, s, u, vt, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: s
@@ -3081,53 +3039,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the singular value decomposition of a matrix A.  The
-    !!  SVD is defined as: A = U * S * V**H, where U is an M-by-M orthogonal
-    !!  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
-    !!  matrix.
-    !!
-    !! @param[in,out] a On input, the M-by-N matrix to factor.  The matrix is
-    !!  overwritten on output.
-    !! @param[out] s A MIN(M, N)-element array containing the singular values
-    !!  of @p a sorted in descending order.
-    !! @param[out] u An optional argument, that if supplied, is used to contain
-    !!  the orthogonal matrix U from the decomposition.  The matrix U contains
-    !!  the left singular vectors, and can be either M-by-M (all left singular
-    !!  vectors are computed), or M-by-MIN(M,N) (only the first MIN(M, N) left
-    !!  singular vectors are computed).
-    !! @param[out] vt An optional argument, that if supplied, is used to contain
-    !!  the conjugate transpose of the N-by-N orthogonal matrix V.  The matrix 
-    !!  V contains the right singular vectors.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation for complex-valued workspaces.  If not provided, the 
-    !!  memory required is allocated within.  If provided, the length of the 
-    !!  array must be at least @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] rwork An optional input, that if provided, prevents any local
-    !!  memory allocation for real-valued workspaces.  If not provided, the 
-    !!  memory required is allocated within.  If provided, the length of the 
-    !!  array must be at least 5 * MIN(M, N).
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process
-    !!      could not converge to a zero value.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZGESVD.
-    !!
-    !! @par See Also
-    !! - [Wikipedia](https://en.wikipedia.org/wiki/Singular_value_decomposition)
-    !! - [Wolfram MathWorld](http://mathworld.wolfram.com/SingularValueDecomposition.html)
+    
     module subroutine svd_cmplx(a, s, u, vt, work, olwork, rwork, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         real(real64), intent(out), dimension(:) :: s

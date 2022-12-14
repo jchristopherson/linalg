@@ -1151,7 +1151,54 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
-!! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+!! (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
+!! \f$ A1 = Q1 R1 \f$.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine qr_rank1_update(real(real64) q(:,:), real(real64) r(:,:), real(real64) u(:), real(real64) v(:), optional real(real64) work(:), optional class(errors) err)
+!! subroutine qr_rank1_update(complex(real64) q(:,:), complex(real64) r(:,:), complex(real64) u(:), complex(real64) v(:), optional complex(real64) work(:), optional real(real64) rwork(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
+!!  output, the updated matrix Q1.
+!! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
+!!  matrix R1.
+!! @param[in,out] u On input, the M-element U update vector.  On output,
+!!  the original content of the array is overwritten.
+!! @param[in,out] v On input, the N-element V update vector.  On output,
+!!  the original content of the array is overwritten.
+!! @param[out] work An optional argument that if supplied prevents local
+!!  memory allocation.  If provided, the array must have at least K
+!!  elements.
+!! @param[out] rwork An optional argument that if supplied prevents local
+!!  memory allocation.  If provided, the array must have at least K
+!!  elements.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Remarks
+!! Notice, K must either be equal to M, or equal to N.  In the event that K = N,
+!! only the submatrix Qa is updated.  This is appropriate as the QR
+!! factorization for an overdetermined system can be written as follows:
+!! @verbatim
+!!  A = Q * R = [Qa, Qb] * [Ra]
+!!                         [0 ]
+!! @endverbatim
+!! Note: Ra is upper triangular of dimension N-by-N.
+!!
+!! @par Notes
+!! This routine utilizes the QRUPDATE routine ZQR1UP.
+!!
+!! @par See Also
+!! [Source](https://sourceforge.net/projects/qrupdate/)
 !!
 !! @par Usage
 !! The following example illustrates a rank 1 update to a QR factored
@@ -1253,6 +1300,30 @@ end interface
 !> @brief Computes the Cholesky factorization of a symmetric, positive
 !! definite matrix.
 !!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine cholesky_factor(real(real64) a(:,:), optional logical upper, optional class(errors) err)
+!! subroutine cholesky_factor(complex(real64) a(:,:), optional logical upper, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
+!!  factored matrix is returned in either the upper or lower triangular
+!!  portion of the matrix, dependent upon the value of @p upper.
+!! @param[in] upper An optional input that, if specified, provides control
+!!  over whether the factorization is computed as \f$ A = U^T U \f$ (set to
+!!  true), or as \f$ A = L L^T \f$ (set to false).  The default value is true
+!!  such that \f$ A = U^T U \f$.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.
+!!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DPOTRF (ZPOTRF in the complex case).
+!!
 !! @par Usage
 !! The following example illustrates the solution of a positive-definite
 !! system of equations via Cholesky factorization.
@@ -1328,6 +1399,37 @@ end interface
 !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
 !! triangular).
 !!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine cholesky_rank1_update(real(real64) r(:,:), real(real64) u(:), optional real(real64) work(:), optional class(errors) err)
+!! subroutine cholesky_rank1_update(complex(real64) r(:,:), complex(real64) u(:), optional complex(real64) work(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+!!  output, the updated matrix R1.
+!! @param[in,out] u On input, the N-element update vector U.  On output,
+!!  the rotation sines used to transform R to R1.
+!! @param[out] work An optional argument that if supplied prevents local
+!!  memory allocation.  If provided, the array must have at least N
+!!  elements.  Additionally, this workspace array is used to contain the
+!!  rotation cosines used to transform R to R1.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the QRUPDATE routine DCH1UP (ZCH1UP in the complex 
+!! case).
+!!
+!! @par See Also
+!! [Source](https://sourceforge.net/projects/qrupdate/)
+!!
 !! @par Usage
 !! The following example illustrates the use of the rank 1 Cholesky update,
 !! and compares the results to factoring the original rank 1 updated matrix.
@@ -1395,6 +1497,40 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
 !! triangular).
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine cholesky_rank1_downdate(real(real64) r(:,:), real(real64) u(:), optional real(real64) work(:), optional class(errors) err)
+!! subroutine cholesky_rank1_downdate(complex(real64) r(:,:), complex(real64) u(:), optional complex(real64) work(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
+!!  output, the updated matrix R1.
+!! @param[in,out] u On input, the N-element update vector U.  On output,
+!!  the rotation sines used to transform R to R1.
+!! @param[out] work An optional argument that if supplied prevents local
+!!  memory allocation.  If provided, the array must have at least N
+!!  elements.  Additionally, this workspace array is used to contain the
+!!  rotation cosines used to transform R to R1.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
+!!      positive definite.
+!!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
+!!
+!! @par Notes
+!! This routine utilizes the QRUPDATE routine DCH1DN (ZCH1DN in the complex
+!! case).
+!!
+!! @par See Also
+!! [Source](https://sourceforge.net/projects/qrupdate/)
 !!
 !! @par Usage
 !! The following example illustrates the use of the rank 1 Cholesky
@@ -2587,97 +2723,14 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
-    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
-    !!
-    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
-    !!  output, the updated matrix Q1.
-    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
-    !!  matrix R1.
-    !! @param[in,out] u On input, the M-element U update vector.  On output,
-    !!  the original content of the array is overwritten.
-    !! @param[in,out] v On input, the N-element V update vector.  On output,
-    !!  the original content of the array is overwritten.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least 2*K
-    !!  elements.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Remarks
-    !! @verbatim
-    !! Notice, K must either be equal to M, or to N.  In the event that K = N,
-    !! only the submatrix Qa is updated.  This is appropriate as the QR
-    !! factorization for an overdetermined system can be written as follows:
-    !!  A = Q * R = [Qa, Qb] * [Ra]
-    !!                         [0 ]
-    !!
-    !! Note: Ra is upper triangular of dimension N-by-N.
-    !! @endverbatim
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine DQR1UP.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    
     module subroutine qr_rank1_update_dbl(q, r, u, v, work, err)
         real(real64), intent(inout), dimension(:,:) :: q, r
         real(real64), intent(inout), dimension(:) :: u, v
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
-    !! (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
-    !!
-    !! @param[in,out] q On input, the original M-by-K orthogonal matrix Q.  On
-    !!  output, the updated matrix Q1.
-    !! @param[in,out] r On input, the M-by-N matrix R.  On output, the updated
-    !!  matrix R1.
-    !! @param[in,out] u On input, the M-element U update vector.  On output,
-    !!  the original content of the array is overwritten.
-    !! @param[in,out] v On input, the N-element V update vector.  On output,
-    !!  the original content of the array is overwritten.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least K
-    !!  elements.
-    !! @param[out] rwork An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least K
-    !!  elements.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Remarks
-    !! @verbatim
-    !! Notice, K must either be equal to M, or to N.  In the event that K = N,
-    !! only the submatrix Qa is updated.  This is appropriate as the QR
-    !! factorization for an overdetermined system can be written as follows:
-    !!  A = Q * R = [Qa, Qb] * [Ra]
-    !!                         [0 ]
-    !!
-    !! Note: Ra is upper triangular of dimension N-by-N.
-    !! @endverbatim
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine ZQR1UP.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    
     module subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)
         complex(real64), intent(inout), dimension(:,:) :: q, r
         complex(real64), intent(inout), dimension(:) :: u, v
@@ -2685,190 +2738,40 @@ interface
         real(real64), intent(out), target, optional, dimension(:) :: rwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the Cholesky factorization of a symmetric, positive
-    !! definite matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
-    !!  factored matrix is returned in either the upper or lower triangular
-    !!  portion of the matrix, dependent upon the value of @p upper.
-    !! @param[in] upper An optional input that, if specified, provides control
-    !!  over whether the factorization is computed as A = U**T * U (set to
-    !!  true), or as A = L * L**T (set to false).  The default value is true
-    !!  such that A = U**T * U.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DPOTRF.
+    
     module subroutine cholesky_factor_dbl(a, upper, err)
         real(real64), intent(inout), dimension(:,:) :: a
         logical, intent(in), optional :: upper
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the Cholesky factorization of a symmetric, positive
-    !! definite matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix to factor.  On output, the
-    !!  factored matrix is returned in either the upper or lower triangular
-    !!  portion of the matrix, dependent upon the value of @p upper.
-    !! @param[in] upper An optional input that, if specified, provides control
-    !!  over whether the factorization is computed as A = U**H * U (set to
-    !!  true), or as A = L * L**H (set to false).  The default value is true
-    !!  such that A = U**H * U.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a is not square.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is not positive definite.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZPOTRF.
+    
     module subroutine cholesky_factor_cmplx(a, upper, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         logical, intent(in), optional :: upper
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
-    !! triangular).
-    !!
-    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
-    !!  output, the updated matrix R1.
-    !! @param[in,out] u On input, the N-element update vector U.  On output,
-    !!  the rotation sines used to transform R to R1.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least N
-    !!  elements.  Additionally, this workspace array is used to contain the
-    !!  rotation cosines used to transform R to R1.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine DCH1UP.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
     module subroutine cholesky_rank1_update_dbl(r, u, work, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(inout), dimension(:) :: u
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the rank 1 update to a Cholesky factored matrix (upper
-    !! triangular).
-    !!
-    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
-    !!  output, the updated matrix R1.
-    !! @param[in,out] u On input, the N-element update vector U.  On output,
-    !!  the rotation sines used to transform R to R1.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least N
-    !!  elements.  Additionally, this workspace array is used to contain the
-    !!  rotation cosines used to transform R to R1.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine ZCH1UP.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    
     module subroutine cholesky_rank1_update_cmplx(r, u, work, err)
         complex(real64), intent(inout), dimension(:,:) :: r
         complex(real64), intent(inout), dimension(:) :: u
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
-    !! triangular).
-    !!
-    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
-    !!  output, the updated matrix R1.
-    !! @param[in,out] u On input, the N-element update vector U.  On output,
-    !!  the rotation sines used to transform R to R1.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least N
-    !!  elements.  Additionally, this workspace array is used to contain the
-    !!  rotation cosines used to transform R to R1.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
-    !!      positive definite.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine DCH1DN.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    
     module subroutine cholesky_rank1_downdate_dbl(r, u, work, err)
         real(real64), intent(inout), dimension(:,:) :: r
         real(real64), intent(inout), dimension(:) :: u
         real(real64), intent(out), target, optional, dimension(:) :: work
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the rank 1 downdate to a Cholesky factored matrix (upper
-    !! triangular).
-    !!
-    !! @param[in,out] r On input, the N-by-N upper triangular matrix R.  On
-    !!  output, the updated matrix R1.
-    !! @param[in,out] u On input, the N-element update vector U.  On output,
-    !!  the rotation sines used to transform R to R1.
-    !! @param[out] work An optional argument that if supplied prevents local
-    !!  memory allocation.  If provided, the array must have at least N
-    !!  elements.  Additionally, this workspace array is used to contain the
-    !!  rotation cosines used to transform R to R1.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
-    !!      incorrect.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not
-    !!      positive definite.
-    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p r is singular.
-    !!
-    !! @par Notes
-    !! This routine utilizes the QRUPDATE routine ZCH1DN.
-    !!
-    !! @par See Also
-    !! [Source](https://sourceforge.net/projects/qrupdate/)
+    
     module subroutine cholesky_rank1_downdate_cmplx(r, u, work, err)
         complex(real64), intent(inout), dimension(:,:) :: r
         complex(real64), intent(inout), dimension(:) :: u

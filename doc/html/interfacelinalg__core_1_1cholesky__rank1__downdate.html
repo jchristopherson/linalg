@@ -107,6 +107,26 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1cholesky__ran
  <a href="interfacelinalg__core_1_1cholesky__rank1__downdate.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Computes the rank 1 downdate to a Cholesky factored matrix (upper triangular). </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>cholesky_rank1_downdate(real(real64) r(:,:), real(real64) u(:), optional real(real64) work(:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>cholesky_rank1_downdate(complex(real64) r(:,:), complex(real64) u(:), optional complex(real64) work(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">r</td><td>On input, the N-by-N upper triangular matrix R. On output, the updated matrix R1. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">u</td><td>On input, the N-element update vector U. On output, the rotation sines used to transform R to R1. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional argument that if supplied prevents local memory allocation. If provided, the array must have at least N elements. Additionally, this workspace array is used to contain the rotation cosines used to transform R to R1. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+<li>LA_MATRIX_FORMAT_ERROR: Occurs if the downdated matrix is not positive definite.</li>
+<li>LA_SINGULAR_MATRIX_ERROR: Occurs if <code>r</code> is singular.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the QRUPDATE routine DCH1DN (ZCH1DN in the complex case).</dd></dl>
+<dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a></dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the use of the rank 1 Cholesky downdate, and compares the results to factoring the original rank 1 downdated matrix. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
 <div class="line">    <span class="keywordtype">use </span>linalg_factor, <span class="keywordtype">only</span> : cholesky_factor, cholesky_rank1_downdate</div>
@@ -154,8 +174,8 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1cholesky__ran
 <div class="line">        print *, ad(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1cholesky__factor_html"><div class="ttname"><a href="interfacelinalg__core_1_1cholesky__factor.html">linalg_core::cholesky_factor</a></div><div class="ttdoc">Computes the Cholesky factorization of a symmetric, positive definite matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01322">linalg_core.f90:1322</a></div></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1cholesky__rank1__downdate_html"><div class="ttname"><a href="interfacelinalg__core_1_1cholesky__rank1__downdate.html">linalg_core::cholesky_rank1_downdate</a></div><div class="ttdoc">Computes the rank 1 downdate to a Cholesky factored matrix (upper triangular).</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01463">linalg_core.f90:1463</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1cholesky__factor_html"><div class="ttname"><a href="interfacelinalg__core_1_1cholesky__factor.html">linalg_core::cholesky_factor</a></div><div class="ttdoc">Computes the Cholesky factorization of a symmetric, positive definite matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01393">linalg_core.f90:1393</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1cholesky__rank1__downdate_html"><div class="ttname"><a href="interfacelinalg__core_1_1cholesky__rank1__downdate.html">linalg_core::cholesky_rank1_downdate</a></div><div class="ttdoc">Computes the rank 1 downdate to a Cholesky factored matrix (upper triangular).</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01599">linalg_core.f90:1599</a></div></div>
 <div class="ttc" id="ainterfacelinalg__core_1_1rank1__update_html"><div class="ttname"><a href="interfacelinalg__core_1_1rank1__update.html">linalg_core::rank1_update</a></div><div class="ttdoc">Performs the rank-1 update to matrix A such that: , where  is an M-by-N matrix, is a scalar,...</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00154">linalg_core.f90:154</a></div></div>
 <div class="ttc" id="anamespacelinalg__core_html"><div class="ttname"><a href="namespacelinalg__core.html">linalg_core</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00015">linalg_core.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Downdating the Factored Form:</div>
@@ -168,7 +188,7 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1cholesky__ran
 <div class="line"> 0.0000000000000000        0.0000000000000000        3.0000000000000000</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l01463">1463</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l01599">1599</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

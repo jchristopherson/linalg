@@ -103,10 +103,35 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1solve__least_
 </div><!--header-->
 <div class="contents">
 
-<p>Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns using a singular value decomposition of matrix A.  
+<p>Solves the overdetermined or underdetermined system \( A X = B \) of M equations of N unknowns using a singular value decomposition of matrix A.  
  <a href="interfacelinalg__core_1_1solve__least__squares__svd.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns using a singular value decomposition of matrix A. </p>
+<div class="textblock"><p >Solves the overdetermined or underdetermined system \( A X = B \) of M equations of N unknowns using a singular value decomposition of matrix A. </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>solve_least_squares_svd(real(real64) a(:,:), real(real64) b(:,:), optional real(real64) s(:), optional integer(int32) arnk, optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_least_squares_svd(complex(real64) a(:,:), complex(real64) b(:,:), optional real(real64) s(:), optional integer(int32) arnk, optional complex(real64) work(:), optional integer(int32) olwork, optional real(real64) rwork(:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_least_squares_svd(real(real64) a(:,:), real(real64) b(:), optional real(real64) s(:), optional integer(int32) arnk, optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_least_squares_svd(complex(real64) a(:,:), complex(real64) b(:), optional real(real64) s(:), optional integer(int32) arnk, optional complex(real64) work(:), optional integer(int32) olwork, optional real(real64) rwork(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input, the M-by-N matrix A. On output, the matrix is overwritten by the details of its complete orthogonal factorization. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">b</td><td>If M &gt;= N, the M-by-NRHS matrix B. On output, the first N rows contain the N-by-NRHS solution matrix X. If M &lt; N, an N-by-NRHS matrix with the first M rows containing the matrix B. On output, the N-by-NRHS solution matrix X. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">arnk</td><td>An optional output, that if provided, will return the rank of <code>a</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">s</td><td>An optional MIN(M, N)-element array that on output contains the singular values of <code>a</code> in descending order. Notice, the condition number of <code>a</code> can be determined by S(1) / S(MIN(M, N)). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">arnk</td><td>An optional output, that if provided, will return the rank of <code>a</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation for complex-valued workspaces. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rwork</td><td>An optional input, that if provided, prevents any local memory allocation for real-valued workspaces. If not provided, the memory required is allocated within. If provided, the length of the array must be at least 5 * MIN(M, N). </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+<li>LA_CONVERGENCE_ERROR: Occurs as a warning if the QR iteration process could not converge to a zero value.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSS (ZGELSS in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the least squares solution of an overdetermined system of linear equations. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
 <div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg__core.html">linalg_core</a></div>
@@ -139,14 +164,14 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1solve__least_
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Least Squares Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F9.5)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(a, 2))</div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1solve__least__squares__svd_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__least__squares__svd.html">linalg_core::solve_least_squares_svd</a></div><div class="ttdoc">Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns using a si...</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02397">linalg_core.f90:2397</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1solve__least__squares__svd_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__least__squares__svd.html">linalg_core::solve_least_squares_svd</a></div><div class="ttdoc">Solves the overdetermined or underdetermined system  of M equations of N unknowns using a singular va...</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02643">linalg_core.f90:2643</a></div></div>
 <div class="ttc" id="anamespacelinalg__core_html"><div class="ttname"><a href="namespacelinalg__core.html">linalg_core</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00015">linalg_core.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Least Squares Solution: X =</div>
 <div class="line"> 0.13158</div>
 <div class="line">-0.57895</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02397">2397</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02643">2643</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

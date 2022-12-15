@@ -107,6 +107,24 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1solve__choles
  <a href="interfacelinalg__core_1_1solve__cholesky.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Solves a system of Cholesky factored equations. </p>
+<dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>solve_cholesky(logical upper, real(real64) a(:,:), real(real64) b(:,:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_cholesky(logical upper, complex(real64) a(:,:), complex(real64) b(:,:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_cholesky(logical upper, real(real64) a(:,:), real(real64) b(:), optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>solve_cholesky(logical upper, complex(real64) a(:,:), complex(real64) b(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">upper</td><td>Set to true if the original matrix \( A \) was factored such that \( A = U^T U \); else, set to false if the factorization of \( A \) was \( A = L L^T \). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N Cholesky factored matrix as returned by <a class="el" href="interfacelinalg__core_1_1cholesky__factor.html">cholesky_factor</a>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">b</td><td>On input, the N-by-NRHS right-hand-side matrix B. On output, the solution matrix X. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRS (ZPOTRS in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the solution of a positive-definite system of equations via Cholesky factorization. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
 <div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg__core.html">linalg_core</a></div>
@@ -158,8 +176,8 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1solve__choles
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (bu(i), i = 1, <span class="keyword">size</span>(bu))</div>
 <div class="line"><span class="keyword">end program</span></div>
 <div class="ttc" id="ainterfacelinalg__core_1_1cholesky__factor_html"><div class="ttname"><a href="interfacelinalg__core_1_1cholesky__factor.html">linalg_core::cholesky_factor</a></div><div class="ttdoc">Computes the Cholesky factorization of a symmetric, positive definite matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l01393">linalg_core.f90:1393</a></div></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1solve__cholesky_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__cholesky.html">linalg_core::solve_cholesky</a></div><div class="ttdoc">Solves a system of Cholesky factored equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02233">linalg_core.f90:2233</a></div></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__triangular__system.html">linalg_core::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02020">linalg_core.f90:2020</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1solve__cholesky_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__cholesky.html">linalg_core::solve_cholesky</a></div><div class="ttdoc">Solves a system of Cholesky factored equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02350">linalg_core.f90:2350</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg__core_1_1solve__triangular__system.html">linalg_core::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02021">linalg_core.f90:2021</a></div></div>
 <div class="ttc" id="anamespacelinalg__core_html"><div class="ttname"><a href="namespacelinalg__core.html">linalg_core</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00015">linalg_core.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Cholesky Solution: X =</div>
 <div class="line"> 239.5833</div>
@@ -171,7 +189,7 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1solve__choles
 <div class="line"> 10.3333</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02233">2233</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02350">2350</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

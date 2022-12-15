@@ -81,8 +81,7 @@ set(qrupdate_sources
 
 # Define the LINALG source files
 set(LINALG_SOURCES
-    ${dir}/linalg_core.f90
-    ${dir}/linalg_constants.f90
+    ${dir}/linalg.f90
     ${dir}/linalg_eigen.f90
     ${dir}/linalg_factor.f90
     ${dir}/linalg_solve.f90

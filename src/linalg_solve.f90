@@ -4,7 +4,7 @@
 !!
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
-submodule (linalg_core) linalg_solve
+submodule (linalg) linalg_solve
 contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX SOLUTION ROUTINES

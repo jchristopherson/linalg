@@ -1,6 +1,6 @@
 ! linalg_basic.f90
 
-submodule (linalg_core) linalg_basic
+submodule (linalg) linalg_basic
 contains
 ! ******************************************************************************
 ! MATRIX MULTIPLICATION ROUTINES
@@ -157,11 +157,11 @@ contains
         ! Initialization
         m = size(c, 1)
         n = size(c, 2)
-        if (opa == TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
+        if (opa == LA_TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
             k = size(a, 1)
             ta = 'T'
             lda = k
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa == LA_HERMITIAN_TRANSPOSE) then
             k = size(a, 1)
             ta = 'H'
             lda = k
@@ -170,10 +170,10 @@ contains
             ta = 'N'
             lda = m
         end if
-        if (opb == TRANSPOSE) then
+        if (opb == LA_TRANSPOSE) then
             tb = 'T'
             ldb = n
-        else if (opb == HERMITIAN_TRANSPOSE) then
+        else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
             tb = 'H'
             ldb = n
         else
@@ -188,12 +188,12 @@ contains
 
         ! Input Check
         flag = 0
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(a, 2) /= m) flag = 4
         else
             if (size(a, 1) /= m) flag = 4
         end if
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(b, 2) /= k .or. size(b, 1) /= n) flag = 5
         else
             if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
@@ -232,9 +232,9 @@ contains
         ! Initialization
         m = size(a, 1)
         n = size(a, 2)
-        if (opa == TRANSPOSE) then
+        if (opa == LA_TRANSPOSE) then
             t = 'T'
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
             t = 'H'
         else
             t = 'N'
@@ -247,7 +247,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(b) /= m) then
                 flag = 4
             else if (size(c) /= n) then
@@ -760,7 +760,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -772,7 +772,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -802,7 +802,7 @@ contains
 
         ! Process
         if (lside) then
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -813,7 +813,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -846,7 +846,7 @@ contains
                 end if
             end if
         else
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -857,7 +857,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -932,7 +932,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -944,7 +944,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -974,7 +974,7 @@ contains
 
         ! Process
         if (lside) then
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -985,7 +985,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1018,7 +1018,7 @@ contains
                 end if
             end if
         else
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1029,7 +1029,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1160,7 +1160,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -1172,7 +1172,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -1202,7 +1202,7 @@ contains
 
         ! Process
         if (lside) then
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1213,7 +1213,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1246,7 +1246,7 @@ contains
                 end if
             end if
         else
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1257,7 +1257,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
                 do i = 1, k
                     if (beta == zero) then

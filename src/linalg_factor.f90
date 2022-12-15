@@ -4,7 +4,7 @@
 !!
 !! @par Purpose
 !! Provides a set of matrix factorization routines.
-submodule (linalg_core) linalg_factor
+submodule (linalg) linalg_factor
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION

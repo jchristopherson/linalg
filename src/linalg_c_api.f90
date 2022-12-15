@@ -4,8 +4,7 @@
 !! LINALG routines begin with the prefix "la_".
 module linalg_c_api
     use iso_c_binding
-    use linalg_core
-    use linalg_constants
+    use linalg
     use ferror
     implicit none
 
@@ -228,20 +227,20 @@ contains
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
     !!
-    !! @param opa Set to TRANSPOSE to compute op(A) as a direct transpose of A,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
+    !! @param opa Set to LA_TRANSPOSE to compute op(A) as a direct transpose of A,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
     !!  of A, otherwise, set to NO_OPERATION to compute op(A) as A.
-    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
     !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
     !! @param mThe number of rows in @p c.
     !! @param n The number of columns in @p c.
     !! @param k The interior dimension of the product @p a and @p b.
     !! @param alpha A scalar multiplier.
-    !! @param a If @p opa is TRANSPOSE or HERMITIAN_TRANSPOSE, this matrix must
+    !! @param a If @p opa is LA_TRANSPOSE or  LA_HERMITIAN_TRANSPOSE, this matrix must
     !!  be @p k by @p m; else, this matrix must be @p m by @p k.
     !! @param lda The leading dimension of matrix @p a.
-    !! @param b If @p opb is TRANSPOSE or HERMITIAN_TRANSPOSE, this matrix must
+    !! @param b If @p opb is LA_TRANSPOSE or  LA_HERMITIAN_TRANSPOSE, this matrix must
     !!  be @p n by @p k; else, this matrix must be @p k by @p n.
     !! @param ldb The leading dimension of matrix @p b.
     !! @param beta A scalar multiplier.
@@ -267,29 +266,29 @@ contains
 
         ! Initialization
         flag = LA_NO_ERROR
-        if (opa == TRANSPOSE) then
+        if (opa == LA_TRANSPOSE) then
             ta = "T"
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
             ta = "H"
         else
             ta = "N"
         end if
 
-        if (opb == TRANSPOSE) then
+        if (opb == LA_TRANSPOSE) then
             tb = "T"
-        else if (opb == HERMITIAN_TRANSPOSE) then
+        else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
             tb = "H"
         else
             tb = "N"
         end if
 
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             nrowa = k
         else
             nrowa = m
         end if
 
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
             nrowb = n
         else
             nrowb = k
@@ -399,8 +398,8 @@ contains
     !!
     !! @param lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.
-    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
     !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
     !! @param m The number of rows in the matrix C.
     !! @param n The number of columns in the matrix C.
@@ -446,7 +445,7 @@ contains
         call err%set_exit_on_error(.false.)
         flag = LA_NO_ERROR
         tb = .false.
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) tb = .true.
         if (lside .and. tb) then
             nrows = n
             ncols = k
@@ -487,8 +486,8 @@ contains
     !!
     !! @param lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.
-    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
     !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
     !! @param m The number of rows in the matrix C.
     !! @param n The number of columns in the matrix C.
@@ -534,7 +533,7 @@ contains
         call err%set_exit_on_error(.false.)
         flag = LA_NO_ERROR
         tb = .false.
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) tb = .true.
         if (lside .and. tb) then
             nrows = n
             ncols = k

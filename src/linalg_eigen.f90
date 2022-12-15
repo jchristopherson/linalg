@@ -4,7 +4,7 @@
 !!
 !! @par Purpose
 !! Provides routines for computing the eigenvalues and eigenvectors of matrices.
-submodule (linalg_core) linalg_eigen
+submodule (linalg) linalg_eigen
 contains
 ! ------------------------------------------------------------------------------
     module subroutine eigen_symm(vecs, a, vals, work, olwork, err)

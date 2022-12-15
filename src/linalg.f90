@@ -1,4 +1,4 @@
-! linalg_core.f90
+! linalg.f90
 
 
 !> @mainpage
@@ -12,10 +12,9 @@
 
 
 !> @brief Provides a set of common linear algebra routines.
-module linalg_core
+module linalg
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use ferror, only : errors
-    use linalg_constants
     implicit none
 
     private
@@ -51,6 +50,47 @@ module linalg_core
     public :: solve_least_squares_svd
     public :: eigen
     public :: sort
+    public :: LA_NO_OPERATION
+    public :: LA_TRANSPOSE
+    public :: LA_HERMITIAN_TRANSPOSE
+    public :: LA_NO_ERROR
+    public :: LA_INVALID_INPUT_ERROR
+    public :: LA_ARRAY_SIZE_ERROR
+    public :: LA_SINGULAR_MATRIX_ERROR
+    public :: LA_MATRIX_FORMAT_ERROR
+    public :: LA_OUT_OF_MEMORY_ERROR
+    public :: LA_CONVERGENCE_ERROR
+    public :: LA_INVALID_OPERATION_ERROR
+
+! ******************************************************************************
+! CONSTANTS
+! ------------------------------------------------------------------------------
+    !> @brief Defines no operation should be performed on the matrix.
+    integer(int32), parameter :: LA_NO_OPERATION = 0
+    !> @brief Defines a transpose operation.
+    integer(int32), parameter :: LA_TRANSPOSE = 1
+    !> @brief Defines a Hermitian transpose operation for a complex-valued matrix.
+    integer(int32), parameter :: LA_HERMITIAN_TRANSPOSE = 2
+
+! ******************************************************************************
+! ERROR FLAGS
+! ------------------------------------------------------------------------------
+    !> A flag denoting no error condition.
+    integer(int32), parameter :: LA_NO_ERROR = 0
+    !> An error flag denoting an invalid input.
+    integer(int32), parameter :: LA_INVALID_INPUT_ERROR = 101
+    !> An error flag denoting an improperly sized array.
+    integer(int32), parameter :: LA_ARRAY_SIZE_ERROR = 102
+    !> An error flag denoting a singular matrix.
+    integer(int32), parameter :: LA_SINGULAR_MATRIX_ERROR = 103
+    !> An error flag denoting an issue with the matrix format.
+    integer(int32), parameter :: LA_MATRIX_FORMAT_ERROR = 104
+    !> An error flag denoting that there is insufficient memory available.
+    integer(int32), parameter :: LA_OUT_OF_MEMORY_ERROR = 105
+    !> An error flag denoting a convergence failure.
+    integer(int32), parameter :: LA_CONVERGENCE_ERROR = 106
+    !> An error resulting from an invalid operation.
+    integer(int32), parameter :: LA_INVALID_OPERATION_ERROR = 107
 
 ! ******************************************************************************
 ! INTERFACES
@@ -2850,6 +2890,126 @@ end interface
 !> @brief Computes the eigenvalues, and optionally the eigenvectors, of a
 !! matrix.
 !!
+!! @par Syntax 1 (Symmetric Matrices)
+!! @code{.f90}
+!! subroutine eigen(logical vecs, real(real64) a(:,:), real(real64) vals(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] vecs Set to true to compute the eigenvectors as well as the
+!!  eigenvalues; else, set to false to just compute the eigenvalues.
+!! @param[in,out] a On input, the N-by-N symmetric matrix on which to
+!!  operate.  On output, and if @p vecs is set to true, the matrix will
+!!  contain the eigenvectors (one per column) corresponding to each
+!!  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
+!!  portion of the matrix is overwritten.
+!! @param[out] vals An N-element array that will contain the eigenvalues
+!!  sorted into ascending order.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DSYEV.
+!!
+!! @par Syntax 2 (Asymmetric Matrices)
+!! @code{.f90}
+!! subroutine eigen(real(real64) a(:,:), complex(real64) vals(:), optional complex(real64) vecs(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine eigen(complex(real64) a(:,:), complex(real64) vals(:), optional complex(real64) vecs(:,:), optional complex(real64) work(:), optional integer(int32) olwork, real(real64) rwork(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
+!!  output, the contents of this matrix are overwritten.
+!! @param[out] vals An N-element array containing the eigenvalues of the
+!!  matrix.  The eigenvalues are not sorted.
+!! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
+!!  compute the right eigenvectors (one per column).  If not provided, only
+!!  the eigenvalues will be computed.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[out] rwork An optional input, that if provided, prevents any local
+!!  memory allocation for real-valued workspaces.  If not provided, the 
+!!  memory required is allocated within.  If provided, the length of the 
+!!  array must be at least 2 * N.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGEEV (ZGEEV in the complex case).
+!!
+!! @par Syntax 3 (General Eigen Problem)
+!! Computes the eigenvalues, and optionally the right eigenvectors of
+!! a square matrix assuming the structure of the eigenvalue problem is
+!! \f$ A X = \lambda B X \f$.
+!! @code{.f90}
+!! subroutine eigen(real(real64) a(:,:), real(real64) b(:,:), complex(real64) alpha(:), optional real(real64) beta(:), optional complex(real64) vecs(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
+!!  of this matrix are overwritten.
+!! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
+!!  of this matrix are overwritten.
+!! @param[out] alpha An N-element array that, if @p beta is not supplied,
+!!  contains the eigenvalues.  If @p beta is supplied however, the
+!!  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
+!!  trivial as it seems as it is entirely possible, and likely, that
+!!  ALPHA / BETA can overflow or underflow.  With that said, the values in
+!!  ALPHA will always be less than and usually comparable with the NORM(A).
+!! @param[out] beta An optional N-element array that if provided forces
+!!  @p alpha to return the numerator, and this array contains the
+!!  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
+!!  the values in this array will always be less than and usually comparable
+!!  with the NORM(B).
+!! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
+!!  compute the right eigenvectors (one per column).  If not provided, only
+!!  the eigenvalues will be computed.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGGEV.
+!!
 !! @par Usage
 !! As an example, consider the eigenvalue problem arising from a mechanical
 !! system of masses and springs such that the masses are described by
@@ -2944,6 +3104,80 @@ end interface
 
 ! ------------------------------------------------------------------------------
 !> @brief Sorts an array.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine sort(real(real64) x(:), optional logical ascend)
+!! subroutine sort(complex(real64) x(:), optional logical ascend)
+!! @endcode
+!!
+!! @param[in,out] x On input, the array to sort.  On output, the sorted
+!!  array.
+!! @param[in] ascend An optional input that, if specified, controls if the
+!!  the array is sorted in an ascending order (default), or a descending
+!!  order.
+!!
+!! @par Remarks
+!! The routine utilizes a quick sort algorithm unless the size of the array
+!! is less than or equal to 20.  For such small arrays an insertion sort
+!! algorithm is utilized.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DLASRT.
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine sort(real(real64) x(:), integer(int32) ind(:), optional logical ascend, optional class(errors) err)
+!! subroutine sort(complex(real64) x(:), integer(int32) ind(:), optional logical ascend, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] x On input, the array to sort.  On output, the sorted
+!!  array.
+!! @param[in,out] ind On input, an integer array.  On output, the contents
+!!  of this array are shifted in the same order as that of @p x as a means
+!!  of tracking the sorting operation.  It is often useful to set this
+!!  array to an ascending group of values (1, 2, ... n) such that this
+!!  array tracks the original positions of the sorted array.  Such an array
+!!  can then be used to align other arrays.  This array must be the same
+!!  size as @p x.
+!! @param[in] ascend An optional input that, if specified, controls if the
+!!  the array is sorted in an ascending order (default), or a descending
+!!  order.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
+!!
+!! @par Remarks
+!! This routine utilizes a quick sort algorithm explained at
+!! http://www.fortran.com/qsort_c.f95.
+!!
+!! @par Syntax 3 (Eigen sorting)
+!! A sorting routine specifically tailored for sorting of eigenvalues
+!! and their associated eigenvectors using a quick-sort approach.
+!! @code{.f90}
+!! subroutine sort(real(real64) vals(:), real(real64) vecs(:,:), optional logical ascend, optional class(errors) err)
+!! subroutine sort(complex(real64) vals(:), complex(real64) vecs(:,:), optional logical ascend, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] vals On input, an N-element array containing the
+!!  eigenvalues.  On output, the sorted eigenvalues.
+!! @param[in,out] vecs On input, an N-by-N matrix containing the
+!!  eigenvectors associated with @p vals (one vector per column).  On
+!!  output, the sorted eigenvector matrix.
+!! @param[in] ascend An optional input that, if specified, controls if the
+!!  the array is sorted in an ascending order (default), or a descending
+!!  order.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory
+!!      available to comoplete this operation.
 interface sort
     module procedure :: sort_dbl_array
     module procedure :: sort_dbl_array_ind
@@ -3757,38 +3991,6 @@ end interface
 ! LINALG_EIGEN.F90
 ! ------------------------------------------------------------------------------
 interface
-    !> @brief Computes the eigenvalues, and optionally the eigenvectors of a
-    !! real, symmetric matrix.
-    !!
-    !! @param[in] vecs Set to true to compute the eigenvectors as well as the
-    !!  eigenvalues; else, set to false to just compute the eigenvalues.
-    !! @param[in,out] a On input, the N-by-N symmetric matrix on which to
-    !!  operate.  On output, and if @p vecs is set to true, the matrix will
-    !!  contain the eigenvectors (one per column) corresponding to each
-    !!  eigenvalue in @p vals.  If @p vecs is set to false, the lower triangular
-    !!  portion of the matrix is overwritten.
-    !! @param[out] vals An N-element array that will contain the eigenvalues
-    !!  sorted into ascending order.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DSYEV.
     module subroutine eigen_symm(vecs, a, vals, work, olwork, err)
         logical, intent(in) :: vecs
         real(real64), intent(inout), dimension(:,:) :: a
@@ -3797,37 +3999,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
-    !! a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
-    !!  output, the contents of this matrix are overwritten.
-    !! @param[out] vals An N-element array containing the eigenvalues of the
-    !!  matrix.  The eigenvalues are not sorted.
-    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
-    !!  compute the right eigenvectors (one per column).  If not provided, only
-    !!  the eigenvalues will be computed.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGEEV.
+    
     module subroutine eigen_asymm(a, vals, vecs, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: vals
@@ -3836,49 +4008,7 @@ interface
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
-
-    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
-    !! a square matrix assuming the structure of the eigenvalue problem is
-    !! A*X = lambda*B*X.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix A.  On output, the contents
-    !!  of this matrix are overwritten.
-    !! @param[in,out] b On input, the N-by-N matrix B.  On output, the contents
-    !!  of this matrix are overwritten.
-    !! @param[out] alpha An N-element array that, if @p beta is not supplied,
-    !!  contains the eigenvalues.  If @p beta is supplied however, the
-    !!  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
-    !!  trivial as it seems as it is entirely possible, and likely, that
-    !!  ALPHA / BETA can overflow or underflow.  With that said, the values in
-    !!  ALPHA will always be less than and usually comparable with the NORM(A).
-    !! @param[out] beta An optional N-element array that if provided forces
-    !!  @p alpha to return the numerator, and this array contains the
-    !!  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
-    !!  the values in this array will always be less than and usually comparable
-    !!  with the NORM(B).
-    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
-    !!  compute the right eigenvectors (one per column).  If not provided, only
-    !!  the eigenvalues will be computed.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DGGEV.
+    
     module subroutine eigen_gen(a, b, alpha, beta, vecs, work, olwork, err)
         real(real64), intent(inout), dimension(:,:) :: a, b
         complex(real64), intent(out), dimension(:) :: alpha
@@ -3889,36 +4019,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Computes the eigenvalues, and optionally the right eigenvectors of
-    !! a square matrix.
-    !!
-    !! @param[in,out] a On input, the N-by-N matrix on which to operate.  On
-    !!  output, the contents of this matrix are overwritten.
-    !! @param[out] vals An N-element array containing the eigenvalues of the
-    !!  matrix.  The eigenvalues are not sorted.
-    !! @param[out] vecs An optional N-by-N matrix, that if supplied, signals to
-    !!  compute the right eigenvectors (one per column).  If not provided, only
-    !!  the eigenvalues will be computed.
-    !! @param[out] work An optional input, that if provided, prevents any local
-    !!  memory allocation.  If not provided, the memory required is allocated
-    !!  within.  If provided, the length of the array must be at least
-    !!  @p olwork.
-    !! @param[out] olwork An optional output used to determine workspace size.
-    !!  If supplied, the routine determines the optimal size for @p work, and
-    !!  returns without performing any actual calculations.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
-    !!      appropriately.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
-    !!      there is insufficient memory available.
-    !!  - LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine ZGEEV.
     module subroutine eigen_cmplx(a, vals, vecs, work, olwork, rwork, err)
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(out), dimension(:) :: vals
@@ -3934,50 +4034,11 @@ end interface
 ! LINALG_SORTING.F90
 ! ------------------------------------------------------------------------------
 interface
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! The routine utilizes a quick sort algorithm unless the size of the array
-    !! is less than or equal to 20.  For such small arrays an insertion sort
-    !! algorithm is utilized.
-    !!
-    !! @par Notes
-    !! This routine utilizes the LAPACK routine DLASRT.
     module subroutine sort_dbl_array(x, ascend)
         real(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
     end subroutine
-
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm explained at
-    !! http://www.fortran.com/qsort_c.f95.
+    
     module subroutine sort_dbl_array_ind(x, ind, ascend, err)
         real(real64), intent(inout), dimension(:) :: x
         integer(int32), intent(inout), dimension(:) :: ind
@@ -3985,56 +4046,11 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted
-    !!  array.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates
-    !! on complex valued items, the complex values are sorted based upon the
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
     module subroutine sort_cmplx_array(x, ascend)
         complex(real64), intent(inout), dimension(:) :: x
         logical, intent(in), optional :: ascend
     end subroutine
 
-    !> @brief Sorts an array.
-    !!
-    !! @param[in,out] x On input, the array to sort.  On output, the sorted
-    !!  array.
-    !! @param[in,out] ind On input, an integer array.  On output, the contents
-    !!  of this array are shifted in the same order as that of @p x as a means
-    !!  of tracking the sorting operation.  It is often useful to set this
-    !!  array to an ascending group of values (1, 2, ... n) such that this
-    !!  array tracks the original positions of the sorted array.  Such an array
-    !!  can then be used to align other arrays.  This array must be the same
-    !!  size as @p x.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ind is not sized to match @p x.
-    !!
-    !! @par Remarks
-    !! This routine utilizes a quick sort algorithm.  As this routine operates
-    !! on complex valued items, the complex values are sorted based upon the
-    !! real component of the number.
-    !!
-    !! @par Notes
-    !! This implementation is a slight modification of the code presented at
-    !! http://www.fortran.com/qsort_c.f95.
     module subroutine sort_cmplx_array_ind(x, ind, ascend, err)
         complex(real64), intent(inout), dimension(:) :: x
         integer(int32), intent(inout), dimension(:) :: ind
@@ -4042,25 +4058,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the
-    !!  eigenvectors associated with @p vals (one vector per column).  On
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory
-    !!      available to comoplete this operation.
     module subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
         complex(real64), intent(inout), dimension(:) :: vals
         complex(real64), intent(inout), dimension(:,:) :: vecs
@@ -4068,25 +4065,6 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
-    !> @brief A sorting routine specifically tailored for sorting of eigenvalues
-    !! and their associated eigenvectors using a quick-sort approach.
-    !!
-    !! @param[in,out] vals On input, an N-element array containing the
-    !!  eigenvalues.  On output, the sorted eigenvalues.
-    !! @param[in,out] vecs On input, an N-by-N matrix containing the
-    !!  eigenvectors associated with @p vals (one vector per column).  On
-    !!  output, the sorted eigenvector matrix.
-    !! @param[in] ascend An optional input that, if specified, controls if the
-    !!  the array is sorted in an ascending order (default), or a descending
-    !!  order.
-    !! @param[out] err An optional errors-based object that if provided can be
-    !!  used to retrieve information relating to any errors encountered during
-    !!  execution.  If not provided, a default implementation of the errors
-    !!  class is used internally to provide error handling.  Possible errors and
-    !!  warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p vecs is not sized to match @p vals.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory
-    !!      available to comoplete this operation.
     module subroutine sort_eigen_dbl(vals, vecs, ascend, err)
         real(real64), intent(inout), dimension(:) :: vals
         real(real64), intent(inout), dimension(:,:) :: vecs

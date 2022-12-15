@@ -3,7 +3,7 @@
 ! Tests miscellaneous routines.
 module test_misc
     use, intrinsic :: iso_fortran_env, only : int32, real64
-    use linalg_core
+    use linalg
     use test_core
     implicit none
 contains

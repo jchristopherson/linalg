@@ -13,8 +13,7 @@
 !! termination of the program.
 module linalg_immutable
     use, intrinsic :: iso_fortran_env, only : int32, real64
-    use linalg_core
-    use linalg_constants
+    use linalg
     implicit none
     private
     public :: mat_rank1_update
@@ -301,10 +300,10 @@ contains
 
         ! Process
         if (size(b, 1) > size(a)) then
-            call diag_mtx_mult(.true., NO_OPERATION, one, a, b(1:size(a),:), &
+            call diag_mtx_mult(.true., LA_NO_OPERATION, one, a, b(1:size(a),:), &
                 zero, c)
         else
-            call diag_mtx_mult(.true., NO_OPERATION, one, a, b, zero, c)
+            call diag_mtx_mult(.true., LA_NO_OPERATION, one, a, b, zero, c)
         end if
     end function
 
@@ -330,7 +329,7 @@ contains
 
         ! Process
         bc(:,1) = b(1:min(size(a), size(b)))
-        call diag_mtx_mult(.true., NO_OPERATION, one, a, bc, zero, cc)
+        call diag_mtx_mult(.true., LA_NO_OPERATION, one, a, bc, zero, cc)
         c = cc(:,1)
     end function
 
@@ -350,10 +349,10 @@ contains
 
         ! Process
         if (size(a, 2) > size(b)) then
-            call diag_mtx_mult(.false., NO_OPERATION, 1.0d0, b, a(:,1:size(b)), &
+            call diag_mtx_mult(.false., LA_NO_OPERATION, 1.0d0, b, a(:,1:size(b)), &
                 0.0d0, c)
         else
-            call diag_mtx_mult(.false., NO_OPERATION, 1.0d0, b, a, 0.0d0, c)
+            call diag_mtx_mult(.false., LA_NO_OPERATION, 1.0d0, b, a, 0.0d0, c)
         end if
     end function
 

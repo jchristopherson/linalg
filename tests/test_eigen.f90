@@ -3,8 +3,7 @@
 ! Tests the eigenvalue/eigenvector routines
 module test_eigen
     use, intrinsic :: iso_fortran_env, only : int32, real64
-    use linalg_core
-    use linalg_constants
+    use linalg
     use test_core
     implicit none
 contains
@@ -110,7 +109,7 @@ contains
         x = matmul(a, vecs)
 
         ! And Y = B * (VECS * LAMBDA)
-        call diag_mtx_mult(.false., NO_OPERATION, 1.0d0, vals, vecs, 0.0d0, y)
+        call diag_mtx_mult(.false., LA_NO_OPERATION, 1.0d0, vals, vecs, 0.0d0, y)
         y = matmul(b, y)
 
         ! Check

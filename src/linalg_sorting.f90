@@ -4,7 +4,7 @@
 !!
 !! @par Purpose
 !! Provides sorting routines.
-submodule (linalg_core) linalg_sorting
+submodule (linalg) linalg_sorting
 contains
 ! ******************************************************************************
 ! SORTING ROUTINES

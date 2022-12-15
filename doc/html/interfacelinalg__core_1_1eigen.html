@@ -107,6 +107,67 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1eigen.html','
  <a href="interfacelinalg__core_1_1eigen.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Computes the eigenvalues, and optionally the eigenvectors, of a matrix. </p>
+<dl class="section user"><dt>Syntax 1 (Symmetric Matrices)</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>eigen(logical vecs, real(real64) a(:,:), real(real64) vals(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">vecs</td><td>Set to true to compute the eigenvectors as well as the eigenvalues; else, set to false to just compute the eigenvalues. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input, the N-by-N symmetric matrix on which to operate. On output, and if <code>vecs</code> is set to true, the matrix will contain the eigenvectors (one per column) corresponding to each eigenvalue in <code>vals</code>. If <code>vecs</code> is set to false, the lower triangular portion of the matrix is overwritten. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vals</td><td>An N-element array that will contain the eigenvalues sorted into ascending order. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+<li>LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DSYEV.</dd></dl>
+<dl class="section user"><dt>Syntax 2 (Asymmetric Matrices)</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>eigen(real(real64) a(:,:), complex(real64) vals(:), optional complex(real64) vecs(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>eigen(complex(real64) a(:,:), complex(real64) vals(:), optional complex(real64) vecs(:,:), optional complex(real64) work(:), optional integer(int32) olwork, real(real64) rwork(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input, the N-by-N matrix on which to operate. On output, the contents of this matrix are overwritten. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vals</td><td>An N-element array containing the eigenvalues of the matrix. The eigenvalues are not sorted. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vecs</td><td>An optional N-by-N matrix, that if supplied, signals to compute the right eigenvectors (one per column). If not provided, only the eigenvalues will be computed. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rwork</td><td>An optional input, that if provided, prevents any local memory allocation for real-valued workspaces. If not provided, the memory required is allocated within. If provided, the length of the array must be at least 2 * N. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+<li>LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGEEV (ZGEEV in the complex case).</dd></dl>
+<dl class="section user"><dt>Syntax 3 (General Eigen Problem)</dt><dd>Computes the eigenvalues, and optionally the right eigenvectors of a square matrix assuming the structure of the eigenvalue problem is \( A X = \lambda B X \). <div class="fragment"><div class="line"><span class="keyword">subroutine </span>eigen(real(real64) a(:,:), real(real64) b(:,:), complex(real64) alpha(:), optional real(real64) beta(:), optional complex(real64) vecs(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">a</td><td>On input, the N-by-N matrix A. On output, the contents of this matrix are overwritten. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">b</td><td>On input, the N-by-N matrix B. On output, the contents of this matrix are overwritten. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">alpha</td><td>An N-element array that, if <code>beta</code> is not supplied, contains the eigenvalues. If <code>beta</code> is supplied however, the eigenvalues must be computed as ALPHA / BETA. This however, is not as trivial as it seems as it is entirely possible, and likely, that ALPHA / BETA can overflow or underflow. With that said, the values in ALPHA will always be less than and usually comparable with the NORM(A). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">beta</td><td>An optional N-element array that if provided forces <code>alpha</code> to return the numerator, and this array contains the denominator used to determine the eigenvalues as ALPHA / BETA. If used, the values in this array will always be less than and usually comparable with the NORM(B). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vecs</td><td>An optional N-by-N matrix, that if supplied, signals to compute the right eigenvectors (one per column). If not provided, only the eigenvalues will be computed. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized appropriately.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
+<li>LA_CONVERGENCE_ERROR: Occurs if the algorithm failed to converge.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGGEV.</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>As an example, consider the eigenvalue problem arising from a mechanical system of masses and springs such that the masses are described by a mass matrix M, and the arrangement of springs are described by a stiffness matrix K. <div class="fragment"><div class="line"><span class="comment">! This is an example illustrating the use of the eigenvalue and eigenvector</span></div>
 <div class="line"><span class="comment">! routines to solve a free vibration problem of 3 masses connected by springs.</span></div>
 <div class="line"><span class="comment">!</span></div>
@@ -164,7 +225,7 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1eigen.html','
 <div class="line">        print <span class="stringliteral">&#39;(F10.3)&#39;</span>, (real(modeshapes(j,i)), j = 1, <span class="keyword">size</span>(natfreq))</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg__core_1_1eigen_html"><div class="ttname"><a href="interfacelinalg__core_1_1eigen.html">linalg_core::eigen</a></div><div class="ttdoc">Computes the eigenvalues, and optionally the eigenvectors, of a matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l02938">linalg_core.f90:2938</a></div></div>
+<div class="ttc" id="ainterfacelinalg__core_1_1eigen_html"><div class="ttname"><a href="interfacelinalg__core_1_1eigen.html">linalg_core::eigen</a></div><div class="ttdoc">Computes the eigenvalues, and optionally the eigenvectors, of a matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l03058">linalg_core.f90:3058</a></div></div>
 <div class="ttc" id="anamespacelinalg__core_html"><div class="ttname"><a href="namespacelinalg__core.html">linalg_core</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg__core_8f90_source.html#l00015">linalg_core.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Modal Information:</div>
 <div class="line">Mode 1: (232.9225 Hz)</div>
@@ -187,7 +248,7 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1eigen.html','
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02938">2938</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l03058">3058</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

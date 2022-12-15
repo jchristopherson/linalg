@@ -107,8 +107,52 @@ $(document).ready(function(){initNavTree('interfacelinalg__core_1_1sort.html',''
  <a href="interfacelinalg__core_1_1sort.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Sorts an array. </p>
+<dl class="section user"><dt>Syntax 1</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>sort(real(real64) x(:), optional logical ascend)</div>
+<div class="line"><span class="keyword">subroutine </span>sort(complex(real64) x(:), optional logical ascend)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>On input, the array to sort. On output, the sorted array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ascend</td><td>An optional input that, if specified, controls if the the array is sorted in an ascending order (default), or a descending order.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Remarks</dt><dd>The routine utilizes a quick sort algorithm unless the size of the array is less than or equal to 20. For such small arrays an insertion sort algorithm is utilized.</dd></dl>
+<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DLASRT.</dd></dl>
+<dl class="section user"><dt>Syntax 2</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>sort(real(real64) x(:), integer(int32) ind(:), optional logical ascend, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>sort(complex(real64) x(:), integer(int32) ind(:), optional logical ascend, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>On input, the array to sort. On output, the sorted array. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ind</td><td>On input, an integer array. On output, the contents of this array are shifted in the same order as that of <code>x</code> as a means of tracking the sorting operation. It is often useful to set this array to an ascending group of values (1, 2, ... n) such that this array tracks the original positions of the sorted array. Such an array can then be used to align other arrays. This array must be the same size as <code>x</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ascend</td><td>An optional input that, if specified, controls if the the array is sorted in an ascending order (default), or a descending order. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if <code>ind</code> is not sized to match <code>x</code>.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Remarks</dt><dd>This routine utilizes a quick sort algorithm explained at <a href="http://www.fortran.com/qsort_c.f95">http://www.fortran.com/qsort_c.f95</a>.</dd></dl>
+<dl class="section user"><dt>Syntax 3 (Eigen soring)</dt><dd>A sorting routine specifically tailored for sorting of eigenvalues and their associated eigenvectors using a quick-sort approach. <div class="fragment"><div class="line"><span class="keyword">subroutine </span>sort(real(real64) vals(:), real(real64) vecs(:,:), optional logical ascend, optional class(errors) err)</div>
+<div class="line"><span class="keyword">subroutine </span>sort(complex(real64) vals(:), complex(real64) vecs(:,:), optional logical ascend, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">vals</td><td>On input, an N-element array containing the eigenvalues. On output, the sorted eigenvalues. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">vecs</td><td>On input, an N-by-N matrix containing the eigenvectors associated with <code>vals</code> (one vector per column). On output, the sorted eigenvector matrix. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ascend</td><td>An optional input that, if specified, controls if the the array is sorted in an ascending order (default), or a descending order. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if <code>vecs</code> is not sized to match <code>vals</code>.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available to comoplete this operation. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l02947">2947</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg__core_8f90_source.html#l03141">3141</a> of file <a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg__core_8f90_source.html">linalg_core.f90</a></li>
 </ul>

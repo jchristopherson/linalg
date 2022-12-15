@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hermitian_5ftranspose_0',['hermitian_transpose',['../namespacelinalg__constants.html#a389e35467a5a18f90927d28fb12ddf70',1,'linalg_constants']]]
+  ['identity_0',['identity',['../namespacelinalg__immutable.html#aeb1f553973ae3e9b86cb30a1ca1f5700',1,'linalg_immutable']]]
 ];

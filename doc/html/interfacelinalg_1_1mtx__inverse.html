@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1mtx__inverse.html',
 </dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the inversion of a 3-by-3 matrix. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Variables</span></div>
@@ -150,7 +150,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1mtx__inverse.html',
 <div class="line">    <span class="comment">! Compute the inverse of A.  Notice, the original matrix is overwritten</span></div>
 <div class="line">    <span class="comment">! with it&#39;s inverse.</span></div>
 <div class="line">    ai = a</div>
-<div class="line">    <span class="keyword">call </span>mtx_inverse(ai)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1mtx__inverse.html">mtx_inverse</a>(ai)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Show that A * inv(A) = I</span></div>
 <div class="line">    c = matmul(a, ai)</div>
@@ -167,6 +167,8 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1mtx__inverse.html',
 <div class="line">        print *, c(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1mtx__inverse_html"><div class="ttname"><a href="interfacelinalg_1_1mtx__inverse.html">linalg::mtx_inverse</a></div><div class="ttdoc">Computes the inverse of a square matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02778">linalg.f90:2778</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Inverse:</div>
 <div class="line"> -1.7777777777777777       0.88888888888888884      -0.11111111111111110</div>
 <div class="line">  1.5555555555555556      -0.77777777777777779       0.22222222222222221</div>

@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1lu__factor.html',''
 </dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of 3 equations of 3 unknowns using LU factorization, the following code will suffice. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Local Variables</span></div>
@@ -157,15 +157,18 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1lu__factor.html',''
 <div class="line">    <span class="comment">!     |   0  |</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the LU factorization</span></div>
-<div class="line">    <span class="keyword">call </span>lu_factor(a, pvt)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1lu__factor.html">lu_factor</a>(a, pvt)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the solution.  The results overwrite b.</span></div>
-<div class="line">    <span class="keyword">call </span>solve_lu(a, pvt, b)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__lu.html">solve_lu</a>(a, pvt, b)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the results.</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00595">linalg.f90:595</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02149">linalg.f90:2149</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The program generates the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line"> 0.3333</div>
 <div class="line">-0.6667</div>

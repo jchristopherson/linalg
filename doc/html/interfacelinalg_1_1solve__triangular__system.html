@@ -147,7 +147,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
 <dl class="section user"><dt>Notes</dt><dd>This routine is based upon the BLAS routine DTRSV (ZTRSV in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the solution of two triangular systems to solve a system of LU factored equations. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Variables</span></div>
@@ -174,10 +174,10 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
 <div class="line">    <span class="comment">!     |   0  |</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the LU factorization</span></div>
-<div class="line">    <span class="keyword">call </span>lu_factor(a, pvt)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1lu__factor.html">lu_factor</a>(a, pvt)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Extract the L and U matrices. A is overwritten with L.</span></div>
-<div class="line">    <span class="keyword">call </span>form_lu(a, pvt, u, p)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1form__lu.html">form_lu</a>(a, pvt, u, p)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Solve the lower triangular system L * Y = P * B for Y, but first compute</span></div>
 <div class="line">    <span class="comment">! P * B, and store the results in B</span></div>
@@ -185,15 +185,19 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Now, compute the solution to the lower triangular system.  Store the</span></div>
 <div class="line">    <span class="comment">! result in B.  Remember, L is unit diagonal (ones on its diagonal)</span></div>
-<div class="line">    <span class="keyword">call </span>solve_triangular_system(.false., .false., .false., a, b)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__triangular__system.html">solve_triangular_system</a>(.false., .false., .false., a, b)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Solve the upper triangular system U * X = Y for X.</span></div>
-<div class="line">    <span class="keyword">call </span>solve_triangular_system(.true., .false., .true., u, b)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__triangular__system.html">solve_triangular_system</a>(.true., .false., .true., u, b)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the results.</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1form__lu_html"><div class="ttname"><a href="interfacelinalg_1_1form__lu.html">linalg::form_lu</a></div><div class="ttdoc">Extracts the L and U matrices from the condensed [L\U] storage format used by the lu_factor.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00717">linalg.f90:717</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00595">linalg.f90:595</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg_1_1solve__triangular__system.html">linalg::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02061">linalg.f90:2061</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line">0.3333</div>
 <div class="line">-0.6667</div>

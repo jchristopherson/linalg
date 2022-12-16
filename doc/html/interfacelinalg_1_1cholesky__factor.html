@@ -125,7 +125,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__factor.ht
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DPOTRF (ZPOTRF in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the solution of a positive-definite system of equations via Cholesky factorization. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Variables</span></div>
@@ -151,10 +151,10 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__factor.ht
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the Cholesky factorization of A considering only the upper</span></div>
 <div class="line">    <span class="comment">! triangular portion of A (the default configuration).</span></div>
-<div class="line">    <span class="keyword">call </span>cholesky_factor(a)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1cholesky__factor.html">cholesky_factor</a>(a)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the solution</span></div>
-<div class="line">    <span class="keyword">call </span>solve_cholesky(.true., a, b)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__cholesky.html">solve_cholesky</a>(.true., a, b)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the results</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Cholesky Solution: X = &quot;</span></div>
@@ -164,15 +164,19 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__factor.ht
 <div class="line">    <span class="comment">! factorization causes A = U**T * U.  Then U**T * U * X = B.</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Step 1 would then be to solve the problem U**T * Y = B, for Y.</span></div>
-<div class="line">    <span class="keyword">call </span>solve_triangular_system(.true., .true., .true., a, bu)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__triangular__system.html">solve_triangular_system</a>(.true., .true., .true., a, bu)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Now, solve the problem U * X = Y, for X</span></div>
-<div class="line">    <span class="keyword">call </span>solve_triangular_system(.true., .false., .true., a, bu)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__triangular__system.html">solve_triangular_system</a>(.true., .false., .true., a, bu)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the results</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Cholesky Solution (Manual Approach): X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (bu(i), i = 1, <span class="keyword">size</span>(bu))</div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1cholesky__factor_html"><div class="ttname"><a href="interfacelinalg_1_1cholesky__factor.html">linalg::cholesky_factor</a></div><div class="ttdoc">Computes the Cholesky factorization of a symmetric, positive definite matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l01433">linalg.f90:1433</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__cholesky_html"><div class="ttname"><a href="interfacelinalg_1_1solve__cholesky.html">linalg::solve_cholesky</a></div><div class="ttdoc">Solves a system of Cholesky factored equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02390">linalg.f90:2390</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg_1_1solve__triangular__system.html">linalg::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02061">linalg.f90:2061</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Cholesky Solution: X =</div>
 <div class="line"> 239.5833</div>
 <div class="line"> -65.6667</div>

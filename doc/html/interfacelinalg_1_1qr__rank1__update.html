@@ -132,7 +132,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1qr__rank1__update.h
 <dl class="section user"><dt>See Also</dt><dd><a href="https://sourceforge.net/projects/qrupdate/">Source</a></dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates a rank 1 update to a QR factored system. The results are compared to updating the original matrix, and then performing the factorization. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Variables</span></div>
@@ -156,22 +156,22 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1qr__rank1__update.h
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the QR factorization of the original matrix</span></div>
 <div class="line">    r = a   <span class="comment">! Making a copy as the matrix will be overwritten by qr_factor</span></div>
-<div class="line">    <span class="keyword">call </span>qr_factor(r, tau)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1qr__factor.html">qr_factor</a>(r, tau)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Form Q &amp; R</span></div>
-<div class="line">    <span class="keyword">call </span>form_qr(r, tau, q)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1form__qr.html">form_qr</a>(r, tau, q)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the rank 1 update to the original matrix such that:</span></div>
 <div class="line">    <span class="comment">! A = A + u * v**T</span></div>
-<div class="line">    <span class="keyword">call </span>rank1_update(1.0d0, u, v, a)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1rank1__update.html">rank1_update</a>(1.0d0, u, v, a)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the rank 1 update to the factorization.  Notice, the contents</span></div>
 <div class="line">    <span class="comment">! of U &amp; V are destroyed as part of this process.</span></div>
-<div class="line">    <span class="keyword">call </span>qr_rank1_update(q, r, u, v)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1qr__rank1__update.html">qr_rank1_update</a>(q, r, u, v)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! As comparison, compute the QR factorization of the rank 1 updated matrix</span></div>
-<div class="line">    <span class="keyword">call </span>qr_factor(a, tau)</div>
-<div class="line">    <span class="keyword">call </span>form_qr(a, tau, qu)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1qr__factor.html">qr_factor</a>(a, tau)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1form__qr.html">form_qr</a>(a, tau, qu)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the matrices</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Updating the Factored Form:&quot;</span></div>
@@ -194,6 +194,11 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1qr__rank1__update.h
 <div class="line">        print *, a(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1form__qr_html"><div class="ttname"><a href="interfacelinalg_1_1form__qr.html">linalg::form_qr</a></div><div class="ttdoc">Forms the full M-by-M orthogonal matrix Q from the elementary reflectors returned by the base QR fact...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l01031">linalg.f90:1031</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1qr__factor_html"><div class="ttname"><a href="interfacelinalg_1_1qr__factor.html">linalg::qr_factor</a></div><div class="ttdoc">Computes the QR factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00871">linalg.f90:871</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1qr__rank1__update_html"><div class="ttname"><a href="interfacelinalg_1_1qr__rank1__update.html">linalg::qr_rank1_update</a></div><div class="ttdoc">Computes the rank 1 update to an M-by-N QR factored matrix A (M &gt;= N) where , and  such that .</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l01334">linalg.f90:1334</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1rank1__update_html"><div class="ttname"><a href="interfacelinalg_1_1rank1__update.html">linalg::rank1_update</a></div><div class="ttdoc">Performs the rank-1 update to matrix A such that: , where  is an M-by-N matrix, is a scalar,...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00194">linalg.f90:194</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Updating the Factored Form:</div>
 <div class="line">Q =</div>
 <div class="line"> -0.13031167282892092       0.98380249683206911      -0.12309149097933236</div>

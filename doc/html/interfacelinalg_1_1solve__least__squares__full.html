@@ -132,7 +132,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__least__squar
 <dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGELSY (ZGELSY in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the least squares solution of an overdetermined system of linear equations. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Local Variables</span></div>
@@ -156,12 +156,14 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__least__squar
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the solution via a least-squares approach.  The results overwrite</span></div>
 <div class="line">    <span class="comment">! the first 2 elements in b.</span></div>
-<div class="line">    <span class="keyword">call </span>solve_least_squares_full(a, b)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__least__squares__full.html">solve_least_squares_full</a>(a, b)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the results</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Least Squares Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F9.5)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(a, 2))</div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__least__squares__full_html"><div class="ttname"><a href="interfacelinalg_1_1solve__least__squares__full.html">linalg::solve_least_squares_full</a></div><div class="ttdoc">Solves the overdetermined or underdetermined system  of M equations of N unknowns,...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02581">linalg.f90:2581</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Least Squares Solution: X =</div>
 <div class="line"> 0.13158</div>
 <div class="line">-0.57895</div>

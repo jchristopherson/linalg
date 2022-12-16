@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__rank1__do
 <dl class="section user"><dt>Usage</dt><dd>The following example illustrates the use of the rank 1 Cholesky downdate, and compares the results to factoring the original rank 1 downdated matrix. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : real64, int32</div>
 <div class="line">    <span class="keywordtype">use </span>linalg_factor, <span class="keywordtype">only</span> : cholesky_factor, cholesky_rank1_downdate</div>
-<div class="line">    <span class="keywordtype">use </span>linalg_core, <span class="keywordtype">only</span> : rank1_update</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a>, <span class="keywordtype">only</span> : <a class="code hl_interface" href="interfacelinalg_1_1rank1__update.html">rank1_update</a></div>
 <div class="line">    <span class="keywordtype">implicit none</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Variables</span></div>
@@ -152,16 +152,16 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__rank1__do
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the rank 1 downdate of A</span></div>
 <div class="line">    ad = a</div>
-<div class="line">    <span class="keyword">call </span>rank1_update(-1.0d0, u, u, ad)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1rank1__update.html">rank1_update</a>(-1.0d0, u, u, ad)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the Cholesky factorization of the original matrix</span></div>
-<div class="line">    <span class="keyword">call </span>cholesky_factor(a)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1cholesky__factor.html">cholesky_factor</a>(a)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Apply the rank 1 downdate to the factored matrix</span></div>
-<div class="line">    <span class="keyword">call </span>cholesky_rank1_downdate(a, u)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1cholesky__rank1__downdate.html">cholesky_rank1_downdate</a>(a, u)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute the Cholesky factorization of the downdate to the original matrix</span></div>
-<div class="line">    <span class="keyword">call </span>cholesky_factor(ad)</div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1cholesky__factor.html">cholesky_factor</a>(ad)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the matrices</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Downdating the Factored Form:&quot;</span></div>
@@ -174,6 +174,10 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1cholesky__rank1__do
 <div class="line">        print *, ad(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1cholesky__factor_html"><div class="ttname"><a href="interfacelinalg_1_1cholesky__factor.html">linalg::cholesky_factor</a></div><div class="ttdoc">Computes the Cholesky factorization of a symmetric, positive definite matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l01433">linalg.f90:1433</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1cholesky__rank1__downdate_html"><div class="ttname"><a href="interfacelinalg_1_1cholesky__rank1__downdate.html">linalg::cholesky_rank1_downdate</a></div><div class="ttdoc">Computes the rank 1 downdate to a Cholesky factored matrix (upper triangular).</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l01639">linalg.f90:1639</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1rank1__update_html"><div class="ttname"><a href="interfacelinalg_1_1rank1__update.html">linalg::rank1_update</a></div><div class="ttdoc">Performs the rank-1 update to matrix A such that: , where  is an M-by-N matrix, is a scalar,...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00194">linalg.f90:194</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Downdating the Factored Form:</div>
 <div class="line"> 2.0000000000000000        6.0000000000000000       -8.0000000000000000</div>
 <div class="line"> 0.0000000000000000        1.0000000000000000        4.9999999999999973</div>

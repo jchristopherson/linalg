@@ -4,7 +4,7 @@
 ! https://www.mathworks.com/help/matlab/ref/lu.html?s_tid=srchtitle
 program example
     use iso_fortran_env, only : real64, int32
-    use linalg_core
+    use linalg
     implicit none
 
     ! Local Variables

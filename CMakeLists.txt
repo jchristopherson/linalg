@@ -46,3 +46,8 @@ if (BUILD_TESTING)
 endif()
 
 # Examples
+option(BUILD_LINALG_EXAMPLES "Build examples")
+message(STATUS "Build LINALG examples: ${BUILD_LINALG_EXAMPLES}")
+if (BUILD_LINALG_EXAMPLES)
+  add_subdirectory(examples)
+endif()

@@ -2838,13 +2838,13 @@ contains
                 rwptr, flag)
         else if (present(u) .and. .not.present(vt)) then
             call ZGESVD(jobu, jobvt, m, n, a, m, s, u, m, temp, n, wptr, &
-                rwptr, lwork, flag)
+                lwork, rwptr, flag)
         else if (.not.present(u) .and. present(vt)) then
             call ZGESVD(jobu, jobvt, m, n, a, m, s, temp, m, vt, n, wptr, &
-                rwptr, lwork, flag)
+                lwork, rwptr, flag)
         else
             call ZGESVD(jobu, jobvt, m, n, a, m, s, temp, m, temp, n, wptr, &
-                rwptr, lwork, flag)
+                lwork, rwptr, flag)
         end if
 
         ! Check for convergence

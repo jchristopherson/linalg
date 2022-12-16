@@ -1630,7 +1630,7 @@ contains
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(int32) :: n, liwork, lwork, istat, flag
+        integer(int32) :: n, liwork, lwork, istat, flag, itemp(1)
         integer(int32), pointer, dimension(:) :: iptr
         integer(int32), allocatable, target, dimension(:) :: iwrk
         real(real64), pointer, dimension(:) :: wptr
@@ -1656,7 +1656,7 @@ contains
         end if
 
         ! Workspace Query
-        call DGETRI(n, a, n, istat, temp, -1, flag)
+        call DGETRI(n, a, n, itemp, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -1731,7 +1731,7 @@ contains
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(int32) :: n, liwork, lwork, istat, flag
+        integer(int32) :: n, liwork, lwork, istat, flag, itemp(1)
         integer(int32), pointer, dimension(:) :: iptr
         integer(int32), allocatable, target, dimension(:) :: iwrk
         complex(real64), pointer, dimension(:) :: wptr
@@ -1757,7 +1757,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZGETRI(n, a, n, istat, temp, -1, flag)
+        call ZGETRI(n, a, n, itemp, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -2035,7 +2035,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, &
+        call ZGESVD('S', 'A', m, n, a, m, rtemp, a, m, a, n, temp, -1, &
             rtemp, flag)
         lwork = int(temp(1), int32)
         lwork = lwork + m * mn + n * n

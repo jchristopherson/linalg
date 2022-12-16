@@ -21,8 +21,6 @@ find_package(LAPACK)
 find_package(ferror 1.4.0 QUIET)
 add_subdirectory(dependencies)
 
-# print_all_variables()
-
 # Source
 add_subdirectory(src)
 add_fortran_library(

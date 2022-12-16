@@ -87,7 +87,6 @@ set(LINALG_SOURCES
     ${dir}/linalg_solve.f90
     ${dir}/linalg_sorting.f90
     ${dir}/linalg_basic.f90
-    ${dir}/linalg_immutable.f90
     ${dir}/linalg_c_api.f90
 )
 list(APPEND LINALG_SOURCES ${qrupdate_sources})

@@ -12,7 +12,6 @@ set(linalg_test_sources
     test_misc.f90
     test_lu.f90
     test_sort.f90
-    test_immutable.f90
 )
 
 # Build the Fortran API tests

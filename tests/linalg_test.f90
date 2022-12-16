@@ -11,7 +11,6 @@ program main
     use test_misc
     use test_lu
     use test_sort
-    use test_immutable
 
     ! Local Variables
     logical :: rst, overall
@@ -159,34 +158,6 @@ program main
     if (.not.rst) overall = .false.
 
     rst = test_dbl_descend_sort()
-    if (.not.rst) overall = .false.
-
-    ! Immutable Tests
-    rst = test_im_lu_factor()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_lu_solve()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_qr_factor()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_qr_factor_pvt()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_cholesky()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_svd()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_inverse()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_pinverse()
-    if (.not.rst) overall = .false.
-
-    rst = test_im_eigen()
     if (.not.rst) overall = .false.
 
     ! End

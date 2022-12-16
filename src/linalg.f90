@@ -1047,7 +1047,6 @@ end interface
 !! subroutine mult_qr(logical lside, logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
 !! @endcode
 !!
-!!
 !! @param[in] lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left;
 !!  else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
 !! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.
@@ -1067,7 +1066,7 @@ end interface
 !! @param[in,out] olwork An optional output used to determine workspace size.
 !!  If supplied, the routine determines the optimal size for @p work, and
 !!  returns without performing any actual calculations.
-!! @param[out] err An optional errors-based object that if provided can be
+!! @param[in,out] err An optional errors-based object that if provided can be
 !!  used to retrieve information relating to any errors encountered during
 !!  execution.  If not provided, a default implementation of the errors
 !!  class is used internally to provide error handling.  Possible errors and
@@ -1985,7 +1984,7 @@ end interface
 !! @param[in] a The N-by-N triangular matrix.
 !! @param[in,out] x On input, the N-element right-hand-side array.  On
 !!  output, the N-element solution array.
-!! @param[out] err An optional errors-based object that if provided can be
+!! @param[in,out] err An optional errors-based object that if provided can be
 !!  used to retrieve information relating to any errors encountered during
 !!  execution.  If not provided, a default implementation of the errors
 !!  class is used internally to provide error handling.  Possible errors and
@@ -3186,7 +3185,6 @@ interface sort
     module procedure :: sort_eigen_cmplx
     module procedure :: sort_eigen_dbl
 end interface
-
 
 ! ******************************************************************************
 ! LINALG_BASIC.F90

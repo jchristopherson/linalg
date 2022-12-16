@@ -63,7 +63,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("mtx_mult_mtx", errmsg, &
@@ -73,6 +73,9 @@ contains
 
         ! Call DGEMM
         call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -120,7 +123,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("mtx_mult_vec", errmsg, &
@@ -130,6 +133,9 @@ contains
 
         ! Call DGEMV
         call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
@@ -200,7 +206,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("cmtx_mult_mtx", errmsg, &
@@ -210,6 +216,9 @@ contains
 
         ! Call ZGEMM
         call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -262,7 +271,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("cmtx_mult_vec", errmsg, &
@@ -272,6 +281,9 @@ contains
 
         ! Call ZGEMV
         call ZGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -428,7 +440,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -513,6 +525,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -633,7 +648,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx3", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -718,6 +733,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -783,7 +801,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx4", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -890,6 +908,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -955,7 +976,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1062,6 +1083,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1183,7 +1207,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx_mix", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1290,6 +1314,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1477,7 +1504,7 @@ contains
         call DGESVD('N', 'N', m, n, a, m, s, dummy, m, dummy, n, w, &
             lwork - mn, flag)
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank", errmsg, LA_CONVERGENCE_ERROR)
         end if
@@ -1505,6 +1532,9 @@ contains
             if (s(i) < t) exit
             rnk = rnk + 1
         end do
+
+        ! Formatting
+100     format(I0, A)
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1606,7 +1636,7 @@ contains
         call ZGESVD('N', 'N', m, n, a, m, s, cdummy, m, cdummy, n, wptr, &
             lwork - mn, rw, flag)
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank_cmplx", errmsg, LA_CONVERGENCE_ERROR)
         end if
@@ -1634,6 +1664,9 @@ contains
             if (s(i) < t) exit
             rnk = rnk + 1
         end do
+
+        ! Formatting
+100     format(I0, A)
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2004,7 +2037,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
-            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+            write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
             call errmgr%report_error("tri_mtx_mult_dbl", trim(errmsg), &
@@ -2068,6 +2101,9 @@ contains
                 end do
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2111,7 +2147,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
-            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+            write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
             call errmgr%report_error("tri_mtx_mult_cmplx", trim(errmsg), &
@@ -2175,6 +2211,9 @@ contains
                 end do
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_symm", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -91,6 +91,9 @@ contains
             call errmgr%report_error("eigen_symm", &
                 "The algorithm failed to converge.", LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -149,7 +152,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_asymm", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -264,6 +267,9 @@ contains
                 vals(i) = cmplx(wr(i), wi(i), real64)
             end do
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -326,7 +332,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_gen", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -459,6 +465,9 @@ contains
             end do
             if (.not.present(beta)) alpha = alpha / bptr
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -513,7 +522,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -587,6 +596,9 @@ contains
                 LA_CONVERGENCE_ERROR)
             return
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------

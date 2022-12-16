@@ -280,7 +280,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -289,6 +289,9 @@ contains
 
         ! Call DGETRS
         call DGETRS("N", n, nrhs, a, n, ipvt, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -325,7 +328,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -334,6 +337,9 @@ contains
 
         ! Call ZGETRS
         call ZGETRS("N", n, nrhs, a, n, ipvt, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -369,7 +375,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -378,6 +384,9 @@ contains
 
         ! Call DGETRS
         call DGETRS("N", n, 1, a, n, ipvt, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -413,7 +422,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_vec_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -422,6 +431,9 @@ contains
 
         ! Call ZGETRS
         call ZGETRS("N", n, 1, a, n, ipvt, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -468,7 +480,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -510,6 +522,9 @@ contains
         ! Solve the triangular system: A(1:N,1:N)*X = B(1:N,:)
         call solve_triangular_system(.true., .true., .false., .true., one, &
             a(1:n,1:n), b(1:n,:))
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -554,7 +569,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -596,6 +611,9 @@ contains
         ! Solve the triangular system: A(1:N,1:N)*X = B(1:N,:)
         call solve_triangular_system(.true., .true., .false., .true., one, &
             a(1:n,1:n), b(1:n,:))
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -637,7 +655,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -678,6 +696,9 @@ contains
 
         ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
         call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -719,7 +740,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_vec_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -760,6 +781,9 @@ contains
 
         ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
         call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -815,7 +839,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -916,6 +940,9 @@ contains
             end do
             b(:,j) = wptr(1:n)
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -972,7 +999,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_mtx_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -1073,6 +1100,9 @@ contains
             end do
             b(:,j) = wptr(1:n)
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1127,7 +1157,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1224,6 +1254,9 @@ contains
             wptr(jpvt(i)) = b(i)
         end do
         b = wptr(1:n)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1279,7 +1312,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_vec_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1376,6 +1409,9 @@ contains
             wptr(jpvt(i)) = b(i)
         end do
         b = wptr(1:n)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -1417,7 +1453,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1426,6 +1462,9 @@ contains
 
         ! Process
         call DPOTRS(uplo, n, nrhs, a, n, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1465,7 +1504,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1474,6 +1513,9 @@ contains
 
         ! Process
         call ZPOTRS(uplo, n, nrhs, a, n, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1512,7 +1554,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1521,6 +1563,9 @@ contains
 
         ! Process
         call DPOTRS(uplo, n, 1, a, n, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1559,7 +1604,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_vec_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1568,6 +1613,9 @@ contains
 
         ! Process
         call ZPOTRS(uplo, n, 1, a, n, b, n, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -1828,7 +1876,7 @@ contains
 
         ! Input Check
         if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
-            write(errmsg, '(AI0AI0A)') &
+            write(errmsg, 100) &
                 "The output matrix AINV is not sized appropriately.  " // &
                 "It is expected to be ", n, "-by-", m, "."
             call errmgr%report_error("mtx_pinverse", errmsg, &
@@ -1876,7 +1924,7 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_pinverse", errmsg, &
                 LA_CONVERGENCE_ERROR)
@@ -1916,6 +1964,10 @@ contains
 
         ! Compute (VT**T * inv(S)) * U**T
         call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
+
+        ! Formatting
+100     format(A, I0, A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1974,7 +2026,7 @@ contains
 
         ! Input Check
         if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
-            write(errmsg, '(AI0AI0A)') &
+            write(errmsg, 100) &
                 "The output matrix AINV is not sized appropriately.  " // &
                 "It is expected to be ", n, "-by-", m, "."
             call errmgr%report_error("mtx_pinverse_cmplx", errmsg, &
@@ -2045,7 +2097,7 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_pinverse_cmplx", errmsg, &
                 LA_CONVERGENCE_ERROR)
@@ -2098,6 +2150,10 @@ contains
                 ainv(i,j) = val
             end do
         end do
+
+        ! Formatting
+100     format(A, I0, A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -2444,7 +2500,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_pvt", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -2507,6 +2563,9 @@ contains
         call DGELSY(m, n, nrhs, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
             flag)
         if (present(arnk)) arnk = rnk
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2557,7 +2616,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_pvt_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -2642,6 +2701,9 @@ contains
         call ZGELSY(m, n, nrhs, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
             rwptr, flag)
         if (present(arnk)) arnk = rnk
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2686,7 +2748,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_pvt", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -2748,6 +2810,9 @@ contains
         ! Process
         call DGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, flag)
         if (present(arnk)) arnk = rnk
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2798,7 +2863,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -2883,6 +2948,9 @@ contains
         call ZGELSY(m, n, 1, a, m, b, maxmn, iptr, rc, rnk, wptr, lwork, &
             rwptr, flag)
         if (present(arnk)) arnk = rnk
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2925,7 +2993,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_svd", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -2989,11 +3057,15 @@ contains
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_mtx_svd", errmsg, &
                 LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -3042,7 +3114,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -3127,11 +3199,15 @@ contains
             rwptr, flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_mtx_svd_cmplx", &
                 errmsg, LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -3174,7 +3250,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_svd", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -3237,11 +3313,15 @@ contains
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_vec_svd", errmsg, &
                 LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -3290,7 +3370,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
                 trim(errmsg), LA_ARRAY_SIZE_ERROR)
@@ -3375,11 +3455,15 @@ contains
             rwptr, flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_vec_svd_cmplx", &
                 errmsg, LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 end submodule

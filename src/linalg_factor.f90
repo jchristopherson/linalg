@@ -49,11 +49,14 @@ contains
         ! call to LAPACK
         if (flag > 0) then
             ! WARNING: Singular matrix
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Singular matrix encountered (row ", flag, ")"
             call errmgr%report_warning("lu_factor_dbl", trim(errmsg), &
                 LA_SINGULAR_MATRIX_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -97,11 +100,14 @@ contains
         ! call to LAPACK
         if (flag > 0) then
             ! WARNING: Singular matrix
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Singular matrix encountered (row ", flag, ")"
             call errmgr%report_warning("lu_factor_cmplx", trim(errmsg), &
                 LA_SINGULAR_MATRIX_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -143,7 +149,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_lu_all", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -166,6 +172,9 @@ contains
             if (j > 1) lu(1:j-1,j) = zero
             lu(j,j) = one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -210,7 +219,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_lu_all_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -233,6 +242,9 @@ contains
             if (j > 1) lu(1:j-1,j) = c_zero
             lu(j,j) = c_one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -269,7 +281,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_lu_only", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -285,6 +297,9 @@ contains
             if (j > 1) lu(1:j-1,j) = zero
             lu(j,j) = one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -321,7 +336,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_lu_only_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -337,6 +352,9 @@ contains
             if (j > 1) lu(1:j-1,j) = zero
             lu(j,j) = one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -519,7 +537,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("qr_factor_pivot", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -561,6 +579,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -605,7 +626,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("qr_factor_pivot_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -665,6 +686,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -711,7 +735,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_qr_no_pivot", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -760,6 +784,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -806,7 +833,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_qr_no_pivot_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -855,6 +882,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -904,7 +934,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_qr_pivot", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -923,6 +953,9 @@ contains
             p(:,j) = zero
             p(jp,j) = one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -972,7 +1005,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("form_qr_pivot_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -991,6 +1024,9 @@ contains
             p(:,j) = zero
             p(jp,j) = one
         end do
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1049,7 +1085,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_qr_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1088,6 +1124,9 @@ contains
 
         ! Call DORMQR
         call DORMQR(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1146,7 +1185,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_qr_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1185,6 +1224,9 @@ contains
 
         ! Call ZUNMQR
         call ZUNMQR(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1232,7 +1274,7 @@ contains
         if (size(a, 1) /= m .or. size(a, 2) < k) flag = 3
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_qr_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1271,6 +1313,9 @@ contains
 
         ! Call DORMQR
         call DORMQR(side, t, m, 1, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1318,7 +1363,7 @@ contains
         if (size(a, 1) /= m .or. size(a, 2) < k) flag = 3
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_qr_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1357,6 +1402,9 @@ contains
 
         ! Call ZUNMQR
         call ZUNMQR(side, t, m, 1, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1403,7 +1451,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("qr_rank1_update", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1437,6 +1485,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1487,7 +1538,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("qr_rank1_update_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1542,6 +1593,9 @@ contains
 
         ! End
         if (allocated(wrk)) deallocate(wrk)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -1592,7 +1646,7 @@ contains
         call DPOTRF(uplo, n, a, n, flag)
         if (flag > 0) then
             ! ERROR: Matrix is not positive definite
-            write(errmsg, '(AI0A)') "The leading minor of order ", flag, &
+            write(errmsg, 100) "The leading minor of order ", flag, &
                 " is not positive definite."
             call errmgr%report_error("cholesky_factor", trim(errmsg), &
                 LA_MATRIX_FORMAT_ERROR)
@@ -1610,6 +1664,9 @@ contains
                 a(1:i-1,i) = zero
             end do
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1658,7 +1715,7 @@ contains
         call ZPOTRF(uplo, n, a, n, flag)
         if (flag > 0) then
             ! ERROR: Matrix is not positive definite
-            write(errmsg, '(AI0A)') "The leading minor of order ", flag, &
+            write(errmsg, 100) "The leading minor of order ", flag, &
                 " is not positive definite."
             call errmgr%report_error("cholesky_factor_cmplx", trim(errmsg), &
                 LA_MATRIX_FORMAT_ERROR)
@@ -1676,6 +1733,9 @@ contains
                 a(1:i-1,i) = zero
             end do
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1711,7 +1771,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("cholesky_rank1_update", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1741,6 +1801,9 @@ contains
 
         ! Process
         call DCH1UP(n, r, n, u, wptr)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1776,7 +1839,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("cholesky_rank1_update_cmplx", &
                 trim(errmsg), &
@@ -1807,6 +1870,9 @@ contains
 
         ! Process
         call ZCH1UP(n, r, n, u, wptr)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1842,7 +1908,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("cholesky_rank1_downdate", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -1882,6 +1948,9 @@ contains
             call errmgr%report_error("cholesky_rank1_downdate", &
                 "The input matrix is singular.", LA_SINGULAR_MATRIX_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1917,7 +1986,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
                 trim(errmsg), &
@@ -1958,6 +2027,9 @@ contains
             call errmgr%report_error("cholesky_rank1_downdate_cmplx", &
                 "The input matrix is singular.", LA_SINGULAR_MATRIX_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -1996,7 +2068,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("rz_factor", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2035,6 +2107,9 @@ contains
 
         ! Call DTZRZF
         call DTZRZF(m, n, a, m, tau, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2071,7 +2146,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("rz_factor_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2110,6 +2185,9 @@ contains
 
         ! Call ZTZRZF
         call ZTZRZF(m, n, a, m, tau, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2175,7 +2253,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_rz_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2214,6 +2292,9 @@ contains
 
         ! Call DORMRZ
         call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2279,7 +2360,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_rz_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2318,6 +2399,9 @@ contains
 
         ! Call ZUNMRZ
         call ZUNMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2369,7 +2453,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_rz_vec", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2408,6 +2492,9 @@ contains
 
         ! Call DORMRZ
         call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2459,7 +2546,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("mult_rz_vec_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2498,6 +2585,9 @@ contains
 
         ! Call ZUNMRZ
         call ZUNMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -2558,7 +2648,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("svd", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2613,10 +2703,14 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("svd", errmsg, LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2680,7 +2774,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("svd_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -2755,11 +2849,15 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("svd_cmplx", errmsg, &
                 LA_CONVERGENCE_ERROR)
         end if
+
+        ! Formatting
+100     format(A, I0, A)
+101     format(I0, A)
     end subroutine
 
 end submodule

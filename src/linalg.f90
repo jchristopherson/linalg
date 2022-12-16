@@ -269,7 +269,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : int32, real64
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -548,7 +548,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -659,7 +659,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -814,7 +814,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -963,7 +963,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -1123,7 +1123,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -1247,7 +1247,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -1370,7 +1370,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -1476,7 +1476,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -1580,7 +1580,7 @@ end interface
 !! program example
 !!     use iso_fortran_env, only : real64, int32
 !!     use linalg_factor, only : cholesky_factor, cholesky_rank1_downdate
-!!     use linalg_core, only : rank1_update
+!!     use linalg, only : rank1_update
 !!     implicit none
 !!
 !!     ! Variables
@@ -1867,7 +1867,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : int32, real64
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -2003,7 +2003,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -2098,7 +2098,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -2228,7 +2228,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -2327,7 +2327,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -2440,7 +2440,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -2541,7 +2541,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -2643,7 +2643,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Local Variables
@@ -2729,7 +2729,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : real64, int32
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -2835,7 +2835,7 @@ end interface
 !! @code{.f90}
 !! program example
 !!     use iso_fortran_env, only : int32, real64
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Variables
@@ -3033,7 +3033,7 @@ end interface
 !! ! Notice: x1" = the second time derivative of x1.
 !! program example
 !!     use iso_fortran_env, only : int32, real64
-!!     use linalg_core
+!!     use linalg
 !!     implicit none
 !!
 !!     ! Define the model parameters

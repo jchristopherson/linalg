@@ -9,7 +9,5 @@ var searchData=
   ['solve_5ftriangular_5fsystem_6',['solve_triangular_system',['../interfacelinalg_1_1solve__triangular__system.html',1,'linalg']]],
   ['sort_7',['sort',['../interfacelinalg_1_1sort.html',1,'linalg']]],
   ['svd_8',['svd',['../interfacelinalg_1_1svd.html',1,'linalg']]],
-  ['svd_5fresults_9',['svd_results',['../structlinalg__immutable_1_1svd__results.html',1,'linalg_immutable']]],
-  ['svd_5fresults_5fcmplx_10',['svd_results_cmplx',['../structlinalg__immutable_1_1svd__results__cmplx.html',1,'linalg_immutable']]],
-  ['swap_11',['swap',['../interfacelinalg_1_1swap.html',1,'linalg']]]
+  ['swap_9',['swap',['../interfacelinalg_1_1swap.html',1,'linalg']]]
 ];

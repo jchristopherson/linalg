@@ -155,7 +155,7 @@ Data Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="memItemLeft" align="right" valign="top">real(real64) function, dimension(size(a, 1), size(a, 2)), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#a9648fd41cc3ce8ec40f67236d274f9a8">mat_rank1_update</a> (a, x, y)</td></tr>
-<tr class="memdesc:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the rank-1 update to matrix A such that: B = X * Y**T + A, where A is an M-by-N matrix, X is an M-element array, and N is an N-element array.  <a href="namespacelinalg__immutable.html#a9648fd41cc3ce8ec40f67236d274f9a8">More...</a><br /></td></tr>
+<tr class="memdesc:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the rank-1 update to matrix A such that: \( B = X  Y^T + A \), where \( A \) is an M-by-N matrix, \( X \) is an M-element array, and \( Y \) is an N-element array.  <a href="namespacelinalg__immutable.html#a9648fd41cc3ce8ec40f67236d274f9a8">More...</a><br /></td></tr>
 <tr class="separator:a9648fd41cc3ce8ec40f67236d274f9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7abd8e3fd4170b5b5dfad4448a651c9"><td class="memItemLeft" align="right" valign="top">real(real64) function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelinalg__immutable.html#ab7abd8e3fd4170b5b5dfad4448a651c9">mat_det</a> (a)</td></tr>
 <tr class="memdesc:ab7abd8e3fd4170b5b5dfad4448a651c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the determinant of a square matrix.  <a href="namespacelinalg__immutable.html#ab7abd8e3fd4170b5b5dfad4448a651c9">More...</a><br /></td></tr>
@@ -553,12 +553,12 @@ Functions/Subroutines</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Performs the rank-1 update to matrix A such that: B = X * Y**T + A, where A is an M-by-N matrix, X is an M-element array, and N is an N-element array. </p>
+<p>Performs the rank-1 update to matrix A such that: \( B = X  Y^T + A \), where \( A \) is an M-by-N matrix, \( X \) is an M-element array, and \( Y \) is an N-element array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N matrix A. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>The M-element array X. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>THe N-element array Y. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>The N-element array Y. </td></tr>
   </table>
   </dd>
 </dl>

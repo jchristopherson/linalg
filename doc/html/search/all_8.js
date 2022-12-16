@@ -1,8 +1,13 @@
 var searchData=
 [
-  ['q_0',['q',['../structlinalg__immutable_1_1qr__results.html#a91547ec8def57c0cc59271ccf59b3a01',1,'linalg_immutable::qr_results::q()'],['../structlinalg__immutable_1_1qr__results__cmplx.html#a7fa839ced2d020c61550d5b6cff9bb69',1,'linalg_immutable::qr_results_cmplx::q()']]],
-  ['qr_5ffactor_1',['qr_factor',['../interfacelinalg_1_1qr__factor.html',1,'linalg']]],
-  ['qr_5frank1_5fupdate_2',['qr_rank1_update',['../interfacelinalg_1_1qr__rank1__update.html',1,'linalg']]],
-  ['qr_5fresults_3',['qr_results',['../structlinalg__immutable_1_1qr__results.html',1,'linalg_immutable']]],
-  ['qr_5fresults_5fcmplx_4',['qr_results_cmplx',['../structlinalg__immutable_1_1qr__results__cmplx.html',1,'linalg_immutable']]]
+  ['solve_5fcholesky_0',['solve_cholesky',['../interfacelinalg_1_1solve__cholesky.html',1,'linalg']]],
+  ['solve_5fleast_5fsquares_1',['solve_least_squares',['../interfacelinalg_1_1solve__least__squares.html',1,'linalg']]],
+  ['solve_5fleast_5fsquares_5ffull_2',['solve_least_squares_full',['../interfacelinalg_1_1solve__least__squares__full.html',1,'linalg']]],
+  ['solve_5fleast_5fsquares_5fsvd_3',['solve_least_squares_svd',['../interfacelinalg_1_1solve__least__squares__svd.html',1,'linalg']]],
+  ['solve_5flu_4',['solve_lu',['../interfacelinalg_1_1solve__lu.html',1,'linalg']]],
+  ['solve_5fqr_5',['solve_qr',['../interfacelinalg_1_1solve__qr.html',1,'linalg']]],
+  ['solve_5ftriangular_5fsystem_6',['solve_triangular_system',['../interfacelinalg_1_1solve__triangular__system.html',1,'linalg']]],
+  ['sort_7',['sort',['../interfacelinalg_1_1sort.html',1,'linalg']]],
+  ['svd_8',['svd',['../interfacelinalg_1_1svd.html',1,'linalg']]],
+  ['swap_9',['swap',['../interfacelinalg_1_1swap.html',1,'linalg']]]
 ];

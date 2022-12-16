@@ -1,26 +1,5 @@
 var searchData=
 [
-  ['mat_5fcholesky_0',['mat_cholesky',['../namespacelinalg__immutable.html#a5876e7f21f20679fd6c0c84768061a30',1,'linalg_immutable']]],
-  ['mat_5fcholesky_5frank1_5fdowndate_1',['mat_cholesky_rank1_downdate',['../namespacelinalg__immutable.html#afb844327cadfdd08580c94cb1668c2a8',1,'linalg_immutable']]],
-  ['mat_5fcholesky_5frank1_5fupdate_2',['mat_cholesky_rank1_update',['../namespacelinalg__immutable.html#a83eaeadc3a3cc5d81c46824174e5a90b',1,'linalg_immutable']]],
-  ['mat_5fdet_3',['mat_det',['../namespacelinalg__immutable.html#ab7abd8e3fd4170b5b5dfad4448a651c9',1,'linalg_immutable']]],
-  ['mat_5feigen_4',['mat_eigen',['../interfacelinalg__immutable_1_1mat__eigen.html',1,'linalg_immutable']]],
-  ['mat_5finverse_5',['mat_inverse',['../namespacelinalg__immutable.html#a98f5b4e5de682d686cb763ab60fcde7f',1,'linalg_immutable']]],
-  ['mat_5flu_6',['mat_lu',['../interfacelinalg__immutable_1_1mat__lu.html',1,'linalg_immutable']]],
-  ['mat_5fmult_5fdiag_7',['mat_mult_diag',['../interfacelinalg__immutable_1_1mat__mult__diag.html',1,'linalg_immutable']]],
-  ['mat_5fmult_5flower_5ftri_8',['mat_mult_lower_tri',['../interfacelinalg__immutable_1_1mat__mult__lower__tri.html',1,'linalg_immutable']]],
-  ['mat_5fmult_5fupper_5ftri_9',['mat_mult_upper_tri',['../interfacelinalg__immutable_1_1mat__mult__upper__tri.html',1,'linalg_immutable']]],
-  ['mat_5fpinverse_10',['mat_pinverse',['../namespacelinalg__immutable.html#aaf39795f72fad79a38213893b850d793',1,'linalg_immutable']]],
-  ['mat_5fqr_11',['mat_qr',['../namespacelinalg__immutable.html#a8f1ba0ce9f8fbece16a512145bbc197f',1,'linalg_immutable']]],
-  ['mat_5fqr_5frank1_5fupdate_12',['mat_qr_rank1_update',['../namespacelinalg__immutable.html#a4b09077ad1495833919bab84b144b297',1,'linalg_immutable']]],
-  ['mat_5frank1_5fupdate_13',['mat_rank1_update',['../namespacelinalg__immutable.html#a9648fd41cc3ce8ec40f67236d274f9a8',1,'linalg_immutable']]],
-  ['mat_5fsolve_5flower_5ftri_14',['mat_solve_lower_tri',['../interfacelinalg__immutable_1_1mat__solve__lower__tri.html',1,'linalg_immutable']]],
-  ['mat_5fsolve_5fupper_5ftri_15',['mat_solve_upper_tri',['../interfacelinalg__immutable_1_1mat__solve__upper__tri.html',1,'linalg_immutable']]],
-  ['mat_5fsvd_16',['mat_svd',['../namespacelinalg__immutable.html#a6236acadb527f7762e3e1c0ee3d9ca82',1,'linalg_immutable']]],
-  ['mtx_5finverse_17',['mtx_inverse',['../interfacelinalg_1_1mtx__inverse.html',1,'linalg']]],
-  ['mtx_5fmult_18',['mtx_mult',['../interfacelinalg_1_1mtx__mult.html',1,'linalg']]],
-  ['mtx_5fpinverse_19',['mtx_pinverse',['../interfacelinalg_1_1mtx__pinverse.html',1,'linalg']]],
-  ['mtx_5frank_20',['mtx_rank',['../interfacelinalg_1_1mtx__rank.html',1,'linalg']]],
-  ['mult_5fqr_21',['mult_qr',['../interfacelinalg_1_1mult__qr.html',1,'linalg']]],
-  ['mult_5frz_22',['mult_rz',['../interfacelinalg_1_1mult__rz.html',1,'linalg']]]
+  ['qr_5ffactor_0',['qr_factor',['../interfacelinalg_1_1qr__factor.html',1,'linalg']]],
+  ['qr_5frank1_5fupdate_1',['qr_rank1_update',['../interfacelinalg_1_1qr__rank1__update.html',1,'linalg']]]
 ];

@@ -33,21 +33,5 @@ var annotated_dup =
       [ "swap", "interfacelinalg_1_1swap.html", null ],
       [ "trace", "interfacelinalg_1_1trace.html", null ],
       [ "tri_mtx_mult", "interfacelinalg_1_1tri__mtx__mult.html", null ]
-    ] ],
-    [ "linalg_immutable", "namespacelinalg__immutable.html", [
-      [ "eigen_results", "structlinalg__immutable_1_1eigen__results.html", "structlinalg__immutable_1_1eigen__results" ],
-      [ "lu_results", "structlinalg__immutable_1_1lu__results.html", "structlinalg__immutable_1_1lu__results" ],
-      [ "lu_results_cmplx", "structlinalg__immutable_1_1lu__results__cmplx.html", "structlinalg__immutable_1_1lu__results__cmplx" ],
-      [ "mat_eigen", "interfacelinalg__immutable_1_1mat__eigen.html", null ],
-      [ "mat_lu", "interfacelinalg__immutable_1_1mat__lu.html", null ],
-      [ "mat_mult_diag", "interfacelinalg__immutable_1_1mat__mult__diag.html", null ],
-      [ "mat_mult_lower_tri", "interfacelinalg__immutable_1_1mat__mult__lower__tri.html", null ],
-      [ "mat_mult_upper_tri", "interfacelinalg__immutable_1_1mat__mult__upper__tri.html", null ],
-      [ "mat_solve_lower_tri", "interfacelinalg__immutable_1_1mat__solve__lower__tri.html", null ],
-      [ "mat_solve_upper_tri", "interfacelinalg__immutable_1_1mat__solve__upper__tri.html", null ],
-      [ "qr_results", "structlinalg__immutable_1_1qr__results.html", "structlinalg__immutable_1_1qr__results" ],
-      [ "qr_results_cmplx", "structlinalg__immutable_1_1qr__results__cmplx.html", "structlinalg__immutable_1_1qr__results__cmplx" ],
-      [ "svd_results", "structlinalg__immutable_1_1svd__results.html", "structlinalg__immutable_1_1svd__results" ],
-      [ "svd_results_cmplx", "structlinalg__immutable_1_1svd__results__cmplx.html", "structlinalg__immutable_1_1svd__results__cmplx" ]
     ] ]
 ];

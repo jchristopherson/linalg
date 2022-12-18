@@ -1,5 +1,6 @@
-#ifndef LINALG_H_
-#define LINALG_H_
+/** @file linalg.h */
+#ifndef LINALG_H_DEFINED
+#define LINALG_H_DEFINED
 
 #include <stdbool.h>
 #include <complex.h>
@@ -22,8 +23,9 @@ extern "C" {
 
 /**
  * Performs the rank-1 update to matrix A such that:
- * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
- * X is an M-element array, and N is an N-element array.
+ * \f$ A = \alpha X Y^T + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+ * \f$ \alpha \f$ is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
+ * is an N-element array.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -43,8 +45,9 @@ int la_rank1_update(int m, int n, double alpha, const double *x,
 
 /**
  * Performs the rank-1 update to matrix A such that:
- * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
- * X is an M-element array, and N is an N-element array.
+ * \f$ A = \alpha X Y^T + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+ * \f$ \alpha \f$ is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
+ * is an N-element array.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -97,7 +100,7 @@ int la_trace_cmplx(int m, int n, const double complex *a, int lda,
     double complex *rst);
 
 /**
- * Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
+ * Computes the matrix operation \f$ C = \alpha op(A) op(B) + \beta C \f$.
  * 
  * @param transa Set to true to compute op(A) as the transpose of A; else,
  *   set to false to compute op(A) as A.
@@ -127,7 +130,7 @@ int la_mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
     double *c, int ldc);
 
 /**
- * Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
+ * Computes the matrix operation \f$ C = \alpha op(A) op(B) + \beta C \f$.
  *
  * @param opa Set to LA_TRANSPOSE to compute op(A) as a direct transpose of A,
  *  set to LA_HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
@@ -160,8 +163,8 @@ int la_mtx_mult_cmplx(int opa, int opb, int m, int n, int k,
     int ldc);
 
 /**
- * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- * or C = alpha * op(B) * A + beta * C.
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta C \f$.
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
@@ -197,8 +200,8 @@ int la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k,
     double *c, int ldc);
 
 /**
- * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- * or C = alpha * op(B) * A + beta * C.
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta * C \f$.
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
@@ -235,8 +238,8 @@ int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k,
     int ldb, double complex beta, double complex *c, int ldc);
 
 /**
- * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- * or C = alpha * op(B) * A + beta * C.
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta C \f$.
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
@@ -348,13 +351,13 @@ int la_det_cmplx(int n, double complex *a, int lda, double complex *d);
 
 /**
  * Computes the triangular matrix operation:
- * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
- * where A is a triangular matrix.
+ * \f$ B = \alpha A^T A + \beta B \f$, or \f$ B = \alpha A A^T + \beta B \f$,
+ * where \f$ A \f$ is a triangular matrix.
  *
- * @param upper Set to true if matrix A is upper triangular, and
- *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
- *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
- *  be computed.
+ * @param upper Set to true if matrix \f$ A \f$ is upper triangular, and
+ *  \f$ B = \alpha A^T A + \beta B \f$ is to be calculated; else, set to false
+ *  if \f$ A \f$ is lower triangular, and \f$ B = \alpha A A^T + \beta B \f$ is
+ *  to be computed.
  * @param alpha A scalar multiplier.
  * @param n The dimension of the matrix.
  * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
@@ -376,13 +379,13 @@ int la_tri_mtx_mult(bool upper, double alpha, int n, const double *a, int lda,
 
 /**
  * Computes the triangular matrix operation:
- * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
- * where A is a triangular matrix.
+ * \f$ B = \alpha A^T A + \beta B \f$, or \f$ B = \alpha A A^T + \beta B \f$,
+ * where \f$ A \f$ is a triangular matrix.
  *
- * @param upper Set to true if matrix A is upper triangular, and
- *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
- *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
- *  be computed.
+ * @param upper Set to true if matrix \f$ A \f$ is upper triangular, and
+ *  \f$ B = \alpha A^T A + \beta B \f$ is to be calculated; else, set to false
+ *  if \f$ A \f$ is lower triangular, and \f$ B = \alpha A A^T + \beta B \f$ is
+ *  to be computed.
  * @param alpha A scalar multiplier.
  * @param n The dimension of the matrix.
  * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
@@ -655,7 +658,7 @@ int la_form_qr_cmplx(bool fullq, int m, int n, double complex *r, int ldr,
  * Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.  This
  * routine also inflates the pivot array into an N-by-N matrix P such
- * that A * P = Q * R.
+ * that \f$ A P = Q R \f$.
  *
  * @param fullq Set to true to always return the full Q matrix; else,
  *  set to false, and in the event that M > N, Q may be supplied as M-by-N,
@@ -690,7 +693,7 @@ int la_form_qr_pvt(bool fullq, int m, int n, double *r, int ldr,
  * Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.  This
  * routine also inflates the pivot array into an N-by-N matrix P such
- * that A * P = Q * R.
+ * that \f$ A P = Q R \f$.
  *
  * @param fullq Set to true to always return the full Q matrix; else,
  *  set to false, and in the event that M > N, Q may be supplied as M-by-N,
@@ -724,11 +727,11 @@ int la_form_qr_cmplx_pvt(bool fullq, int m, int n, double complex *r, int ldr,
 
 /**
  * Multiplies a general matrix by the orthogonal matrix Q from a QR
- * factorization such that: C = op(Q) * C, or C = C * op(Q).
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
  *
- * @param lside Set to true to apply Q or Q**T from the left; else, set
- *  to false to apply Q or Q**T from the right.
- * @param trans Set to true to apply Q**T; else, set to false.
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^T \f$; else, set to false.
  * @param m The number of rows in matrix C.
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
@@ -756,11 +759,11 @@ int la_mult_qr(bool lside, bool trans, int m, int n, int k, double *a, int lda,
 
 /**
  * Multiplies a general matrix by the orthogonal matrix Q from a QR
- * factorization such that: C = op(Q) * C, or C = C * op(Q).
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
  *
- * @param lside Set to true to apply Q or Q**H from the left; else, set
- *  to false to apply Q or Q**H from the right.
- * @param trans Set to true to apply Q**H; else, set to false.
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^H \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^H \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^H \f$; else, set to false.
  * @param m The number of rows in matrix C.
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
@@ -789,7 +792,8 @@ int la_mult_qr_cmplx(bool lside, bool trans, int m, int n, int k,
 
 /**
  * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
+ * \f$ A1 = Q1 R1 \f$.
  *
  * @param m The number of rows in R.
  * @param n The number of columns in R.
@@ -815,7 +819,8 @@ int la_qr_rank1_update(int m, int n, double *q, int ldq, double *r, int ldr,
 
 /**
  * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
+ * \f$ A1 = Q1 R1 \f$.
  *
  * @param m The number of rows in R.
  * @param n The number of columns in R.
@@ -1553,4 +1558,4 @@ int la_sort_eigen_cmplx(bool ascend, int n, double complex *vals,
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-#endif  // LINALG_H_
+#endif  // LINALG_H_DEFINED

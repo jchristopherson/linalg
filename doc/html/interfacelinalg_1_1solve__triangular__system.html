@@ -137,7 +137,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
     <tr><td class="paramdir">[in]</td><td class="paramname">nounit</td><td>Set to true if A is not a unit-diagonal matrix (ones on every diagonal element); else, set to false if A is a unit-diagonal matrix. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The N-by-N triangular matrix. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>On input, the N-element right-hand-side array. On output, the N-element solution array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
 <li>LA_ARRAY_SIZE_ERROR: Occurs if <code>a</code> is not square, or if the sizes of <code>a</code> and <code>b</code> are not compatible.</li>
 </ul>
 </td></tr>
@@ -196,7 +196,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
 <div class="line"><span class="keyword">end program</span></div>
 <div class="ttc" id="ainterfacelinalg_1_1form__lu_html"><div class="ttname"><a href="interfacelinalg_1_1form__lu.html">linalg::form_lu</a></div><div class="ttdoc">Extracts the L and U matrices from the condensed [L\U] storage format used by the lu_factor.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00717">linalg.f90:717</a></div></div>
 <div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00595">linalg.f90:595</a></div></div>
-<div class="ttc" id="ainterfacelinalg_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg_1_1solve__triangular__system.html">linalg::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02061">linalg.f90:2061</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg_1_1solve__triangular__system.html">linalg::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02060">linalg.f90:2060</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00015">linalg.f90:15</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line">0.3333</div>
@@ -204,7 +204,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1solve__triangular__
 <div class="line">0.0000</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l02061">2061</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l02060">2060</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg_8f90_source.html">linalg.f90</a></li>
 </ul>

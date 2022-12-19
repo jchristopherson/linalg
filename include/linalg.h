@@ -45,7 +45,7 @@ int la_rank1_update(int m, int n, double alpha, const double *x,
 
 /**
  * Performs the rank-1 update to matrix A such that:
- * \f$ A = \alpha X Y^T + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+ * \f$ A = \alpha X Y^H + A \f$, where \f$ A \f$ is an M-by-N matrix, 
  * \f$ \alpha \f$ is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
  * is an N-element array.
  *
@@ -819,7 +819,7 @@ int la_qr_rank1_update(int m, int n, double *q, int ldq, double *r, int ldr,
 
 /**
  * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^H \f$ such that 
  * \f$ A1 = Q1 R1 \f$.
  *
  * @param m The number of rows in R.
@@ -849,8 +849,8 @@ int la_qr_rank1_update_cmplx(int m, int n, double complex *q, int ldq,
  * definite matrix.
  *
  * @param upper Set to true to compute the upper triangular factoriztion
- *  A = U**T * U; else, set to false to compute the lower triangular
- *  factorzation A = L * L**T.
+ *  \f$ A = U^T U \f$; else, set to false to compute the lower triangular
+ *  factorzation \f$ A = L L^T \f$.
  * @param n The dimension of matrix A.
  * @param a On input, the N-by-N matrix to factor.  On output, the
  *  factored matrix is returned in either the upper or lower triangular
@@ -869,8 +869,8 @@ int la_cholesky_factor(bool upper, int n, double *a, int lda);
  * definite matrix.
  *
  * @param upper Set to true to compute the upper triangular factoriztion
- *  A = U**T * U; else, set to false to compute the lower triangular
- *  factorzation A = L * L**T.
+ *  \f$ A = U^T U \f$; else, set to false to compute the lower triangular
+ *  factorzation \f$ A = L L^T \f$.
  * @param n The dimension of matrix A.
  * @param a On input, the N-by-N matrix to factor.  On output, the
  *  factored matrix is returned in either the upper or lower triangular
@@ -967,10 +967,10 @@ int la_cholesky_rank1_downdate_cmplx(int n, double complex *r, int ldr,
     double complex *u);
 
 /**
- * Computes the singular value decomposition of a matrix A.  The
- *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
- *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
- *  matrix.
+ * Computes the singular value decomposition of a matrix \f$ A \f$.  The
+ *  SVD is defined as: \f$ A = U S V^T \f$, where \f$ U \f$ is an M-by-M 
+ *  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is
+ *  an N-by-N orthogonal matrix.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -999,10 +999,10 @@ int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
     double *vt, int ldv);
 
 /**
- * Computes the singular value decomposition of a matrix A.  The
- *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
- *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
- *  matrix.
+ * Computes the singular value decomposition of a matrix \f$ A \f$.  The
+ *  SVD is defined as: \f$ A = U S V^H \f$, where \f$ U \f$ is an M-by-M 
+ *  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is
+ *  an N-by-N orthogonal matrix.  
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -1014,9 +1014,9 @@ int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
  * @param u An M-by-M matrix where the orthogonal U matrix will be
  *  written.
  * @param ldu The leading dimension of matrix U.
- * @param vt An N-by-N matrix where the transpose of the right 
+ * @param vt An N-by-N matrix where the conjugate transpose of the right 
  *  singular vector matrix V.
- * @param ldv The leading dimension of matrix V.
+ * @param ldv The leading dimension of @p vt.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -1031,15 +1031,15 @@ int la_svd_cmplx(int m, int n, double complex *a, int lda, double *s,
     double complex *u, int ldu, double complex *vt, int ldv);
 
 /**
- * Solves one of the matrix equations: op(A) * X = alpha * B, or
- * X * op(A) = alpha * B, where A is a triangular matrix.
+ * Solves one of the matrix equations: \f$ op(A) X = \alpha B \f$, or
+ * \f$ X op(A) = \alpha B \f$, where \f$ A \f$ is a triangular matrix.
  *
- * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
- *  false to solve X * op(A) = alpha * B.
+ * @param lside Set to true to solve \f$ op(A) X = \alpha B \f$; else, set to
+ *  false to solve \f$ X op(A) = \alpha B \f$.
  * @param upper Set to true if A is an upper triangular matrix; else,
  *  set to false if A is a lower triangular matrix.
- * @param trans Set to true if op(A) = A**T; else, set to false if
- *  op(A) = A.
+ * @param trans Set to true if \f$ op(A) = A^T \f$; else, set to false if
+ *  \f$ op(A) = A \f$.
  * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
  *  every diagonal element); else, set to false if A is a unit-diagonal
  *  matrix.
@@ -1062,15 +1062,15 @@ int la_solve_tri_mtx(bool lside, bool upper, bool trans, bool nounit, int m,
     int n, double alpha, const double *a, int lda, double *b, int ldb);
 
 /**
- * Solves one of the matrix equations: op(A) * X = alpha * B, or
- * X * op(A) = alpha * B, where A is a triangular matrix.
+ * Solves one of the matrix equations: \f$ op(A) X = \alpha B \f$, or
+ * \f$ X op(A) = \alpha B \f$, where \f$ A \f$ is a triangular matrix.
  *
- * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
- *  false to solve X * op(A) = alpha * B.
+ * @param lside Set to true to solve \f$ op(A) X = \alpha B \f$; else, set to
+ *  false to solve \f$ X op(A) = \alpha B \f$.
  * @param upper Set to true if A is an upper triangular matrix; else,
  *  set to false if A is a lower triangular matrix.
- * @param trans Set to true if op(A) = A**H; else, set to false if
- *  op(A) = A.
+ * @param trans Set to true if \f$ op(A) = A^H \f$; else, set to false if
+ *  \f$ op(A) = A \f$.
  * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
  *  every diagonal element); else, set to false if A is a unit-diagonal
  *  matrix.
@@ -1239,8 +1239,8 @@ int la_solve_qr_cmplx_pvt(int m, int n, int k, double complex *a, int lda,
  * Solves a system of Cholesky factored equations.
  *
  * @param upper Set to true if the original matrix A was factored such
- *  that A = U**T * U; else, set to false if the factorization of A was
- *  A = L**T * L.
+ *  that \f$ A = U^T U \f$; else, set to false if the factorization of A was
+ *  \f$ A = L^T L \f$.
  * @param m The number of rows in matrix B.
  * @param n The number of columns in matrix B.
  * @param a The M-by-M Cholesky factored matrix.
@@ -1260,8 +1260,8 @@ int la_solve_cholesky(bool upper, int m, int n, const double *a, int lda,
  * Solves a system of Cholesky factored equations.
  *
  * @param upper Set to true if the original matrix A was factored such
- *  that A = U**T * U; else, set to false if the factorization of A was
- *  A = L**T * L.
+ *  that \f$ A = U^T U \f$; else, set to false if the factorization of A was
+ *  \f$ A = L^T L \f$.
  * @param m The number of rows in matrix B.
  * @param n The number of columns in matrix B.
  * @param a The M-by-M Cholesky factored matrix.
@@ -1278,7 +1278,7 @@ int la_solve_cholesky_cmplx(bool upper, int m, int n, const double complex *a,
     int lda, double complex *b, int ldb);
 
 /**
- * Solves the overdetermined or underdetermined system (A*X = B) of
+ * Solves the overdetermined or underdetermined system (\f$ A X = B \f$) of
  * M equations of N unknowns using a QR or LQ factorization of the matrix A.
  * Notice, it is assumed that matrix A has full rank.
  *
@@ -1306,7 +1306,7 @@ int la_solve_least_squares(int m, int n, int k, double *a, int lda, double *b,
     int ldb);
 
 /**
- * Solves the overdetermined or underdetermined system (A*X = B) of
+ * Solves the overdetermined or underdetermined system (\f$ A X = B \f$) of
  * M equations of N unknowns using a QR or LQ factorization of the matrix A.
  * Notice, it is assumed that matrix A has full rank.
  *
@@ -1455,7 +1455,7 @@ int la_eigen_asymm(bool vecs, int n, double *a, int lda,
 /**
  * Computes the eigenvalues, and optionally the right eigenvectors of
  * a square matrix assuming the structure of the eigenvalue problem is
- * A*X = lambda*B*X.
+ * \f$ A X = \lambda B X \f$.
  *
  * @param vecs Set to true to compute the eigenvectors as well as the
  *  eigenvalues; else, set to false to just compute the eigenvalues.

@@ -1191,7 +1191,8 @@ end interface
 ! ------------------------------------------------------------------------------
 !> @brief Computes the rank 1 update to an M-by-N QR factored matrix A
 !! (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
-!! \f$ A1 = Q1 R1 \f$.
+!! \f$ A1 = Q1 R1 \f$.  In the event \f$ V \f$ is complex-valued, \f$ V^H \f$
+!! is computed instead of \f$ V^T \f$.
 !!
 !! @par Syntax
 !! @code{.f90}
@@ -1810,7 +1811,8 @@ end interface
 !> @brief Computes the singular value decomposition of a matrix A.  The
 !!  SVD is defined as: \f$ A = U S V^T \f$, where \f$ U \f$ is an M-by-M 
 !!  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is 
-!!  an N-by-N orthogonal matrix.
+!!  an N-by-N orthogonal matrix.  In the event that \f$ V \f$ is complex valued,
+!!  \f$ V^H \f$ is computed instead of \f$ V^T \f$.
 !!
 !! @par Syntax
 !! @code{.f90}

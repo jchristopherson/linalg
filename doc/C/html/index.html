@@ -103,7 +103,52 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="textblock"><h1><a class="anchor" id="intro_sec"></a>
 Introduction</h1>
 <p >LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines. This library provides routines for solving systems of linear equations, solving over or under-determined systems, and solving eigenvalue problems.</p>
-<dl class="section user"><dt>Example 2 - Solving an Eigenvalue Problem</dt><dd>The following example illustrates how to solve an eigenvalue problem using a mechanical vibrating system.</dd></dl>
+<dl class="section user"><dt>Example 1 - Solving Linear Equations</dt><dd>The following piece of code illustrates how to solve a system of linear equations using LU factorization.</dd></dl>
+<div class="fragment"><div class="line">  <span class="keywordtype">int</span> main() {</div>
+<div class="line">    <span class="comment">// Local Variables</span></div>
+<div class="line">    <span class="keywordtype">int</span> i, flag, pvt[3];</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Build the 3-by-3 matrix A - Use column-major formating!</span></div>
+<div class="line">    <span class="comment">//     | 1  2  3 |</span></div>
+<div class="line">    <span class="comment">// A = | 4  5  6 |</span></div>
+<div class="line">    <span class="comment">//     | 7  8  0 |</span></div>
+<div class="line">    <span class="keywordtype">double</span> a[] = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 0.0};</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Build the right-hand-side vector B.</span></div>
+<div class="line">    <span class="comment">//     | -1 |</span></div>
+<div class="line">    <span class="comment">// b = | -2 |</span></div>
+<div class="line">    <span class="comment">//     | -3 |</span></div>
+<div class="line">    <span class="keywordtype">double</span> b[] = {-1.0, -2.0, -3.0};</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// The solution is:</span></div>
+<div class="line">    <span class="comment">//     |  1/3 |</span></div>
+<div class="line">    <span class="comment">// x = | -2/3 |</span></div>
+<div class="line">    <span class="comment">//     |   0  |</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Compute the LU factorization</span></div>
+<div class="line">    flag = <a class="code hl_function" href="linalg_8h.html#a248142a5f0826cddac5daf1c74f234a6">la_lu_factor</a>(3, 3, a, 3, pvt);</div>
+<div class="line">    <span class="keywordflow">if</span> (flag != LA_NO_ERROR) <span class="keywordflow">return</span> flag;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Solve.  The results overwrite b.</span></div>
+<div class="line">    flag = <a class="code hl_function" href="linalg_8h.html#aae725d3247301d1163c58f89edff3d4b">la_solve_lu</a>(3, 1, a, 3, pvt, b, 3);</div>
+<div class="line">    <span class="keywordflow">if</span> (flag != LA_NO_ERROR) <span class="keywordflow">return</span> flag;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Display the results</span></div>
+<div class="line">    printf(<span class="stringliteral">&quot;LU Solution: X = \n&quot;</span>);</div>
+<div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; 3; i++) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;%8.4f\n&quot;</span>, b[i]);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// End</span></div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+<div class="ttc" id="alinalg_8h_html_a248142a5f0826cddac5daf1c74f234a6"><div class="ttname"><a href="linalg_8h.html#a248142a5f0826cddac5daf1c74f234a6">la_lu_factor</a></div><div class="ttdeci">int la_lu_factor(int m, int n, double *a, int lda, int *ipvt)</div></div>
+<div class="ttc" id="alinalg_8h_html_aae725d3247301d1163c58f89edff3d4b"><div class="ttname"><a href="linalg_8h.html#aae725d3247301d1163c58f89edff3d4b">la_solve_lu</a></div><div class="ttdeci">int la_solve_lu(int m, int n, const double *a, int lda, const int *ipvt, double *b, int ldb)</div></div>
+</div><!-- fragment --><p> The program generates the following output. </p><div class="fragment"><div class="line"> LU Solution: X = </div>
+<div class="line"> 0.3333</div>
+<div class="line">-0.6667</div>
+<div class="line"> 0.0000</div>
+</div><!-- fragment --><dl class="section user"><dt>Example 2 - Solving an Eigenvalue Problem</dt><dd>The following example illustrates how to solve an eigenvalue problem using a mechanical vibrating system.</dd></dl>
 <div class="fragment"><div class="line">   <span class="comment">// This is an example illustrating the use of the eigenvalue and eigenvector </span></div>
 <div class="line">   <span class="comment">// routines to solve a free vibration problem of 3 masses connected by springs.</span></div>
 <div class="line">   <span class="comment">// </span></div>
@@ -119,7 +164,7 @@ Introduction</h1>
 <div class="line">   <span class="comment">// | 0   0   m3| |x3&quot;|   |   0    -k3    k3+k4| |x3|   |0|</span></div>
 <div class="line">   <span class="comment">// </span></div>
 <div class="line">   <span class="comment">// Notice: x1&quot; = the second time derivative of x1.</span></div>
-<div class="line">  </div>
+<div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;complex.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;math.h&gt;</span></div>

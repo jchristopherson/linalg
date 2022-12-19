@@ -3703,6 +3703,94 @@ interface mult_lq
     module procedure :: mult_lq_vec_cmplx
 end interface
 
+!> @brief Solves a system of M LQ-factored equations of N unknowns.  N must be
+!! greater than or equal to M.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine solve_lq(real(real64) a(:,:), real(real64) tau(:), real(real64) b(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine solve_lq(complex(real64) a(:,:), complex(real64) tau(:), complex(real64) b(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine solve_lq(real(real64) a(:,:), real(real64) tau(:), real(real64) b(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine solve_lq(complex(real64) a(:,:), complex(real64) tau(:), complex(real64) b(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] a On input, the M-by-N LQ factored matrix as returned by
+!!  @ref lq_factor.  On output, the contents of this matrix are restored.
+!!  Notice, N must be greater than or equal to M.
+!! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+!!  the elementary reflectors as returned by @ref lq_factor.
+!! @param[in] b On input, an N-by-NRHS matrix where the first M rows contain
+!!  the right-hand-side matrix.  On output, the N-by-NRHS solution matrix X.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Usage
+!! The following example illustrates the solution of a system of equations
+!! using LQ factorization.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : real64, int32
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Local Variables
+!!     real(real64) :: a(3,3), tau(3), b(3)
+!!     integer(int32) :: i, pvt(3)
+!!
+!!     ! Build the 3-by-3 matrix A.
+!!     !     | 1   2   3 |
+!!     ! A = | 4   5   6 |
+!!     !     | 7   8   0 |
+!!     a = reshape( &
+!!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+!!         [3, 3])
+!!
+!!     ! Build the right-hand-side vector B.
+!!     !     | -1 |
+!!     ! b = | -2 |
+!!     !     | -3 |
+!!     b = [-1.0d0, -2.0d0, -3.0d0]
+!!
+!!     ! The solution is:
+!!     !     |  1/3 |
+!!     ! x = | -2/3 |
+!!     !     |   0  |
+!!
+!!     ! Compute the LQ factorization
+!!     call lq_factor(a, tau)
+!!
+!!     ! Compute the solution.  The results overwrite b.
+!!     call solve_lq(a, tau, b)
+!!
+!!     ! Display the results
+!!     print '(A)', "LQ Solution: X = "
+!!     print '(F8.4)', (b(i), i = 1, size(b))
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! QR Solution: X =
+!! 0.3333
+!! -0.6667
+!! 0.0000
+!! @endcode
+!!
+!! @par See Also
+!! - [LAPACK Users Manual](https://netlib.org/lapack/lug/node41.html)
 interface solve_lq
     module procedure :: solve_lq_mtx
     module procedure :: solve_lq_mtx_cmplx

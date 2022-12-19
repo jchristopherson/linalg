@@ -1,14 +1,144 @@
 ! linalg.f90
 
-
 !> @mainpage
 !!
 !! @section intro_sec Introduction
 !! LINALG is a linear algebra library that provides a user-friendly interface
-!! to several BLAS and LAPACK routines.
+!! to several BLAS and LAPACK routines.  This library provides routines for
+!! solving systems of linear equations, solving over or under-determined 
+!! systems, and solving eigenvalue problems.
 !!
-!! @author Jason Christopherson
-!! @version 1.6.1
+!! @par Example 1 - Solving Linear Equations
+!! The following piece of code illustrates how to solve a system of linear 
+!! equations using LU factorization.
+!!
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Local Variables
+!!     real(real64) :: a(3,3), b(3)
+!!     integer(int32) :: i, pvt(3)
+!!
+!!     ! Build the 3-by-3 matrix A.
+!!     !     | 1   2   3 |
+!!     ! A = | 4   5   6 |
+!!     !     | 7   8   0 |
+!!     a = reshape( &
+!!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+!!         [3, 3])
+!!
+!!     ! Build the right-hand-side vector B.
+!!     !     | -1 |
+!!     ! b = | -2 |
+!!     !     | -3 |
+!!     b = [-1.0d0, -2.0d0, -3.0d0]
+!!
+!!     ! The solution is:
+!!     !     |  1/3 |
+!!     ! x = | -2/3 |
+!!     !     |   0  |
+!!
+!!     ! Compute the LU factorization
+!!     call lu_factor(a, pvt)
+!!
+!!     ! Compute the solution.  The results overwrite b.
+!!     call solve_lu(a, pvt, b)
+!!
+!!     ! Display the results.
+!!     print '(A)', "LU Solution: X = "
+!!     print '(F8.4)', (b(i), i = 1, size(b))
+!! end program
+!! @endcode
+!! The program generates the following output.
+!! @code{.txt}
+!!  LU Solution: X =
+!!   0.3333
+!!  -0.6667
+!!   0.0000
+!! @endcode
+!!
+!! @par Example 2 - Solving an Eigenvalue Problem
+!! The following example illustrates how to solve an eigenvalue problem using
+!! a mechanical vibrating system.
+!!
+!! @code{.f90}
+!! ! This is an example illustrating the use of the eigenvalue and eigenvector
+!! ! routines to solve a free vibration problem of 3 masses connected by springs.
+!! !
+!! !     k1           k2           k3           k4
+!! ! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|
+!! !
+!! ! As illustrated above, the system consists of 3 masses connected by springs.
+!! ! Spring k1 and spring k4 connect the end masses to ground.  The equations of
+!! ! motion for this system are as follows.
+!! !
+!! ! | m1  0   0 | |x1"|   | k1+k2  -k2      0  | |x1|   |0|
+!! ! | 0   m2  0 | |x2"| + |  -k2  k2+k3    -k3 | |x2| = |0|
+!! ! | 0   0   m3| |x3"|   |   0    -k3    k3+k4| |x3|   |0|
+!! !
+!! ! Notice: x1" = the second time derivative of x1.
+!! program example
+!!     use iso_fortran_env, only : int32, real64
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Define the model parameters
+!!     real(real64), parameter :: pi = 3.14159265359d0
+!!     real(real64), parameter :: m1 = 0.5d0
+!!     real(real64), parameter :: m2 = 2.5d0
+!!     real(real64), parameter :: m3 = 0.75d0
+!!     real(real64), parameter :: k1 = 5.0d6
+!!     real(real64), parameter :: k2 = 10.0d6
+!!     real(real64), parameter :: k3 = 10.0d6
+!!     real(real64), parameter :: k4 = 5.0d6
+!!
+!!     ! Local Variables
+!!     integer(int32) :: i, j
+!!     real(real64) :: m(3,3), k(3,3), natFreq(3)
+!!    complex(real64) :: vals(3), modeShapes(3,3)
+!!
+!!     ! Define the mass matrix
+!!     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])
+!!
+!!     ! Define the stiffness matrix
+!!     k = reshape([k1 + k2, -k2, 0.0d0, -k2, k2 + k3, -k3, 0.0d0, -k3, k3 + k4], &
+!!         [3, 3])
+!!
+!!     ! Compute the eigenvalues and eigenvectors.
+!!     call eigen(k, m, vals, vecs = modeShapes)
+!!
+!!     ! Compute the natural frequency values, and return them with units of Hz.
+!!     ! Notice, all eigenvalues and eigenvectors are real for this example.
+!!     natFreq = sqrt(real(vals)) / (2.0d0 * pi)
+!!
+!!     ! Display the natural frequency and mode shape values.  Notice, the eigen
+!!     ! routine does not necessarily sort the values.
+!!     print '(A)', "Modal Information (Not Sorted):"
+!!     do i = 1, size(natFreq)
+!!         print '(AI0AF8.4A)', "Mode ", i, ": (", natFreq(i), " Hz)"
+!!         print '(F10.3)', (real(modeShapes(j,i)), j = 1, size(natFreq))
+!!     end do
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! Modal Information:
+!! Mode 1: (232.9225 Hz)
+!!     -0.718
+!!     -1.000
+!!     -0.747
+!! Mode 2: (749.6189 Hz)
+!!     -0.419
+!!     -0.164
+!!      1.000
+!! Mode 3: (923.5669 Hz)
+!!      1.000
+!!     -0.184
+!!      0.179
+!! @endcode
 
 
 !> @brief Provides a set of common linear algebra routines.

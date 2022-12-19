@@ -3466,4 +3466,379 @@ contains
 101     format(I0, A)
     end subroutine
 
+! ******************************************************************************
+! LQ SOLUTION
+! ------------------------------------------------------------------------------
+    module subroutine solve_lq_mtx(a, tau, b, work, olwork, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:,:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: one = 1.0d0
+
+        ! Local Variables
+        integer(int32) :: m, n, nrhs, k, lwork, flag, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        nrhs = size(b, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b, 1) /= n) then
+            flag = 3
+        end if
+
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lq_mtx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_lq(.true., .true., a, tau, b, olwork = lwork)
+
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_lq_mtx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_lq_mtx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
+        ! The lower triangular system is M-by-M and Y is M-by-NHRS.
+        call solve_triangular_system(.true., .false., .false., .true., one, &
+            a(1:m,1:m), b(1:m,:), errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Compute Q**T * Y = X
+        call mult_lq(.true., .true., a, tau, b, work = wptr, err = errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:,:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: m, n, nrhs, k, lwork, flag, istat
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        nrhs = size(b, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b, 1) /= n) then
+            flag = 3
+        end if
+
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lq_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_lq(.true., .true., a, tau, b, olwork = lwork)
+
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_lq_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_lq_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
+        ! The lower triangular system is M-by-M and Y is M-by-NHRS.
+        call solve_triangular_system(.true., .false., .false., .true., one, &
+            a(1:m,1:m), b(1:m,:), errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Compute Q**T * Y = X
+        call mult_lq(.true., .true., a, tau, b, work = wptr, err = errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_lq_vec(a, tau, b, work, olwork, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, k, lwork, flag, istat
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b) /= n) then
+            flag = 3
+        end if
+
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lq_vec", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_lq(.true., a, tau, b, olwork = lwork)
+
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_lq_vec", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_lq_vec", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
+        ! The lower triangular system is M-by-M and Y is M-by-NHRS.
+        call solve_triangular_system(.false., .false., .true., a(1:m,1:m), &
+            b(1:m), errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Compute Q**T * Y = X
+        call mult_lq(.true., a, tau, b, work = wptr, err = errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine solve_lq_vec_cmplx(a, tau, b, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, k, lwork, flag, istat
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        k = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= k) then
+            flag = 2
+        else if (size(b) /= n) then
+            flag = 3
+        end if
+
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("solve_lq_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call mult_lq(.true., a, tau, b, olwork = lwork)
+
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("solve_lq_vec_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("solve_lq_vec_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
+        ! The lower triangular system is M-by-M and Y is M-by-NHRS.
+        call solve_triangular_system(.false., .false., .true., a(1:m,1:m), &
+            b(1:m), errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Compute Q**T * Y = X
+        call mult_lq(.true., a, tau, b, work = wptr, err = errmgr)
+        if (errmgr%has_error_occurred()) return
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
 end submodule

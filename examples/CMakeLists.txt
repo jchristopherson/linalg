@@ -54,6 +54,18 @@ target_link_libraries(pinverse_example linalg)
 add_executable(svd_example linalg_svd_example.f90)
 target_link_libraries(svd_example linalg)
 
+# Full LQ Example
+add_executable(lq_full_example linalg_lq_full_example.f90)
+target_link_libraries(lq_full_example linalg)
+
+# LQ Multiplication Example
+add_executable(lq_mult_example linalg_lq_mult_example.f90)
+target_link_libraries(lq_mult_example linalg)
+
+# LQ Example
+add_executable(lq_example linalg_lq_example.f90)
+target_link_libraries(lq_example linalg)
+
 # --------------------
 # C API Eigenvalue Example
 include_directories(${PROJECT_SOURCE_DIR}/include)

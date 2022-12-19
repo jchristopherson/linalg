@@ -2860,5 +2860,709 @@ contains
 101     format(I0, A)
     end subroutine
 
+! ******************************************************************************
+! LQ FACTORIZATION
+! ------------------------------------------------------------------------------
+    module subroutine lq_factor_no_pivot(a, tau, work, olwork, err)
+        ! Arguments
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: tau
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, mn, istat, lwork, flag
+        real(real64), dimension(1) :: temp
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(tau) /= mn) then
+            ! ERROR: TAU not sized correctly
+            call errmgr%report_error("lq_factor_no_pivot", &
+                "Incorrectly sized input array TAU, argument 2.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DGELQF(m, n, a, m, tau, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("lq_factor_no_pivot", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("lq_factor_no_pivot", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DGELQF
+        call DGELQF(m, n, a, m, tau, wptr, lwork, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine lq_factor_no_pivot_cmplx(a, tau, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: tau
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n, mn, istat, lwork, flag
+        complex(real64), dimension(1) :: temp
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (size(tau) /= mn) then
+            ! ERROR: TAU not sized correctly
+            call errmgr%report_error("lq_factor_no_pivot_cmplx", &
+                "Incorrectly sized input array TAU, argument 2.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZGELQF(m, n, a, m, tau, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("lq_factor_no_pivot_cmplx", &
+                    "Incorrectly sized input array WORK, argument 3.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("lq_factor_no_pivot_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZGELQF
+        call ZGELQF(m, n, a, m, tau, wptr, lwork, flag)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)
+        ! Arguments
+        real(real64), intent(inout), dimension(:,:) :: l
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), dimension(:,:) :: q
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(l, 1)
+        n = size(l, 2)
+        mn = min(m, n)
+        qcol = size(q, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= mn) then
+            flag = 2
+        else if (size(q, 1) /= m .or. size(q, 2) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lq_no_pivot", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DORGLQ(m, n, mn, q, m, tau, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("form_lq_no_pivot", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("form_lq_no_pivot", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Copy the upper triangular portion of L to Q, and then zero it out in L
+        do j = 2, mn
+            q(1:j-1,j) = l(1:j-1,j)
+            l(1:j-1,j) = zero
+        end do
+        if (n > m) then
+            l(:,m+1:n) = zero
+        end if
+
+        ! Build Q
+        call DORGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)
+        ! Arguments
+        complex(real64), intent(inout), dimension(:,:) :: l
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(out), dimension(:,:) :: q
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn, istat, flag, lwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(l, 1)
+        n = size(l, 2)
+        mn = min(m, n)
+        qcol = size(q, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (m > n) then
+            flag = 1
+        else if (size(tau) /= mn) then
+            flag = 2
+        else if (size(q, 1) /= m .or. size(q, 2) /= n) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("form_lq_no_pivot_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZUNGLQ(m, n, mn, q, m, tau, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("form_lq_no_pivot_cmplx", &
+                    "Incorrectly sized input array WORK, argument 4.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("form_lq_no_pivot_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Copy the upper triangular portion of L to Q, and then zero it out in L
+        do j = 2, mn
+            q(1:j-1,j) = l(1:j-1,j)
+            l(1:j-1,j) = zero
+        end do
+        if (n > m) then
+            l(:,m+1:n) = zero
+        end if
+
+        ! Build Q
+        call ZUNGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: lside, trans
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:,:) :: c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, n, k, nrowa, ncola, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(tau)
+        if (lside) then
+            side = 'L'
+            nrowa = m
+            ncola = n
+        else
+            side = 'R'
+            nrowa = n
+            ncola = m
+        end if
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 1) /= nrowa .or. size(a, 2) /= ncola) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_lq_mtx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DORMLQ(side, t, m, n, k, a, nrowa, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_lq_mtx", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_lq_mtx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DORMLQ
+        call DORMLQ(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: lside, trans
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:,:) :: c
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, n, k, nrowa, ncola, istat, flag, lwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(tau)
+        if (lside) then
+            side = 'L'
+            nrowa = m
+            ncola = n
+        else
+            side = 'R'
+            nrowa = n
+            ncola = m
+        end if
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 1) /= nrowa .or. size(a, 2) /= ncola) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_lq_mtx_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZUNMLQ(side, t, m, n, k, a, nrowa, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_lq_mtx_cmplx", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_lq_mtx_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZUNMLQ
+        call ZUNMLQ(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, n, k, istat, flag, lwork
+        real(real64), pointer, dimension(:) :: wptr
+        real(real64), allocatable, target, dimension(:) :: wrk
+        real(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c)
+        n = 1
+        k = size(tau)
+        side = 'L'
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 1) /= m .or. size(a, 2) < m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_lq_vec", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call DORMLQ(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_lq_vec", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_lq_vec", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call DORMLQ
+        call DORMLQ(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: c
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: side, t
+        integer(int32) :: m, n, k, istat, flag, lwork
+        complex(real64), pointer, dimension(:) :: wptr
+        complex(real64), allocatable, target, dimension(:) :: wrk
+        complex(real64), dimension(1) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c)
+        n = 1
+        k = size(tau)
+        side = 'L'
+        if (trans) then
+            t = 'T'
+        else
+            t = 'N'
+        end if
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (size(a, 1) /= m .or. size(a, 2) < m) then
+            flag = 3
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("mult_lq_vec_cmplx", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Workspace Query
+        call ZUNMLQ(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)
+        lwork = int(temp(1), int32)
+        if (present(olwork)) then
+            olwork = lwork
+            return
+        end if
+
+        ! Local Memory Allocation
+        if (present(work)) then
+            if (size(work) < lwork) then
+                ! ERROR: WORK not sized correctly
+                call errmgr%report_error("mult_lq_vec_cmplx", &
+                    "Incorrectly sized input array WORK, argument 6.", &
+                    LA_ARRAY_SIZE_ERROR)
+                return
+            end if
+            wptr => work(1:lwork)
+        else
+            allocate(wrk(lwork), stat = istat)
+            if (istat /= 0) then
+                ! ERROR: Out of memory
+                call errmgr%report_error("mult_lq_vec_cmplx", &
+                    "Insufficient memory available.", &
+                    LA_OUT_OF_MEMORY_ERROR)
+                return
+            end if
+            wptr => wrk
+        end if
+
+        ! Call ZUNMLQ
+        call ZUNMLQ(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
 ! ------------------------------------------------------------------------------
 end submodule

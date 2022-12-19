@@ -180,6 +180,10 @@ module linalg
     public :: solve_least_squares_svd
     public :: eigen
     public :: sort
+    public :: lq_factor
+    public :: form_lq
+    public :: mult_lq
+    public :: solve_lq
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -1179,7 +1183,9 @@ end interface
 !!
 !! @param[in] lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left;
 !!  else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
-!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
+!!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
+!!  \f$ Q^T \f$.
 !! @param[in] a On input, an LDA-by-K matrix containing the elementary
 !!  reflectors output from the QR factorization.  If @p lside is set to
 !!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
@@ -1217,7 +1223,9 @@ end interface
 !! subroutine mult_qr(logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
 !! @endcode
 !!
-!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
+!!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
+!!  \f$ Q^T \f$.
 !! @param[in] a On input, an M-by-K matrix containing the elementary
 !!  reflectors output from the QR factorization.  Notice, the contents of
 !!  this matrix are restored on exit.
@@ -3318,6 +3326,390 @@ interface sort
     module procedure :: sort_eigen_dbl
 end interface
 
+!> @brief Computes the LQ factorization of an M-by-N matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine lq_factor(real(real64) a(:,:), real(real64) tau(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine lq_factor(complex(real64) a(:,:), complex(real64) tau(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] a On input, the M-by-N matrix to factor.  On output, the
+!!  elements on and below the diagonal contain the MIN(M, N)-by-N lower
+!!  trapezoidal matrix L (L is lower triangular if M >= N).  The elements
+!!  above the diagonal, along with the array @p tau, represent the
+!!  orthogonal matrix Q as a product of elementary reflectors.
+!! @param[out] tau A MIN(M, N)-element array used to store the scalar
+!!  factors of the elementary reflectors.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p tau or @p work are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DGELQF (ZGELQF for the complex 
+!! case).
+!!
+!! @par Usage
+!! The folowing example illustrates the solution of a system of equations using
+!! LQ factorization.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : real64, int32
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Variables
+!!     real(real64) :: a(3,3), b(3), q(3,3), tau(3), x(3)
+!!     integer(int32) :: i
+!!
+!!     ! Build the 3-by-3 matrix A.
+!!     !     | 1   2   3 |
+!!     ! A = | 4   5   6 |
+!!     !     | 7   8   0 |
+!!     a = reshape( &
+!!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+!!         [3, 3])
+!!
+!!     ! Build the right-hand-side vector B.
+!!     !     | -1 |
+!!     ! b = | -2 |
+!!     !     | -3 |
+!!     b = [-1.0d0, -2.0d0, -3.0d0]
+!!
+!!     ! The solution is:
+!!     !     |  1/3 |
+!!     ! x = | -2/3 |
+!!     !     |   0  |
+!!
+!!     ! Compute the LQ factorization
+!!     call lq_factor(a, tau)
+!!
+!!     ! Build L and Q.  A is overwritten with L
+!!     call form_lq(a, tau, q)
+!!
+!!     ! Solve the lower triangular problem and store the solution in B.
+!!     !
+!!     ! A few notes about this solution noting we've factored A = L * Q.
+!!     !
+!!     ! We then have to solve: L * Q * X = B for X.  If we let Y = Q * X, then
+!!     ! we solve the lower triangular system L * Y = B for Y.
+!!     call solve_triangular_system(.false., .false., .true., a, b)
+!!
+!!     ! Now we've solved the lower triangular system L * Y = B for Y.  At
+!!     ! this point we solve the problem: Q * X = Y.  Q is an orthogonal matrix;
+!!     ! therefore, inv(Q) = Q**T.  We can solve this by multiplying both
+!!     ! sides by Q**T:
+!!     !
+!!     ! Compute Q**T * B = X
+!!     call mtx_mult(.true., 1.0d0, q, b, 0.0d0, x)
+!!
+!!     ! Display the results
+!!     print '(A)', "LQ Solution: X = "
+!!     print '(F8.4)', (x(i), i = 1, size(x))
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! LQ Solution: X = 
+!!    0.3333
+!!   -0.6667
+!!    0.0000
+!! @endcode
+!!
+!! @par See Also
+!! - [LAPACK Users Manual](https://netlib.org/lapack/lug/node41.html)
+interface lq_factor
+    module procedure :: lq_factor_no_pivot
+    module procedure :: lq_factor_no_pivot_cmplx
+end interface
+
+!> @brief Forms the matrix Q with orthonormal rows from the elementary 
+!! reflectors returned by the LQ factorization algorithm.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine form_lq(real(real64) l(:,:), real(real64) tau(:), real(real64) q(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine form_lq(complex(real64) l(:,:), complex(real64) tau(:), complex(real64) q(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in,out] l On input, an M-by-N matrix where the elements above the 
+!!  diagonal contain the elementary reflectors generated from the LQ 
+!!  factorization performed by @ref lq_factor.  On and below the diagonal the
+!!  matrix contains the matrix L.  On output, the elements above the diagonal
+!!  are zeroed sucht hat the remaining matrix is the M-by-N lower trapezoidal
+!!  matrix L where only the M-by-M submatrix is the lower triangular matrix L.
+!!  Notice, M must be less than or equal to N for this routine.
+!! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
+!!  each elementary reflector defined in @p l.
+!! @param[out] q An M-by-N matrix where the matrix Q with orhtonormal rows will
+!!  be written.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORGLQ (ZUNGLQ in the complex case).
+!!
+!! @par Usage
+!! The folowing example illustrates the solution of a system of equations using
+!! LQ factorization.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : real64, int32
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Variables
+!!     real(real64) :: a(3,3), b(3), q(3,3), tau(3), x(3)
+!!     integer(int32) :: i
+!!
+!!     ! Build the 3-by-3 matrix A.
+!!     !     | 1   2   3 |
+!!     ! A = | 4   5   6 |
+!!     !     | 7   8   0 |
+!!     a = reshape( &
+!!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+!!         [3, 3])
+!!
+!!     ! Build the right-hand-side vector B.
+!!     !     | -1 |
+!!     ! b = | -2 |
+!!     !     | -3 |
+!!     b = [-1.0d0, -2.0d0, -3.0d0]
+!!
+!!     ! The solution is:
+!!     !     |  1/3 |
+!!     ! x = | -2/3 |
+!!     !     |   0  |
+!!
+!!     ! Compute the LQ factorization
+!!     call lq_factor(a, tau)
+!!
+!!     ! Build L and Q.  A is overwritten with L
+!!     call form_lq(a, tau, q)
+!!
+!!     ! Solve the lower triangular problem and store the solution in B.
+!!     !
+!!     ! A few notes about this solution noting we've factored A = L * Q.
+!!     !
+!!     ! We then have to solve: L * Q * X = B for X.  If we let Y = Q * X, then
+!!     ! we solve the lower triangular system L * Y = B for Y.
+!!     call solve_triangular_system(.false., .false., .true., a, b)
+!!
+!!     ! Now we've solved the lower triangular system L * Y = B for Y.  At
+!!     ! this point we solve the problem: Q * X = Y.  Q is an orthogonal matrix;
+!!     ! therefore, inv(Q) = Q**T.  We can solve this by multiplying both
+!!     ! sides by Q**T:
+!!     !
+!!     ! Compute Q**T * B = X
+!!     call mtx_mult(.true., 1.0d0, q, b, 0.0d0, x)
+!!
+!!     ! Display the results
+!!     print '(A)', "LQ Solution: X = "
+!!     print '(F8.4)', (x(i), i = 1, size(x))
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! LQ Solution: X = 
+!!    0.3333
+!!   -0.6667
+!!    0.0000
+!! @endcode
+!!
+!! @par See Also
+!! - [LAPACK Users Manual](https://netlib.org/lapack/lug/node41.html)
+interface form_lq
+    module procedure :: form_lq_no_pivot
+    module procedure :: form_lq_no_pivot_cmplx
+end interface
+
+!> @brief Multiplies a general matrix by the orthogonal matrix Q from a LQ
+!! factorization.
+!!
+!! @par Syntax 1
+!! Multiplies a general matrix by the orthogonal matrix \f$ Q \f$ from a LQ
+!! factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
+!! @code{.f90}
+!! subroutine mult_qr(logical lside, logical trans, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_qr(logical lside, logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left;
+!!  else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
+!!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
+!!  \f$ Q^T \f$.
+!! @param[in] a On input, an LDA-by-K matrix containing the elementary
+!!  reflectors output from the QR factorization.  If @p lside is set to
+!!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
+!!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
+!!  restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of each
+!!  elementary reflector defined in @p a.
+!! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
+!!  of the orthogonal matrix Q and the original matrix C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[in,out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Syntax 2
+!! Multiplies a vector by the orthogonal matrix \f$ Q \f$ from a QR
+!! factorization such that: \f$ C = op(Q) C\f$.
+!! @code{.f90}
+!! subroutine mult_qr(logical trans, real(real64) a(:,:), real(real64) tau(:), real(real64) c(:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! subroutine mult_qr(logical trans, complex(real64) a(:,:), complex(real64) tau(:), complex(real64) c(:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
+!!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
+!!  \f$ Q^T \f$.
+!! @param[in] a On input, an M-by-K matrix containing the elementary
+!!  reflectors output from the QR factorization.  Notice, the contents of
+!!  this matrix are restored on exit.
+!! @param[in] tau A K-element array containing the scalar factors of each
+!!  elementary reflector defined in @p a.
+!! @param[in,out] c On input, the M-element vector C.  On output, the
+!!  product of the orthogonal matrix Q and the original vector C.
+!! @param[out] work An optional input, that if provided, prevents any local
+!!  memory allocation.  If not provided, the memory required is allocated
+!!  within.  If provided, the length of the array must be at least
+!!  @p olwork.
+!! @param[out] olwork An optional output used to determine workspace size.
+!!  If supplied, the routine determines the optimal size for @p work, and
+!!  returns without performing any actual calculations.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+!!      there is insufficient memory available.
+!!
+!! @par Notes
+!! This routine utilizes the LAPACK routine DORMLQ (ZUNMLQ in the complex case).
+!!
+!! @par Usage
+!! The folowing example illustrates the solution of a system of equations using
+!! LQ factorization.
+!! @code{.f90}
+!! program example
+!!     use iso_fortran_env, only : real64, int32
+!!     use linalg
+!!     implicit none
+!!
+!!     ! Local Variables
+!!     real(real64) :: a(3,3), tau(3), b(3)
+!!     integer(int32) :: i, pvt(3)
+!!
+!!     ! Build the 3-by-3 matrix A.
+!!     !     | 1   2   3 |
+!!     ! A = | 4   5   6 |
+!!     !     | 7   8   0 |
+!!     a = reshape( &
+!!         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
+!!         [3, 3])
+!!
+!!     ! Build the right-hand-side vector B.
+!!     !     | -1 |
+!!     ! b = | -2 |
+!!     !     | -3 |
+!!     b = [-1.0d0, -2.0d0, -3.0d0]
+!!
+!!     ! The solution is:
+!!     !     |  1/3 |
+!!     ! x = | -2/3 |
+!!     !     |   0  |
+!!
+!!     ! Compute the LQ factorization
+!!     call lq_factor(a, tau)
+!!
+!!     ! Solve the lower triangular problem and store the solution in B.
+!!     !
+!!     ! A comment about this solution noting we've factored A = L * Q.
+!!     !
+!!     ! We then have to solve: L * Q * X = B for X.  If we let Y = Q * X, then
+!!     ! we solve the lower triangular system L * Y = B for Y.
+!!     call solve_triangular_system(.false., .false., .true., a, b)
+!!
+!!     ! Now we've solved the lower triangular system L * Y = B for Y.  At
+!!     ! this point we solve the problem: Q * X = Y.  Q is an orthogonal matrix;
+!!     ! therefore, inv(Q) = Q**T.  We can solve this by multiplying both
+!!     ! sides by Q**T:
+!!     !
+!!     ! Compute Q**T * B = X
+!!     call mult_lq(.true., a, tau, b)
+!!
+!!     ! Display the results
+!!     print '(A)', "LQ Solution: X = "
+!!     print '(F8.4)', (b(i), i = 1, size(b))
+!! end program
+!! @endcode
+!! The above program produces the following output.
+!! @code{.txt}
+!! LQ Solution: X = 
+!!    0.3333
+!!   -0.6667
+!!    0.0000
+!! @endcode
+!!
+!! @par See Also
+!! - [LAPACK Users Manual](https://netlib.org/lapack/lug/node41.html)
+interface mult_lq
+    module procedure :: mult_lq_mtx
+    module procedure :: mult_lq_mtx_cmplx
+    module procedure :: mult_lq_vec
+    module procedure :: mult_lq_vec_cmplx
+end interface
+
+interface solve_lq
+    module procedure :: solve_lq_mtx
+    module procedure :: solve_lq_mtx_cmplx
+    module procedure :: solve_lq_vec
+    module procedure :: solve_lq_vec_cmplx
+end interface
+
 ! ******************************************************************************
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
@@ -3804,6 +4196,80 @@ interface
         real(real64), intent(out), target, optional, dimension(:) :: rwork
         class(errors), intent(inout), optional, target :: err
     end subroutine
+
+    module subroutine lq_factor_no_pivot(a, tau, work, olwork, err)
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: tau
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine lq_factor_no_pivot_cmplx(a, tau, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: tau
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)
+        real(real64), intent(inout), dimension(:,:) :: l
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(out), dimension(:,:) :: q
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)
+        complex(real64), intent(inout), dimension(:,:) :: l
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(out), dimension(:,:) :: q
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)
+        logical, intent(in) :: lside, trans
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:,:) :: c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
+        logical, intent(in) :: lside, trans
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:,:) :: c
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)
+        logical, intent(in) :: trans
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: c
+        real(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)
+        logical, intent(in) :: trans
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: c
+        complex(real64), intent(out), target, dimension(:), optional :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************
@@ -4115,6 +4581,41 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    module subroutine solve_lq_mtx(a, tau, b, work, olwork, err)
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:,:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:,:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine solve_lq_vec(a, tau, b, work, olwork, err)
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: tau
+        real(real64), intent(inout), dimension(:) :: b
+        real(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine solve_lq_vec_cmplx(a, tau, b, work, olwork, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: tau
+        complex(real64), intent(inout), dimension(:) :: b
+        complex(real64), intent(out), target, optional, dimension(:) :: work
+        integer(int32), intent(out), optional :: olwork
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************

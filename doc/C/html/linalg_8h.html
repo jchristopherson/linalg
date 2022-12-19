@@ -310,7 +310,7 @@ Functions</h2></td></tr>
 <p >Computes the Cholesky factorization of a symmetric, positive definite matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">upper</td><td>Set to true to compute the upper triangular factoriztion A = U**T * U; else, set to false to compute the lower triangular factorzation A = L * L**T. </td></tr>
+    <tr><td class="paramname">upper</td><td>Set to true to compute the upper triangular factoriztion \( A = U^T U \); else, set to false to compute the lower triangular factorzation \( A = L L^T \). </td></tr>
     <tr><td class="paramname">n</td><td>The dimension of matrix A. </td></tr>
     <tr><td class="paramname">a</td><td>On input, the N-by-N matrix to factor. On output, the factored matrix is returned in either the upper or lower triangular portion of the matrix, dependent upon the value of <code>upper</code>. </td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A.</td></tr>
@@ -366,7 +366,7 @@ Functions</h2></td></tr>
 <p >Computes the Cholesky factorization of a symmetric, positive definite matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">upper</td><td>Set to true to compute the upper triangular factoriztion A = U**T * U; else, set to false to compute the lower triangular factorzation A = L * L**T. </td></tr>
+    <tr><td class="paramname">upper</td><td>Set to true to compute the upper triangular factoriztion \( A = U^T U \); else, set to false to compute the lower triangular factorzation \( A = L L^T \). </td></tr>
     <tr><td class="paramname">n</td><td>The dimension of matrix A. </td></tr>
     <tr><td class="paramname">a</td><td>On input, the N-by-N matrix to factor. On output, the factored matrix is returned in either the upper or lower triangular portion of the matrix, dependent upon the value of <code>upper</code>. </td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A.</td></tr>
@@ -1301,7 +1301,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Computes the eigenvalues, and optionally the right eigenvectors of a square matrix assuming the structure of the eigenvalue problem is A*X = lambda*B*X.</p>
+<p >Computes the eigenvalues, and optionally the right eigenvectors of a square matrix assuming the structure of the eigenvalue problem is \( A X = \lambda B X \).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vecs</td><td>Set to true to compute the eigenvectors as well as the eigenvalues; else, set to false to just compute the eigenvalues. </td></tr>
@@ -2471,7 +2471,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lside</td><td>Set to true to apply \( Q \) or \( Q^T \) from the left; else, set to false to apply \( Q \) or \( Q^T \) from the right. </td></tr>
-    <tr><td class="paramname">trans</td><td>Set to true to apply Q**T; else, set to false. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true to apply \( Q^T \); else, set to false. </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
     <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
@@ -2569,7 +2569,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">lside</td><td>Set to true to apply \( Q \) or \( Q^H \) from the left; else, set to false to apply \( Q \) or \( Q^H \) from the right. </td></tr>
-    <tr><td class="paramname">trans</td><td>Set to true to apply Q**H; else, set to false. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true to apply \( Q^H \); else, set to false. </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
     <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
@@ -3137,7 +3137,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Computes the rank 1 update to an M-by-N QR factored matrix A (M &gt;= N) where \( A = Q R \), and \( A1 = A + U V^T \) such that \( A1 = Q1 R1 \).</p>
+<p >Computes the rank 1 update to an M-by-N QR factored matrix A (M &gt;= N) where \( A = Q R \), and \( A1 = A + U V^H \) such that \( A1 = Q1 R1 \).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of rows in R. </td></tr>
@@ -3355,7 +3355,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Performs the rank-1 update to matrix A such that: \( A = \alpha X Y^T + A \), where \( A \) is an M-by-N matrix, \( \alpha \) is a scalar, \( X \) is an M-element array, and \( Y \) is an N-element array.</p>
+<p >Performs the rank-1 update to matrix A such that: \( A = \alpha X Y^H + A \), where \( A \) is an M-by-N matrix, \( \alpha \) is a scalar, \( X \) is an M-element array, and \( Y \) is an N-element array.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of rows in the matrix. </td></tr>
@@ -3498,7 +3498,7 @@ Functions</h2></td></tr>
 <p >Solves a system of Cholesky factored equations.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">upper</td><td>Set to true if the original matrix A was factored such that A = U**T * U; else, set to false if the factorization of A was A = L**T * L. </td></tr>
+    <tr><td class="paramname">upper</td><td>Set to true if the original matrix A was factored such that \( A = U^T U \); else, set to false if the factorization of A was \( A = L^T L \). </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix B. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix B. </td></tr>
     <tr><td class="paramname">a</td><td>The M-by-M Cholesky factored matrix. </td></tr>
@@ -3574,7 +3574,7 @@ Functions</h2></td></tr>
 <p >Solves a system of Cholesky factored equations.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">upper</td><td>Set to true if the original matrix A was factored such that A = U**T * U; else, set to false if the factorization of A was A = L**T * L. </td></tr>
+    <tr><td class="paramname">upper</td><td>Set to true if the original matrix A was factored such that \( A = U^T U \); else, set to false if the factorization of A was \( A = L^T L \). </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix B. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix B. </td></tr>
     <tr><td class="paramname">a</td><td>The M-by-M Cholesky factored matrix. </td></tr>
@@ -3647,7 +3647,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns using a QR or LQ factorization of the matrix A. Notice, it is assumed that matrix A has full rank.</p>
+<p >Solves the overdetermined or underdetermined system ( \( A X = B \)) of M equations of N unknowns using a QR or LQ factorization of the matrix A. Notice, it is assumed that matrix A has full rank.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of equations (rows in matrix A). </td></tr>
@@ -3725,7 +3725,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Solves the overdetermined or underdetermined system (A*X = B) of M equations of N unknowns using a QR or LQ factorization of the matrix A. Notice, it is assumed that matrix A has full rank.</p>
+<p >Solves the overdetermined or underdetermined system ( \( A X = B \)) of M equations of N unknowns using a QR or LQ factorization of the matrix A. Notice, it is assumed that matrix A has full rank.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of equations (rows in matrix A). </td></tr>
@@ -4329,12 +4329,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Solves one of the matrix equations: op(A) * X = alpha * B, or X * op(A) = alpha * B, where A is a triangular matrix.</p>
+<p >Solves one of the matrix equations: \( op(A) X = \alpha B \), or \( X op(A) = \alpha B \), where \( A \) is a triangular matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">lside</td><td>Set to true to solve op(A) * X = alpha * B; else, set to false to solve X * op(A) = alpha * B. </td></tr>
+    <tr><td class="paramname">lside</td><td>Set to true to solve \( op(A) X = \alpha B \); else, set to false to solve \( X op(A) = \alpha B \). </td></tr>
     <tr><td class="paramname">upper</td><td>Set to true if A is an upper triangular matrix; else, set to false if A is a lower triangular matrix. </td></tr>
-    <tr><td class="paramname">trans</td><td>Set to true if op(A) = A**T; else, set to false if op(A) = A. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true if \( op(A) = A^T \); else, set to false if \( op(A) = A \). </td></tr>
     <tr><td class="paramname">nounit</td><td>Set to true if A is not a unit-diagonal matrix (ones on every diagonal element); else, set to false if A is a unit-diagonal matrix. </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix B. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix B. </td></tr>
@@ -4433,12 +4433,12 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Solves one of the matrix equations: op(A) * X = alpha * B, or X * op(A) = alpha * B, where A is a triangular matrix.</p>
+<p >Solves one of the matrix equations: \( op(A) X = \alpha B \), or \( X op(A) = \alpha B \), where \( A \) is a triangular matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">lside</td><td>Set to true to solve op(A) * X = alpha * B; else, set to false to solve X * op(A) = alpha * B. </td></tr>
+    <tr><td class="paramname">lside</td><td>Set to true to solve \( op(A) X = \alpha B \); else, set to false to solve \( X op(A) = \alpha B \). </td></tr>
     <tr><td class="paramname">upper</td><td>Set to true if A is an upper triangular matrix; else, set to false if A is a lower triangular matrix. </td></tr>
-    <tr><td class="paramname">trans</td><td>Set to true if op(A) = A**H; else, set to false if op(A) = A. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true if \( op(A) = A^H \); else, set to false if \( op(A) = A \). </td></tr>
     <tr><td class="paramname">nounit</td><td>Set to true if A is not a unit-diagonal matrix (ones on every diagonal element); else, set to false if A is a unit-diagonal matrix. </td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix B. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix B. </td></tr>
@@ -4651,7 +4651,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Computes the singular value decomposition of a matrix A. The SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal matrix.</p>
+<p >Computes the singular value decomposition of a matrix \( A \). The SVD is defined as: \( A = U S V^T \), where \( U \) is an M-by-M orthogonal matrix, \( S \) is an M-by-N diagonal matrix, and \( V \) is an N-by-N orthogonal matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of rows in the matrix. </td></tr>
@@ -4743,7 +4743,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Computes the singular value decomposition of a matrix A. The SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal matrix.</p>
+<p >Computes the singular value decomposition of a matrix \( A \). The SVD is defined as: \( A = U S V^H \), where \( U \) is an M-by-M orthogonal matrix, \( S \) is an M-by-N diagonal matrix, and \( V \) is an N-by-N orthogonal matrix. <br  />
+</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">m</td><td>The number of rows in the matrix. </td></tr>
@@ -4753,8 +4754,8 @@ Functions</h2></td></tr>
     <tr><td class="paramname">s</td><td>A MIN(M, N)-element array containing the singular values of <code>a</code> sorted in descending order. </td></tr>
     <tr><td class="paramname">u</td><td>An M-by-M matrix where the orthogonal U matrix will be written. </td></tr>
     <tr><td class="paramname">ldu</td><td>The leading dimension of matrix U. </td></tr>
-    <tr><td class="paramname">vt</td><td>An N-by-N matrix where the transpose of the right singular vector matrix V. </td></tr>
-    <tr><td class="paramname">ldv</td><td>The leading dimension of matrix V.</td></tr>
+    <tr><td class="paramname">vt</td><td>An N-by-N matrix where the conjugate transpose of the right singular vector matrix V. </td></tr>
+    <tr><td class="paramname">ldv</td><td>The leading dimension of <code>vt</code>.</td></tr>
   </table>
   </dd>
 </dl>

@@ -3153,8 +3153,260 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function la_lq_factor(m, n, a, lda, tau) bind(C, name = "la_lq_factor") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call lq_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    function la_lq_factor_cmplx(m, n, a, lda, tau) &
+            bind(C, name = "la_lq_factor_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call lq_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function la_form_lq(m, n, l, ldl, tau, q, ldq) &
+            bind(C, name = "la_form_lq") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, ldl, ldq
+        real(c_double), intent(inout) :: l(ldl,*)
+        real(c_double), intent(in) :: tau(*)
+        real(c_double), intent(out) :: q(ldq,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        flag = LA_NO_ERROR
+        if (ldl < m .or. ldq < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call form_lq(l(1:m,1:n), tau(1:mn), q(1:m,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function la_form_lq_cmplx(m, n, l, ldl, tau, q, ldq) &
+        bind(C, name = "la_form_lq_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, ldl, ldq
+    complex(c_double), intent(inout) :: l(ldl,*)
+    complex(c_double), intent(in) :: tau(*)
+    complex(c_double), intent(out) :: q(ldq,*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    flag = LA_NO_ERROR
+    if (ldl < m .or. ldq < m) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call form_lq(l(1:m,1:n), tau(1:mn), q(1:m,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_mult_lq(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+        bind(C, name = "la_mult_lq") result(flag)
+    ! Local Variables
+    logical(c_bool), intent(in), value :: lside, trans
+    integer(c_int), intent(in), value :: m, n, k, lda, ldc
+    real(c_double), intent(in) :: a(lda,*)
+    real(c_double), intent(inout) :: c(ldc,*)
+    real(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lside) then
+        ma = m
+    else
+        ma = n
+    end if
+    if (lda < ma .or. ldc < m .or. k < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+    
+    ! Process
+    call mult_lq(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+        c(1:m,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_mult_lq_cmplx(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+        bind(C, name = "la_mult_lq_cmplx") result(flag)
+    ! Local Variables
+    logical(c_bool), intent(in), value :: lside, trans
+    integer(c_int), intent(in), value :: m, n, k, lda, ldc
+    complex(c_double), intent(in) :: a(lda,*)
+    complex(c_double), intent(inout) :: c(ldc,*)
+    complex(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lside) then
+        ma = m
+    else
+        ma = n
+    end if
+    if (lda < ma .or. ldc < m .or. k < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call mult_lq(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+        c(1:m,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_solve_lq(m, n, k, a, lda, tau, b, ldb) &
+    bind(C, name = "la_solve_lq") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, k, lda, ldb
+    real(c_double), intent(in) :: a(lda,*)
+    real(c_double), intent(inout) :: b(ldb,*)
+    real(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < m .or. ldb < n) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call solve_lq(a(1:m,1:n), tau(1:mn), b(1:n,1:k), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_solve_lq_cmplx(m, n, k, a, lda, tau, b, ldb) &
+    bind(C, name = "la_solve_lq_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, k, lda, ldb
+    complex(c_double), intent(in) :: a(lda,*)
+    complex(c_double), intent(inout) :: b(ldb,*)
+    complex(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < m .or. ldb < n) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call solve_lq(a(1:m,1:n), tau(1:mn), b(1:n,1:k), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
 
 ! ------------------------------------------------------------------------------
 end module

@@ -61,5 +61,6 @@ var searchData=
   ['la_5ftrace_5fcmplx_58',['la_trace_cmplx',['../linalg_8h.html#a021fbb7fdccf557ec407a86bace43d85',1,'linalg.h']]],
   ['la_5ftri_5fmtx_5fmult_59',['la_tri_mtx_mult',['../linalg_8h.html#ae7d70f1ef2a2824772e1bf0f726c257e',1,'linalg.h']]],
   ['la_5ftri_5fmtx_5fmult_5fcmplx_60',['la_tri_mtx_mult_cmplx',['../linalg_8h.html#a02c464a9dd95298c91f431ae4d0773e9',1,'linalg.h']]],
-  ['linalg_2eh_61',['linalg.h',['../linalg_8h.html',1,'']]]
+  ['linalg_61',['linalg',['../index.html',1,'']]],
+  ['linalg_2eh_62',['linalg.h',['../linalg_8h.html',1,'']]]
 ];

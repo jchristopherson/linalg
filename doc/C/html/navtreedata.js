@@ -25,6 +25,7 @@
 var NAVTREE =
 [
   [ "linalg", "index.html", [
+    [ "Introduction", "index.html#intro_sec", null ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "Globals", "globals.html", [

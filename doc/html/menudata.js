@@ -33,4 +33,9 @@ var menudata={children:[
 {text:"Data Types List",url:"annotated.html"},
 {text:"Data Types",url:"classes.html"}]},
 {text:"Files",url:"files.html",children:[
-{text:"File List",url:"files.html"}]}]}
+{text:"File List",url:"files.html"},
+{text:"File Members",url:"globals.html",children:[
+{text:"All",url:"globals.html",children:[
+{text:"l",url:"globals.html#index_l"}]},
+{text:"Functions/Subroutines",url:"globals_func.html",children:[
+{text:"l",url:"globals_func.html#index_l"}]}]}]}]}

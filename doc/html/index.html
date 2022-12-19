@@ -102,10 +102,126 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="intro_sec"></a>
 Introduction</h1>
-<p >LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</p>
-<dl class="section author"><dt>Author</dt><dd>Jason Christopherson </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.6.1 </dd></dl>
-</div></div><!-- PageDoc -->
+<p >LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines. This library provides routines for solving systems of linear equations, solving over or under-determined systems, and solving eigenvalue problems.</p>
+<dl class="section user"><dt>Example 1 - Solving Linear Equations</dt><dd>The following piece of code illustrates how to solve a system of linear equations using LU factorization.</dd></dl>
+<div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
+<div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
+<div class="line">    <span class="keywordtype">implicit none</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Local Variables</span></div>
+<div class="line"><span class="keywordtype">    real</span>(real64) :: a(3,3), b(3)</div>
+<div class="line">    <span class="keywordtype">integer(int32)</span> :: i, pvt(3)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Build the 3-by-3 matrix A.</span></div>
+<div class="line">    <span class="comment">!     | 1   2   3 |</span></div>
+<div class="line">    <span class="comment">! A = | 4   5   6 |</span></div>
+<div class="line">    <span class="comment">!     | 7   8   0 |</span></div>
+<div class="line">    a = reshape( &amp;</div>
+<div class="line">        [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &amp;</div>
+<div class="line">        [3, 3])</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Build the right-hand-side vector B.</span></div>
+<div class="line">    <span class="comment">!     | -1 |</span></div>
+<div class="line">    <span class="comment">! b = | -2 |</span></div>
+<div class="line">    <span class="comment">!     | -3 |</span></div>
+<div class="line">    b = [-1.0d0, -2.0d0, -3.0d0]</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! The solution is:</span></div>
+<div class="line">    <span class="comment">!     |  1/3 |</span></div>
+<div class="line">    <span class="comment">! x = | -2/3 |</span></div>
+<div class="line">    <span class="comment">!     |   0  |</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Compute the LU factorization</span></div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1lu__factor.html">lu_factor</a>(a, pvt)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Compute the solution.  The results overwrite b.</span></div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1solve__lu.html">solve_lu</a>(a, pvt, b)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Display the results.</span></div>
+<div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
+<div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
+<div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00725">linalg.f90:725</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02280">linalg.f90:2280</a></div></div>
+<div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
+</div><!-- fragment --><p> The program generates the following output. </p><div class="fragment"><div class="line">LU Solution: X =</div>
+<div class="line"> 0.3333</div>
+<div class="line">-0.6667</div>
+<div class="line"> 0.0000</div>
+</div><!-- fragment --><dl class="section user"><dt>Example 2 - Solving an Eigenvalue Problem</dt><dd>The following example illustrates how to solve an eigenvalue problem using a mechanical vibrating system.</dd></dl>
+<div class="fragment"><div class="line"><span class="comment">! This is an example illustrating the use of the eigenvalue and eigenvector</span></div>
+<div class="line"><span class="comment">! routines to solve a free vibration problem of 3 masses connected by springs.</span></div>
+<div class="line"><span class="comment">!</span></div>
+<div class="line"><span class="comment">!     k1           k2           k3           k4</span></div>
+<div class="line"><span class="comment">! |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|</span></div>
+<div class="line"><span class="comment">!</span></div>
+<div class="line"><span class="comment">! As illustrated above, the system consists of 3 masses connected by springs.</span></div>
+<div class="line"><span class="comment">! Spring k1 and spring k4 connect the end masses to ground.  The equations of</span></div>
+<div class="line"><span class="comment">! motion for this system are as follows.</span></div>
+<div class="line"><span class="comment">!</span></div>
+<div class="line"><span class="comment">! | m1  0   0 | |x1&quot;|   | k1+k2  -k2      0  | |x1|   |0|</span></div>
+<div class="line"><span class="comment">! | 0   m2  0 | |x2&quot;| + |  -k2  k2+k3    -k3 | |x2| = |0|</span></div>
+<div class="line"><span class="comment">! | 0   0   m3| |x3&quot;|   |   0    -k3    k3+k4| |x3|   |0|</span></div>
+<div class="line"><span class="comment">!</span></div>
+<div class="line"><span class="comment">! Notice: x1&quot; = the second time derivative of x1.</span></div>
+<div class="line"><span class="keyword">program</span> example</div>
+<div class="line">    <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : int32, real64</div>
+<div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
+<div class="line">    <span class="keywordtype">implicit none</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Define the model parameters</span></div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: pi = 3.14159265359d0</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: m1 = 0.5d0</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: m2 = 2.5d0</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: m3 = 0.75d0</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: k1 = 5.0d6</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: k2 = 10.0d6</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: k3 = 10.0d6</div>
+<div class="line"><span class="keywordtype">    real</span>(real64), <span class="keywordtype">parameter</span> :: k4 = 5.0d6</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Local Variables</span></div>
+<div class="line">    <span class="keywordtype">integer(int32)</span> :: i, j</div>
+<div class="line"><span class="keywordtype">    real</span>(real64) :: m(3,3), k(3,3), natFreq(3)</div>
+<div class="line">   <span class="keywordtype">complex(real64)</span> :: vals(3), modeShapes(3,3)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Define the mass matrix</span></div>
+<div class="line">    m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Define the stiffness matrix</span></div>
+<div class="line">    k = reshape([k1 + k2, -k2, 0.0d0, -k2, k2 + k3, -k3, 0.0d0, -k3, k3 + k4], &amp;</div>
+<div class="line">        [3, 3])</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Compute the eigenvalues and eigenvectors.</span></div>
+<div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1eigen.html">eigen</a>(k, m, vals, vecs = modeshapes)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Compute the natural frequency values, and return them with units of Hz.</span></div>
+<div class="line">    <span class="comment">! Notice, all eigenvalues and eigenvectors are real for this example.</span></div>
+<div class="line">    natfreq = sqrt(real(vals)) / (2.0d0 * pi)</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">! Display the natural frequency and mode shape values.  Notice, the eigen</span></div>
+<div class="line">    <span class="comment">! routine does not necessarily sort the values.</span></div>
+<div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Modal Information (Not Sorted):&quot;</span></div>
+<div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(natfreq)</div>
+<div class="line">        print <span class="stringliteral">&#39;(AI0AF8.4A)&#39;</span>, <span class="stringliteral">&quot;Mode &quot;</span>, i, <span class="stringliteral">&quot;: (&quot;</span>, natfreq(i), <span class="stringliteral">&quot; Hz)&quot;</span></div>
+<div class="line">        print <span class="stringliteral">&#39;(F10.3)&#39;</span>, (real(modeshapes(j,i)), j = 1, <span class="keyword">size</span>(natfreq))</div>
+<div class="line"><span class="keywordflow">    end do</span></div>
+<div class="line"><span class="keyword">end program</span></div>
+<div class="ttc" id="ainterfacelinalg_1_1eigen_html"><div class="ttname"><a href="interfacelinalg_1_1eigen.html">linalg::eigen</a></div><div class="ttdoc">Computes the eigenvalues, and optionally the eigenvectors, of a matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l03229">linalg.f90:3229</a></div></div>
+</div><!-- fragment --><p> The above program produces the following output. </p><div class="fragment"><div class="line">Modal Information:</div>
+<div class="line">Mode 1: (232.9225 Hz)</div>
+<div class="line">    -0.718</div>
+<div class="line">    -1.000</div>
+<div class="line">    -0.747</div>
+<div class="line">Mode 2: (749.6189 Hz)</div>
+<div class="line">    -0.419</div>
+<div class="line">    -0.164</div>
+<div class="line">     1.000</div>
+<div class="line">Mode 3: (923.5669 Hz)</div>
+<div class="line">     1.000</div>
+<div class="line">    -0.184</div>
+<div class="line">     0.179</div>
+</div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

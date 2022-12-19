@@ -38,4 +38,7 @@ int main() {
     for (i = 0; i < 3; i++) {
         printf("%8.4f\n", b[i]);
     }
+
+    // End
+    return 0;
 }

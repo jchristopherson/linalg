@@ -1800,7 +1800,7 @@ int la_lq_factor_cmplx(int m, int n, double complex *a, int lda,
  * @param ldl The leading dimension of matrix L.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  each elementary reflector defined in @p r.
- * @param q An M-by-N matrix where the Q matrix will be written.
+ * @param q An N-by-N matrix where the Q matrix will be written.
  * @param ldq The leading dimension of matrix Q.
  *
  * @return An error code.  The following codes are possible.
@@ -1823,7 +1823,7 @@ int la_form_lq(int m, int n, double *l, int ldl, const double *tau, double *q,
  * @param ldl The leading dimension of matrix L.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
  *  each elementary reflector defined in @p r.
- * @param q An M-by-N matrix where the Q matrix will be written.
+ * @param q An N-by-N matrix where the Q matrix will be written.
  * @param ldq The leading dimension of matrix Q.
  *
  * @return An error code.  The following codes are possible.

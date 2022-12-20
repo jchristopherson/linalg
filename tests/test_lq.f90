@@ -17,7 +17,7 @@ contains
         real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(real64) :: a(m, n), aref(m, n), tau(m), q(m, n)
+        real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
         logical :: rst
 
         ! Initialization
@@ -46,7 +46,7 @@ contains
         real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(real64) :: a(m, n), aref(m, n), tau(m), q(m, n), temp(m, n)
+        real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n), temp(m, n)
         logical :: rst
 
         ! Initialization
@@ -61,7 +61,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a(:,1:m), q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Factorization Test 1"
         end if
@@ -76,7 +76,7 @@ contains
 
         ! Local Variables
         real(real64) :: ar(m, n), ai(m, n)
-        complex(real64) :: a(m, n), aref(m, n), tau(m), q(m, n)
+        complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
         logical :: rst
 
         ! Initialization
@@ -108,7 +108,7 @@ contains
 
         ! Local Variables
         real(real64) :: ar(m, n), ai(m, n)
-        complex(real64) :: a(m, n), aref(m, n), tau(m), q(m, n)
+        complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
         logical :: rst
 
         ! Initialization
@@ -125,7 +125,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a(:,1:m), q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Factorization Test 1"
         end if
@@ -141,8 +141,8 @@ contains
         real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(real64) :: a(m, n), l(m, n), tau(m), q(m, n), c1(m, n), c2(m, n), &
-            ans(m, n), c3(m), c4(m), ans2(m)
+        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
+            ans(n, n), c3(n), c4(n), ans2(n)
         logical :: rst
 
         ! Initialization
@@ -157,7 +157,7 @@ contains
         call lq_factor(a, tau)
         l = a
 
-        ! Extract L and Q and check that L * Q = A
+        ! Extract L and Q
         call form_lq(l, tau, q)
 
         ! Compute C = Q * C
@@ -193,8 +193,8 @@ contains
         real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(real64) :: a(m, n), l(m, n), tau(m), q(m, n), c1(m, n), c2(m, n), &
-            ans(m, n), c3(m), c4(m), ans2(m)
+        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
+            ans(n, n), c3(n), c4(n), ans2(n)
         logical :: rst
 
         ! Initialization
@@ -209,31 +209,31 @@ contains
         call lq_factor(a, tau)
         l = a
 
-        ! Extract L and Q and check that L * Q = A
+        ! Extract L and Q
         call form_lq(l, tau, q)
 
         ! Compute C = Q * C
-        call mult_lq(.true., .false., a(:,1:m), tau, c1)
+        call mult_lq(.true., .false., a, tau, c1)
 
         ! Compute the answer
-        ans = matmul(q(:,1:m), c2)
+        ans = matmul(q, c2)
 
         ! Test
         if (.not.is_mtx_equal(c1, ans, tol)) then
             rst = .false.
-            print '(A)', "Test Failed: LQ Multiplication Test 1"
+            print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 1"
         end if
 
         ! Vector RHS
-        call mult_lq(.false., a(:,1:m), tau, c3)
+        call mult_lq(.false., a, tau, c3)
 
         ! Compute the answer
-        ans2 = matmul(q(:,1:m), c4)
+        ans2 = matmul(q, c4)
 
         ! Test
         if (.not.is_mtx_equal(c3, ans2, tol)) then
             rst = .false.
-            print '(A)', "Test Failed: LQ Multiplication Test 2"
+            print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 2"
         end if
     end function
 

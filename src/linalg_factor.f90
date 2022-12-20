@@ -3016,7 +3016,7 @@ contains
         real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, istat, flag, lwork
+        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
         real(real64), pointer, dimension(:) :: wptr
         real(real64), allocatable, target, dimension(:) :: wrk
         real(real64), dimension(1) :: temp
@@ -3084,13 +3084,11 @@ contains
         end if
 
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
-        do j = 2, mn
-            q(1:j-1,j) = l(1:j-1,j)
-            l(1:j-1,j) = zero
+        do j = 2, n
+            k = min(j - 1, m)
+            q(1:j-1,j) = l(1:k,j)
+            l(1:k,j) = zero
         end do
-        if (n > m) then
-            l(:,m+1:n) = zero
-        end if
 
         ! Build Q
         call DORGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
@@ -3113,7 +3111,7 @@ contains
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, istat, flag, lwork
+        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         complex(real64), dimension(1) :: temp
@@ -3181,13 +3179,11 @@ contains
         end if
 
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
-        do j = 2, mn
-            q(1:j-1,j) = l(1:j-1,j)
-            l(1:j-1,j) = zero
+        do j = 2, n
+            k = min(j - 1, m)
+            q(1:j-1,j) = l(1:k,j)
+            l(1:k,j) = zero
         end do
-        if (n > m) then
-            l(:,m+1:n) = zero
-        end if
 
         ! Build Q
         call ZUNGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
@@ -3224,11 +3220,11 @@ contains
         if (lside) then
             side = 'L'
             nrowa = m
-            ncola = n
+            ncola = m
         else
             side = 'R'
             nrowa = n
-            ncola = m
+            ncola = n
         end if
         if (trans) then
             t = 'T'
@@ -3320,11 +3316,11 @@ contains
         if (lside) then
             side = 'L'
             nrowa = m
-            ncola = n
+            ncola = m
         else
             side = 'R'
             nrowa = n
-            ncola = m
+            ncola = n
         end if
         if (trans) then
             t = 'T'
@@ -3427,7 +3423,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= m .or. size(a, 2) < m) then
+        if (size(a, 1) /= m .or. size(a, 2) /= m) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3515,7 +3511,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= m .or. size(a, 2) < m) then
+        if (size(a, 1) /= m .or. size(a, 2) /= m) then
             flag = 3
         end if
         if (flag /= 0) then

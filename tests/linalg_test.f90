@@ -11,6 +11,7 @@ program main
     use test_misc
     use test_lu
     use test_sort
+    use test_lq
 
     ! Local Variables
     logical :: rst, overall
@@ -160,10 +161,28 @@ program main
     rst = test_dbl_descend_sort()
     if (.not.rst) overall = .false.
 
+    ! LQ Factorization Tests
+    rst = test_lq_factor()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_factor_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_factor_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult_ud()
+    if (.not.rst) overall = .false.
+
     ! End
     if (overall) then
         print '(A)', "LINALG TEST STATUS: PASS"
+        call exit(0)
     else
         print '(A)', "LINALG TEST STATUS: FAILED"
+        call exit(1)
     end if
 end program

@@ -3028,7 +3028,6 @@ contains
         m = size(l, 1)
         n = size(l, 2)
         mn = min(m, n)
-        qcol = size(q, 2)
         if (present(err)) then
             errmgr => err
         else
@@ -3041,7 +3040,7 @@ contains
             flag = 1
         else if (size(tau) /= mn) then
             flag = 2
-        else if (size(q, 1) /= m .or. size(q, 2) /= n) then
+        else if (size(q, 1) /= n .or. size(q, 2) /= n) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3054,7 +3053,7 @@ contains
         end if
 
         ! Workspace Query
-        call DORGLQ(m, n, mn, q, m, tau, temp, -1, flag)
+        call DORGLQ(n, n, mn, q, n, tau, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3091,7 +3090,7 @@ contains
         end do
 
         ! Build Q
-        call DORGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
+        call DORGLQ(n, n, mn, q, n, tau, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)
@@ -3149,7 +3148,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZUNGLQ(m, n, mn, q, m, tau, temp, -1, flag)
+        call ZUNGLQ(n, n, mn, q, n, tau, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3186,7 +3185,7 @@ contains
         end do
 
         ! Build Q
-        call ZUNGLQ(m, n, mn, q, m, tau, wptr, lwork, flag)
+        call ZUNGLQ(n, n, mn, q, n, tau, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)
@@ -3419,7 +3418,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= m .or. size(a, 2) /= m) then
+        if (size(a, 1) /= k .or. size(a, 2) /= m) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3432,7 +3431,7 @@ contains
         end if
 
         ! Workspace Query
-        call DORMLQ(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)
+        call DORMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3462,7 +3461,7 @@ contains
         end if
 
         ! Call DORMLQ
-        call DORMLQ(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)
+        call DORMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)
@@ -3507,7 +3506,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= m .or. size(a, 2) /= m) then
+        if (size(a, 1) /= k .or. size(a, 2) /= m) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3520,7 +3519,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZUNMLQ(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)
+        call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3550,7 +3549,7 @@ contains
         end if
 
         ! Call ZUNMLQ
-        call ZUNMLQ(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)
+        call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)

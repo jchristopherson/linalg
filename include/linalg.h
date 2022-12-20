@@ -1846,11 +1846,9 @@ int la_form_lq_cmplx(int m, int n, double complex *l, int ldl,
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
  *  the matrix Q.
- * @param a On input, an LDA-by-K matrix containing the elementary
+ * @param a On input, an K-by-P matrix containing the elementary
  *  reflectors output from the LQ factorization.  If @p lside is set to
- *  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
- *  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
- *  restored on exit.
+ *  true, P = M; else, if @p lside is set to false, P = N.
  * @param lda The leading dimension of matrix A.
  * @param tau A K-element array containing the scalar factors of each
  *  elementary reflector defined in @p a.
@@ -1878,11 +1876,9 @@ int la_mult_lq(bool lside, bool trans, int m, int n, int k, const double *a,
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
  *  the matrix Q.
- * @param a On input, an LDA-by-K matrix containing the elementary
+ * @param a On input, an K-by-P matrix containing the elementary
  *  reflectors output from the LQ factorization.  If @p lside is set to
- *  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
- *  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
- *  restored on exit.
+ *  true, P = M; else, if @p lside is set to false, P = N.
  * @param lda The leading dimension of matrix A.
  * @param tau A K-element array containing the scalar factors of each
  *  elementary reflector defined in @p a.

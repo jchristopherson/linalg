@@ -3436,8 +3436,8 @@ interface lq_factor
     module procedure :: lq_factor_no_pivot_cmplx
 end interface
 
-!> @brief Forms the matrix Q with orthonormal rows from the elementary 
-!! reflectors returned by the LQ factorization algorithm.
+!> @brief Forms the orthogonal matrix Q from the elementary reflectors returned 
+!! by the LQ factorization algorithm.
 !!
 !! @par Syntax
 !! @code{.f90}
@@ -3454,7 +3454,7 @@ end interface
 !!  Notice, M must be less than or equal to N for this routine.
 !! @param[in] tau A MIN(M, N)-element array containing the scalar factors of
 !!  each elementary reflector defined in @p l.
-!! @param[out] q An M-by-N matrix where the matrix Q with orhtonormal rows will
+!! @param[out] q An N-by-N matrix where the orthogonal matrix Q will
 !!  be written.
 !! @param[out] work An optional input, that if provided, prevents any local
 !!  memory allocation.  If not provided, the memory required is allocated
@@ -3566,11 +3566,9 @@ end interface
 !! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
 !!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
 !!  \f$ Q^T \f$.
-!! @param[in] a On input, an LDA-by-K matrix containing the elementary
-!!  reflectors output from the QR factorization.  If @p lside is set to
-!!  true, LDA = M, and M >= K >= 0; else, if @p lside is set to false,
-!!  LDA = N, and N >= K >= 0.  Notice, the contents of this matrix are
-!!  restored on exit.
+!! @param[in] a On input, an K-by-P matrix containing the elementary
+!!  reflectors output from the LQ factorization.  If @p lside is set to
+!!  true, P = M; else, if @p lside is set to false, P = N.
 !! @param[in] tau A K-element array containing the scalar factors of each
 !!  elementary reflector defined in @p a.
 !! @param[in,out] c On input, the M-by-N matrix C.  On output, the product
@@ -3603,8 +3601,8 @@ end interface
 !! @param[in] trans Set to true to apply \f$ Q^T \f$; else, set to false.  In 
 !!  the event \f$ Q \f$ is complex-valued, \f$ Q^H \f$ is computed instead of
 !!  \f$ Q^T \f$.
-!! @param[in] a On input, an M-by-K matrix containing the elementary
-!!  reflectors output from the QR factorization.  Notice, the contents of
+!! @param[in] a On input, an K-by-M matrix containing the elementary
+!!  reflectors output from the LQ factorization.  Notice, the contents of
 !!  this matrix are restored on exit.
 !! @param[in] tau A K-element array containing the scalar factors of each
 !!  elementary reflector defined in @p a.

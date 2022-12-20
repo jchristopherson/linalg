@@ -183,6 +183,18 @@ program main
     rst = test_lq_mult_cmplx_ud()
     if (.not.rst) overall = .false.
 
+    rst = test_lq_mult_right()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult_right_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult_right_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult_right_cmplx_ud()
+    if (.not.rst) overall = .false.
+
     ! End
     if (overall) then
         call exit(0)

@@ -472,8 +472,224 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_lq_mult_right() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        logical :: rst
+        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), c2(m, n), &
+            ans(m, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+        call random_number(c1)
+        c2 = c1
+
+        ! Compute the LQ factorization
+        call lq_factor(a, tau)
+        l = a
+
+        ! Extract L & Q
+        call form_lq(l, tau, q)
+
+        ! Compute C = C * Q
+        call mult_lq(.false., .false., a, tau, c1)
+
+        ! Compute the answer
+        ans = matmul(c2, q)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: LQ Right Multiplication Test 1"
+        end if
+
+        ! Transpose
+        c1 = c2
+        call mult_lq(.false., .true., a, tau, c1)
+
+        ! Compute the answer: C = C * Q**T
+        call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: LQ Right Multiplication Test 2"
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    function test_lq_mult_right_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 50
+        real(real64), parameter :: tol = 1.0d-8
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        logical :: rst
+        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
+            c2(m, n), ans(m, n)
+        real(real64) :: ar(m, n), ai(m, n), cr(m, n), ci(m, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        call random_number(cr)
+        call random_number(ci)
+        a = cmplx(ar, ai, real64)
+        c1 = cmplx(cr, ci, real64)
+        c2 = c1
+
+        ! Compute the LQ factorization
+        call lq_factor(a, tau)
+        l = a
+
+        ! Extract L & Q
+        call form_lq(l, tau, q)
+
+        ! Compute C = C * Q
+        call mult_lq(.false., .false., a, tau, c1)
+
+        ! Compute the answer
+        ans = matmul(c2, q)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex LQ Right Multiplication Test 1"
+        end if
+
+        ! Transpose
+        ! c1 = c2
+        ! call mult_lq(.false., .true., a, tau, c1)
+
+        ! ! Compute the answer: C = C * Q**H
+        ! call mtx_mult(LA_NO_OPERATION, LA_HERMITIAN_TRANSPOSE, one, c2, q, &
+        !     zero, ans)
+
+        ! ! Test
+        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        !     rst = .false.
+        !     print '(A)', "Test Failed: Complex LQ Right Multiplication Test 2"
+        ! end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_lq_mult_right_ud() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
+
+        ! Local Variables
+        logical :: rst
+        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), c2(m, n), &
+            ans(m, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(a)
+        call random_number(c1)
+        c2 = c1
+
+        ! Compute the LQ factorization
+        call lq_factor(a, tau)
+        l = a
+
+        ! Extract L & Q
+        call form_lq(l, tau, q)
+
+        ! Compute C = C * Q
+        call mult_lq(.false., .false., a, tau, c1)
+
+        ! Compute the answer
+        ans = matmul(c2, q)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 1"
+        end if
+
+        ! Transpose
+        c1 = c2
+        call mult_lq(.false., .true., a, tau, c1)
+
+        ! Compute the answer: C = C * Q**T
+        call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_lq_mult_right_cmplx_ud() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+        real(real64), parameter :: tol = 1.0d-8
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        logical :: rst
+        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
+            c2(m, n), ans(m, n)
+        real(real64) :: ar(m, n), ai(m, n), cr(m, n), ci(m, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        call random_number(cr)
+        call random_number(ci)
+        a = cmplx(ar, ai, real64)
+        c1 = cmplx(cr, ci, real64)
+        c2 = c1
+
+        ! Compute the LQ factorization
+        call lq_factor(a, tau)
+        l = a
+
+        ! Extract L & Q
+        call form_lq(l, tau, q)
+
+        ! Compute C = C * Q
+        call mult_lq(.false., .false., a, tau, c1)
+
+        ! Compute the answer
+        ans = matmul(c2, q)
+
+        ! Test
+        if (.not.is_mtx_equal(c1, ans, tol)) then
+            rst = .false.
+            print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 1"
+        end if
+
+        ! Transpose
+        ! c1 = c2
+        ! call mult_lq(.false., .true., a, tau, c1)
+
+        ! ! Compute the answer: C = C * Q**H
+        ! call mtx_mult(LA_NO_OPERATION, LA_HERMITIAN_TRANSPOSE, one, c2, q, &
+        !     zero, ans)
+
+        ! ! Test
+        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        !     rst = .false.
+        !     print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 2"
+        ! end if
+    end function
 
 ! ------------------------------------------------------------------------------
 end module

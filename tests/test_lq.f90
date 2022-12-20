@@ -221,7 +221,7 @@ contains
         ! Test
         if (.not.is_mtx_equal(c1, ans, tol)) then
             rst = .false.
-            print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 1"
+            print '(A)', "Test Failed: LQ Multiplication Test 1"
         end if
 
         ! Vector RHS
@@ -233,7 +233,7 @@ contains
         ! Test
         if (.not.is_mtx_equal(c3, ans2, tol)) then
             rst = .false.
-            print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 2"
+            print '(A)', "Test Failed: LQ Multiplication Test 2"
         end if
     end function
 

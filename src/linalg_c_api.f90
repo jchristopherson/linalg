@@ -3229,13 +3229,13 @@ contains
         ! Initialization
         mn = min(m, n)
         flag = LA_NO_ERROR
-        if (ldl < m .or. ldq < m) then
+        if (ldl < m .or. ldq < n) then
             flag = LA_INVALID_INPUT_ERROR
             return
         end if
 
         ! Process
-        call form_lq(l(1:m,1:n), tau(1:mn), q(1:m,1:n), err = err)
+        call form_lq(l(1:m,1:n), tau(1:mn), q(1:n,1:n), err = err)
         if (err%has_error_occurred()) then
             flag = err%get_error_flag()
             return
@@ -3259,13 +3259,13 @@ contains
     ! Initialization
     mn = min(m, n)
     flag = LA_NO_ERROR
-    if (ldl < m .or. ldq < m) then
+    if (ldl < m .or. ldq < n) then
         flag = LA_INVALID_INPUT_ERROR
         return
     end if
 
     ! Process
-    call form_lq(l(1:m,1:n), tau(1:mn), q(1:m,1:n), err = err)
+    call form_lq(l(1:m,1:n), tau(1:mn), q(1:n,1:n), err = err)
     if (err%has_error_occurred()) then
         flag = err%get_error_flag()
         return
@@ -3295,13 +3295,13 @@ function la_mult_lq(lside, trans, m, n, k, a, lda, tau, c, ldc) &
     else
         ma = n
     end if
-    if (lda < ma .or. ldc < m .or. k < ma) then
+    if (lda < k .or. ldc < m .or. k < ma) then
         flag = LA_INVALID_INPUT_ERROR
         return
     end if
     
     ! Process
-    call mult_lq(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+    call mult_lq(logical(lside), logical(trans), a(1:k,1:ma), tau(1:k), &
         c(1:m,1:n), err = err)
     if (err%has_error_occurred()) then
         flag = err%get_error_flag()
@@ -3332,13 +3332,13 @@ function la_mult_lq_cmplx(lside, trans, m, n, k, a, lda, tau, c, ldc) &
     else
         ma = n
     end if
-    if (lda < ma .or. ldc < m .or. k < ma) then
+    if (lda < k .or. ldc < m .or. k < ma) then
         flag = LA_INVALID_INPUT_ERROR
         return
     end if
 
     ! Process
-    call mult_lq(logical(lside), logical(trans), a(1:ma,1:k), tau(1:k), &
+    call mult_lq(logical(lside), logical(trans), a(1:k,1:ma), tau(1:k), &
         c(1:m,1:n), err = err)
     if (err%has_error_occurred()) then
         flag = err%get_error_flag()

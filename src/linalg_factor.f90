@@ -3122,7 +3122,6 @@ contains
         m = size(l, 1)
         n = size(l, 2)
         mn = min(m, n)
-        qcol = size(q, 2)
         if (present(err)) then
             errmgr => err
         else
@@ -3135,7 +3134,7 @@ contains
             flag = 1
         else if (size(tau) /= mn) then
             flag = 2
-        else if (size(q, 1) /= m .or. size(q, 2) /= n) then
+        else if (size(q, 1) /= n .or. size(q, 2) /= n) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3318,7 +3317,7 @@ contains
             ncola = n
         end if
         if (trans) then
-            t = 'T'
+            t = 'C'
         else
             t = 'N'
         end if
@@ -3494,7 +3493,7 @@ contains
         k = size(tau)
         side = 'L'
         if (trans) then
-            t = 'T'
+            t = 'C'
         else
             t = 'N'
         end if

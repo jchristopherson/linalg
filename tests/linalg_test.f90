@@ -177,12 +177,16 @@ program main
     rst = test_lq_mult_ud()
     if (.not.rst) overall = .false.
 
+    rst = test_lq_mult_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_mult_cmplx_ud()
+    if (.not.rst) overall = .false.
+
     ! End
     if (overall) then
-        print '(A)', "LINALG TEST STATUS: PASS"
         call exit(0)
     else
-        print '(A)', "LINALG TEST STATUS: FAILED"
         call exit(1)
     end if
 end program

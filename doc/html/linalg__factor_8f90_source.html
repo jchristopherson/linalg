@@ -3126,536 +3126,535 @@ $(document).ready(function(){initNavTree('linalg__factor_8f90_source.html',''); 
 <div class="line"><a id="l03028" name="l03028"></a><span class="lineno"> 3028</span>        m = <span class="keyword">size</span>(l, 1)</div>
 <div class="line"><a id="l03029" name="l03029"></a><span class="lineno"> 3029</span>        n = <span class="keyword">size</span>(l, 2)</div>
 <div class="line"><a id="l03030" name="l03030"></a><span class="lineno"> 3030</span>        mn = min(m, n)</div>
-<div class="line"><a id="l03031" name="l03031"></a><span class="lineno"> 3031</span>        qcol = <span class="keyword">size</span>(q, 2)</div>
-<div class="line"><a id="l03032" name="l03032"></a><span class="lineno"> 3032</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03033" name="l03033"></a><span class="lineno"> 3033</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03034" name="l03034"></a><span class="lineno"> 3034</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03035" name="l03035"></a><span class="lineno"> 3035</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03036" name="l03036"></a><span class="lineno"> 3036</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03037" name="l03037"></a><span class="lineno"> 3037</span> </div>
-<div class="line"><a id="l03038" name="l03038"></a><span class="lineno"> 3038</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03039" name="l03039"></a><span class="lineno"> 3039</span>        flag = 0</div>
-<div class="line"><a id="l03040" name="l03040"></a><span class="lineno"> 3040</span>        <span class="keywordflow">if</span> (m &gt; n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03041" name="l03041"></a><span class="lineno"> 3041</span>            flag = 1</div>
-<div class="line"><a id="l03042" name="l03042"></a><span class="lineno"> 3042</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(tau) /= mn) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03043" name="l03043"></a><span class="lineno"> 3043</span>            flag = 2</div>
-<div class="line"><a id="l03044" name="l03044"></a><span class="lineno"> 3044</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(q, 1) /= m .or. <span class="keyword">size</span>(q, 2) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03045" name="l03045"></a><span class="lineno"> 3045</span>            flag = 3</div>
-<div class="line"><a id="l03046" name="l03046"></a><span class="lineno"> 3046</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03047" name="l03047"></a><span class="lineno"> 3047</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03048" name="l03048"></a><span class="lineno"> 3048</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03049" name="l03049"></a><span class="lineno"> 3049</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03050" name="l03050"></a><span class="lineno"> 3050</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03051" name="l03051"></a><span class="lineno"> 3051</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03052" name="l03052"></a><span class="lineno"> 3052</span>                la_array_size_error)</div>
-<div class="line"><a id="l03053" name="l03053"></a><span class="lineno"> 3053</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03054" name="l03054"></a><span class="lineno"> 3054</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03055" name="l03055"></a><span class="lineno"> 3055</span> </div>
-<div class="line"><a id="l03056" name="l03056"></a><span class="lineno"> 3056</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03057" name="l03057"></a><span class="lineno"> 3057</span>        <span class="keyword">call </span>dorglq(m, n, mn, q, m, tau, temp, -1, flag)</div>
-<div class="line"><a id="l03058" name="l03058"></a><span class="lineno"> 3058</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03059" name="l03059"></a><span class="lineno"> 3059</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03060" name="l03060"></a><span class="lineno"> 3060</span>            olwork = lwork</div>
-<div class="line"><a id="l03061" name="l03061"></a><span class="lineno"> 3061</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03062" name="l03062"></a><span class="lineno"> 3062</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03063" name="l03063"></a><span class="lineno"> 3063</span> </div>
-<div class="line"><a id="l03064" name="l03064"></a><span class="lineno"> 3064</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03065" name="l03065"></a><span class="lineno"> 3065</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03066" name="l03066"></a><span class="lineno"> 3066</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03067" name="l03067"></a><span class="lineno"> 3067</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03068" name="l03068"></a><span class="lineno"> 3068</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, &amp;</div>
-<div class="line"><a id="l03069" name="l03069"></a><span class="lineno"> 3069</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 4.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03070" name="l03070"></a><span class="lineno"> 3070</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03071" name="l03071"></a><span class="lineno"> 3071</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03072" name="l03072"></a><span class="lineno"> 3072</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03073" name="l03073"></a><span class="lineno"> 3073</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03074" name="l03074"></a><span class="lineno"> 3074</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03075" name="l03075"></a><span class="lineno"> 3075</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03076" name="l03076"></a><span class="lineno"> 3076</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03077" name="l03077"></a><span class="lineno"> 3077</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03078" name="l03078"></a><span class="lineno"> 3078</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, &amp;</div>
-<div class="line"><a id="l03079" name="l03079"></a><span class="lineno"> 3079</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03080" name="l03080"></a><span class="lineno"> 3080</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03081" name="l03081"></a><span class="lineno"> 3081</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03082" name="l03082"></a><span class="lineno"> 3082</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03083" name="l03083"></a><span class="lineno"> 3083</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03084" name="l03084"></a><span class="lineno"> 3084</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03085" name="l03085"></a><span class="lineno"> 3085</span> </div>
-<div class="line"><a id="l03086" name="l03086"></a><span class="lineno"> 3086</span>        <span class="comment">! Copy the upper triangular portion of L to Q, and then zero it out in L</span></div>
-<div class="line"><a id="l03087" name="l03087"></a><span class="lineno"> 3087</span>        <span class="keywordflow">do</span> j = 2, n</div>
-<div class="line"><a id="l03088" name="l03088"></a><span class="lineno"> 3088</span>            k = min(j - 1, m)</div>
-<div class="line"><a id="l03089" name="l03089"></a><span class="lineno"> 3089</span>            q(1:j-1,j) = l(1:k,j)</div>
-<div class="line"><a id="l03090" name="l03090"></a><span class="lineno"> 3090</span>            l(1:k,j) = zero</div>
-<div class="line"><a id="l03091" name="l03091"></a><span class="lineno"> 3091</span><span class="keywordflow">        end do</span></div>
-<div class="line"><a id="l03092" name="l03092"></a><span class="lineno"> 3092</span> </div>
-<div class="line"><a id="l03093" name="l03093"></a><span class="lineno"> 3093</span>        <span class="comment">! Build Q</span></div>
-<div class="line"><a id="l03094" name="l03094"></a><span class="lineno"> 3094</span>        <span class="keyword">call </span>dorglq(m, n, mn, q, m, tau, wptr, lwork, flag)</div>
-<div class="line"><a id="l03095" name="l03095"></a><span class="lineno"> 3095</span> </div>
-<div class="line"><a id="l03096" name="l03096"></a><span class="lineno"> 3096</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03097" name="l03097"></a><span class="lineno"> 3097</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03098" name="l03098"></a><span class="lineno"> 3098</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03099" name="l03099"></a><span class="lineno"> 3099</span> </div>
-<div class="line"><a id="l03100" name="l03100"></a><span class="lineno"> 3100</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03101" name="l03101"></a><span class="lineno"> 3101</span>    <span class="keyword">module</span> subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)</div>
-<div class="line"><a id="l03102" name="l03102"></a><span class="lineno"> 3102</span>        <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l03103" name="l03103"></a><span class="lineno"> 3103</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: l</div>
-<div class="line"><a id="l03104" name="l03104"></a><span class="lineno"> 3104</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
-<div class="line"><a id="l03105" name="l03105"></a><span class="lineno"> 3105</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:,:)</span> :: q</div>
-<div class="line"><a id="l03106" name="l03106"></a><span class="lineno"> 3106</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
-<div class="line"><a id="l03107" name="l03107"></a><span class="lineno"> 3107</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
-<div class="line"><a id="l03108" name="l03108"></a><span class="lineno"> 3108</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l03109" name="l03109"></a><span class="lineno"> 3109</span> </div>
-<div class="line"><a id="l03110" name="l03110"></a><span class="lineno"> 3110</span>        <span class="comment">! Parameters</span></div>
-<div class="line"><a id="l03111" name="l03111"></a><span class="lineno"> 3111</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">parameter</span> :: zero = (0.0d0, 0.0d0)</div>
-<div class="line"><a id="l03112" name="l03112"></a><span class="lineno"> 3112</span> </div>
-<div class="line"><a id="l03113" name="l03113"></a><span class="lineno"> 3113</span>        <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l03114" name="l03114"></a><span class="lineno"> 3114</span>        <span class="keywordtype">integer(int32)</span> :: i, m, n, mn, k, istat, flag, lwork</div>
-<div class="line"><a id="l03115" name="l03115"></a><span class="lineno"> 3115</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
-<div class="line"><a id="l03116" name="l03116"></a><span class="lineno"> 3116</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
-<div class="line"><a id="l03117" name="l03117"></a><span class="lineno"> 3117</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
-<div class="line"><a id="l03118" name="l03118"></a><span class="lineno"> 3118</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l03119" name="l03119"></a><span class="lineno"> 3119</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l03120" name="l03120"></a><span class="lineno"> 3120</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
-<div class="line"><a id="l03121" name="l03121"></a><span class="lineno"> 3121</span> </div>
-<div class="line"><a id="l03122" name="l03122"></a><span class="lineno"> 3122</span>        <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l03123" name="l03123"></a><span class="lineno"> 3123</span>        m = <span class="keyword">size</span>(l, 1)</div>
-<div class="line"><a id="l03124" name="l03124"></a><span class="lineno"> 3124</span>        n = <span class="keyword">size</span>(l, 2)</div>
-<div class="line"><a id="l03125" name="l03125"></a><span class="lineno"> 3125</span>        mn = min(m, n)</div>
-<div class="line"><a id="l03126" name="l03126"></a><span class="lineno"> 3126</span>        qcol = <span class="keyword">size</span>(q, 2)</div>
-<div class="line"><a id="l03127" name="l03127"></a><span class="lineno"> 3127</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03128" name="l03128"></a><span class="lineno"> 3128</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03129" name="l03129"></a><span class="lineno"> 3129</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03130" name="l03130"></a><span class="lineno"> 3130</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03131" name="l03131"></a><span class="lineno"> 3131</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03132" name="l03132"></a><span class="lineno"> 3132</span> </div>
-<div class="line"><a id="l03133" name="l03133"></a><span class="lineno"> 3133</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03134" name="l03134"></a><span class="lineno"> 3134</span>        flag = 0</div>
-<div class="line"><a id="l03135" name="l03135"></a><span class="lineno"> 3135</span>        <span class="keywordflow">if</span> (m &gt; n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03136" name="l03136"></a><span class="lineno"> 3136</span>            flag = 1</div>
-<div class="line"><a id="l03137" name="l03137"></a><span class="lineno"> 3137</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(tau) /= mn) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03138" name="l03138"></a><span class="lineno"> 3138</span>            flag = 2</div>
-<div class="line"><a id="l03139" name="l03139"></a><span class="lineno"> 3139</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(q, 1) /= m .or. <span class="keyword">size</span>(q, 2) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03140" name="l03140"></a><span class="lineno"> 3140</span>            flag = 3</div>
-<div class="line"><a id="l03141" name="l03141"></a><span class="lineno"> 3141</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03142" name="l03142"></a><span class="lineno"> 3142</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03143" name="l03143"></a><span class="lineno"> 3143</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03144" name="l03144"></a><span class="lineno"> 3144</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03145" name="l03145"></a><span class="lineno"> 3145</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03146" name="l03146"></a><span class="lineno"> 3146</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03147" name="l03147"></a><span class="lineno"> 3147</span>                la_array_size_error)</div>
-<div class="line"><a id="l03148" name="l03148"></a><span class="lineno"> 3148</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03149" name="l03149"></a><span class="lineno"> 3149</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03150" name="l03150"></a><span class="lineno"> 3150</span> </div>
-<div class="line"><a id="l03151" name="l03151"></a><span class="lineno"> 3151</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03152" name="l03152"></a><span class="lineno"> 3152</span>        <span class="keyword">call </span>zunglq(m, n, mn, q, m, tau, temp, -1, flag)</div>
-<div class="line"><a id="l03153" name="l03153"></a><span class="lineno"> 3153</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03154" name="l03154"></a><span class="lineno"> 3154</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03155" name="l03155"></a><span class="lineno"> 3155</span>            olwork = lwork</div>
-<div class="line"><a id="l03156" name="l03156"></a><span class="lineno"> 3156</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03157" name="l03157"></a><span class="lineno"> 3157</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03158" name="l03158"></a><span class="lineno"> 3158</span> </div>
-<div class="line"><a id="l03159" name="l03159"></a><span class="lineno"> 3159</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03160" name="l03160"></a><span class="lineno"> 3160</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03161" name="l03161"></a><span class="lineno"> 3161</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03162" name="l03162"></a><span class="lineno"> 3162</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03163" name="l03163"></a><span class="lineno"> 3163</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03164" name="l03164"></a><span class="lineno"> 3164</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 4.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03165" name="l03165"></a><span class="lineno"> 3165</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03166" name="l03166"></a><span class="lineno"> 3166</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03167" name="l03167"></a><span class="lineno"> 3167</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03168" name="l03168"></a><span class="lineno"> 3168</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03169" name="l03169"></a><span class="lineno"> 3169</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03170" name="l03170"></a><span class="lineno"> 3170</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03171" name="l03171"></a><span class="lineno"> 3171</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03172" name="l03172"></a><span class="lineno"> 3172</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03173" name="l03173"></a><span class="lineno"> 3173</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03174" name="l03174"></a><span class="lineno"> 3174</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03175" name="l03175"></a><span class="lineno"> 3175</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03176" name="l03176"></a><span class="lineno"> 3176</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03177" name="l03177"></a><span class="lineno"> 3177</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03178" name="l03178"></a><span class="lineno"> 3178</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03179" name="l03179"></a><span class="lineno"> 3179</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03180" name="l03180"></a><span class="lineno"> 3180</span> </div>
-<div class="line"><a id="l03181" name="l03181"></a><span class="lineno"> 3181</span>        <span class="comment">! Copy the upper triangular portion of L to Q, and then zero it out in L</span></div>
-<div class="line"><a id="l03182" name="l03182"></a><span class="lineno"> 3182</span>        <span class="keywordflow">do</span> j = 2, n</div>
-<div class="line"><a id="l03183" name="l03183"></a><span class="lineno"> 3183</span>            k = min(j - 1, m)</div>
-<div class="line"><a id="l03184" name="l03184"></a><span class="lineno"> 3184</span>            q(1:j-1,j) = l(1:k,j)</div>
-<div class="line"><a id="l03185" name="l03185"></a><span class="lineno"> 3185</span>            l(1:k,j) = zero</div>
-<div class="line"><a id="l03186" name="l03186"></a><span class="lineno"> 3186</span><span class="keywordflow">        end do</span></div>
-<div class="line"><a id="l03187" name="l03187"></a><span class="lineno"> 3187</span> </div>
-<div class="line"><a id="l03188" name="l03188"></a><span class="lineno"> 3188</span>        <span class="comment">! Build Q</span></div>
-<div class="line"><a id="l03189" name="l03189"></a><span class="lineno"> 3189</span>        <span class="keyword">call </span>zunglq(m, n, mn, q, m, tau, wptr, lwork, flag)</div>
-<div class="line"><a id="l03190" name="l03190"></a><span class="lineno"> 3190</span> </div>
-<div class="line"><a id="l03191" name="l03191"></a><span class="lineno"> 3191</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03192" name="l03192"></a><span class="lineno"> 3192</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03193" name="l03193"></a><span class="lineno"> 3193</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03194" name="l03194"></a><span class="lineno"> 3194</span> </div>
-<div class="line"><a id="l03195" name="l03195"></a><span class="lineno"> 3195</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03196" name="l03196"></a><span class="lineno"> 3196</span>    <span class="keyword">module</span> subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)</div>
-<div class="line"><a id="l03197" name="l03197"></a><span class="lineno"> 3197</span>        <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l03198" name="l03198"></a><span class="lineno"> 3198</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: lside, trans</div>
-<div class="line"><a id="l03199" name="l03199"></a><span class="lineno"> 3199</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
-<div class="line"><a id="l03200" name="l03200"></a><span class="lineno"> 3200</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
-<div class="line"><a id="l03201" name="l03201"></a><span class="lineno"> 3201</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: c</div>
-<div class="line"><a id="l03202" name="l03202"></a><span class="lineno"> 3202</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
-<div class="line"><a id="l03203" name="l03203"></a><span class="lineno"> 3203</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
-<div class="line"><a id="l03204" name="l03204"></a><span class="lineno"> 3204</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l03205" name="l03205"></a><span class="lineno"> 3205</span> </div>
-<div class="line"><a id="l03206" name="l03206"></a><span class="lineno"> 3206</span>        <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l03207" name="l03207"></a><span class="lineno"> 3207</span>        <span class="keywordtype">character</span> :: side, t</div>
-<div class="line"><a id="l03208" name="l03208"></a><span class="lineno"> 3208</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, ncola, istat, flag, lwork</div>
-<div class="line"><a id="l03209" name="l03209"></a><span class="lineno"> 3209</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
-<div class="line"><a id="l03210" name="l03210"></a><span class="lineno"> 3210</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
-<div class="line"><a id="l03211" name="l03211"></a><span class="lineno"> 3211</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">dimension(1)</span> :: temp</div>
-<div class="line"><a id="l03212" name="l03212"></a><span class="lineno"> 3212</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l03213" name="l03213"></a><span class="lineno"> 3213</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l03214" name="l03214"></a><span class="lineno"> 3214</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
-<div class="line"><a id="l03215" name="l03215"></a><span class="lineno"> 3215</span> </div>
-<div class="line"><a id="l03216" name="l03216"></a><span class="lineno"> 3216</span>        <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l03217" name="l03217"></a><span class="lineno"> 3217</span>        m = <span class="keyword">size</span>(c, 1)</div>
-<div class="line"><a id="l03218" name="l03218"></a><span class="lineno"> 3218</span>        n = <span class="keyword">size</span>(c, 2)</div>
-<div class="line"><a id="l03219" name="l03219"></a><span class="lineno"> 3219</span>        k = <span class="keyword">size</span>(tau)</div>
-<div class="line"><a id="l03220" name="l03220"></a><span class="lineno"> 3220</span>        <span class="keywordflow">if</span> (lside) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03221" name="l03221"></a><span class="lineno"> 3221</span>            side = <span class="stringliteral">&#39;L&#39;</span></div>
-<div class="line"><a id="l03222" name="l03222"></a><span class="lineno"> 3222</span>            ncola = m</div>
-<div class="line"><a id="l03223" name="l03223"></a><span class="lineno"> 3223</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03224" name="l03224"></a><span class="lineno"> 3224</span>            side = <span class="stringliteral">&#39;R&#39;</span></div>
-<div class="line"><a id="l03225" name="l03225"></a><span class="lineno"> 3225</span>            ncola = n</div>
-<div class="line"><a id="l03226" name="l03226"></a><span class="lineno"> 3226</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03227" name="l03227"></a><span class="lineno"> 3227</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03228" name="l03228"></a><span class="lineno"> 3228</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
-<div class="line"><a id="l03229" name="l03229"></a><span class="lineno"> 3229</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03230" name="l03230"></a><span class="lineno"> 3230</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
-<div class="line"><a id="l03231" name="l03231"></a><span class="lineno"> 3231</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03232" name="l03232"></a><span class="lineno"> 3232</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03233" name="l03233"></a><span class="lineno"> 3233</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03234" name="l03234"></a><span class="lineno"> 3234</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03235" name="l03235"></a><span class="lineno"> 3235</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03236" name="l03236"></a><span class="lineno"> 3236</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03237" name="l03237"></a><span class="lineno"> 3237</span> </div>
-<div class="line"><a id="l03238" name="l03238"></a><span class="lineno"> 3238</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03239" name="l03239"></a><span class="lineno"> 3239</span>        flag = 0</div>
-<div class="line"><a id="l03240" name="l03240"></a><span class="lineno"> 3240</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= ncola) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03241" name="l03241"></a><span class="lineno"> 3241</span>            flag = 3</div>
-<div class="line"><a id="l03242" name="l03242"></a><span class="lineno"> 3242</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03243" name="l03243"></a><span class="lineno"> 3243</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03244" name="l03244"></a><span class="lineno"> 3244</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03245" name="l03245"></a><span class="lineno"> 3245</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03246" name="l03246"></a><span class="lineno"> 3246</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03247" name="l03247"></a><span class="lineno"> 3247</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03248" name="l03248"></a><span class="lineno"> 3248</span>                la_array_size_error)</div>
-<div class="line"><a id="l03249" name="l03249"></a><span class="lineno"> 3249</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03250" name="l03250"></a><span class="lineno"> 3250</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03251" name="l03251"></a><span class="lineno"> 3251</span> </div>
-<div class="line"><a id="l03252" name="l03252"></a><span class="lineno"> 3252</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03253" name="l03253"></a><span class="lineno"> 3253</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
-<div class="line"><a id="l03254" name="l03254"></a><span class="lineno"> 3254</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03255" name="l03255"></a><span class="lineno"> 3255</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03256" name="l03256"></a><span class="lineno"> 3256</span>            olwork = lwork</div>
-<div class="line"><a id="l03257" name="l03257"></a><span class="lineno"> 3257</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03258" name="l03258"></a><span class="lineno"> 3258</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03259" name="l03259"></a><span class="lineno"> 3259</span> </div>
-<div class="line"><a id="l03260" name="l03260"></a><span class="lineno"> 3260</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03261" name="l03261"></a><span class="lineno"> 3261</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03262" name="l03262"></a><span class="lineno"> 3262</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03263" name="l03263"></a><span class="lineno"> 3263</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03264" name="l03264"></a><span class="lineno"> 3264</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03265" name="l03265"></a><span class="lineno"> 3265</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03266" name="l03266"></a><span class="lineno"> 3266</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03267" name="l03267"></a><span class="lineno"> 3267</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03268" name="l03268"></a><span class="lineno"> 3268</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03269" name="l03269"></a><span class="lineno"> 3269</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03270" name="l03270"></a><span class="lineno"> 3270</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03271" name="l03271"></a><span class="lineno"> 3271</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03272" name="l03272"></a><span class="lineno"> 3272</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03273" name="l03273"></a><span class="lineno"> 3273</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03274" name="l03274"></a><span class="lineno"> 3274</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03275" name="l03275"></a><span class="lineno"> 3275</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03276" name="l03276"></a><span class="lineno"> 3276</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03277" name="l03277"></a><span class="lineno"> 3277</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03278" name="l03278"></a><span class="lineno"> 3278</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03279" name="l03279"></a><span class="lineno"> 3279</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03280" name="l03280"></a><span class="lineno"> 3280</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03281" name="l03281"></a><span class="lineno"> 3281</span> </div>
-<div class="line"><a id="l03282" name="l03282"></a><span class="lineno"> 3282</span>        <span class="comment">! Call DORMLQ</span></div>
-<div class="line"><a id="l03283" name="l03283"></a><span class="lineno"> 3283</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
-<div class="line"><a id="l03284" name="l03284"></a><span class="lineno"> 3284</span> </div>
-<div class="line"><a id="l03285" name="l03285"></a><span class="lineno"> 3285</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03286" name="l03286"></a><span class="lineno"> 3286</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03287" name="l03287"></a><span class="lineno"> 3287</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03288" name="l03288"></a><span class="lineno"> 3288</span> </div>
-<div class="line"><a id="l03289" name="l03289"></a><span class="lineno"> 3289</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03290" name="l03290"></a><span class="lineno"> 3290</span>    <span class="keyword">module</span> subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)</div>
-<div class="line"><a id="l03291" name="l03291"></a><span class="lineno"> 3291</span>        <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l03292" name="l03292"></a><span class="lineno"> 3292</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: lside, trans</div>
-<div class="line"><a id="l03293" name="l03293"></a><span class="lineno"> 3293</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
-<div class="line"><a id="l03294" name="l03294"></a><span class="lineno"> 3294</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
-<div class="line"><a id="l03295" name="l03295"></a><span class="lineno"> 3295</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: c</div>
-<div class="line"><a id="l03296" name="l03296"></a><span class="lineno"> 3296</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
-<div class="line"><a id="l03297" name="l03297"></a><span class="lineno"> 3297</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
-<div class="line"><a id="l03298" name="l03298"></a><span class="lineno"> 3298</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l03299" name="l03299"></a><span class="lineno"> 3299</span> </div>
-<div class="line"><a id="l03300" name="l03300"></a><span class="lineno"> 3300</span>        <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l03301" name="l03301"></a><span class="lineno"> 3301</span>        <span class="keywordtype">character</span> :: side, t</div>
-<div class="line"><a id="l03302" name="l03302"></a><span class="lineno"> 3302</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, ncola, istat, flag, lwork</div>
-<div class="line"><a id="l03303" name="l03303"></a><span class="lineno"> 3303</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
-<div class="line"><a id="l03304" name="l03304"></a><span class="lineno"> 3304</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
-<div class="line"><a id="l03305" name="l03305"></a><span class="lineno"> 3305</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
-<div class="line"><a id="l03306" name="l03306"></a><span class="lineno"> 3306</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l03307" name="l03307"></a><span class="lineno"> 3307</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l03308" name="l03308"></a><span class="lineno"> 3308</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
-<div class="line"><a id="l03309" name="l03309"></a><span class="lineno"> 3309</span> </div>
-<div class="line"><a id="l03310" name="l03310"></a><span class="lineno"> 3310</span>        <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l03311" name="l03311"></a><span class="lineno"> 3311</span>        m = <span class="keyword">size</span>(c, 1)</div>
-<div class="line"><a id="l03312" name="l03312"></a><span class="lineno"> 3312</span>        n = <span class="keyword">size</span>(c, 2)</div>
-<div class="line"><a id="l03313" name="l03313"></a><span class="lineno"> 3313</span>        k = <span class="keyword">size</span>(tau)</div>
-<div class="line"><a id="l03314" name="l03314"></a><span class="lineno"> 3314</span>        <span class="keywordflow">if</span> (lside) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03315" name="l03315"></a><span class="lineno"> 3315</span>            side = <span class="stringliteral">&#39;L&#39;</span></div>
-<div class="line"><a id="l03316" name="l03316"></a><span class="lineno"> 3316</span>            ncola = m</div>
-<div class="line"><a id="l03317" name="l03317"></a><span class="lineno"> 3317</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03318" name="l03318"></a><span class="lineno"> 3318</span>            side = <span class="stringliteral">&#39;R&#39;</span></div>
-<div class="line"><a id="l03319" name="l03319"></a><span class="lineno"> 3319</span>            ncola = n</div>
-<div class="line"><a id="l03320" name="l03320"></a><span class="lineno"> 3320</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03321" name="l03321"></a><span class="lineno"> 3321</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03322" name="l03322"></a><span class="lineno"> 3322</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
-<div class="line"><a id="l03323" name="l03323"></a><span class="lineno"> 3323</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03324" name="l03324"></a><span class="lineno"> 3324</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
-<div class="line"><a id="l03325" name="l03325"></a><span class="lineno"> 3325</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03326" name="l03326"></a><span class="lineno"> 3326</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03327" name="l03327"></a><span class="lineno"> 3327</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03328" name="l03328"></a><span class="lineno"> 3328</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03329" name="l03329"></a><span class="lineno"> 3329</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03330" name="l03330"></a><span class="lineno"> 3330</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03331" name="l03331"></a><span class="lineno"> 3331</span> </div>
-<div class="line"><a id="l03332" name="l03332"></a><span class="lineno"> 3332</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03333" name="l03333"></a><span class="lineno"> 3333</span>        flag = 0</div>
-<div class="line"><a id="l03334" name="l03334"></a><span class="lineno"> 3334</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= ncola) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03335" name="l03335"></a><span class="lineno"> 3335</span>            flag = 3</div>
-<div class="line"><a id="l03336" name="l03336"></a><span class="lineno"> 3336</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03337" name="l03337"></a><span class="lineno"> 3337</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03338" name="l03338"></a><span class="lineno"> 3338</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03339" name="l03339"></a><span class="lineno"> 3339</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03340" name="l03340"></a><span class="lineno"> 3340</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03341" name="l03341"></a><span class="lineno"> 3341</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03342" name="l03342"></a><span class="lineno"> 3342</span>                la_array_size_error)</div>
-<div class="line"><a id="l03343" name="l03343"></a><span class="lineno"> 3343</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03344" name="l03344"></a><span class="lineno"> 3344</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03345" name="l03345"></a><span class="lineno"> 3345</span> </div>
-<div class="line"><a id="l03346" name="l03346"></a><span class="lineno"> 3346</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03347" name="l03347"></a><span class="lineno"> 3347</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
-<div class="line"><a id="l03348" name="l03348"></a><span class="lineno"> 3348</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03349" name="l03349"></a><span class="lineno"> 3349</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03350" name="l03350"></a><span class="lineno"> 3350</span>            olwork = lwork</div>
-<div class="line"><a id="l03351" name="l03351"></a><span class="lineno"> 3351</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03352" name="l03352"></a><span class="lineno"> 3352</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03353" name="l03353"></a><span class="lineno"> 3353</span> </div>
-<div class="line"><a id="l03354" name="l03354"></a><span class="lineno"> 3354</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03355" name="l03355"></a><span class="lineno"> 3355</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03356" name="l03356"></a><span class="lineno"> 3356</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03357" name="l03357"></a><span class="lineno"> 3357</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03358" name="l03358"></a><span class="lineno"> 3358</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03359" name="l03359"></a><span class="lineno"> 3359</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03360" name="l03360"></a><span class="lineno"> 3360</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03361" name="l03361"></a><span class="lineno"> 3361</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03362" name="l03362"></a><span class="lineno"> 3362</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03363" name="l03363"></a><span class="lineno"> 3363</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03364" name="l03364"></a><span class="lineno"> 3364</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03365" name="l03365"></a><span class="lineno"> 3365</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03366" name="l03366"></a><span class="lineno"> 3366</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03367" name="l03367"></a><span class="lineno"> 3367</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03368" name="l03368"></a><span class="lineno"> 3368</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03369" name="l03369"></a><span class="lineno"> 3369</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03370" name="l03370"></a><span class="lineno"> 3370</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03371" name="l03371"></a><span class="lineno"> 3371</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03372" name="l03372"></a><span class="lineno"> 3372</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03373" name="l03373"></a><span class="lineno"> 3373</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03374" name="l03374"></a><span class="lineno"> 3374</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03375" name="l03375"></a><span class="lineno"> 3375</span> </div>
-<div class="line"><a id="l03376" name="l03376"></a><span class="lineno"> 3376</span>        <span class="comment">! Call ZUNMLQ</span></div>
-<div class="line"><a id="l03377" name="l03377"></a><span class="lineno"> 3377</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
-<div class="line"><a id="l03378" name="l03378"></a><span class="lineno"> 3378</span> </div>
-<div class="line"><a id="l03379" name="l03379"></a><span class="lineno"> 3379</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03380" name="l03380"></a><span class="lineno"> 3380</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03381" name="l03381"></a><span class="lineno"> 3381</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03382" name="l03382"></a><span class="lineno"> 3382</span> </div>
-<div class="line"><a id="l03383" name="l03383"></a><span class="lineno"> 3383</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03384" name="l03384"></a><span class="lineno"> 3384</span>    <span class="keyword">module</span> subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)</div>
-<div class="line"><a id="l03385" name="l03385"></a><span class="lineno"> 3385</span>        <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l03386" name="l03386"></a><span class="lineno"> 3386</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: trans</div>
-<div class="line"><a id="l03387" name="l03387"></a><span class="lineno"> 3387</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
-<div class="line"><a id="l03388" name="l03388"></a><span class="lineno"> 3388</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
-<div class="line"><a id="l03389" name="l03389"></a><span class="lineno"> 3389</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: c</div>
-<div class="line"><a id="l03390" name="l03390"></a><span class="lineno"> 3390</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
-<div class="line"><a id="l03391" name="l03391"></a><span class="lineno"> 3391</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
-<div class="line"><a id="l03392" name="l03392"></a><span class="lineno"> 3392</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l03393" name="l03393"></a><span class="lineno"> 3393</span> </div>
-<div class="line"><a id="l03394" name="l03394"></a><span class="lineno"> 3394</span>        <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l03395" name="l03395"></a><span class="lineno"> 3395</span>        <span class="keywordtype">character</span> :: side, t</div>
-<div class="line"><a id="l03396" name="l03396"></a><span class="lineno"> 3396</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, istat, flag, lwork</div>
-<div class="line"><a id="l03397" name="l03397"></a><span class="lineno"> 3397</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
-<div class="line"><a id="l03398" name="l03398"></a><span class="lineno"> 3398</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
-<div class="line"><a id="l03399" name="l03399"></a><span class="lineno"> 3399</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">dimension(1)</span> :: temp</div>
-<div class="line"><a id="l03400" name="l03400"></a><span class="lineno"> 3400</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l03401" name="l03401"></a><span class="lineno"> 3401</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l03402" name="l03402"></a><span class="lineno"> 3402</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
-<div class="line"><a id="l03403" name="l03403"></a><span class="lineno"> 3403</span> </div>
-<div class="line"><a id="l03404" name="l03404"></a><span class="lineno"> 3404</span>        <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l03405" name="l03405"></a><span class="lineno"> 3405</span>        m = <span class="keyword">size</span>(c)</div>
-<div class="line"><a id="l03406" name="l03406"></a><span class="lineno"> 3406</span>        n = 1</div>
-<div class="line"><a id="l03407" name="l03407"></a><span class="lineno"> 3407</span>        k = <span class="keyword">size</span>(tau)</div>
-<div class="line"><a id="l03408" name="l03408"></a><span class="lineno"> 3408</span>        side = <span class="stringliteral">&#39;L&#39;</span></div>
-<div class="line"><a id="l03409" name="l03409"></a><span class="lineno"> 3409</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03410" name="l03410"></a><span class="lineno"> 3410</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
-<div class="line"><a id="l03411" name="l03411"></a><span class="lineno"> 3411</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03412" name="l03412"></a><span class="lineno"> 3412</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
-<div class="line"><a id="l03413" name="l03413"></a><span class="lineno"> 3413</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03414" name="l03414"></a><span class="lineno"> 3414</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03415" name="l03415"></a><span class="lineno"> 3415</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03416" name="l03416"></a><span class="lineno"> 3416</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03417" name="l03417"></a><span class="lineno"> 3417</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03418" name="l03418"></a><span class="lineno"> 3418</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03419" name="l03419"></a><span class="lineno"> 3419</span> </div>
-<div class="line"><a id="l03420" name="l03420"></a><span class="lineno"> 3420</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03421" name="l03421"></a><span class="lineno"> 3421</span>        flag = 0</div>
-<div class="line"><a id="l03422" name="l03422"></a><span class="lineno"> 3422</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= m .or. <span class="keyword">size</span>(a, 2) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03423" name="l03423"></a><span class="lineno"> 3423</span>            flag = 3</div>
-<div class="line"><a id="l03424" name="l03424"></a><span class="lineno"> 3424</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03425" name="l03425"></a><span class="lineno"> 3425</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03426" name="l03426"></a><span class="lineno"> 3426</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03427" name="l03427"></a><span class="lineno"> 3427</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03428" name="l03428"></a><span class="lineno"> 3428</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03429" name="l03429"></a><span class="lineno"> 3429</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03430" name="l03430"></a><span class="lineno"> 3430</span>                la_array_size_error)</div>
-<div class="line"><a id="l03431" name="l03431"></a><span class="lineno"> 3431</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03432" name="l03432"></a><span class="lineno"> 3432</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03433" name="l03433"></a><span class="lineno"> 3433</span> </div>
-<div class="line"><a id="l03434" name="l03434"></a><span class="lineno"> 3434</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03435" name="l03435"></a><span class="lineno"> 3435</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)</div>
-<div class="line"><a id="l03436" name="l03436"></a><span class="lineno"> 3436</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03437" name="l03437"></a><span class="lineno"> 3437</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03438" name="l03438"></a><span class="lineno"> 3438</span>            olwork = lwork</div>
-<div class="line"><a id="l03439" name="l03439"></a><span class="lineno"> 3439</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03440" name="l03440"></a><span class="lineno"> 3440</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03441" name="l03441"></a><span class="lineno"> 3441</span> </div>
-<div class="line"><a id="l03442" name="l03442"></a><span class="lineno"> 3442</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03443" name="l03443"></a><span class="lineno"> 3443</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03444" name="l03444"></a><span class="lineno"> 3444</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03445" name="l03445"></a><span class="lineno"> 3445</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03446" name="l03446"></a><span class="lineno"> 3446</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, &amp;</div>
-<div class="line"><a id="l03447" name="l03447"></a><span class="lineno"> 3447</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03448" name="l03448"></a><span class="lineno"> 3448</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03449" name="l03449"></a><span class="lineno"> 3449</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03450" name="l03450"></a><span class="lineno"> 3450</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03451" name="l03451"></a><span class="lineno"> 3451</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03452" name="l03452"></a><span class="lineno"> 3452</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03453" name="l03453"></a><span class="lineno"> 3453</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03454" name="l03454"></a><span class="lineno"> 3454</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03455" name="l03455"></a><span class="lineno"> 3455</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03456" name="l03456"></a><span class="lineno"> 3456</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, &amp;</div>
-<div class="line"><a id="l03457" name="l03457"></a><span class="lineno"> 3457</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03458" name="l03458"></a><span class="lineno"> 3458</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03459" name="l03459"></a><span class="lineno"> 3459</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03460" name="l03460"></a><span class="lineno"> 3460</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03461" name="l03461"></a><span class="lineno"> 3461</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03462" name="l03462"></a><span class="lineno"> 3462</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03463" name="l03463"></a><span class="lineno"> 3463</span> </div>
-<div class="line"><a id="l03464" name="l03464"></a><span class="lineno"> 3464</span>        <span class="comment">! Call DORMLQ</span></div>
-<div class="line"><a id="l03465" name="l03465"></a><span class="lineno"> 3465</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)</div>
-<div class="line"><a id="l03466" name="l03466"></a><span class="lineno"> 3466</span> </div>
-<div class="line"><a id="l03467" name="l03467"></a><span class="lineno"> 3467</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03468" name="l03468"></a><span class="lineno"> 3468</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03469" name="l03469"></a><span class="lineno"> 3469</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03470" name="l03470"></a><span class="lineno"> 3470</span> </div>
-<div class="line"><a id="l03471" name="l03471"></a><span class="lineno"> 3471</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03472" name="l03472"></a><span class="lineno"> 3472</span>    <span class="keyword">module</span> subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)</div>
-<div class="line"><a id="l03473" name="l03473"></a><span class="lineno"> 3473</span>        <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l03474" name="l03474"></a><span class="lineno"> 3474</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: trans</div>
-<div class="line"><a id="l03475" name="l03475"></a><span class="lineno"> 3475</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
-<div class="line"><a id="l03476" name="l03476"></a><span class="lineno"> 3476</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
-<div class="line"><a id="l03477" name="l03477"></a><span class="lineno"> 3477</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: c</div>
-<div class="line"><a id="l03478" name="l03478"></a><span class="lineno"> 3478</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
-<div class="line"><a id="l03479" name="l03479"></a><span class="lineno"> 3479</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
-<div class="line"><a id="l03480" name="l03480"></a><span class="lineno"> 3480</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l03481" name="l03481"></a><span class="lineno"> 3481</span> </div>
-<div class="line"><a id="l03482" name="l03482"></a><span class="lineno"> 3482</span>        <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l03483" name="l03483"></a><span class="lineno"> 3483</span>        <span class="keywordtype">character</span> :: side, t</div>
-<div class="line"><a id="l03484" name="l03484"></a><span class="lineno"> 3484</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, istat, flag, lwork</div>
-<div class="line"><a id="l03485" name="l03485"></a><span class="lineno"> 3485</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
-<div class="line"><a id="l03486" name="l03486"></a><span class="lineno"> 3486</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
-<div class="line"><a id="l03487" name="l03487"></a><span class="lineno"> 3487</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
-<div class="line"><a id="l03488" name="l03488"></a><span class="lineno"> 3488</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l03489" name="l03489"></a><span class="lineno"> 3489</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l03490" name="l03490"></a><span class="lineno"> 3490</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
-<div class="line"><a id="l03491" name="l03491"></a><span class="lineno"> 3491</span> </div>
-<div class="line"><a id="l03492" name="l03492"></a><span class="lineno"> 3492</span>        <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l03493" name="l03493"></a><span class="lineno"> 3493</span>        m = <span class="keyword">size</span>(c)</div>
-<div class="line"><a id="l03494" name="l03494"></a><span class="lineno"> 3494</span>        n = 1</div>
-<div class="line"><a id="l03495" name="l03495"></a><span class="lineno"> 3495</span>        k = <span class="keyword">size</span>(tau)</div>
-<div class="line"><a id="l03496" name="l03496"></a><span class="lineno"> 3496</span>        side = <span class="stringliteral">&#39;L&#39;</span></div>
-<div class="line"><a id="l03497" name="l03497"></a><span class="lineno"> 3497</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03498" name="l03498"></a><span class="lineno"> 3498</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
-<div class="line"><a id="l03499" name="l03499"></a><span class="lineno"> 3499</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03500" name="l03500"></a><span class="lineno"> 3500</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
-<div class="line"><a id="l03501" name="l03501"></a><span class="lineno"> 3501</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03502" name="l03502"></a><span class="lineno"> 3502</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03503" name="l03503"></a><span class="lineno"> 3503</span>            errmgr =&gt; err</div>
-<div class="line"><a id="l03504" name="l03504"></a><span class="lineno"> 3504</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03505" name="l03505"></a><span class="lineno"> 3505</span>            errmgr =&gt; deferr</div>
-<div class="line"><a id="l03506" name="l03506"></a><span class="lineno"> 3506</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03507" name="l03507"></a><span class="lineno"> 3507</span> </div>
-<div class="line"><a id="l03508" name="l03508"></a><span class="lineno"> 3508</span>        <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l03509" name="l03509"></a><span class="lineno"> 3509</span>        flag = 0</div>
-<div class="line"><a id="l03510" name="l03510"></a><span class="lineno"> 3510</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= m .or. <span class="keyword">size</span>(a, 2) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03511" name="l03511"></a><span class="lineno"> 3511</span>            flag = 3</div>
-<div class="line"><a id="l03512" name="l03512"></a><span class="lineno"> 3512</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03513" name="l03513"></a><span class="lineno"> 3513</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03514" name="l03514"></a><span class="lineno"> 3514</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
-<div class="line"><a id="l03515" name="l03515"></a><span class="lineno"> 3515</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
-<div class="line"><a id="l03516" name="l03516"></a><span class="lineno"> 3516</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
-<div class="line"><a id="l03517" name="l03517"></a><span class="lineno"> 3517</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, trim(errmsg), &amp;</div>
-<div class="line"><a id="l03518" name="l03518"></a><span class="lineno"> 3518</span>                la_array_size_error)</div>
-<div class="line"><a id="l03519" name="l03519"></a><span class="lineno"> 3519</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03520" name="l03520"></a><span class="lineno"> 3520</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03521" name="l03521"></a><span class="lineno"> 3521</span> </div>
-<div class="line"><a id="l03522" name="l03522"></a><span class="lineno"> 3522</span>        <span class="comment">! Workspace Query</span></div>
-<div class="line"><a id="l03523" name="l03523"></a><span class="lineno"> 3523</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, m, tau, c, m, temp, -1, flag)</div>
-<div class="line"><a id="l03524" name="l03524"></a><span class="lineno"> 3524</span>        lwork = int(temp(1), int32)</div>
-<div class="line"><a id="l03525" name="l03525"></a><span class="lineno"> 3525</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03526" name="l03526"></a><span class="lineno"> 3526</span>            olwork = lwork</div>
-<div class="line"><a id="l03527" name="l03527"></a><span class="lineno"> 3527</span>            <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03528" name="l03528"></a><span class="lineno"> 3528</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03529" name="l03529"></a><span class="lineno"> 3529</span> </div>
-<div class="line"><a id="l03530" name="l03530"></a><span class="lineno"> 3530</span>        <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l03531" name="l03531"></a><span class="lineno"> 3531</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03532" name="l03532"></a><span class="lineno"> 3532</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03533" name="l03533"></a><span class="lineno"> 3533</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
-<div class="line"><a id="l03534" name="l03534"></a><span class="lineno"> 3534</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03535" name="l03535"></a><span class="lineno"> 3535</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03536" name="l03536"></a><span class="lineno"> 3536</span>                    la_array_size_error)</div>
-<div class="line"><a id="l03537" name="l03537"></a><span class="lineno"> 3537</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03538" name="l03538"></a><span class="lineno"> 3538</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03539" name="l03539"></a><span class="lineno"> 3539</span>            wptr =&gt; work(1:lwork)</div>
-<div class="line"><a id="l03540" name="l03540"></a><span class="lineno"> 3540</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03541" name="l03541"></a><span class="lineno"> 3541</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
-<div class="line"><a id="l03542" name="l03542"></a><span class="lineno"> 3542</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l03543" name="l03543"></a><span class="lineno"> 3543</span>                <span class="comment">! ERROR: Out of memory</span></div>
-<div class="line"><a id="l03544" name="l03544"></a><span class="lineno"> 3544</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, &amp;</div>
-<div class="line"><a id="l03545" name="l03545"></a><span class="lineno"> 3545</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
-<div class="line"><a id="l03546" name="l03546"></a><span class="lineno"> 3546</span>                    la_out_of_memory_error)</div>
-<div class="line"><a id="l03547" name="l03547"></a><span class="lineno"> 3547</span>                <span class="keywordflow">return</span></div>
-<div class="line"><a id="l03548" name="l03548"></a><span class="lineno"> 3548</span><span class="keywordflow">            end if</span></div>
-<div class="line"><a id="l03549" name="l03549"></a><span class="lineno"> 3549</span>            wptr =&gt; wrk</div>
-<div class="line"><a id="l03550" name="l03550"></a><span class="lineno"> 3550</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l03551" name="l03551"></a><span class="lineno"> 3551</span> </div>
-<div class="line"><a id="l03552" name="l03552"></a><span class="lineno"> 3552</span>        <span class="comment">! Call ZUNMLQ</span></div>
-<div class="line"><a id="l03553" name="l03553"></a><span class="lineno"> 3553</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, m, tau, c, m, wptr, lwork, flag)</div>
-<div class="line"><a id="l03554" name="l03554"></a><span class="lineno"> 3554</span> </div>
-<div class="line"><a id="l03555" name="l03555"></a><span class="lineno"> 3555</span>        <span class="comment">! Formatting</span></div>
-<div class="line"><a id="l03556" name="l03556"></a><span class="lineno"> 3556</span>100     <span class="keyword">format</span>(a, i0, a)</div>
-<div class="line"><a id="l03557" name="l03557"></a><span class="lineno"> 3557</span>    <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l03558" name="l03558"></a><span class="lineno"> 3558</span> </div>
-<div class="line"><a id="l03559" name="l03559"></a><span class="lineno"> 3559</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l03560" name="l03560"></a><span class="lineno"> 3560</span><span class="keyword">end </span>submodule</div>
+<div class="line"><a id="l03031" name="l03031"></a><span class="lineno"> 3031</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03032" name="l03032"></a><span class="lineno"> 3032</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03033" name="l03033"></a><span class="lineno"> 3033</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03034" name="l03034"></a><span class="lineno"> 3034</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03035" name="l03035"></a><span class="lineno"> 3035</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03036" name="l03036"></a><span class="lineno"> 3036</span> </div>
+<div class="line"><a id="l03037" name="l03037"></a><span class="lineno"> 3037</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03038" name="l03038"></a><span class="lineno"> 3038</span>        flag = 0</div>
+<div class="line"><a id="l03039" name="l03039"></a><span class="lineno"> 3039</span>        <span class="keywordflow">if</span> (m &gt; n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03040" name="l03040"></a><span class="lineno"> 3040</span>            flag = 1</div>
+<div class="line"><a id="l03041" name="l03041"></a><span class="lineno"> 3041</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(tau) /= mn) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03042" name="l03042"></a><span class="lineno"> 3042</span>            flag = 2</div>
+<div class="line"><a id="l03043" name="l03043"></a><span class="lineno"> 3043</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(q, 1) /= n .or. <span class="keyword">size</span>(q, 2) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03044" name="l03044"></a><span class="lineno"> 3044</span>            flag = 3</div>
+<div class="line"><a id="l03045" name="l03045"></a><span class="lineno"> 3045</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03046" name="l03046"></a><span class="lineno"> 3046</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03047" name="l03047"></a><span class="lineno"> 3047</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03048" name="l03048"></a><span class="lineno"> 3048</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03049" name="l03049"></a><span class="lineno"> 3049</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03050" name="l03050"></a><span class="lineno"> 3050</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03051" name="l03051"></a><span class="lineno"> 3051</span>                la_array_size_error)</div>
+<div class="line"><a id="l03052" name="l03052"></a><span class="lineno"> 3052</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03053" name="l03053"></a><span class="lineno"> 3053</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03054" name="l03054"></a><span class="lineno"> 3054</span> </div>
+<div class="line"><a id="l03055" name="l03055"></a><span class="lineno"> 3055</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03056" name="l03056"></a><span class="lineno"> 3056</span>        <span class="keyword">call </span>dorglq(n, n, mn, q, n, tau, temp, -1, flag)</div>
+<div class="line"><a id="l03057" name="l03057"></a><span class="lineno"> 3057</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03058" name="l03058"></a><span class="lineno"> 3058</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03059" name="l03059"></a><span class="lineno"> 3059</span>            olwork = lwork</div>
+<div class="line"><a id="l03060" name="l03060"></a><span class="lineno"> 3060</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03061" name="l03061"></a><span class="lineno"> 3061</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03062" name="l03062"></a><span class="lineno"> 3062</span> </div>
+<div class="line"><a id="l03063" name="l03063"></a><span class="lineno"> 3063</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03064" name="l03064"></a><span class="lineno"> 3064</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03065" name="l03065"></a><span class="lineno"> 3065</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03066" name="l03066"></a><span class="lineno"> 3066</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03067" name="l03067"></a><span class="lineno"> 3067</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, &amp;</div>
+<div class="line"><a id="l03068" name="l03068"></a><span class="lineno"> 3068</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 4.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03069" name="l03069"></a><span class="lineno"> 3069</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03070" name="l03070"></a><span class="lineno"> 3070</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03071" name="l03071"></a><span class="lineno"> 3071</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03072" name="l03072"></a><span class="lineno"> 3072</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03073" name="l03073"></a><span class="lineno"> 3073</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03074" name="l03074"></a><span class="lineno"> 3074</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03075" name="l03075"></a><span class="lineno"> 3075</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03076" name="l03076"></a><span class="lineno"> 3076</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03077" name="l03077"></a><span class="lineno"> 3077</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot&quot;</span>, &amp;</div>
+<div class="line"><a id="l03078" name="l03078"></a><span class="lineno"> 3078</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03079" name="l03079"></a><span class="lineno"> 3079</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03080" name="l03080"></a><span class="lineno"> 3080</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03081" name="l03081"></a><span class="lineno"> 3081</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03082" name="l03082"></a><span class="lineno"> 3082</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03083" name="l03083"></a><span class="lineno"> 3083</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03084" name="l03084"></a><span class="lineno"> 3084</span> </div>
+<div class="line"><a id="l03085" name="l03085"></a><span class="lineno"> 3085</span>        <span class="comment">! Copy the upper triangular portion of L to Q, and then zero it out in L</span></div>
+<div class="line"><a id="l03086" name="l03086"></a><span class="lineno"> 3086</span>        <span class="keywordflow">do</span> j = 2, n</div>
+<div class="line"><a id="l03087" name="l03087"></a><span class="lineno"> 3087</span>            k = min(j - 1, m)</div>
+<div class="line"><a id="l03088" name="l03088"></a><span class="lineno"> 3088</span>            q(1:j-1,j) = l(1:k,j)</div>
+<div class="line"><a id="l03089" name="l03089"></a><span class="lineno"> 3089</span>            l(1:k,j) = zero</div>
+<div class="line"><a id="l03090" name="l03090"></a><span class="lineno"> 3090</span><span class="keywordflow">        end do</span></div>
+<div class="line"><a id="l03091" name="l03091"></a><span class="lineno"> 3091</span> </div>
+<div class="line"><a id="l03092" name="l03092"></a><span class="lineno"> 3092</span>        <span class="comment">! Build Q</span></div>
+<div class="line"><a id="l03093" name="l03093"></a><span class="lineno"> 3093</span>        <span class="keyword">call </span>dorglq(n, n, mn, q, n, tau, wptr, lwork, flag)</div>
+<div class="line"><a id="l03094" name="l03094"></a><span class="lineno"> 3094</span> </div>
+<div class="line"><a id="l03095" name="l03095"></a><span class="lineno"> 3095</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03096" name="l03096"></a><span class="lineno"> 3096</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03097" name="l03097"></a><span class="lineno"> 3097</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03098" name="l03098"></a><span class="lineno"> 3098</span> </div>
+<div class="line"><a id="l03099" name="l03099"></a><span class="lineno"> 3099</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03100" name="l03100"></a><span class="lineno"> 3100</span>    <span class="keyword">module</span> subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)</div>
+<div class="line"><a id="l03101" name="l03101"></a><span class="lineno"> 3101</span>        <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l03102" name="l03102"></a><span class="lineno"> 3102</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: l</div>
+<div class="line"><a id="l03103" name="l03103"></a><span class="lineno"> 3103</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
+<div class="line"><a id="l03104" name="l03104"></a><span class="lineno"> 3104</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:,:)</span> :: q</div>
+<div class="line"><a id="l03105" name="l03105"></a><span class="lineno"> 3105</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
+<div class="line"><a id="l03106" name="l03106"></a><span class="lineno"> 3106</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
+<div class="line"><a id="l03107" name="l03107"></a><span class="lineno"> 3107</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l03108" name="l03108"></a><span class="lineno"> 3108</span> </div>
+<div class="line"><a id="l03109" name="l03109"></a><span class="lineno"> 3109</span>        <span class="comment">! Parameters</span></div>
+<div class="line"><a id="l03110" name="l03110"></a><span class="lineno"> 3110</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">parameter</span> :: zero = (0.0d0, 0.0d0)</div>
+<div class="line"><a id="l03111" name="l03111"></a><span class="lineno"> 3111</span> </div>
+<div class="line"><a id="l03112" name="l03112"></a><span class="lineno"> 3112</span>        <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l03113" name="l03113"></a><span class="lineno"> 3113</span>        <span class="keywordtype">integer(int32)</span> :: i, m, n, mn, k, istat, flag, lwork</div>
+<div class="line"><a id="l03114" name="l03114"></a><span class="lineno"> 3114</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
+<div class="line"><a id="l03115" name="l03115"></a><span class="lineno"> 3115</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
+<div class="line"><a id="l03116" name="l03116"></a><span class="lineno"> 3116</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
+<div class="line"><a id="l03117" name="l03117"></a><span class="lineno"> 3117</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l03118" name="l03118"></a><span class="lineno"> 3118</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l03119" name="l03119"></a><span class="lineno"> 3119</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
+<div class="line"><a id="l03120" name="l03120"></a><span class="lineno"> 3120</span> </div>
+<div class="line"><a id="l03121" name="l03121"></a><span class="lineno"> 3121</span>        <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l03122" name="l03122"></a><span class="lineno"> 3122</span>        m = <span class="keyword">size</span>(l, 1)</div>
+<div class="line"><a id="l03123" name="l03123"></a><span class="lineno"> 3123</span>        n = <span class="keyword">size</span>(l, 2)</div>
+<div class="line"><a id="l03124" name="l03124"></a><span class="lineno"> 3124</span>        mn = min(m, n)</div>
+<div class="line"><a id="l03125" name="l03125"></a><span class="lineno"> 3125</span>        qcol = <span class="keyword">size</span>(q, 2)</div>
+<div class="line"><a id="l03126" name="l03126"></a><span class="lineno"> 3126</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03127" name="l03127"></a><span class="lineno"> 3127</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03128" name="l03128"></a><span class="lineno"> 3128</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03129" name="l03129"></a><span class="lineno"> 3129</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03130" name="l03130"></a><span class="lineno"> 3130</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03131" name="l03131"></a><span class="lineno"> 3131</span> </div>
+<div class="line"><a id="l03132" name="l03132"></a><span class="lineno"> 3132</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03133" name="l03133"></a><span class="lineno"> 3133</span>        flag = 0</div>
+<div class="line"><a id="l03134" name="l03134"></a><span class="lineno"> 3134</span>        <span class="keywordflow">if</span> (m &gt; n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03135" name="l03135"></a><span class="lineno"> 3135</span>            flag = 1</div>
+<div class="line"><a id="l03136" name="l03136"></a><span class="lineno"> 3136</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(tau) /= mn) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03137" name="l03137"></a><span class="lineno"> 3137</span>            flag = 2</div>
+<div class="line"><a id="l03138" name="l03138"></a><span class="lineno"> 3138</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">size</span>(q, 1) /= m .or. <span class="keyword">size</span>(q, 2) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03139" name="l03139"></a><span class="lineno"> 3139</span>            flag = 3</div>
+<div class="line"><a id="l03140" name="l03140"></a><span class="lineno"> 3140</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03141" name="l03141"></a><span class="lineno"> 3141</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03142" name="l03142"></a><span class="lineno"> 3142</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03143" name="l03143"></a><span class="lineno"> 3143</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03144" name="l03144"></a><span class="lineno"> 3144</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03145" name="l03145"></a><span class="lineno"> 3145</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03146" name="l03146"></a><span class="lineno"> 3146</span>                la_array_size_error)</div>
+<div class="line"><a id="l03147" name="l03147"></a><span class="lineno"> 3147</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03148" name="l03148"></a><span class="lineno"> 3148</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03149" name="l03149"></a><span class="lineno"> 3149</span> </div>
+<div class="line"><a id="l03150" name="l03150"></a><span class="lineno"> 3150</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03151" name="l03151"></a><span class="lineno"> 3151</span>        <span class="keyword">call </span>zunglq(n, n, mn, q, n, tau, temp, -1, flag)</div>
+<div class="line"><a id="l03152" name="l03152"></a><span class="lineno"> 3152</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03153" name="l03153"></a><span class="lineno"> 3153</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03154" name="l03154"></a><span class="lineno"> 3154</span>            olwork = lwork</div>
+<div class="line"><a id="l03155" name="l03155"></a><span class="lineno"> 3155</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03156" name="l03156"></a><span class="lineno"> 3156</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03157" name="l03157"></a><span class="lineno"> 3157</span> </div>
+<div class="line"><a id="l03158" name="l03158"></a><span class="lineno"> 3158</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03159" name="l03159"></a><span class="lineno"> 3159</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03160" name="l03160"></a><span class="lineno"> 3160</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03161" name="l03161"></a><span class="lineno"> 3161</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03162" name="l03162"></a><span class="lineno"> 3162</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03163" name="l03163"></a><span class="lineno"> 3163</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 4.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03164" name="l03164"></a><span class="lineno"> 3164</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03165" name="l03165"></a><span class="lineno"> 3165</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03166" name="l03166"></a><span class="lineno"> 3166</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03167" name="l03167"></a><span class="lineno"> 3167</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03168" name="l03168"></a><span class="lineno"> 3168</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03169" name="l03169"></a><span class="lineno"> 3169</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03170" name="l03170"></a><span class="lineno"> 3170</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03171" name="l03171"></a><span class="lineno"> 3171</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03172" name="l03172"></a><span class="lineno"> 3172</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;form_lq_no_pivot_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03173" name="l03173"></a><span class="lineno"> 3173</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03174" name="l03174"></a><span class="lineno"> 3174</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03175" name="l03175"></a><span class="lineno"> 3175</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03176" name="l03176"></a><span class="lineno"> 3176</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03177" name="l03177"></a><span class="lineno"> 3177</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03178" name="l03178"></a><span class="lineno"> 3178</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03179" name="l03179"></a><span class="lineno"> 3179</span> </div>
+<div class="line"><a id="l03180" name="l03180"></a><span class="lineno"> 3180</span>        <span class="comment">! Copy the upper triangular portion of L to Q, and then zero it out in L</span></div>
+<div class="line"><a id="l03181" name="l03181"></a><span class="lineno"> 3181</span>        <span class="keywordflow">do</span> j = 2, n</div>
+<div class="line"><a id="l03182" name="l03182"></a><span class="lineno"> 3182</span>            k = min(j - 1, m)</div>
+<div class="line"><a id="l03183" name="l03183"></a><span class="lineno"> 3183</span>            q(1:j-1,j) = l(1:k,j)</div>
+<div class="line"><a id="l03184" name="l03184"></a><span class="lineno"> 3184</span>            l(1:k,j) = zero</div>
+<div class="line"><a id="l03185" name="l03185"></a><span class="lineno"> 3185</span><span class="keywordflow">        end do</span></div>
+<div class="line"><a id="l03186" name="l03186"></a><span class="lineno"> 3186</span> </div>
+<div class="line"><a id="l03187" name="l03187"></a><span class="lineno"> 3187</span>        <span class="comment">! Build Q</span></div>
+<div class="line"><a id="l03188" name="l03188"></a><span class="lineno"> 3188</span>        <span class="keyword">call </span>zunglq(n, n, mn, q, n, tau, wptr, lwork, flag)</div>
+<div class="line"><a id="l03189" name="l03189"></a><span class="lineno"> 3189</span> </div>
+<div class="line"><a id="l03190" name="l03190"></a><span class="lineno"> 3190</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03191" name="l03191"></a><span class="lineno"> 3191</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03192" name="l03192"></a><span class="lineno"> 3192</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03193" name="l03193"></a><span class="lineno"> 3193</span> </div>
+<div class="line"><a id="l03194" name="l03194"></a><span class="lineno"> 3194</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03195" name="l03195"></a><span class="lineno"> 3195</span>    <span class="keyword">module</span> subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)</div>
+<div class="line"><a id="l03196" name="l03196"></a><span class="lineno"> 3196</span>        <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l03197" name="l03197"></a><span class="lineno"> 3197</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: lside, trans</div>
+<div class="line"><a id="l03198" name="l03198"></a><span class="lineno"> 3198</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
+<div class="line"><a id="l03199" name="l03199"></a><span class="lineno"> 3199</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
+<div class="line"><a id="l03200" name="l03200"></a><span class="lineno"> 3200</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: c</div>
+<div class="line"><a id="l03201" name="l03201"></a><span class="lineno"> 3201</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
+<div class="line"><a id="l03202" name="l03202"></a><span class="lineno"> 3202</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
+<div class="line"><a id="l03203" name="l03203"></a><span class="lineno"> 3203</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l03204" name="l03204"></a><span class="lineno"> 3204</span> </div>
+<div class="line"><a id="l03205" name="l03205"></a><span class="lineno"> 3205</span>        <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l03206" name="l03206"></a><span class="lineno"> 3206</span>        <span class="keywordtype">character</span> :: side, t</div>
+<div class="line"><a id="l03207" name="l03207"></a><span class="lineno"> 3207</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, ncola, istat, flag, lwork</div>
+<div class="line"><a id="l03208" name="l03208"></a><span class="lineno"> 3208</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
+<div class="line"><a id="l03209" name="l03209"></a><span class="lineno"> 3209</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
+<div class="line"><a id="l03210" name="l03210"></a><span class="lineno"> 3210</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">dimension(1)</span> :: temp</div>
+<div class="line"><a id="l03211" name="l03211"></a><span class="lineno"> 3211</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l03212" name="l03212"></a><span class="lineno"> 3212</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l03213" name="l03213"></a><span class="lineno"> 3213</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
+<div class="line"><a id="l03214" name="l03214"></a><span class="lineno"> 3214</span> </div>
+<div class="line"><a id="l03215" name="l03215"></a><span class="lineno"> 3215</span>        <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l03216" name="l03216"></a><span class="lineno"> 3216</span>        m = <span class="keyword">size</span>(c, 1)</div>
+<div class="line"><a id="l03217" name="l03217"></a><span class="lineno"> 3217</span>        n = <span class="keyword">size</span>(c, 2)</div>
+<div class="line"><a id="l03218" name="l03218"></a><span class="lineno"> 3218</span>        k = <span class="keyword">size</span>(tau)</div>
+<div class="line"><a id="l03219" name="l03219"></a><span class="lineno"> 3219</span>        <span class="keywordflow">if</span> (lside) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03220" name="l03220"></a><span class="lineno"> 3220</span>            side = <span class="stringliteral">&#39;L&#39;</span></div>
+<div class="line"><a id="l03221" name="l03221"></a><span class="lineno"> 3221</span>            ncola = m</div>
+<div class="line"><a id="l03222" name="l03222"></a><span class="lineno"> 3222</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03223" name="l03223"></a><span class="lineno"> 3223</span>            side = <span class="stringliteral">&#39;R&#39;</span></div>
+<div class="line"><a id="l03224" name="l03224"></a><span class="lineno"> 3224</span>            ncola = n</div>
+<div class="line"><a id="l03225" name="l03225"></a><span class="lineno"> 3225</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03226" name="l03226"></a><span class="lineno"> 3226</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03227" name="l03227"></a><span class="lineno"> 3227</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
+<div class="line"><a id="l03228" name="l03228"></a><span class="lineno"> 3228</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03229" name="l03229"></a><span class="lineno"> 3229</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
+<div class="line"><a id="l03230" name="l03230"></a><span class="lineno"> 3230</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03231" name="l03231"></a><span class="lineno"> 3231</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03232" name="l03232"></a><span class="lineno"> 3232</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03233" name="l03233"></a><span class="lineno"> 3233</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03234" name="l03234"></a><span class="lineno"> 3234</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03235" name="l03235"></a><span class="lineno"> 3235</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03236" name="l03236"></a><span class="lineno"> 3236</span> </div>
+<div class="line"><a id="l03237" name="l03237"></a><span class="lineno"> 3237</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03238" name="l03238"></a><span class="lineno"> 3238</span>        flag = 0</div>
+<div class="line"><a id="l03239" name="l03239"></a><span class="lineno"> 3239</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= ncola) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03240" name="l03240"></a><span class="lineno"> 3240</span>            flag = 3</div>
+<div class="line"><a id="l03241" name="l03241"></a><span class="lineno"> 3241</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03242" name="l03242"></a><span class="lineno"> 3242</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03243" name="l03243"></a><span class="lineno"> 3243</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03244" name="l03244"></a><span class="lineno"> 3244</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03245" name="l03245"></a><span class="lineno"> 3245</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03246" name="l03246"></a><span class="lineno"> 3246</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03247" name="l03247"></a><span class="lineno"> 3247</span>                la_array_size_error)</div>
+<div class="line"><a id="l03248" name="l03248"></a><span class="lineno"> 3248</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03249" name="l03249"></a><span class="lineno"> 3249</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03250" name="l03250"></a><span class="lineno"> 3250</span> </div>
+<div class="line"><a id="l03251" name="l03251"></a><span class="lineno"> 3251</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03252" name="l03252"></a><span class="lineno"> 3252</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
+<div class="line"><a id="l03253" name="l03253"></a><span class="lineno"> 3253</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03254" name="l03254"></a><span class="lineno"> 3254</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03255" name="l03255"></a><span class="lineno"> 3255</span>            olwork = lwork</div>
+<div class="line"><a id="l03256" name="l03256"></a><span class="lineno"> 3256</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03257" name="l03257"></a><span class="lineno"> 3257</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03258" name="l03258"></a><span class="lineno"> 3258</span> </div>
+<div class="line"><a id="l03259" name="l03259"></a><span class="lineno"> 3259</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03260" name="l03260"></a><span class="lineno"> 3260</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03261" name="l03261"></a><span class="lineno"> 3261</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03262" name="l03262"></a><span class="lineno"> 3262</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03263" name="l03263"></a><span class="lineno"> 3263</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03264" name="l03264"></a><span class="lineno"> 3264</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03265" name="l03265"></a><span class="lineno"> 3265</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03266" name="l03266"></a><span class="lineno"> 3266</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03267" name="l03267"></a><span class="lineno"> 3267</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03268" name="l03268"></a><span class="lineno"> 3268</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03269" name="l03269"></a><span class="lineno"> 3269</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03270" name="l03270"></a><span class="lineno"> 3270</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03271" name="l03271"></a><span class="lineno"> 3271</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03272" name="l03272"></a><span class="lineno"> 3272</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03273" name="l03273"></a><span class="lineno"> 3273</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03274" name="l03274"></a><span class="lineno"> 3274</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03275" name="l03275"></a><span class="lineno"> 3275</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03276" name="l03276"></a><span class="lineno"> 3276</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03277" name="l03277"></a><span class="lineno"> 3277</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03278" name="l03278"></a><span class="lineno"> 3278</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03279" name="l03279"></a><span class="lineno"> 3279</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03280" name="l03280"></a><span class="lineno"> 3280</span> </div>
+<div class="line"><a id="l03281" name="l03281"></a><span class="lineno"> 3281</span>        <span class="comment">! Call DORMLQ</span></div>
+<div class="line"><a id="l03282" name="l03282"></a><span class="lineno"> 3282</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
+<div class="line"><a id="l03283" name="l03283"></a><span class="lineno"> 3283</span> </div>
+<div class="line"><a id="l03284" name="l03284"></a><span class="lineno"> 3284</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03285" name="l03285"></a><span class="lineno"> 3285</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03286" name="l03286"></a><span class="lineno"> 3286</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03287" name="l03287"></a><span class="lineno"> 3287</span> </div>
+<div class="line"><a id="l03288" name="l03288"></a><span class="lineno"> 3288</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03289" name="l03289"></a><span class="lineno"> 3289</span>    <span class="keyword">module</span> subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)</div>
+<div class="line"><a id="l03290" name="l03290"></a><span class="lineno"> 3290</span>        <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l03291" name="l03291"></a><span class="lineno"> 3291</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: lside, trans</div>
+<div class="line"><a id="l03292" name="l03292"></a><span class="lineno"> 3292</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
+<div class="line"><a id="l03293" name="l03293"></a><span class="lineno"> 3293</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
+<div class="line"><a id="l03294" name="l03294"></a><span class="lineno"> 3294</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:,:)</span> :: c</div>
+<div class="line"><a id="l03295" name="l03295"></a><span class="lineno"> 3295</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
+<div class="line"><a id="l03296" name="l03296"></a><span class="lineno"> 3296</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
+<div class="line"><a id="l03297" name="l03297"></a><span class="lineno"> 3297</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l03298" name="l03298"></a><span class="lineno"> 3298</span> </div>
+<div class="line"><a id="l03299" name="l03299"></a><span class="lineno"> 3299</span>        <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l03300" name="l03300"></a><span class="lineno"> 3300</span>        <span class="keywordtype">character</span> :: side, t</div>
+<div class="line"><a id="l03301" name="l03301"></a><span class="lineno"> 3301</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, ncola, istat, flag, lwork</div>
+<div class="line"><a id="l03302" name="l03302"></a><span class="lineno"> 3302</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
+<div class="line"><a id="l03303" name="l03303"></a><span class="lineno"> 3303</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
+<div class="line"><a id="l03304" name="l03304"></a><span class="lineno"> 3304</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
+<div class="line"><a id="l03305" name="l03305"></a><span class="lineno"> 3305</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l03306" name="l03306"></a><span class="lineno"> 3306</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l03307" name="l03307"></a><span class="lineno"> 3307</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
+<div class="line"><a id="l03308" name="l03308"></a><span class="lineno"> 3308</span> </div>
+<div class="line"><a id="l03309" name="l03309"></a><span class="lineno"> 3309</span>        <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l03310" name="l03310"></a><span class="lineno"> 3310</span>        m = <span class="keyword">size</span>(c, 1)</div>
+<div class="line"><a id="l03311" name="l03311"></a><span class="lineno"> 3311</span>        n = <span class="keyword">size</span>(c, 2)</div>
+<div class="line"><a id="l03312" name="l03312"></a><span class="lineno"> 3312</span>        k = <span class="keyword">size</span>(tau)</div>
+<div class="line"><a id="l03313" name="l03313"></a><span class="lineno"> 3313</span>        <span class="keywordflow">if</span> (lside) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03314" name="l03314"></a><span class="lineno"> 3314</span>            side = <span class="stringliteral">&#39;L&#39;</span></div>
+<div class="line"><a id="l03315" name="l03315"></a><span class="lineno"> 3315</span>            ncola = m</div>
+<div class="line"><a id="l03316" name="l03316"></a><span class="lineno"> 3316</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03317" name="l03317"></a><span class="lineno"> 3317</span>            side = <span class="stringliteral">&#39;R&#39;</span></div>
+<div class="line"><a id="l03318" name="l03318"></a><span class="lineno"> 3318</span>            ncola = n</div>
+<div class="line"><a id="l03319" name="l03319"></a><span class="lineno"> 3319</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03320" name="l03320"></a><span class="lineno"> 3320</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03321" name="l03321"></a><span class="lineno"> 3321</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
+<div class="line"><a id="l03322" name="l03322"></a><span class="lineno"> 3322</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03323" name="l03323"></a><span class="lineno"> 3323</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
+<div class="line"><a id="l03324" name="l03324"></a><span class="lineno"> 3324</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03325" name="l03325"></a><span class="lineno"> 3325</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03326" name="l03326"></a><span class="lineno"> 3326</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03327" name="l03327"></a><span class="lineno"> 3327</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03328" name="l03328"></a><span class="lineno"> 3328</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03329" name="l03329"></a><span class="lineno"> 3329</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03330" name="l03330"></a><span class="lineno"> 3330</span> </div>
+<div class="line"><a id="l03331" name="l03331"></a><span class="lineno"> 3331</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03332" name="l03332"></a><span class="lineno"> 3332</span>        flag = 0</div>
+<div class="line"><a id="l03333" name="l03333"></a><span class="lineno"> 3333</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= ncola) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03334" name="l03334"></a><span class="lineno"> 3334</span>            flag = 3</div>
+<div class="line"><a id="l03335" name="l03335"></a><span class="lineno"> 3335</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03336" name="l03336"></a><span class="lineno"> 3336</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03337" name="l03337"></a><span class="lineno"> 3337</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03338" name="l03338"></a><span class="lineno"> 3338</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03339" name="l03339"></a><span class="lineno"> 3339</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03340" name="l03340"></a><span class="lineno"> 3340</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03341" name="l03341"></a><span class="lineno"> 3341</span>                la_array_size_error)</div>
+<div class="line"><a id="l03342" name="l03342"></a><span class="lineno"> 3342</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03343" name="l03343"></a><span class="lineno"> 3343</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03344" name="l03344"></a><span class="lineno"> 3344</span> </div>
+<div class="line"><a id="l03345" name="l03345"></a><span class="lineno"> 3345</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03346" name="l03346"></a><span class="lineno"> 3346</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
+<div class="line"><a id="l03347" name="l03347"></a><span class="lineno"> 3347</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03348" name="l03348"></a><span class="lineno"> 3348</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03349" name="l03349"></a><span class="lineno"> 3349</span>            olwork = lwork</div>
+<div class="line"><a id="l03350" name="l03350"></a><span class="lineno"> 3350</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03351" name="l03351"></a><span class="lineno"> 3351</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03352" name="l03352"></a><span class="lineno"> 3352</span> </div>
+<div class="line"><a id="l03353" name="l03353"></a><span class="lineno"> 3353</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03354" name="l03354"></a><span class="lineno"> 3354</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03355" name="l03355"></a><span class="lineno"> 3355</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03356" name="l03356"></a><span class="lineno"> 3356</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03357" name="l03357"></a><span class="lineno"> 3357</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03358" name="l03358"></a><span class="lineno"> 3358</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03359" name="l03359"></a><span class="lineno"> 3359</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03360" name="l03360"></a><span class="lineno"> 3360</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03361" name="l03361"></a><span class="lineno"> 3361</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03362" name="l03362"></a><span class="lineno"> 3362</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03363" name="l03363"></a><span class="lineno"> 3363</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03364" name="l03364"></a><span class="lineno"> 3364</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03365" name="l03365"></a><span class="lineno"> 3365</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03366" name="l03366"></a><span class="lineno"> 3366</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03367" name="l03367"></a><span class="lineno"> 3367</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_mtx_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03368" name="l03368"></a><span class="lineno"> 3368</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03369" name="l03369"></a><span class="lineno"> 3369</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03370" name="l03370"></a><span class="lineno"> 3370</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03371" name="l03371"></a><span class="lineno"> 3371</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03372" name="l03372"></a><span class="lineno"> 3372</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03373" name="l03373"></a><span class="lineno"> 3373</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03374" name="l03374"></a><span class="lineno"> 3374</span> </div>
+<div class="line"><a id="l03375" name="l03375"></a><span class="lineno"> 3375</span>        <span class="comment">! Call ZUNMLQ</span></div>
+<div class="line"><a id="l03376" name="l03376"></a><span class="lineno"> 3376</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
+<div class="line"><a id="l03377" name="l03377"></a><span class="lineno"> 3377</span> </div>
+<div class="line"><a id="l03378" name="l03378"></a><span class="lineno"> 3378</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03379" name="l03379"></a><span class="lineno"> 3379</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03380" name="l03380"></a><span class="lineno"> 3380</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03381" name="l03381"></a><span class="lineno"> 3381</span> </div>
+<div class="line"><a id="l03382" name="l03382"></a><span class="lineno"> 3382</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03383" name="l03383"></a><span class="lineno"> 3383</span>    <span class="keyword">module</span> subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)</div>
+<div class="line"><a id="l03384" name="l03384"></a><span class="lineno"> 3384</span>        <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l03385" name="l03385"></a><span class="lineno"> 3385</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: trans</div>
+<div class="line"><a id="l03386" name="l03386"></a><span class="lineno"> 3386</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
+<div class="line"><a id="l03387" name="l03387"></a><span class="lineno"> 3387</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
+<div class="line"><a id="l03388" name="l03388"></a><span class="lineno"> 3388</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: c</div>
+<div class="line"><a id="l03389" name="l03389"></a><span class="lineno"> 3389</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
+<div class="line"><a id="l03390" name="l03390"></a><span class="lineno"> 3390</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
+<div class="line"><a id="l03391" name="l03391"></a><span class="lineno"> 3391</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l03392" name="l03392"></a><span class="lineno"> 3392</span> </div>
+<div class="line"><a id="l03393" name="l03393"></a><span class="lineno"> 3393</span>        <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l03394" name="l03394"></a><span class="lineno"> 3394</span>        <span class="keywordtype">character</span> :: side, t</div>
+<div class="line"><a id="l03395" name="l03395"></a><span class="lineno"> 3395</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, istat, flag, lwork</div>
+<div class="line"><a id="l03396" name="l03396"></a><span class="lineno"> 3396</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
+<div class="line"><a id="l03397" name="l03397"></a><span class="lineno"> 3397</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
+<div class="line"><a id="l03398" name="l03398"></a><span class="lineno"> 3398</span><span class="keywordtype">        real</span>(real64), <span class="keywordtype">dimension(1)</span> :: temp</div>
+<div class="line"><a id="l03399" name="l03399"></a><span class="lineno"> 3399</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l03400" name="l03400"></a><span class="lineno"> 3400</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l03401" name="l03401"></a><span class="lineno"> 3401</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
+<div class="line"><a id="l03402" name="l03402"></a><span class="lineno"> 3402</span> </div>
+<div class="line"><a id="l03403" name="l03403"></a><span class="lineno"> 3403</span>        <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l03404" name="l03404"></a><span class="lineno"> 3404</span>        m = <span class="keyword">size</span>(c)</div>
+<div class="line"><a id="l03405" name="l03405"></a><span class="lineno"> 3405</span>        n = 1</div>
+<div class="line"><a id="l03406" name="l03406"></a><span class="lineno"> 3406</span>        k = <span class="keyword">size</span>(tau)</div>
+<div class="line"><a id="l03407" name="l03407"></a><span class="lineno"> 3407</span>        side = <span class="stringliteral">&#39;L&#39;</span></div>
+<div class="line"><a id="l03408" name="l03408"></a><span class="lineno"> 3408</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03409" name="l03409"></a><span class="lineno"> 3409</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
+<div class="line"><a id="l03410" name="l03410"></a><span class="lineno"> 3410</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03411" name="l03411"></a><span class="lineno"> 3411</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
+<div class="line"><a id="l03412" name="l03412"></a><span class="lineno"> 3412</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03413" name="l03413"></a><span class="lineno"> 3413</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03414" name="l03414"></a><span class="lineno"> 3414</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03415" name="l03415"></a><span class="lineno"> 3415</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03416" name="l03416"></a><span class="lineno"> 3416</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03417" name="l03417"></a><span class="lineno"> 3417</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03418" name="l03418"></a><span class="lineno"> 3418</span> </div>
+<div class="line"><a id="l03419" name="l03419"></a><span class="lineno"> 3419</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03420" name="l03420"></a><span class="lineno"> 3420</span>        flag = 0</div>
+<div class="line"><a id="l03421" name="l03421"></a><span class="lineno"> 3421</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03422" name="l03422"></a><span class="lineno"> 3422</span>            flag = 3</div>
+<div class="line"><a id="l03423" name="l03423"></a><span class="lineno"> 3423</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03424" name="l03424"></a><span class="lineno"> 3424</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03425" name="l03425"></a><span class="lineno"> 3425</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03426" name="l03426"></a><span class="lineno"> 3426</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03427" name="l03427"></a><span class="lineno"> 3427</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03428" name="l03428"></a><span class="lineno"> 3428</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03429" name="l03429"></a><span class="lineno"> 3429</span>                la_array_size_error)</div>
+<div class="line"><a id="l03430" name="l03430"></a><span class="lineno"> 3430</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03431" name="l03431"></a><span class="lineno"> 3431</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03432" name="l03432"></a><span class="lineno"> 3432</span> </div>
+<div class="line"><a id="l03433" name="l03433"></a><span class="lineno"> 3433</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03434" name="l03434"></a><span class="lineno"> 3434</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
+<div class="line"><a id="l03435" name="l03435"></a><span class="lineno"> 3435</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03436" name="l03436"></a><span class="lineno"> 3436</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03437" name="l03437"></a><span class="lineno"> 3437</span>            olwork = lwork</div>
+<div class="line"><a id="l03438" name="l03438"></a><span class="lineno"> 3438</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03439" name="l03439"></a><span class="lineno"> 3439</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03440" name="l03440"></a><span class="lineno"> 3440</span> </div>
+<div class="line"><a id="l03441" name="l03441"></a><span class="lineno"> 3441</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03442" name="l03442"></a><span class="lineno"> 3442</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03443" name="l03443"></a><span class="lineno"> 3443</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03444" name="l03444"></a><span class="lineno"> 3444</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03445" name="l03445"></a><span class="lineno"> 3445</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, &amp;</div>
+<div class="line"><a id="l03446" name="l03446"></a><span class="lineno"> 3446</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03447" name="l03447"></a><span class="lineno"> 3447</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03448" name="l03448"></a><span class="lineno"> 3448</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03449" name="l03449"></a><span class="lineno"> 3449</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03450" name="l03450"></a><span class="lineno"> 3450</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03451" name="l03451"></a><span class="lineno"> 3451</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03452" name="l03452"></a><span class="lineno"> 3452</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03453" name="l03453"></a><span class="lineno"> 3453</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03454" name="l03454"></a><span class="lineno"> 3454</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03455" name="l03455"></a><span class="lineno"> 3455</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec&quot;</span>, &amp;</div>
+<div class="line"><a id="l03456" name="l03456"></a><span class="lineno"> 3456</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03457" name="l03457"></a><span class="lineno"> 3457</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03458" name="l03458"></a><span class="lineno"> 3458</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03459" name="l03459"></a><span class="lineno"> 3459</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03460" name="l03460"></a><span class="lineno"> 3460</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03461" name="l03461"></a><span class="lineno"> 3461</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03462" name="l03462"></a><span class="lineno"> 3462</span> </div>
+<div class="line"><a id="l03463" name="l03463"></a><span class="lineno"> 3463</span>        <span class="comment">! Call DORMLQ</span></div>
+<div class="line"><a id="l03464" name="l03464"></a><span class="lineno"> 3464</span>        <span class="keyword">call </span>dormlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
+<div class="line"><a id="l03465" name="l03465"></a><span class="lineno"> 3465</span> </div>
+<div class="line"><a id="l03466" name="l03466"></a><span class="lineno"> 3466</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03467" name="l03467"></a><span class="lineno"> 3467</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03468" name="l03468"></a><span class="lineno"> 3468</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03469" name="l03469"></a><span class="lineno"> 3469</span> </div>
+<div class="line"><a id="l03470" name="l03470"></a><span class="lineno"> 3470</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03471" name="l03471"></a><span class="lineno"> 3471</span>    <span class="keyword">module</span> subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)</div>
+<div class="line"><a id="l03472" name="l03472"></a><span class="lineno"> 3472</span>        <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l03473" name="l03473"></a><span class="lineno"> 3473</span>        <span class="keywordtype">logical</span>, <span class="keywordtype">intent(in)</span> :: trans</div>
+<div class="line"><a id="l03474" name="l03474"></a><span class="lineno"> 3474</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:,:)</span> :: a</div>
+<div class="line"><a id="l03475" name="l03475"></a><span class="lineno"> 3475</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: tau</div>
+<div class="line"><a id="l03476" name="l03476"></a><span class="lineno"> 3476</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: c</div>
+<div class="line"><a id="l03477" name="l03477"></a><span class="lineno"> 3477</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span>, <span class="keywordtype">optional</span> :: work</div>
+<div class="line"><a id="l03478" name="l03478"></a><span class="lineno"> 3478</span>        <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">optional</span> :: olwork</div>
+<div class="line"><a id="l03479" name="l03479"></a><span class="lineno"> 3479</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l03480" name="l03480"></a><span class="lineno"> 3480</span> </div>
+<div class="line"><a id="l03481" name="l03481"></a><span class="lineno"> 3481</span>        <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l03482" name="l03482"></a><span class="lineno"> 3482</span>        <span class="keywordtype">character</span> :: side, t</div>
+<div class="line"><a id="l03483" name="l03483"></a><span class="lineno"> 3483</span>        <span class="keywordtype">integer(int32)</span> :: m, n, k, istat, flag, lwork</div>
+<div class="line"><a id="l03484" name="l03484"></a><span class="lineno"> 3484</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">pointer</span>, <span class="keywordtype">dimension(:)</span> :: wptr</div>
+<div class="line"><a id="l03485" name="l03485"></a><span class="lineno"> 3485</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">target</span>, <span class="keywordtype">dimension(:)</span> :: wrk</div>
+<div class="line"><a id="l03486" name="l03486"></a><span class="lineno"> 3486</span>        <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">dimension(1)</span> :: temp</div>
+<div class="line"><a id="l03487" name="l03487"></a><span class="lineno"> 3487</span>        <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l03488" name="l03488"></a><span class="lineno"> 3488</span>        <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l03489" name="l03489"></a><span class="lineno"> 3489</span>        <span class="keywordtype">character(len = 128)</span> :: errmsg</div>
+<div class="line"><a id="l03490" name="l03490"></a><span class="lineno"> 3490</span> </div>
+<div class="line"><a id="l03491" name="l03491"></a><span class="lineno"> 3491</span>        <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l03492" name="l03492"></a><span class="lineno"> 3492</span>        m = <span class="keyword">size</span>(c)</div>
+<div class="line"><a id="l03493" name="l03493"></a><span class="lineno"> 3493</span>        n = 1</div>
+<div class="line"><a id="l03494" name="l03494"></a><span class="lineno"> 3494</span>        k = <span class="keyword">size</span>(tau)</div>
+<div class="line"><a id="l03495" name="l03495"></a><span class="lineno"> 3495</span>        side = <span class="stringliteral">&#39;L&#39;</span></div>
+<div class="line"><a id="l03496" name="l03496"></a><span class="lineno"> 3496</span>        <span class="keywordflow">if</span> (trans) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03497" name="l03497"></a><span class="lineno"> 3497</span>            t = <span class="stringliteral">&#39;T&#39;</span></div>
+<div class="line"><a id="l03498" name="l03498"></a><span class="lineno"> 3498</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03499" name="l03499"></a><span class="lineno"> 3499</span>            t = <span class="stringliteral">&#39;N&#39;</span></div>
+<div class="line"><a id="l03500" name="l03500"></a><span class="lineno"> 3500</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03501" name="l03501"></a><span class="lineno"> 3501</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03502" name="l03502"></a><span class="lineno"> 3502</span>            errmgr =&gt; err</div>
+<div class="line"><a id="l03503" name="l03503"></a><span class="lineno"> 3503</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03504" name="l03504"></a><span class="lineno"> 3504</span>            errmgr =&gt; deferr</div>
+<div class="line"><a id="l03505" name="l03505"></a><span class="lineno"> 3505</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03506" name="l03506"></a><span class="lineno"> 3506</span> </div>
+<div class="line"><a id="l03507" name="l03507"></a><span class="lineno"> 3507</span>        <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l03508" name="l03508"></a><span class="lineno"> 3508</span>        flag = 0</div>
+<div class="line"><a id="l03509" name="l03509"></a><span class="lineno"> 3509</span>        <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 1) /= k .or. <span class="keyword">size</span>(a, 2) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03510" name="l03510"></a><span class="lineno"> 3510</span>            flag = 3</div>
+<div class="line"><a id="l03511" name="l03511"></a><span class="lineno"> 3511</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03512" name="l03512"></a><span class="lineno"> 3512</span>        <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03513" name="l03513"></a><span class="lineno"> 3513</span>            <span class="comment">! ERROR: One of the input arrays is not sized correctly</span></div>
+<div class="line"><a id="l03514" name="l03514"></a><span class="lineno"> 3514</span>            <span class="keyword">write</span>(errmsg, 100) <span class="stringliteral">&quot;Input number &quot;</span>, flag, &amp;</div>
+<div class="line"><a id="l03515" name="l03515"></a><span class="lineno"> 3515</span>                <span class="stringliteral">&quot; is not sized correctly.&quot;</span></div>
+<div class="line"><a id="l03516" name="l03516"></a><span class="lineno"> 3516</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, trim(errmsg), &amp;</div>
+<div class="line"><a id="l03517" name="l03517"></a><span class="lineno"> 3517</span>                la_array_size_error)</div>
+<div class="line"><a id="l03518" name="l03518"></a><span class="lineno"> 3518</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03519" name="l03519"></a><span class="lineno"> 3519</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03520" name="l03520"></a><span class="lineno"> 3520</span> </div>
+<div class="line"><a id="l03521" name="l03521"></a><span class="lineno"> 3521</span>        <span class="comment">! Workspace Query</span></div>
+<div class="line"><a id="l03522" name="l03522"></a><span class="lineno"> 3522</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)</div>
+<div class="line"><a id="l03523" name="l03523"></a><span class="lineno"> 3523</span>        lwork = int(temp(1), int32)</div>
+<div class="line"><a id="l03524" name="l03524"></a><span class="lineno"> 3524</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(olwork)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03525" name="l03525"></a><span class="lineno"> 3525</span>            olwork = lwork</div>
+<div class="line"><a id="l03526" name="l03526"></a><span class="lineno"> 3526</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03527" name="l03527"></a><span class="lineno"> 3527</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03528" name="l03528"></a><span class="lineno"> 3528</span> </div>
+<div class="line"><a id="l03529" name="l03529"></a><span class="lineno"> 3529</span>        <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l03530" name="l03530"></a><span class="lineno"> 3530</span>        <span class="keywordflow">if</span> (<span class="keyword">present</span>(work)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03531" name="l03531"></a><span class="lineno"> 3531</span>            <span class="keywordflow">if</span> (<span class="keyword">size</span>(work) &lt; lwork) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03532" name="l03532"></a><span class="lineno"> 3532</span>                <span class="comment">! ERROR: WORK not sized correctly</span></div>
+<div class="line"><a id="l03533" name="l03533"></a><span class="lineno"> 3533</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03534" name="l03534"></a><span class="lineno"> 3534</span>                    <span class="stringliteral">&quot;Incorrectly sized input array WORK, argument 6.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03535" name="l03535"></a><span class="lineno"> 3535</span>                    la_array_size_error)</div>
+<div class="line"><a id="l03536" name="l03536"></a><span class="lineno"> 3536</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03537" name="l03537"></a><span class="lineno"> 3537</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03538" name="l03538"></a><span class="lineno"> 3538</span>            wptr =&gt; work(1:lwork)</div>
+<div class="line"><a id="l03539" name="l03539"></a><span class="lineno"> 3539</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03540" name="l03540"></a><span class="lineno"> 3540</span>            <span class="keyword">allocate</span>(wrk(lwork), stat = istat)</div>
+<div class="line"><a id="l03541" name="l03541"></a><span class="lineno"> 3541</span>            <span class="keywordflow">if</span> (istat /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l03542" name="l03542"></a><span class="lineno"> 3542</span>                <span class="comment">! ERROR: Out of memory</span></div>
+<div class="line"><a id="l03543" name="l03543"></a><span class="lineno"> 3543</span>                <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;mult_lq_vec_cmplx&quot;</span>, &amp;</div>
+<div class="line"><a id="l03544" name="l03544"></a><span class="lineno"> 3544</span>                    <span class="stringliteral">&quot;Insufficient memory available.&quot;</span>, &amp;</div>
+<div class="line"><a id="l03545" name="l03545"></a><span class="lineno"> 3545</span>                    la_out_of_memory_error)</div>
+<div class="line"><a id="l03546" name="l03546"></a><span class="lineno"> 3546</span>                <span class="keywordflow">return</span></div>
+<div class="line"><a id="l03547" name="l03547"></a><span class="lineno"> 3547</span><span class="keywordflow">            end if</span></div>
+<div class="line"><a id="l03548" name="l03548"></a><span class="lineno"> 3548</span>            wptr =&gt; wrk</div>
+<div class="line"><a id="l03549" name="l03549"></a><span class="lineno"> 3549</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l03550" name="l03550"></a><span class="lineno"> 3550</span> </div>
+<div class="line"><a id="l03551" name="l03551"></a><span class="lineno"> 3551</span>        <span class="comment">! Call ZUNMLQ</span></div>
+<div class="line"><a id="l03552" name="l03552"></a><span class="lineno"> 3552</span>        <span class="keyword">call </span>zunmlq(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)</div>
+<div class="line"><a id="l03553" name="l03553"></a><span class="lineno"> 3553</span> </div>
+<div class="line"><a id="l03554" name="l03554"></a><span class="lineno"> 3554</span>        <span class="comment">! Formatting</span></div>
+<div class="line"><a id="l03555" name="l03555"></a><span class="lineno"> 3555</span>100     <span class="keyword">format</span>(a, i0, a)</div>
+<div class="line"><a id="l03556" name="l03556"></a><span class="lineno"> 3556</span>    <span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l03557" name="l03557"></a><span class="lineno"> 3557</span> </div>
+<div class="line"><a id="l03558" name="l03558"></a><span class="lineno"> 3558</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l03559" name="l03559"></a><span class="lineno"> 3559</span><span class="keyword">end </span>submodule</div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

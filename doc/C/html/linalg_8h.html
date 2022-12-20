@@ -268,6 +268,22 @@ Functions</h2></td></tr>
 <tr class="separator:abf5918abab8f97fc2ac5887e051ff493"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a090178a5f99a4b400da80481aad77757"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#a090178a5f99a4b400da80481aad77757">la_sort_eigen_cmplx</a> (bool ascend, int n, double complex *vals, double complex *vecs, int ldv)</td></tr>
 <tr class="separator:a090178a5f99a4b400da80481aad77757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b2048bb219e58f455175041558ac44f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#a7b2048bb219e58f455175041558ac44f">la_lq_factor</a> (int m, int n, double *a, int lda, double *tau)</td></tr>
+<tr class="separator:a7b2048bb219e58f455175041558ac44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6786c40f8f91e5f16f06e92be71ffa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#a5e6786c40f8f91e5f16f06e92be71ffa">la_lq_factor_cmplx</a> (int m, int n, double complex *a, int lda, double complex *tau)</td></tr>
+<tr class="separator:a5e6786c40f8f91e5f16f06e92be71ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac54763802ad5c3966f8e14cdf93fdc96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#ac54763802ad5c3966f8e14cdf93fdc96">la_form_lq</a> (int m, int n, double *l, int ldl, const double *tau, double *q, int ldq)</td></tr>
+<tr class="separator:ac54763802ad5c3966f8e14cdf93fdc96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54b8d224976dca7ef384eed74f50bed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#aa54b8d224976dca7ef384eed74f50bed">la_form_lq_cmplx</a> (int m, int n, double complex *l, int ldl, const double complex *tau, double complex *q, int ldq)</td></tr>
+<tr class="separator:aa54b8d224976dca7ef384eed74f50bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac575e10e20e9c2d8d40ed8df47179773"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#ac575e10e20e9c2d8d40ed8df47179773">la_mult_lq</a> (bool lside, bool trans, int m, int n, int k, const double *a, int lda, const double *tau, double *c, int ldc)</td></tr>
+<tr class="separator:ac575e10e20e9c2d8d40ed8df47179773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcb07293cf47d090dfb89c20837ca7b5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#adcb07293cf47d090dfb89c20837ca7b5">la_mult_lq_cmplx</a> (bool lside, bool trans, int m, int n, int k, const double complex *a, int lda, const double complex *tau, double complex *c, int ldc)</td></tr>
+<tr class="separator:adcb07293cf47d090dfb89c20837ca7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c485d619c24435be713cf4356285e9a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#a2c485d619c24435be713cf4356285e9a">la_solve_lq</a> (int m, int n, int k, const double *a, int lda, const double *tau, double *b, int ldb)</td></tr>
+<tr class="separator:a2c485d619c24435be713cf4356285e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54ee9d9ab89b88b0ca682f70bc6c3c54"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linalg_8h.html#a54ee9d9ab89b88b0ca682f70bc6c3c54">la_solve_lq_cmplx</a> (int m, int n, int k, const double complex *a, int lda, const double complex *tau, double complex *b, int ldb)</td></tr>
+<tr class="separator:a54ee9d9ab89b88b0ca682f70bc6c3c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a3967bc139cba341a513d1353bea62ac9" name="a3967bc139cba341a513d1353bea62ac9"></a>
@@ -1390,6 +1406,160 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ac54763802ad5c3966f8e14cdf93fdc96" name="ac54763802ad5c3966f8e14cdf93fdc96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac54763802ad5c3966f8e14cdf93fdc96">&#9670;&#160;</a></span>la_form_lq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_form_lq </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldq</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Forms the matrix Q with orthonormal rows from the elementary reflectors returned by the base QR factorization algorithm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of rows in R. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in R. </td></tr>
+    <tr><td class="paramname">l</td><td>On input, the M-by-N factored matrix as returned by the LQ factorization routine. On output, the lower triangular matrix L. </td></tr>
+    <tr><td class="paramname">ldl</td><td>The leading dimension of matrix L. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array containing the scalar factors of each elementary reflector defined in <code>r</code>. </td></tr>
+    <tr><td class="paramname">q</td><td>An M-by-N matrix where the Q matrix will be written. </td></tr>
+    <tr><td class="paramname">ldq</td><td>The leading dimension of matrix Q.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>ldl</code> or <code>ldq</code> are not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="aa54b8d224976dca7ef384eed74f50bed" name="aa54b8d224976dca7ef384eed74f50bed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54b8d224976dca7ef384eed74f50bed">&#9670;&#160;</a></span>la_form_lq_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_form_lq_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double complex *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldq</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Forms the matrix Q with orthonormal rows from the elementary reflectors returned by the base QR factorization algorithm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of rows in R. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in R. </td></tr>
+    <tr><td class="paramname">l</td><td>On input, the M-by-N factored matrix as returned by the LQ factorization routine. On output, the lower triangular matrix L. </td></tr>
+    <tr><td class="paramname">ldl</td><td>The leading dimension of matrix L. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array containing the scalar factors of each elementary reflector defined in <code>r</code>. </td></tr>
+    <tr><td class="paramname">q</td><td>An M-by-N matrix where the Q matrix will be written. </td></tr>
+    <tr><td class="paramname">ldq</td><td>The leading dimension of matrix Q.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>ldl</code> or <code>ldq</code> are not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
 <a id="a15774f6323c34d307c99b32ac4f188a7" name="a15774f6323c34d307c99b32ac4f188a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a15774f6323c34d307c99b32ac4f188a7">&#9670;&#160;</a></span>la_form_lu()</h2>
 
@@ -1633,7 +1803,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
 <li>LA_NO_ERROR: No error occurred. Successful operation.</li>
-<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>ldr</code> or <code>ldq</code> are not correct.</li>
 <li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
 </ul>
 </dd></dl>
@@ -1717,7 +1887,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
 <li>LA_NO_ERROR: No error occurred. Successful operation.</li>
-<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>ldr</code> or <code>ldq</code> are not correct.</li>
 <li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
 </ul>
 </dd></dl>
@@ -2027,6 +2197,132 @@ Functions</h2></td></tr>
 <li>LA_NO_ERROR: No error occurred. Successful operation.</li>
 <li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
 <li>LA_SINGULAR_MATRIX_ERROR: Occurs if the input matrix is singular. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a7b2048bb219e58f455175041558ac44f" name="a7b2048bb219e58f455175041558ac44f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b2048bb219e58f455175041558ac44f">&#9670;&#160;</a></span>la_lq_factor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_lq_factor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>tau</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Computes the LQ factorization of an M-by-N matrix without pivoting.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of rows in the matrix. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in the matrix. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, the M-by-N matrix to factor. On output, the elements on and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal matrix R (R is upper triangular if M &gt;= N). The elements below the diagonal, along with the array <code>tau</code>, represent the orthogonal matrix Q as a product of elementary reflectors. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array used to store the scalar factors of the elementary reflectors.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a5e6786c40f8f91e5f16f06e92be71ffa" name="a5e6786c40f8f91e5f16f06e92be71ffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e6786c40f8f91e5f16f06e92be71ffa">&#9670;&#160;</a></span>la_lq_factor_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_lq_factor_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>tau</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Computes the LQ factorization of an M-by-N matrix without pivoting.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of rows in the matrix. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in the matrix. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, the M-by-N matrix to factor. On output, the elements on and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal matrix R (R is upper triangular if M &gt;= N). The elements below the diagonal, along with the array <code>tau</code>, represent the orthogonal matrix Q as a product of elementary reflectors. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array used to store the scalar factors of the elementary reflectors.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
 </ul>
 </dd></dl>
 
@@ -2394,6 +2690,202 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ac575e10e20e9c2d8d40ed8df47179773" name="ac575e10e20e9c2d8d40ed8df47179773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac575e10e20e9c2d8d40ed8df47179773">&#9670;&#160;</a></span>la_mult_lq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_mult_lq </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>lside</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Multiplies a general matrix by the orthogonal matrix Q from a LQ factorization such that: \( C = op(Q) C \), or \( C = C op(Q) \).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lside</td><td>Set to true to apply \( Q \) or \( Q^T \) from the left; else, set to false to apply \( Q \) or \( Q^T \) from the right. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true to apply \( Q^T \); else, set to false. </td></tr>
+    <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
+    <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, an K-by-P matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, P = M; else, if <code>lside</code> is set to false, P = N. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
+    <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>
+    <tr><td class="paramname">ldc</td><td>The leading dimension of matrix C.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> or <code>ldc</code> are not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="adcb07293cf47d090dfb89c20837ca7b5" name="adcb07293cf47d090dfb89c20837ca7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcb07293cf47d090dfb89c20837ca7b5">&#9670;&#160;</a></span>la_mult_lq_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_mult_lq_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>lside</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>trans</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double complex *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double complex *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Multiplies a general matrix by the orthogonal matrix Q from a LQ factorization such that: \( C = op(Q) C \), or \( C = C op(Q) \).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lside</td><td>Set to true to apply \( Q \) or \( Q^H \) from the left; else, set to false to apply \( Q \) or \( Q^H \) from the right. </td></tr>
+    <tr><td class="paramname">trans</td><td>Set to true to apply \( Q^H \); else, set to false. </td></tr>
+    <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
+    <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
+    <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, an K-by-P matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, P = M; else, if <code>lside</code> is set to false, P = N. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
+    <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>
+    <tr><td class="paramname">ldc</td><td>The leading dimension of matrix C.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> or <code>ldc</code> are not correct.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
 <a id="a95f921847131eaedd62a439490d2a801" name="a95f921847131eaedd62a439490d2a801"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95f921847131eaedd62a439490d2a801">&#9670;&#160;</a></span>la_mult_qr()</h2>
 
@@ -2479,13 +2971,13 @@ Functions</h2></td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
     <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
     <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>
-    <tr><td class="paramname">ldc</td><td>THe leading dimension of matrix C.</td></tr>
+    <tr><td class="paramname">ldc</td><td>The leading dimension of matrix C.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
 <li>LA_NO_ERROR: No error occurred. Successful operation.</li>
-<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> or <code>ldc</code> are not correct.</li>
 <li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
 </ul>
 </dd></dl>
@@ -2577,13 +3069,13 @@ Functions</h2></td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
     <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
     <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>
-    <tr><td class="paramname">ldc</td><td>THe leading dimension of matrix C.</td></tr>
+    <tr><td class="paramname">ldc</td><td>The leading dimension of matrix C.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
 <li>LA_NO_ERROR: No error occurred. Successful operation.</li>
-<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> is not correct.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code> or <code>ldc</code> are not correct.</li>
 <li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory available. </li>
 </ul>
 </dd></dl>
@@ -3743,6 +4235,174 @@ Functions</h2></td></tr>
 <li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code>, or <code>ldb</code> is not correct.</li>
 <li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available.</li>
 <li>LA_INVALID_OPERATION_ERROR: Occurs if <code>a</code> is not of full rank. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a2c485d619c24435be713cf4356285e9a" name="a2c485d619c24435be713cf4356285e9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c485d619c24435be713cf4356285e9a">&#9670;&#160;</a></span>la_solve_lq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_solve_lq </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Solves a system of M QR-factored equations of N unknowns where N &gt;= M.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of equations (rows in matrix A). </td></tr>
+    <tr><td class="paramname">n</td><td>The number of unknowns (columns in matrix A). </td></tr>
+    <tr><td class="paramname">k</td><td>The number of columns in the right-hand-side matrix. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, the M-by-N QR factored matrix as returned by lq_factor. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array containing the scalar factors of the elementary reflectors as returned by lq_factor. </td></tr>
+    <tr><td class="paramname">b</td><td>On input, an N-by-K matrix containing the first M rows of the right-hand-side matrix. On output, the solution matrix X. </td></tr>
+    <tr><td class="paramname">ldb</td><td>The leading dimension of matrix B.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code>, or <code>ldb</code> is not correct, or if <code>m</code> is less than <code>n</code>.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available. </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a54ee9d9ab89b88b0ca682f70bc6c3c54" name="a54ee9d9ab89b88b0ca682f70bc6c3c54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54ee9d9ab89b88b0ca682f70bc6c3c54">&#9670;&#160;</a></span>la_solve_lq_cmplx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int la_solve_lq_cmplx </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double complex *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double complex *&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double complex *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ldb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Solves a system of M QR-factored equations of N unknowns where N &gt;= M.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">m</td><td>The number of equations (rows in matrix A). </td></tr>
+    <tr><td class="paramname">n</td><td>The number of unknowns (columns in matrix A). </td></tr>
+    <tr><td class="paramname">k</td><td>The number of columns in the right-hand-side matrix. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, the M-by-N QR factored matrix as returned by lq_factor. </td></tr>
+    <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
+    <tr><td class="paramname">tau</td><td>A MIN(M, N)-element array containing the scalar factors of the elementary reflectors as returned by lq_factor. </td></tr>
+    <tr><td class="paramname">b</td><td>On input, an N-by-K matrix containing the first M rows of the right-hand-side matrix. On output, the solution matrix X. </td></tr>
+    <tr><td class="paramname">ldb</td><td>The leading dimension of matrix B.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code. The following codes are possible.<ul>
+<li>LA_NO_ERROR: No error occurred. Successful operation.</li>
+<li>LA_INVALID_INPUT_ERROR: Occurs if <code>lda</code>, or <code>ldb</code> is not correct, or if <code>m</code> is less than <code>n</code>.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and there is insufficient memory available. </li>
 </ul>
 </dd></dl>
 

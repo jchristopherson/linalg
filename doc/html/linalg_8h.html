@@ -2942,7 +2942,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
     <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
-    <tr><td class="paramname">a</td><td>On input, an LDA-by-K matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, LDA = M, and M &gt;= K &gt;= 0; else, if <code>lside</code> is set to false, LDA = N, and N &gt;= K &gt;= 0. Notice, the contents of this matrix are restored on exit. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, an K-by-P matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, P = M; else, if <code>lside</code> is set to false, P = N. </td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
     <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
     <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>
@@ -3040,7 +3040,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">m</td><td>The number of rows in matrix C. </td></tr>
     <tr><td class="paramname">n</td><td>The number of columns in matrix C. </td></tr>
     <tr><td class="paramname">k</td><td>The number of elementary reflectors whose product defines the matrix Q. </td></tr>
-    <tr><td class="paramname">a</td><td>On input, an LDA-by-K matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, LDA = M, and M &gt;= K &gt;= 0; else, if <code>lside</code> is set to false, LDA = N, and N &gt;= K &gt;= 0. Notice, the contents of this matrix are restored on exit. </td></tr>
+    <tr><td class="paramname">a</td><td>On input, an K-by-P matrix containing the elementary reflectors output from the LQ factorization. If <code>lside</code> is set to true, P = M; else, if <code>lside</code> is set to false, P = N. </td></tr>
     <tr><td class="paramname">lda</td><td>The leading dimension of matrix A. </td></tr>
     <tr><td class="paramname">tau</td><td>A K-element array containing the scalar factors of each elementary reflector defined in <code>a</code>. </td></tr>
     <tr><td class="paramname">c</td><td>On input, the M-by-N matrix C. On output, the product of the orthogonal matrix Q and the original matrix C. </td></tr>

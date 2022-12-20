@@ -103,10 +103,10 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1form__lq.html','');
 </div><!--header-->
 <div class="contents">
 
-<p>Forms the matrix Q with orthonormal rows from the elementary reflectors returned by the LQ factorization algorithm.  
+<p>Forms the orthogonal matrix Q from the elementary reflectors returned by the LQ factorization algorithm.  
  <a href="interfacelinalg_1_1form__lq.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Forms the matrix Q with orthonormal rows from the elementary reflectors returned by the LQ factorization algorithm. </p>
+<div class="textblock"><p >Forms the orthogonal matrix Q from the elementary reflectors returned by the LQ factorization algorithm. </p>
 <dl class="section user"><dt>Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>form_lq(real(real64) l(:,:), real(real64) tau(:), real(real64) q(:,:), optional real(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>form_lq(complex(real64) l(:,:), complex(real64) tau(:), complex(real64) q(:,:), optional complex(real64) work(:), optional integer(int32) olwork, optional class(errors) err)</div>
 </div><!-- fragment --></dd></dl>
@@ -114,7 +114,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1form__lq.html','');
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">l</td><td>On input, an M-by-N matrix where the elements above the diagonal contain the elementary reflectors generated from the LQ factorization performed by <a class="el" href="interfacelinalg_1_1lq__factor.html">lq_factor</a>. On and below the diagonal the matrix contains the matrix L. On output, the elements above the diagonal are zeroed sucht hat the remaining matrix is the M-by-N lower trapezoidal matrix L where only the M-by-M submatrix is the lower triangular matrix L. Notice, M must be less than or equal to N for this routine. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tau</td><td>A MIN(M, N)-element array containing the scalar factors of each elementary reflector defined in <code>l</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">q</td><td>An M-by-N matrix where the matrix Q with orhtonormal rows will be written. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">q</td><td>An N-by-N matrix where the orthogonal matrix Q will be written. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">work</td><td>An optional input, that if provided, prevents any local memory allocation. If not provided, the memory required is allocated within. If provided, the length of the array must be at least <code>olwork</code>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">olwork</td><td>An optional output used to determine workspace size. If supplied, the routine determines the optimal size for <code>work</code>, and returns without performing any actual calculations. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
@@ -180,7 +180,7 @@ $(document).ready(function(){initNavTree('interfacelinalg_1_1form__lq.html','');
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LQ Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (x(i), i = 1, <span class="keyword">size</span>(x))</div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg_1_1form__lq_html"><div class="ttname"><a href="interfacelinalg_1_1form__lq.html">linalg::form_lq</a></div><div class="ttdoc">Forms the matrix Q with orthonormal rows from the elementary reflectors returned by the LQ factorizat...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l03548">linalg.f90:3548</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1form__lq_html"><div class="ttname"><a href="interfacelinalg_1_1form__lq.html">linalg::form_lq</a></div><div class="ttdoc">Forms the orthogonal matrix Q from the elementary reflectors returned by the LQ factorization algorit...</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l03548">linalg.f90:3548</a></div></div>
 <div class="ttc" id="ainterfacelinalg_1_1lq__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lq__factor.html">linalg::lq_factor</a></div><div class="ttdoc">Computes the LQ factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l03434">linalg.f90:3434</a></div></div>
 <div class="ttc" id="ainterfacelinalg_1_1mtx__mult_html"><div class="ttname"><a href="interfacelinalg_1_1mtx__mult.html">linalg::mtx_mult</a></div><div class="ttdoc">Performs the matrix operation: .</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l00293">linalg.f90:293</a></div></div>
 <div class="ttc" id="ainterfacelinalg_1_1solve__triangular__system_html"><div class="ttname"><a href="interfacelinalg_1_1solve__triangular__system.html">linalg::solve_triangular_system</a></div><div class="ttdoc">Solves a triangular system of equations.</div><div class="ttdef"><b>Definition:</b> <a href="linalg_8f90_source.html#l02200">linalg.f90:2200</a></div></div>

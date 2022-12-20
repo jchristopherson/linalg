@@ -3205,7 +3205,7 @@ contains
 
         ! Local Variables
         character :: side, t
-        integer(int32) :: m, n, k, nrowa, ncola, istat, flag, lwork
+        integer(int32) :: m, n, k, ncola, istat, flag, lwork
         real(real64), pointer, dimension(:) :: wptr
         real(real64), allocatable, target, dimension(:) :: wrk
         real(real64), dimension(1) :: temp
@@ -3219,11 +3219,9 @@ contains
         k = size(tau)
         if (lside) then
             side = 'L'
-            nrowa = m
             ncola = m
         else
             side = 'R'
-            nrowa = n
             ncola = n
         end if
         if (trans) then
@@ -3239,7 +3237,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= nrowa .or. size(a, 2) /= ncola) then
+        if (size(a, 1) /= k .or. size(a, 2) /= ncola) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3252,7 +3250,7 @@ contains
         end if
 
         ! Workspace Query
-        call DORMLQ(side, t, m, n, k, a, nrowa, tau, c, m, temp, -1, flag)
+        call DORMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3282,7 +3280,7 @@ contains
         end if
 
         ! Call DORMLQ
-        call DORMLQ(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+        call DORMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)
@@ -3301,7 +3299,7 @@ contains
 
         ! Local Variables
         character :: side, t
-        integer(int32) :: m, n, k, nrowa, ncola, istat, flag, lwork
+        integer(int32) :: m, n, k, ncola, istat, flag, lwork
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         complex(real64), dimension(1) :: temp
@@ -3315,11 +3313,9 @@ contains
         k = size(tau)
         if (lside) then
             side = 'L'
-            nrowa = m
             ncola = m
         else
             side = 'R'
-            nrowa = n
             ncola = n
         end if
         if (trans) then
@@ -3335,7 +3331,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (size(a, 1) /= nrowa .or. size(a, 2) /= ncola) then
+        if (size(a, 1) /= k .or. size(a, 2) /= ncola) then
             flag = 3
         end if
         if (flag /= 0) then
@@ -3348,7 +3344,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZUNMLQ(side, t, m, n, k, a, nrowa, tau, c, m, temp, -1, flag)
+        call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
         lwork = int(temp(1), int32)
         if (present(olwork)) then
             olwork = lwork
@@ -3378,7 +3374,7 @@ contains
         end if
 
         ! Call ZUNMLQ
-        call ZUNMLQ(side, t, m, n, k, a, nrowa, tau, c, m, wptr, lwork, flag)
+        call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
 
         ! Formatting
 100     format(A, I0, A)

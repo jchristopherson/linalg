@@ -11,6 +11,12 @@ install_library(
     ${CMAKE_INSTALL_PREFIX}
 )
 
+# Install the C API headers
+install(
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
+
 # Install the documentation files
 install_documentation(
     ${PROJECT_SOURCE_DIR}/doc/html

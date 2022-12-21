@@ -1,5 +1,41 @@
 var annotated_dup =
 [
-    [ "linalg_core", "namespacelinalg__core.html", "namespacelinalg__core" ],
-    [ "linalg_immutable", "namespacelinalg__immutable.html", "namespacelinalg__immutable" ]
+    [ "linalg", "namespacelinalg.html", [
+      [ "cholesky_factor", "interfacelinalg_1_1cholesky__factor.html", null ],
+      [ "cholesky_rank1_downdate", "interfacelinalg_1_1cholesky__rank1__downdate.html", null ],
+      [ "cholesky_rank1_update", "interfacelinalg_1_1cholesky__rank1__update.html", null ],
+      [ "det", "interfacelinalg_1_1det.html", null ],
+      [ "diag_mtx_mult", "interfacelinalg_1_1diag__mtx__mult.html", null ],
+      [ "eigen", "interfacelinalg_1_1eigen.html", null ],
+      [ "form_lq", "interfacelinalg_1_1form__lq.html", null ],
+      [ "form_lu", "interfacelinalg_1_1form__lu.html", null ],
+      [ "form_qr", "interfacelinalg_1_1form__qr.html", null ],
+      [ "lq_factor", "interfacelinalg_1_1lq__factor.html", null ],
+      [ "lu_factor", "interfacelinalg_1_1lu__factor.html", null ],
+      [ "mtx_inverse", "interfacelinalg_1_1mtx__inverse.html", null ],
+      [ "mtx_mult", "interfacelinalg_1_1mtx__mult.html", null ],
+      [ "mtx_pinverse", "interfacelinalg_1_1mtx__pinverse.html", null ],
+      [ "mtx_rank", "interfacelinalg_1_1mtx__rank.html", null ],
+      [ "mult_lq", "interfacelinalg_1_1mult__lq.html", null ],
+      [ "mult_qr", "interfacelinalg_1_1mult__qr.html", null ],
+      [ "mult_rz", "interfacelinalg_1_1mult__rz.html", null ],
+      [ "qr_factor", "interfacelinalg_1_1qr__factor.html", null ],
+      [ "qr_rank1_update", "interfacelinalg_1_1qr__rank1__update.html", null ],
+      [ "rank1_update", "interfacelinalg_1_1rank1__update.html", null ],
+      [ "recip_mult_array", "interfacelinalg_1_1recip__mult__array.html", null ],
+      [ "rz_factor", "interfacelinalg_1_1rz__factor.html", null ],
+      [ "solve_cholesky", "interfacelinalg_1_1solve__cholesky.html", null ],
+      [ "solve_least_squares", "interfacelinalg_1_1solve__least__squares.html", null ],
+      [ "solve_least_squares_full", "interfacelinalg_1_1solve__least__squares__full.html", null ],
+      [ "solve_least_squares_svd", "interfacelinalg_1_1solve__least__squares__svd.html", null ],
+      [ "solve_lq", "interfacelinalg_1_1solve__lq.html", null ],
+      [ "solve_lu", "interfacelinalg_1_1solve__lu.html", null ],
+      [ "solve_qr", "interfacelinalg_1_1solve__qr.html", null ],
+      [ "solve_triangular_system", "interfacelinalg_1_1solve__triangular__system.html", null ],
+      [ "sort", "interfacelinalg_1_1sort.html", null ],
+      [ "svd", "interfacelinalg_1_1svd.html", null ],
+      [ "swap", "interfacelinalg_1_1swap.html", null ],
+      [ "trace", "interfacelinalg_1_1trace.html", null ],
+      [ "tri_mtx_mult", "interfacelinalg_1_1tri__mtx__mult.html", null ]
+    ] ]
 ];

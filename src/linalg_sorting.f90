@@ -4,7 +4,7 @@
 !!
 !! @par Purpose
 !! Provides sorting routines.
-submodule (linalg_core) linalg_sorting
+submodule (linalg) linalg_sorting
 contains
 ! ******************************************************************************
 ! SORTING ROUTINES
@@ -64,7 +64,7 @@ contains
 
         ! Input Check
         if (size(ind) /= n) then
-            write(errmsg, "(AI0AI0A)") &
+            write(errmsg, 100) &
                 "Expected the tracking array to be of size ", n, &
                 ", but found an array of size ", size(ind), "."
             call errmgr%report_error("sort_dbl_array_ind", trim(errmsg), &
@@ -75,6 +75,9 @@ contains
 
         ! Process
         call qsort_dbl_ind(dir, x, ind)
+
+        ! Formatting
+100     format(A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -127,7 +130,7 @@ contains
 
         ! Input Check
         if (size(ind) /= n) then
-            write(errmsg, "(AI0AI0A)") &
+            write(errmsg, 100) &
                 "Expected the tracking array to be of size ", n, &
                 ", but found an array of size ", size(ind), "."
             call errmgr%report_error("sort_cmplx_array_ind", trim(errmsg), &
@@ -138,6 +141,9 @@ contains
 
         ! Process
         call qsort_cmplx_ind(dir, x, ind)
+
+        ! Formatting
+100     format(A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -172,7 +178,7 @@ contains
         n = size(vals)
         if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
             ! ARRAY SIZE ERROR
-            write(errmsg, '(AI0AI0AI0AI0A)') &
+            write(errmsg, 100) &
                 "Expected the eigenvector matrix to be of size ", n, &
                 "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
                 "-by-", size(vecs, 2), "."
@@ -197,6 +203,9 @@ contains
         ! Shift the eigenvectors around to keep them associated with the
         ! appropriate eigenvalue
         vecs = vecs(:,ind)
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -231,7 +240,7 @@ contains
         n = size(vals)
         if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
             ! ARRAY SIZE ERROR
-            write(errmsg, '(AI0AI0AI0AI0A)') &
+            write(errmsg, 100) &
                 "Expected the eigenvector matrix to be of size ", n, &
                 "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
                 "-by-", size(vecs, 2), "."
@@ -256,6 +265,9 @@ contains
         ! Shift the eigenvectors around to keep them associated with the
         ! appropriate eigenvalue
         vecs = vecs(:,ind)
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ******************************************************************************

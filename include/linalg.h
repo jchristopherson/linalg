@@ -1,5 +1,193 @@
-#ifndef LINALG_H_
-#define LINALG_H_
+/** @file linalg.h */
+
+/** @mainpage
+ * 
+ * @section intro_sec Introduction
+ * LINALG is a linear algebra library that provides a user-friendly interface
+ * to several BLAS and LAPACK routines.  This library provides routines for
+ * solving systems of linear equations, solving over or under-determined 
+ * systems, and solving eigenvalue problems.
+ *
+ * @par Example 1 - Solving Linear Equations
+ * The following piece of code illustrates how to solve a system of linear 
+ * equations using LU factorization.
+ * 
+ * @code{.c}
+  int main() {
+    // Local Variables
+    int i, flag, pvt[3];
+
+    // Build the 3-by-3 matrix A - Use column-major formating!
+    //     | 1  2  3 |
+    // A = | 4  5  6 |
+    //     | 7  8  0 |
+    double a[] = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 0.0};
+
+    // Build the right-hand-side vector B.
+    //     | -1 |
+    // b = | -2 |
+    //     | -3 |
+    double b[] = {-1.0, -2.0, -3.0};
+
+    // The solution is:
+    //     |  1/3 |
+    // x = | -2/3 |
+    //     |   0  |
+
+    // Compute the LU factorization
+    flag = la_lu_factor(3, 3, a, 3, pvt);
+    if (flag != LA_NO_ERROR) return flag;
+
+    // Solve.  The results overwrite b.
+    flag = la_solve_lu(3, 1, a, 3, pvt, b, 3);
+    if (flag != LA_NO_ERROR) return flag;
+
+    // Display the results
+    printf("LU Solution: X = \n");
+    for (i = 0; i < 3; i++) {
+        printf("%8.4f\n", b[i]);
+    }
+
+    // End
+    return 0;
+}
+ * @endcode
+ * The program generates the following output.
+ * @code{.txt}
+  LU Solution: X = 
+  0.3333
+ -0.6667
+  0.0000
+ * @endcode
+ * 
+ * 
+ * @par Example 2 - Solving an Eigenvalue Problem
+ * The following example illustrates how to solve an eigenvalue problem using
+ * a mechanical vibrating system.
+ * 
+ * @code{.c}
+ * // This is an example illustrating the use of the eigenvalue and eigenvector 
+ * // routines to solve a free vibration problem of 3 masses connected by springs.
+ * // 
+ * //     k1           k2           k3           k4
+ * // |-\/\/\-| m1 |-\/\/\-| m2 |-\/\/\-| m3 |-\/\/\-|
+ * // 
+ * // As illustrated above, the system consists of 3 masses connected by springs.
+ * // Spring k1 and spring k4 connect the end masses to ground.  The equations of 
+ * // motion for this system are as follows.
+ * // 
+ * // | m1  0   0 | |x1"|   | k1+k2  -k2      0  | |x1|   |0|
+ * // | 0   m2  0 | |x2"| + |  -k2  k2+k3    -k3 | |x2| = |0|
+ * // | 0   0   m3| |x3"|   |   0    -k3    k3+k4| |x3|   |0|
+ * // 
+ * // Notice: x1" = the second time derivative of x1.
+ 
+#include <stdio.h>
+#include <complex.h>
+#include <math.h>
+#include "linalg.h"
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define INDEX(i, j, m) ((j) * (m) + (i))
+void normalize_array(int n, double *x);
+
+int main() {
+    // Constants
+    const int ndof = 3;
+    const double pi = 3.14159265359;
+    const double m1 = 0.5;
+    const double m2 = 2.5;
+    const double m3 = 0.75;
+    const double k1 = 5.0e6;
+    const double k2 = 10.0e6;
+    const double k3 = 10.0e6;
+    const double k4 = 5.0e6;
+
+    // Local Variables
+    int i, j, flag;
+    double m[9], k[9], beta[3], natFreq[3], modeShapes[9];
+    double complex alpha[3], vals[3], vecs[9];
+
+    // Build the system matrices
+    m[0] = m1;          m[3] = 0.0;         m[6] = 0.0;
+    m[1] = 0.0;         m[4] = m2;          m[7] = 0.0;
+    m[2] = 0.0;         m[5] = 0.0;         m[8] = m3;
+
+    k[0] = k1 + k2;     k[3] = -k2;         k[6] = 0.0;
+    k[1] = -k2;         k[4] = k2 + k3;     k[7] = -k3;
+    k[2] = 0.0;         k[5] = -k3;         k[8] = k3 + k4;
+
+    // Compute the eigenvalues and eigenvectors
+    flag = la_eigen_gen(true, ndof, k, ndof, m, ndof, alpha, beta, vecs, ndof);
+
+    // Compute the eigenvalues from their components
+    for (i = 0; i < ndof; ++i) vals[i] = alpha[i] / beta[i];
+
+    // Sort the eigenvalues and eigenvectors
+    flag = la_sort_eigen_cmplx(true, ndof, vals, vecs, ndof);
+
+    // Compute the natural frequencies and extract the mode shape info
+    for (i = 0; i < ndof; ++i) {
+        natFreq[i] = sqrt(creal(vals[i])) / (2.0 * pi);
+        
+        // Extract the real components - the imaginary component is zero
+        for (j = 0; j < ndof; ++j) {
+            modeShapes[INDEX(j,i,ndof)] = creal(vecs[INDEX(j,i,ndof)]);
+        }
+
+        // Normalize the mode shape
+        normalize_array(ndof, &modeShapes[INDEX(0,i,ndof)]);
+    }
+
+    // Print out each mode shape
+    printf("Modal Information:\n");
+    for (i = 0; i < ndof; ++i) {
+        printf("Mode %i: (%f Hz)\n", i + 1, natFreq[i]);
+        for (j = 0; j < ndof; ++j) {
+            printf("\t%f\n", modeShapes[INDEX(j, i, ndof)]);
+        }
+    }
+
+    // End
+    return 0;
+}
+
+void normalize_array(int n, double *x) {
+    // Local Variables
+    int i;
+    double val, maxval;
+
+    // Find the largest magnitude value
+    maxval = x[0];
+    for (i = 1; i < n; ++i) {
+        val = x[i];
+        if (fabs(val) > fabs(maxval)) maxval = val;
+    }
+
+    // Normalize the array
+    for (i = 0; i < n; ++i) x[i] /= maxval;
+}
+ * @endcode
+ * The above program produces the following output.
+ * @code{.txt}
+ *  Modal Information:
+    Mode 1: (232.922543 Hz)
+            0.717922
+            1.000000
+            0.746623
+    Mode 2: (749.618856 Hz)
+            -0.419151
+            -0.163803
+            1.000000
+    Mode 3: (923.566902 Hz)
+            1.000000
+            -0.183707
+            0.179128
+ * @endcode
+*/
+
+#ifndef LINALG_H_DEFINED
+#define LINALG_H_DEFINED
 
 #include <stdbool.h>
 #include <complex.h>
@@ -22,8 +210,9 @@ extern "C" {
 
 /**
  * Performs the rank-1 update to matrix A such that:
- * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
- * X is an M-element array, and N is an N-element array.
+ * \f$ A = \alpha X Y^T + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+ * \f$ \alpha \f$ is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
+ * is an N-element array.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -43,8 +232,9 @@ int la_rank1_update(int m, int n, double alpha, const double *x,
 
 /**
  * Performs the rank-1 update to matrix A such that:
- * A = alpha * X * Y**T + A, where A is an M-by-N matrix, alpha is a scalar,
- * X is an M-element array, and N is an N-element array.
+ * \f$ A = \alpha X Y^H + A \f$, where \f$ A \f$ is an M-by-N matrix, 
+ * \f$ \alpha \f$ is a scalar, \f$ X \f$ is an M-element array, and \f$ Y \f$ 
+ * is an N-element array.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -97,7 +287,7 @@ int la_trace_cmplx(int m, int n, const double complex *a, int lda,
     double complex *rst);
 
 /**
- * Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
+ * Computes the matrix operation \f$ C = \alpha op(A) op(B) + \beta C \f$.
  * 
  * @param transa Set to true to compute op(A) as the transpose of A; else,
  *   set to false to compute op(A) as A.
@@ -127,7 +317,7 @@ int la_mtx_mult(bool transa, bool transb, int m, int n, int k, double alpha,
     double *c, int ldc);
 
 /**
- * Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
+ * Computes the matrix operation \f$ C = \alpha op(A) op(B) + \beta C \f$.
  *
  * @param opa Set to LA_TRANSPOSE to compute op(A) as a direct transpose of A,
  *  set to LA_HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
@@ -160,8 +350,8 @@ int la_mtx_mult_cmplx(int opa, int opb, int m, int n, int k,
     int ldc);
 
 /**
- * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- * or C = alpha * op(B) * A + beta * C.
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta C \f$.
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
@@ -197,12 +387,12 @@ int la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k,
     double *c, int ldc);
 
 /**
- * Computes the matrix operation: C = alpha * A * op(B) + beta * C,
- * or C = alpha * op(B) * A + beta * C.
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta * C \f$.
  *
  * @param lside Set to true to apply matrix A from the left; else, set
  *  to false to apply matrix A from the left.
- * @param opb Set to TLA_RANSPOSE to compute op(B) as a direct transpose of B,
+ * @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
  *  set to LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
  *  of B, otherwise, set to LA_NO_OPERATION to compute op(B) as B.
  * @param m The number of rows in the matrix C.
@@ -232,6 +422,44 @@ int la_diag_mtx_mult(bool lside, bool transb, int m, int n, int k,
  */
 int la_diag_mtx_mult_cmplx(bool lside, int opb, int m, int n, int k, 
     double complex alpha, const double complex *a, const double complex *b, 
+    int ldb, double complex beta, double complex *c, int ldc);
+
+/**
+ * Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
+ * or \f$ C = \alpha op(B) A + \beta C \f$.
+ *
+ * @param lside Set to true to apply matrix A from the left; else, set
+ *  to false to apply matrix A from the left.
+ * @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+ *  set to LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+ *  of B, otherwise, set to LA_NO_OPERATION to compute op(B) as B.
+ * @param m The number of rows in the matrix C.
+ * @param n The number of columns in the matrix C.
+ * @param k The inner dimension of the matrix product A * op(B).
+ * @param alpha A scalar multiplier.
+ * @param a A P-element array containing the diagonal elements of matrix A
+ *  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+ *  if @p lside is false.
+ * @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+ *  and TDB = trailing dimension of B):
+ *  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+ *  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+ *  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+ *  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+ * @param ldb The leading dimension of matrix B.
+ * @param beta A scalar multiplier.
+ * @param c The @p m by @p n matrix C.
+ * @param ldc The leading dimension of matrix C.
+ * 
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+ *      correct.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+ *      incorrect.
+ */
+int la_diag_mtx_mult_mixed(bool lside, int opb, int m, int n, int k, 
+    double complex alpha, const double *a, const double complex *b, 
     int ldb, double complex beta, double complex *c, int ldc);
 
 /**
@@ -310,13 +538,13 @@ int la_det_cmplx(int n, double complex *a, int lda, double complex *d);
 
 /**
  * Computes the triangular matrix operation:
- * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
- * where A is a triangular matrix.
+ * \f$ B = \alpha A^T A + \beta B \f$, or \f$ B = \alpha A A^T + \beta B \f$,
+ * where \f$ A \f$ is a triangular matrix.
  *
- * @param upper Set to true if matrix A is upper triangular, and
- *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
- *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
- *  be computed.
+ * @param upper Set to true if matrix \f$ A \f$ is upper triangular, and
+ *  \f$ B = \alpha A^T A + \beta B \f$ is to be calculated; else, set to false
+ *  if \f$ A \f$ is lower triangular, and \f$ B = \alpha A A^T + \beta B \f$ is
+ *  to be computed.
  * @param alpha A scalar multiplier.
  * @param n The dimension of the matrix.
  * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
@@ -338,13 +566,13 @@ int la_tri_mtx_mult(bool upper, double alpha, int n, const double *a, int lda,
 
 /**
  * Computes the triangular matrix operation:
- * B = alpha * A**T * A + beta * B, or B = alpha * A * A**T + beta * B,
- * where A is a triangular matrix.
+ * \f$ B = \alpha A^T A + \beta B \f$, or \f$ B = \alpha A A^T + \beta B \f$,
+ * where \f$ A \f$ is a triangular matrix.
  *
- * @param upper Set to true if matrix A is upper triangular, and
- *  B = alpha * A**T * A + beta * B is to be calculated; else, set to false
- *  if A is lower triangular, and B = alpha * A * A**T + beta * B is to
- *  be computed.
+ * @param upper Set to true if matrix \f$ A \f$ is upper triangular, and
+ *  \f$ B = \alpha A^T A + \beta B \f$ is to be calculated; else, set to false
+ *  if \f$ A \f$ is lower triangular, and \f$ B = \alpha A A^T + \beta B \f$ is
+ *  to be computed.
  * @param alpha A scalar multiplier.
  * @param n The dimension of the matrix.
  * @param a The @p n by @p n triangular matrix A.  Notice, if @p upper is
@@ -577,7 +805,7 @@ int la_qr_factor_cmplx_pvt(int m, int n, double complex *a, int lda,
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr or @p ldq are not correct.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
  *      available.
  */
@@ -606,7 +834,7 @@ int la_form_qr(bool fullq, int m, int n, double *r, int ldr, const double *tau,
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr or @p ldq are not correct.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
  *      available.
  */
@@ -617,7 +845,7 @@ int la_form_qr_cmplx(bool fullq, int m, int n, double complex *r, int ldr,
  * Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.  This
  * routine also inflates the pivot array into an N-by-N matrix P such
- * that A * P = Q * R.
+ * that \f$ A P = Q R \f$.
  *
  * @param fullq Set to true to always return the full Q matrix; else,
  *  set to false, and in the event that M > N, Q may be supplied as M-by-N,
@@ -652,7 +880,7 @@ int la_form_qr_pvt(bool fullq, int m, int n, double *r, int ldr,
  * Forms the full M-by-M orthogonal matrix Q from the elementary
  * reflectors returned by the base QR factorization algorithm.  This
  * routine also inflates the pivot array into an N-by-N matrix P such
- * that A * P = Q * R.
+ * that \f$ A P = Q R \f$.
  *
  * @param fullq Set to true to always return the full Q matrix; else,
  *  set to false, and in the event that M > N, Q may be supplied as M-by-N,
@@ -686,11 +914,11 @@ int la_form_qr_cmplx_pvt(bool fullq, int m, int n, double complex *r, int ldr,
 
 /**
  * Multiplies a general matrix by the orthogonal matrix Q from a QR
- * factorization such that: C = op(Q) * C, or C = C * op(Q).
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
  *
- * @param lside Set to true to apply Q or Q**T from the left; else, set
- *  to false to apply Q or Q**T from the right.
- * @param trans Set to true to apply Q**T; else, set to false.
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^T \f$; else, set to false.
  * @param m The number of rows in matrix C.
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
@@ -705,11 +933,11 @@ int la_form_qr_cmplx_pvt(bool fullq, int m, int n, double complex *r, int ldr,
  *  elementary reflector defined in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
  *  of the orthogonal matrix Q and the original matrix C.
- * @param ldc THe leading dimension of matrix C.
+ * @param ldc The leading dimension of matrix C.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldc are not correct.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
  *      available.
  */
@@ -718,11 +946,11 @@ int la_mult_qr(bool lside, bool trans, int m, int n, int k, double *a, int lda,
 
 /**
  * Multiplies a general matrix by the orthogonal matrix Q from a QR
- * factorization such that: C = op(Q) * C, or C = C * op(Q).
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
  *
- * @param lside Set to true to apply Q or Q**H from the left; else, set
- *  to false to apply Q or Q**H from the right.
- * @param trans Set to true to apply Q**H; else, set to false.
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^H \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^H \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^H \f$; else, set to false.
  * @param m The number of rows in matrix C.
  * @param n The number of columns in matrix C.
  * @param k The number of elementary reflectors whose product defines 
@@ -737,11 +965,11 @@ int la_mult_qr(bool lside, bool trans, int m, int n, int k, double *a, int lda,
  *  elementary reflector defined in @p a.
  * @param c On input, the M-by-N matrix C.  On output, the product
  *  of the orthogonal matrix Q and the original matrix C.
- * @param ldc THe leading dimension of matrix C.
+ * @param ldc The leading dimension of matrix C.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldc are not correct.
  *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
  *      available.
  */
@@ -751,7 +979,8 @@ int la_mult_qr_cmplx(bool lside, bool trans, int m, int n, int k,
 
 /**
  * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^T \f$ such that 
+ * \f$ A1 = Q1 R1 \f$.
  *
  * @param m The number of rows in R.
  * @param n The number of columns in R.
@@ -777,7 +1006,8 @@ int la_qr_rank1_update(int m, int n, double *q, int ldq, double *r, int ldr,
 
 /**
  * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where A = Q * R, and A1 = A + U * V**T such that A1 = Q1 * R1.
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^H \f$ such that 
+ * \f$ A1 = Q1 R1 \f$.
  *
  * @param m The number of rows in R.
  * @param n The number of columns in R.
@@ -806,8 +1036,8 @@ int la_qr_rank1_update_cmplx(int m, int n, double complex *q, int ldq,
  * definite matrix.
  *
  * @param upper Set to true to compute the upper triangular factoriztion
- *  A = U**T * U; else, set to false to compute the lower triangular
- *  factorzation A = L * L**T.
+ *  \f$ A = U^T U \f$; else, set to false to compute the lower triangular
+ *  factorzation \f$ A = L L^T \f$.
  * @param n The dimension of matrix A.
  * @param a On input, the N-by-N matrix to factor.  On output, the
  *  factored matrix is returned in either the upper or lower triangular
@@ -826,8 +1056,8 @@ int la_cholesky_factor(bool upper, int n, double *a, int lda);
  * definite matrix.
  *
  * @param upper Set to true to compute the upper triangular factoriztion
- *  A = U**T * U; else, set to false to compute the lower triangular
- *  factorzation A = L * L**T.
+ *  \f$ A = U^T U \f$; else, set to false to compute the lower triangular
+ *  factorzation \f$ A = L L^T \f$.
  * @param n The dimension of matrix A.
  * @param a On input, the N-by-N matrix to factor.  On output, the
  *  factored matrix is returned in either the upper or lower triangular
@@ -924,10 +1154,10 @@ int la_cholesky_rank1_downdate_cmplx(int n, double complex *r, int ldr,
     double complex *u);
 
 /**
- * Computes the singular value decomposition of a matrix A.  The
- *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
- *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
- *  matrix.
+ * Computes the singular value decomposition of a matrix \f$ A \f$.  The
+ *  SVD is defined as: \f$ A = U S V^T \f$, where \f$ U \f$ is an M-by-M 
+ *  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is
+ *  an N-by-N orthogonal matrix.
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -956,10 +1186,10 @@ int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
     double *vt, int ldv);
 
 /**
- * Computes the singular value decomposition of a matrix A.  The
- *  SVD is defined as: A = U * S * V**T, where U is an M-by-M orthogonal
- *  matrix, S is an M-by-N diagonal matrix, and V is an N-by-N orthogonal
- *  matrix.
+ * Computes the singular value decomposition of a matrix \f$ A \f$.  The
+ *  SVD is defined as: \f$ A = U S V^H \f$, where \f$ U \f$ is an M-by-M 
+ *  orthogonal matrix, \f$ S \f$ is an M-by-N diagonal matrix, and \f$ V \f$ is
+ *  an N-by-N orthogonal matrix.  
  *
  * @param m The number of rows in the matrix.
  * @param n The number of columns in the matrix.
@@ -971,9 +1201,9 @@ int la_svd(int m, int n, double *a, int lda, double *s, double *u, int ldu,
  * @param u An M-by-M matrix where the orthogonal U matrix will be
  *  written.
  * @param ldu The leading dimension of matrix U.
- * @param vt An N-by-N matrix where the transpose of the right 
+ * @param vt An N-by-N matrix where the conjugate transpose of the right 
  *  singular vector matrix V.
- * @param ldv The leading dimension of matrix V.
+ * @param ldv The leading dimension of @p vt.
  *
  * @return An error code.  The following codes are possible.
  *  - LA_NO_ERROR: No error occurred.  Successful operation.
@@ -988,15 +1218,15 @@ int la_svd_cmplx(int m, int n, double complex *a, int lda, double *s,
     double complex *u, int ldu, double complex *vt, int ldv);
 
 /**
- * Solves one of the matrix equations: op(A) * X = alpha * B, or
- * X * op(A) = alpha * B, where A is a triangular matrix.
+ * Solves one of the matrix equations: \f$ op(A) X = \alpha B \f$, or
+ * \f$ X op(A) = \alpha B \f$, where \f$ A \f$ is a triangular matrix.
  *
- * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
- *  false to solve X * op(A) = alpha * B.
+ * @param lside Set to true to solve \f$ op(A) X = \alpha B \f$; else, set to
+ *  false to solve \f$ X op(A) = \alpha B \f$.
  * @param upper Set to true if A is an upper triangular matrix; else,
  *  set to false if A is a lower triangular matrix.
- * @param trans Set to true if op(A) = A**T; else, set to false if
- *  op(A) = A.
+ * @param trans Set to true if \f$ op(A) = A^T \f$; else, set to false if
+ *  \f$ op(A) = A \f$.
  * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
  *  every diagonal element); else, set to false if A is a unit-diagonal
  *  matrix.
@@ -1019,15 +1249,15 @@ int la_solve_tri_mtx(bool lside, bool upper, bool trans, bool nounit, int m,
     int n, double alpha, const double *a, int lda, double *b, int ldb);
 
 /**
- * Solves one of the matrix equations: op(A) * X = alpha * B, or
- * X * op(A) = alpha * B, where A is a triangular matrix.
+ * Solves one of the matrix equations: \f$ op(A) X = \alpha B \f$, or
+ * \f$ X op(A) = \alpha B \f$, where \f$ A \f$ is a triangular matrix.
  *
- * @param lside Set to true to solve op(A) * X = alpha * B; else, set to
- *  false to solve X * op(A) = alpha * B.
+ * @param lside Set to true to solve \f$ op(A) X = \alpha B \f$; else, set to
+ *  false to solve \f$ X op(A) = \alpha B \f$.
  * @param upper Set to true if A is an upper triangular matrix; else,
  *  set to false if A is a lower triangular matrix.
- * @param trans Set to true if op(A) = A**H; else, set to false if
- *  op(A) = A.
+ * @param trans Set to true if \f$ op(A) = A^H \f$; else, set to false if
+ *  \f$ op(A) = A \f$.
  * @param nounit Set to true if A is not a unit-diagonal matrix (ones on
  *  every diagonal element); else, set to false if A is a unit-diagonal
  *  matrix.
@@ -1096,10 +1326,10 @@ int la_solve_lu_cmplx(int m, int n, const double complex *a, int lda,
  * @param n The number of unknowns (columns in matrix A).
  * @param k The number of columns in the right-hand-side matrix.
  * @param a On input, the M-by-N QR factored matrix as returned by
- *  qr_factor.  On output, the contents of this matrix are restored.
+ *  @ref qr_factor.  On output, the contents of this matrix are restored.
  * @param lda The leading dimension of matrix A.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  the elementary reflectors as returned by qr_factor.
+ *  the elementary reflectors as returned by @ref qr_factor.
  * @param b On input, the M-by-K right-hand-side matrix.  On output,
  *  the first N rows are overwritten by the solution matrix X.
  * @param ldb The leading dimension of matrix B.
@@ -1122,10 +1352,10 @@ int la_solve_qr(int m, int n, int k, double *a, int lda, const double *tau,
  * @param n The number of unknowns (columns in matrix A).
  * @param k The number of columns in the right-hand-side matrix.
  * @param a On input, the M-by-N QR factored matrix as returned by
- *  qr_factor.  On output, the contents of this matrix are restored.
+ *  @ref qr_factor.  On output, the contents of this matrix are restored.
  * @param lda The leading dimension of matrix A.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  the elementary reflectors as returned by qr_factor.
+ *  the elementary reflectors as returned by @ref qr_factor.
  * @param b On input, the M-by-K right-hand-side matrix.  On output,
  *  the first N rows are overwritten by the solution matrix X.
  * @param ldb The leading dimension of matrix B.
@@ -1147,10 +1377,10 @@ int la_solve_qr_cmplx(int m, int n, int k, double complex *a, int lda,
  * @param n The number of unknowns (columns in matrix A).
  * @param k The number of columns in the right-hand-side matrix.
  * @param a On input, the M-by-N QR factored matrix as returned by
- *  qr_factor.  On output, the contents of this matrix are restored.
+ *  @ref qr_factor.  On output, the contents of this matrix are restored.
  * @param lda The leading dimension of matrix A.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  the elementary reflectors as returned by qr_factor.
+ *  the elementary reflectors as returned by @ref qr_factor.
  * @param jpvt The N-element array that was used to track the column
  *  pivoting operations in the QR factorization.
  * @param b On input, the M-by-K right-hand-side matrix.  On output,
@@ -1173,10 +1403,10 @@ int la_solve_qr_pvt(int m, int n, int k, double *a, int lda, const double *tau,
  * @param n The number of unknowns (columns in matrix A).
  * @param k The number of columns in the right-hand-side matrix.
  * @param a On input, the M-by-N QR factored matrix as returned by
- *  qr_factor.  On output, the contents of this matrix are restored.
+ *  @ref qr_factor.  On output, the contents of this matrix are restored.
  * @param lda The leading dimension of matrix A.
  * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  the elementary reflectors as returned by qr_factor.
+ *  the elementary reflectors as returned by @ref qr_factor.
  * @param jpvt The N-element array that was used to track the column
  *  pivoting operations in the QR factorization.
  * @param b On input, the M-by-K right-hand-side matrix.  On output,
@@ -1196,8 +1426,8 @@ int la_solve_qr_cmplx_pvt(int m, int n, int k, double complex *a, int lda,
  * Solves a system of Cholesky factored equations.
  *
  * @param upper Set to true if the original matrix A was factored such
- *  that A = U**T * U; else, set to false if the factorization of A was
- *  A = L**T * L.
+ *  that \f$ A = U^T U \f$; else, set to false if the factorization of A was
+ *  \f$ A = L^T L \f$.
  * @param m The number of rows in matrix B.
  * @param n The number of columns in matrix B.
  * @param a The M-by-M Cholesky factored matrix.
@@ -1217,8 +1447,8 @@ int la_solve_cholesky(bool upper, int m, int n, const double *a, int lda,
  * Solves a system of Cholesky factored equations.
  *
  * @param upper Set to true if the original matrix A was factored such
- *  that A = U**T * U; else, set to false if the factorization of A was
- *  A = L**T * L.
+ *  that \f$ A = U^T U \f$; else, set to false if the factorization of A was
+ *  \f$ A = L^T L \f$.
  * @param m The number of rows in matrix B.
  * @param n The number of columns in matrix B.
  * @param a The M-by-M Cholesky factored matrix.
@@ -1235,7 +1465,7 @@ int la_solve_cholesky_cmplx(bool upper, int m, int n, const double complex *a,
     int lda, double complex *b, int ldb);
 
 /**
- * Solves the overdetermined or underdetermined system (A*X = B) of
+ * Solves the overdetermined or underdetermined system (\f$ A X = B \f$) of
  * M equations of N unknowns using a QR or LQ factorization of the matrix A.
  * Notice, it is assumed that matrix A has full rank.
  *
@@ -1263,7 +1493,7 @@ int la_solve_least_squares(int m, int n, int k, double *a, int lda, double *b,
     int ldb);
 
 /**
- * Solves the overdetermined or underdetermined system (A*X = B) of
+ * Solves the overdetermined or underdetermined system (\f$ A X = B \f$) of
  * M equations of N unknowns using a QR or LQ factorization of the matrix A.
  * Notice, it is assumed that matrix A has full rank.
  *
@@ -1412,7 +1642,7 @@ int la_eigen_asymm(bool vecs, int n, double *a, int lda,
 /**
  * Computes the eigenvalues, and optionally the right eigenvectors of
  * a square matrix assuming the structure of the eigenvalue problem is
- * A*X = lambda*B*X.
+ * \f$ A X = \lambda B X \f$.
  *
  * @param vecs Set to true to compute the eigenvectors as well as the
  *  eigenvalues; else, set to false to just compute the eigenvalues.
@@ -1423,17 +1653,14 @@ int la_eigen_asymm(bool vecs, int n, double *a, int lda,
  * @param b On input, the N-by-N matrix B.  On output, the contents
  *  of this matrix are overwritten.
  * @param ldb The leading dimension of matrix B.
- * @param alpha An N-element array that, if @p beta is not supplied,
- *  contains the eigenvalues.  If @p beta is supplied however, the
+ * @param alpha An N-element array a factor of the eigenvalues.  The 
  *  eigenvalues must be computed as ALPHA / BETA.  This however, is not as
  *  trivial as it seems as it is entirely possible, and likely, that
  *  ALPHA / BETA can overflow or underflow.  With that said, the values in
  *  ALPHA will always be less than and usually comparable with the NORM(A).
- * @param beta An optional N-element array that if provided forces
- *  @p alpha to return the numerator, and this array contains the
- *  denominator used to determine the eigenvalues as ALPHA / BETA.  If used,
- *  the values in this array will always be less than and usually comparable
- *  with the NORM(B).
+ * @param beta An N-element array that contains the denominator used to 
+ *  determine the eigenvalues as ALPHA / BETA.  If used, the values in this 
+ *  array will always be less than and usually comparable with the NORM(B).
  * @param v An N-by-N matrix where the right eigenvectors will be
  *  written (one per column).
  *
@@ -1515,7 +1742,213 @@ int la_sort_eigen(bool ascend, int n, double *vals, double *vecs, int ldv);
 int la_sort_eigen_cmplx(bool ascend, int n, double complex *vals,
     double complex *vecs, int ldv);
 
+/**
+ * Computes the LQ factorization of an M-by-N matrix without
+ * pivoting.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_lq_factor(int m, int n, double *a, int lda, double *tau);
+
+/**
+ * Computes the LQ factorization of an M-by-N matrix without
+ * pivoting.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_lq_factor_cmplx(int m, int n, double complex *a, int lda, 
+    double complex *tau);
+
+/**
+ * Forms the matrix Q with orthonormal rows from the elementary
+ * reflectors returned by the base QR factorization algorithm.
+ *
+ * @param m The number of rows in R.
+ * @param n The number of columns in R.
+ * @param l On input, the M-by-N factored matrix as returned by the
+ *  LQ factorization routine.  On output, the lower triangular matrix L.
+ * @param ldl The leading dimension of matrix L.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  each elementary reflector defined in @p r.
+ * @param q An N-by-N matrix where the Q matrix will be written.
+ * @param ldq The leading dimension of matrix Q.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldl or @p ldq are not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_form_lq(int m, int n, double *l, int ldl, const double *tau, double *q,
+    int ldq);
+
+/**
+ * Forms the matrix Q with orthonormal rows from the elementary
+ * reflectors returned by the base QR factorization algorithm.
+ *
+ * @param m The number of rows in R.
+ * @param n The number of columns in R.
+ * @param l On input, the M-by-N factored matrix as returned by the
+ *  LQ factorization routine.  On output, the lower triangular matrix L.
+ * @param ldl The leading dimension of matrix L.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  each elementary reflector defined in @p r.
+ * @param q An N-by-N matrix where the Q matrix will be written.
+ * @param ldq The leading dimension of matrix Q.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldl or @p ldq are not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_form_lq_cmplx(int m, int n, double complex *l, int ldl, 
+    const double complex *tau, double complex *q, int ldq);
+
+/**
+ * Multiplies a general matrix by the orthogonal matrix Q from a LQ
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
+ *
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^T \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^T \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^T \f$; else, set to false.
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of elementary reflectors whose product defines 
+ *  the matrix Q.
+ * @param a On input, an K-by-P matrix containing the elementary
+ *  reflectors output from the LQ factorization.  If @p lside is set to
+ *  true, P = M; else, if @p lside is set to false, P = N.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A K-element array containing the scalar factors of each
+ *  elementary reflector defined in @p a.
+ * @param c On input, the M-by-N matrix C.  On output, the product
+ *  of the orthogonal matrix Q and the original matrix C.
+ * @param ldc The leading dimension of matrix C.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldc are not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_mult_lq(bool lside, bool trans, int m, int n, int k, const double *a,
+    int lda, const double *tau, double *c, int ldc);
+
+/**
+ * Multiplies a general matrix by the orthogonal matrix Q from a LQ
+ * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
+ *
+ * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^H \f$ from the left; 
+ * else, set to false to apply \f$ Q \f$ or \f$ Q^H \f$ from the right.
+ * @param trans Set to true to apply \f$ Q^H \f$; else, set to false.
+ * @param m The number of rows in matrix C.
+ * @param n The number of columns in matrix C.
+ * @param k The number of elementary reflectors whose product defines 
+ *  the matrix Q.
+ * @param a On input, an K-by-P matrix containing the elementary
+ *  reflectors output from the LQ factorization.  If @p lside is set to
+ *  true, P = M; else, if @p lside is set to false, P = N.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A K-element array containing the scalar factors of each
+ *  elementary reflector defined in @p a.
+ * @param c On input, the M-by-N matrix C.  On output, the product
+ *  of the orthogonal matrix Q and the original matrix C.
+ * @param ldc The leading dimension of matrix C.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda or @p ldc are not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_mult_lq_cmplx(bool lside, bool trans, int m, int n, int k, 
+    const double complex *a, int lda, const double complex *tau, 
+    double complex *c, int ldc);
+
+/**
+ * Solves a system of M QR-factored equations of N unknowns where
+ * N >= M.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  @ref lq_factor.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by @ref lq_factor.
+ * @param b On input, an N-by-K matrix containing the first M rows of the
+ *  right-hand-side matrix.  On output, the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+ *      if @p m is less than @p n.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_lq(int m, int n, int k, const double *a, int lda, 
+    const double *tau, double *b, int ldb);
+
+/**
+ * Solves a system of M QR-factored equations of N unknowns where
+ * N >= M.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  @ref lq_factor.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by @ref lq_factor.
+ * @param b On input, an N-by-K matrix containing the first M rows of the
+ *  right-hand-side matrix.  On output, the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+ *      if @p m is less than @p n.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_lq_cmplx(int m, int n, int k, const double complex *a, int lda, 
+    const double complex *tau, double complex *b, int ldb);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-#endif  // LINALG_H_
+#endif  // LINALG_H_DEFINED

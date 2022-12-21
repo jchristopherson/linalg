@@ -1,16 +1,13 @@
 # linalg
 A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
-## Status
-![Build Status](https://travis-ci.org/jchristopherson/linalg.svg?branch=master)
-
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.
 
 ```fortran
 program example
     use iso_fortran_env
-    use linalg_core
+    use linalg
     implicit none
 
     ! Local Variables
@@ -61,7 +58,7 @@ This example solves an overdefined system of 3 equations of 2 uknowns.
 ```fortran
 program example
     use iso_fortran_env
-    use linalg_core
+    use linalg
     implicit none
 
     ! Local Variables
@@ -120,7 +117,7 @@ This example computes the eigenvalues and eigenvectors of a mechanical system co
 ! Notice: x1" = the second time derivative of x1.
 program example
     use iso_fortran_env
-    use linalg_core
+    use linalg
     implicit none
 
     ! Define the model parameters

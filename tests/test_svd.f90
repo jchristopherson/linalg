@@ -4,7 +4,7 @@
 module test_svd_ops
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
-    use linalg_core
+    use linalg
     implicit none
 contains
 ! ------------------------------------------------------------------------------

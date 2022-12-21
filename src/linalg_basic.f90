@@ -1,6 +1,6 @@
 ! linalg_basic.f90
 
-submodule (linalg_core) linalg_basic
+submodule (linalg) linalg_basic
 contains
 ! ******************************************************************************
 ! MATRIX MULTIPLICATION ROUTINES
@@ -63,7 +63,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("mtx_mult_mtx", errmsg, &
@@ -73,6 +73,9 @@ contains
 
         ! Call DGEMM
         call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -120,7 +123,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("mtx_mult_vec", errmsg, &
@@ -130,6 +133,9 @@ contains
 
         ! Call DGEMV
         call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
@@ -157,11 +163,11 @@ contains
         ! Initialization
         m = size(c, 1)
         n = size(c, 2)
-        if (opa == TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
+        if (opa == LA_TRANSPOSE) then ! K = # of columns in op(A) (# of rows in op(B))
             k = size(a, 1)
             ta = 'T'
             lda = k
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa == LA_HERMITIAN_TRANSPOSE) then
             k = size(a, 1)
             ta = 'H'
             lda = k
@@ -170,10 +176,10 @@ contains
             ta = 'N'
             lda = m
         end if
-        if (opb == TRANSPOSE) then
+        if (opb == LA_TRANSPOSE) then
             tb = 'T'
             ldb = n
-        else if (opb == HERMITIAN_TRANSPOSE) then
+        else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
             tb = 'H'
             ldb = n
         else
@@ -188,19 +194,19 @@ contains
 
         ! Input Check
         flag = 0
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(a, 2) /= m) flag = 4
         else
             if (size(a, 1) /= m) flag = 4
         end if
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(b, 2) /= k .or. size(b, 1) /= n) flag = 5
         else
             if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("cmtx_mult_mtx", errmsg, &
@@ -210,6 +216,9 @@ contains
 
         ! Call ZGEMM
         call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -232,9 +241,9 @@ contains
         ! Initialization
         m = size(a, 1)
         n = size(a, 2)
-        if (opa == TRANSPOSE) then
+        if (opa == LA_TRANSPOSE) then
             t = 'T'
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
             t = 'H'
         else
             t = 'N'
@@ -247,7 +256,7 @@ contains
 
         ! Input Check
         flag = 0
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             if (size(b) /= m) then
                 flag = 4
             else if (size(c) /= n) then
@@ -262,7 +271,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
-            write(errmsg, '(AI0A)') &
+            write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
             call errmgr%report_error("cmtx_mult_vec", errmsg, &
@@ -272,6 +281,9 @@ contains
 
         ! Call ZGEMV
         call ZGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ******************************************************************************
@@ -428,7 +440,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -513,6 +525,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -633,7 +648,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx3", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -718,6 +733,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -760,7 +778,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -772,7 +790,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -783,7 +801,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx4", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -802,7 +820,7 @@ contains
 
         ! Process
         if (lside) then
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -813,7 +831,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -846,7 +864,7 @@ contains
                 end if
             end if
         else
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -857,7 +875,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -890,6 +908,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -932,7 +953,7 @@ contains
             if (k > m) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * A * B**T + beta * C
                     if (nrowb /= n .or. ncolb < k) flag = 5
                 else
@@ -944,7 +965,7 @@ contains
             if (k > n) then
                 flag = 4
             else
-                if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
                     ! Compute C = alpha * B**T * A + beta * C
                     if (ncolb /= m .or. nrowb < k) flag = 5
                 else
@@ -955,7 +976,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
-            write(errmsg, '(AI0A)') "Input number ", flag, &
+            write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx_cmplx", trim(errmsg), &
                 LA_ARRAY_SIZE_ERROR)
@@ -974,7 +995,7 @@ contains
 
         ! Process
         if (lside) then
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * A * B**T + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -985,7 +1006,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1018,7 +1039,7 @@ contains
                 end if
             end if
         else
-            if (opb == TRANSPOSE) then
+            if (opb == LA_TRANSPOSE) then
                 ! Compute C = alpha * B**T * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1029,7 +1050,7 @@ contains
                     temp = alpha * a(i)
                     if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
                 end do
-            else if (opb == HERMITIAN_TRANSPOSE) then
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
                 do i = 1, k
                     if (beta == zero) then
@@ -1062,6 +1083,9 @@ contains
                 end if
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1070,6 +1094,237 @@ contains
         logical, intent(in) :: lside
         complex(real64), intent(in) :: alpha
         complex(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+
+        ! Initialization
+        m = size(b, 1)
+        n = size(b, 2)
+        k = size(a)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
+            ! ERROR: One of the input arrays is not sized correctly
+            call errmgr%report_error("diag_mtx_mult_mtx2_cmplx", &
+                "Input number 3 is not sized correctly.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            ! Compute B = alpha * A * B
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(i,:) = temp * b(i,:)
+            end do
+            if (m > k) b(k+1:m,:) = zero
+        else
+            ! Compute B = alpha * B * A
+            do i = 1, k
+                temp = alpha * a(i)
+                if (temp /= one) b(:,i) = temp * b(:,i)
+            end do
+            if (n > k) b(:,k+1:n) = zero
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        integer(int32), intent(in) :: opb
+        complex(real64) :: alpha, beta
+        real(real64), intent(in), dimension(:) :: a
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(inout), dimension(:,:) :: c
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+        complex(real64) :: temp
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = 128) :: errmsg
+
+        ! Initialization
+        m = size(c, 1)
+        n = size(c, 2)
+        k = size(a)
+        nrowb = size(b, 1)
+        ncolb = size(b, 2)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        flag = 0
+        if (lside) then
+            if (k > m) then
+                flag = 4
+            else
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
+                    ! Compute C = alpha * A * B**T + beta * C
+                    if (nrowb /= n .or. ncolb < k) flag = 5
+                else
+                    ! Compute C = alpha * A * B + beta * C
+                    if (nrowb < k .or. ncolb /= n) flag = 5
+                end if
+            end if
+        else
+            if (k > n) then
+                flag = 4
+            else
+                if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
+                    ! Compute C = alpha * B**T * A + beta * C
+                    if (ncolb /= m .or. nrowb < k) flag = 5
+                else
+                    ! Compute C = alpha * B * A + beta * C
+                    if (nrowb /= m .or. ncolb < k) flag = 5
+                end if
+            end if
+        end if
+        if (flag /= 0) then
+            ! ERROR: One of the input arrays is not sized correctly
+            write(errmsg, 100) "Input number ", flag, &
+                " is not sized correctly."
+            call errmgr%report_error("diag_mtx_mult_mtx_mix", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Deal with ALPHA == 0
+        if (alpha == 0) then
+            if (beta == zero) then
+                c = zero
+            else if (beta /= one) then
+                c = beta * c
+            end if
+            return
+        end if
+
+        ! Process
+        if (lside) then
+            if (opb == LA_TRANSPOSE) then
+                ! Compute C = alpha * A * B**T + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                end do
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * A * B**H + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
+                end do
+            else
+                ! Compute C = alpha * A * B + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(i,:) = zero
+                    else if (beta /= one) then
+                        c(i,:) = beta * c(i,:)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                end do
+            end if
+
+            ! Handle extra rows
+            if (m > k) then
+                if (beta == zero) then
+                    c(k+1:m,:) = zero
+                else
+                    c(k+1:m,:) = beta * c(k+1:m,:)
+                end if
+            end if
+        else
+            if (opb == LA_TRANSPOSE) then
+                ! Compute C = alpha * B**T * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                end do
+            else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
+                ! Compute C = alpha * B**H * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
+                end do
+            else
+                ! Compute C = alpha * B * A + beta * C
+                do i = 1, k
+                    if (beta == zero) then
+                        c(:,i) = zero
+                    else if (beta /= one) then
+                        c(:,i) = beta * c(:,i)
+                    end if
+                    temp = alpha * a(i)
+                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                end do
+            end if
+
+            ! Handle extra columns
+            if (n > k) then
+                if (beta == zero) then
+                    c(:,k+1:m) = zero
+                else if (beta /= one) then
+                    c(:,k+1:m) = beta * c(:,k+1:m)
+                end if
+            end if
+        end if
+
+        ! Formatting
+100     format(A, I0, A)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        complex(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
         complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
 
@@ -1249,7 +1504,7 @@ contains
         call DGESVD('N', 'N', m, n, a, m, s, dummy, m, dummy, n, w, &
             lwork - mn, flag)
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank", errmsg, LA_CONVERGENCE_ERROR)
         end if
@@ -1277,6 +1532,9 @@ contains
             if (s(i) < t) exit
             rnk = rnk + 1
         end do
+
+        ! Formatting
+100     format(I0, A)
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1378,7 +1636,7 @@ contains
         call ZGESVD('N', 'N', m, n, a, m, s, cdummy, m, cdummy, n, wptr, &
             lwork - mn, rw, flag)
         if (flag > 0) then
-            write(errmsg, '(I0A)') flag, " superdiagonals could not " // &
+            write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank_cmplx", errmsg, LA_CONVERGENCE_ERROR)
         end if
@@ -1406,6 +1664,9 @@ contains
             if (s(i) < t) exit
             rnk = rnk + 1
         end do
+
+        ! Formatting
+100     format(I0, A)
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1776,7 +2037,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
-            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+            write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
             call errmgr%report_error("tri_mtx_mult_dbl", trim(errmsg), &
@@ -1840,6 +2101,9 @@ contains
                 end do
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1883,7 +2147,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
-            write(errmsg, '(AI0AI0AI0AI0AI0A)') "The matrix at input ", flag, &
+            write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
             call errmgr%report_error("tri_mtx_mult_cmplx", trim(errmsg), &
@@ -1947,6 +2211,9 @@ contains
                 end do
             end if
         end if
+
+        ! Formatting
+100     format(A, I0, A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
 ! ------------------------------------------------------------------------------

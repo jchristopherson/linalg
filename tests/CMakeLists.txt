@@ -1,4 +1,6 @@
-# Fortran Tests
+include("${PROJECT_SOURCE_DIR}/cmake/helper.cmake")
+
+# Fortran API tests source code
 set(linalg_test_sources
     linalg_test.f90
     test_core.f90
@@ -10,13 +12,38 @@ set(linalg_test_sources
     test_misc.f90
     test_lu.f90
     test_sort.f90
-    test_immutable.f90
+    test_lq.f90
 )
+
+# Build the Fortran API tests
 add_executable(linalg_test ${linalg_test_sources})
-target_link_libraries(linalg_test linalg)
+link_library(linalg_test linalg ${PROJECT_INCLUDE_DIR})
+add_test(
+    NAME linalg_test
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    COMMAND $<TARGET_FILE:linalg_test>
+)
 
 
-# Run the tests
-add_custom_command(OUTPUT linalg_tests DEPENDS ${linalg_test_sources}
-    COMMAND linalg_test)
-add_custom_target(run_linalg_tests ALL DEPENDS linalg_tests)
+# C API tests
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+set(linalg_c_test_sources
+    c_linalg_test.c
+    c_test_core.c
+    c_linalg_test_misc.c
+    c_linalg_test_factor.c
+    c_linalg_test_eigen.c
+)
+
+# Build the C API tests
+add_executable(linalg_c_test ${linalg_c_test_sources})
+link_library(linalg_c_test linalg ${PROJECT_INCLUDE_DIR})
+add_test(
+    NAME linalg_c_test
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    COMMAND $<TARGET_FILE:linalg_c_test>
+)

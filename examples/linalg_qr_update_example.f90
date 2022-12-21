@@ -2,7 +2,7 @@
 
 program example
     use iso_fortran_env
-    use linalg_core
+    use linalg
     implicit none
 
     ! Variables

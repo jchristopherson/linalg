@@ -4,8 +4,7 @@
 !! LINALG routines begin with the prefix "la_".
 module linalg_c_api
     use iso_c_binding
-    use linalg_core
-    use linalg_constants
+    use linalg
     use ferror
     implicit none
 
@@ -228,20 +227,20 @@ contains
 ! ------------------------------------------------------------------------------
     !> @brief Computes the matrix operation C = alpha * op(A) * op(B) + beta * C.
     !!
-    !! @param opa Set to TRANSPOSE to compute op(A) as a direct transpose of A,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
+    !! @param opa Set to LA_TRANSPOSE to compute op(A) as a direct transpose of A,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(A) as the Hermitian transpose
     !!  of A, otherwise, set to NO_OPERATION to compute op(A) as A.
-    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
     !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
     !! @param mThe number of rows in @p c.
     !! @param n The number of columns in @p c.
     !! @param k The interior dimension of the product @p a and @p b.
     !! @param alpha A scalar multiplier.
-    !! @param a If @p opa is TRANSPOSE or HERMITIAN_TRANSPOSE, this matrix must
+    !! @param a If @p opa is LA_TRANSPOSE or  LA_HERMITIAN_TRANSPOSE, this matrix must
     !!  be @p k by @p m; else, this matrix must be @p m by @p k.
     !! @param lda The leading dimension of matrix @p a.
-    !! @param b If @p opb is TRANSPOSE or HERMITIAN_TRANSPOSE, this matrix must
+    !! @param b If @p opb is LA_TRANSPOSE or  LA_HERMITIAN_TRANSPOSE, this matrix must
     !!  be @p n by @p k; else, this matrix must be @p k by @p n.
     !! @param ldb The leading dimension of matrix @p b.
     !! @param beta A scalar multiplier.
@@ -267,29 +266,29 @@ contains
 
         ! Initialization
         flag = LA_NO_ERROR
-        if (opa == TRANSPOSE) then
+        if (opa == LA_TRANSPOSE) then
             ta = "T"
-        else if (opa == HERMITIAN_TRANSPOSE) then
+        else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
             ta = "H"
         else
             ta = "N"
         end if
 
-        if (opb == TRANSPOSE) then
+        if (opb == LA_TRANSPOSE) then
             tb = "T"
-        else if (opb == HERMITIAN_TRANSPOSE) then
+        else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
             tb = "H"
         else
             tb = "N"
         end if
 
-        if (opa == TRANSPOSE .or. opa == HERMITIAN_TRANSPOSE) then
+        if (opa == LA_TRANSPOSE .or. opa ==  LA_HERMITIAN_TRANSPOSE) then
             nrowa = k
         else
             nrowa = m
         end if
 
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) then
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) then
             nrowb = n
         else
             nrowb = k
@@ -399,8 +398,96 @@ contains
     !!
     !! @param lside Set to true to apply matrix A from the left; else, set
     !!  to false to apply matrix A from the left.
-    !! @param opb Set to TRANSPOSE to compute op(B) as a direct transpose of B,
-    !!  set to HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
+    !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
+    !! @param m The number of rows in the matrix C.
+    !! @param n The number of columns in the matrix C.
+    !! @param k The inner dimension of the matrix product A * op(B).
+    !! @param alpha A scalar multiplier.
+    !! @param a A P-element array containing the diagonal elements of matrix A
+    !!  where P = MIN(@p m, @p k) if @p lside is true; else, P = MIN(@p n, @p k)
+    !!  if @p lside is false.
+    !! @param b The LDB-by-TDB matrix B where (LDB = leading dimension of B,
+    !!  and TDB = trailing dimension of B):
+    !!  - @p lside == true & @p trans == true: LDB = @p n, TDB = @p k
+    !!  - @p lside == true & @p trans == false: LDB = @p k, TDB = @p n
+    !!  - @p lside == false & @p trans == true: LDB = @p k, TDB = @p m
+    !!  - @p lside == false & @p trans == false: LDB = @p m, TDB = @p k
+    !! @param ldb The leading dimension of matrix B.
+    !! @param beta A scalar multiplier.
+    !! @param c The @p m by @p n matrix C.
+    !! @param ldc The leading dimension of matrix C.
+    !!
+    !! @return An error code.  The following codes are possible.
+    !!  - LA_NO_ERROR: No error occurred.  Successful operation.
+    !!  - LA_INVALID_INPUT_ERROR: Occurs if @p ldb, or @p ldc are not
+    !!      correct.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+    !!      incorrect.
+    function la_diag_mtx_mult_mixed(lside, opb, m, n, k, alpha, a, b, ldb, &
+            beta, c, ldc) bind(C, name = "la_diag_mtx_mult_mixed") result(flag)
+        ! Arguments
+        logical(c_bool), intent(in), value :: lside
+        integer(c_int), intent(in), value :: opb, m, n, k, ldb, ldc
+        complex(c_double), intent(in), value :: alpha, beta
+        real(c_double), intent(in) :: a(*)
+        complex(c_double), intent(in) :: b(ldb,*)
+        complex(c_double), intent(inout) :: c(ldc,*)
+        integer(c_int) :: flag
+
+        ! Local Variabes
+        integer(c_int) :: nrows, ncols, p
+        logical :: ls, tb
+        type(errors) :: err
+
+        ! Initialization
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        tb = .false.
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) tb = .true.
+        if (lside .and. tb) then
+            nrows = n
+            ncols = k
+            p = min(k, m)
+            ls = .true.
+        else if (lside .and. .not. tb) then
+            nrows = k
+            ncols = n
+            p = min(k, m)
+            ls = .true.
+        else if (.not. lside .and. tb) then
+            nrows = k
+            ncols = m
+            p = min(k, n)
+            ls = .false.
+        else
+            nrows = m
+            ncols = k
+            p = min(k, n)
+            ls = .false.
+        end if
+
+        ! Error Checking
+        if (ldb < nrows .or. ldc < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call diag_mtx_mult(ls, opb, alpha, a(1:p), b(1:nrows,1:ncols), &
+            beta, c(1:m,1:n))
+        if (err%has_error_occurred()) flag = err%get_error_flag()
+    end function
+
+! ------------------------------------------------------------------------------
+    !> @brief Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+    !! or C = alpha * op(B) * A + beta * C.
+    !!
+    !! @param lside Set to true to apply matrix A from the left; else, set
+    !!  to false to apply matrix A from the left.
+    !! @param opb Set to LA_TRANSPOSE to compute op(B) as a direct transpose of B,
+    !!  set to  LA_HERMITIAN_TRANSPOSE to compute op(B) as the Hermitian transpose
     !!  of B, otherwise, set to NO_OPERATION to compute op(B) as B.
     !! @param m The number of rows in the matrix C.
     !! @param n The number of columns in the matrix C.
@@ -446,7 +533,7 @@ contains
         call err%set_exit_on_error(.false.)
         flag = LA_NO_ERROR
         tb = .false.
-        if (opb == TRANSPOSE .or. opb == HERMITIAN_TRANSPOSE) tb = .true.
+        if (opb == LA_TRANSPOSE .or. opb ==  LA_HERMITIAN_TRANSPOSE) tb = .true.
         if (lside .and. tb) then
             nrows = n
             ncols = k
@@ -3066,8 +3153,260 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function la_lq_factor(m, n, a, lda, tau) bind(C, name = "la_lq_factor") &
+            result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        real(c_double), intent(inout) :: a(lda,*)
+        real(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call lq_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
 
 ! ------------------------------------------------------------------------------
+    function la_lq_factor_cmplx(m, n, a, lda, tau) &
+            bind(C, name = "la_lq_factor_cmplx") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, lda
+        complex(c_double), intent(inout) :: a(lda,*)
+        complex(c_double), intent(out) :: tau(*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        call err%set_exit_on_error(.false.)
+        flag = LA_NO_ERROR
+        if (lda < m) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call lq_factor(a(1:m,1:n), tau(1:mn), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function la_form_lq(m, n, l, ldl, tau, q, ldq) &
+            bind(C, name = "la_form_lq") result(flag)
+        ! Arguments
+        integer(c_int), intent(in), value :: m, n, ldl, ldq
+        real(c_double), intent(inout) :: l(ldl,*)
+        real(c_double), intent(in) :: tau(*)
+        real(c_double), intent(out) :: q(ldq,*)
+        integer(c_int) :: flag
+
+        ! Local Variables
+        type(errors) err
+        integer(c_int) :: mn
+
+        ! Initialization
+        mn = min(m, n)
+        flag = LA_NO_ERROR
+        if (ldl < m .or. ldq < n) then
+            flag = LA_INVALID_INPUT_ERROR
+            return
+        end if
+
+        ! Process
+        call form_lq(l(1:m,1:n), tau(1:mn), q(1:n,1:n), err = err)
+        if (err%has_error_occurred()) then
+            flag = err%get_error_flag()
+            return
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function la_form_lq_cmplx(m, n, l, ldl, tau, q, ldq) &
+        bind(C, name = "la_form_lq_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, ldl, ldq
+    complex(c_double), intent(inout) :: l(ldl,*)
+    complex(c_double), intent(in) :: tau(*)
+    complex(c_double), intent(out) :: q(ldq,*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    flag = LA_NO_ERROR
+    if (ldl < m .or. ldq < n) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call form_lq(l(1:m,1:n), tau(1:mn), q(1:n,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_mult_lq(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+        bind(C, name = "la_mult_lq") result(flag)
+    ! Local Variables
+    logical(c_bool), intent(in), value :: lside, trans
+    integer(c_int), intent(in), value :: m, n, k, lda, ldc
+    real(c_double), intent(in) :: a(lda,*)
+    real(c_double), intent(inout) :: c(ldc,*)
+    real(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lside) then
+        ma = m
+    else
+        ma = n
+    end if
+    if (lda < k .or. ldc < m .or. k < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+    
+    ! Process
+    call mult_lq(logical(lside), logical(trans), a(1:k,1:ma), tau(1:k), &
+        c(1:m,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_mult_lq_cmplx(lside, trans, m, n, k, a, lda, tau, c, ldc) &
+        bind(C, name = "la_mult_lq_cmplx") result(flag)
+    ! Local Variables
+    logical(c_bool), intent(in), value :: lside, trans
+    integer(c_int), intent(in), value :: m, n, k, lda, ldc
+    complex(c_double), intent(in) :: a(lda,*)
+    complex(c_double), intent(inout) :: c(ldc,*)
+    complex(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lside) then
+        ma = m
+    else
+        ma = n
+    end if
+    if (lda < k .or. ldc < m .or. k < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call mult_lq(logical(lside), logical(trans), a(1:k,1:ma), tau(1:k), &
+        c(1:m,1:n), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_solve_lq(m, n, k, a, lda, tau, b, ldb) &
+    bind(C, name = "la_solve_lq") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, k, lda, ldb
+    real(c_double), intent(in) :: a(lda,*)
+    real(c_double), intent(inout) :: b(ldb,*)
+    real(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < m .or. ldb < n) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call solve_lq(a(1:m,1:n), tau(1:mn), b(1:n,1:k), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_solve_lq_cmplx(m, n, k, a, lda, tau, b, ldb) &
+    bind(C, name = "la_solve_lq_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, k, lda, ldb
+    complex(c_double), intent(in) :: a(lda,*)
+    complex(c_double), intent(inout) :: b(ldb,*)
+    complex(c_double), intent(in) :: tau(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: mn
+
+    ! Initialization
+    mn = min(m, n)
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < m .or. ldb < n) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call solve_lq(a(1:m,1:n), tau(1:mn), b(1:n,1:k), err = err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
 
 ! ------------------------------------------------------------------------------
 end module

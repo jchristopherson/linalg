@@ -35,6 +35,7 @@ target_link_libraries(${PROJECT_NAME} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 
 # Installation
+add_subdirectory(install)
 
 # Testing
 option(BUILD_TESTING "Build tests")
@@ -46,7 +47,7 @@ if (BUILD_TESTING)
 endif()
 
 # Examples
-option(BUILD_LINALG_EXAMPLES "Build examples")
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples")
 message(STATUS "Build LINALG examples: ${BUILD_LINALG_EXAMPLES}")
 if (BUILD_LINALG_EXAMPLES)
   add_subdirectory(examples)

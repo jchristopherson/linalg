@@ -33,6 +33,8 @@ bool test_svd();
 bool test_cmplx_svd();
 bool test_inverse();
 bool test_cmplx_inverse();
+bool test_lq();
+bool test_cmplx_lq();
 
 // c_linalg_test_eigen.c
 bool test_eigen_symm();

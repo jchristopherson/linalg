@@ -79,6 +79,12 @@ int main()
     check = test_eigen_gen();
     if (!check) flag = 15;
 
+    check = test_lq();
+    if (!check) flag = 16;
+
+    // check = test_cmplx_lq();
+    // if (!check) flag = 17;
+
     // End
     return flag;
 }

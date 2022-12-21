@@ -649,3 +649,90 @@ bool test_cmplx_inverse()
     if (!is_cmplx_mtx_equal(n, n, a, ainv, tol)) rst = false;
     return rst;
 }
+
+
+
+
+
+bool test_lq()
+{
+    // Variables
+    const int m = 50;
+    const int n = 50;
+    const int nrhs = 20;
+    const int mn = m * n;
+    const int mnrhs = m * nrhs;
+    const int nnrhs = n * nrhs;
+    const int minmn = MIN(m, n);
+    const double tol = 1.0e-8;
+    const double zero = 0.0;
+    const double one = 1.0;
+    double a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs];
+    bool rst;
+    int i, j, flag;
+
+    // Initialization
+    rst = true;
+    create_matrix(m, n, a);
+    copy_matrix(m, n, a, a1);
+    create_matrix(m, nrhs, bref);
+    copy_matrix(m, nrhs, bref, x);
+
+    // Factor
+    flag = la_lq_factor(m, n, a, m, tau);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Solve
+    flag = la_solve_lq(m, n, nrhs, a, m, tau, x, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test by ensuring A * X = B
+    flag = la_mtx_mult(false, false, m, nrhs, n, one, a1, m, x, n, zero, b, m);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_mtx_equal(m, nrhs, b, bref, tol)) rst = false;
+
+    // End
+    return rst;
+}
+
+bool test_cmplx_lq()
+{
+    // Variables
+    const int m = 50;
+    const int n = 50;
+    const int nrhs = 20;
+    const int mn = m * n;
+    const int mnrhs = m * nrhs;
+    const int nnrhs = n * nrhs;
+    const int minmn = MIN(m, n);
+    const double tol = 1.0e-8;
+    const double complex zero = 0.0 + 0.0 * I;
+    const double complex one = 1.0 + 1.0 * I;
+    double complex a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs];
+    bool rst;
+    int i, j, flag;
+
+    // Initialization
+    rst = true;
+    cmplx_create_matrix(m, n, a);
+    cmplx_copy_matrix(m, n, a, a1);
+    cmplx_create_matrix(m, nrhs, bref);
+    cmplx_copy_matrix(m, nrhs, bref, x);
+
+    // Factor
+    flag = la_lq_factor_cmplx(m, n, a, m, tau);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Solve
+    flag = la_solve_lq_cmplx(m, n, nrhs, a, m, tau, x, n);
+    if (flag != LA_NO_ERROR) rst = false;
+
+    // Test by ensuring A * X = B
+    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, nrhs, n, 
+        one, a1, m, x, n, zero, b, m);
+    if (flag != LA_NO_ERROR) rst = false;
+    if (!is_cmplx_mtx_equal(m, nrhs, b, bref, tol)) rst = false;
+
+    // End
+    return rst;
+}

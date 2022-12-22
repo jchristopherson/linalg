@@ -1,5 +1,5 @@
 # Master CMAKE Build Script
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C

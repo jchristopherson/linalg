@@ -17,6 +17,7 @@ else()
     FetchContent_Declare(
         ferror
         GIT_REPOSITORY "https://github.com/jchristopherson/ferror"
+        OVERRIDE_FIND_PACKAGE
     )
 
     FetchContent_MakeAvailable(ferror)

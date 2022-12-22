@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.7.0
+  VERSION 1.7.1
 )
 
 # Utilize the GNU installation structure

@@ -6,6 +6,10 @@ module test_core
     implicit none
     private
     public :: is_mtx_equal
+    public :: REAL64_TOL
+
+    ! Default tolerance to use for comparison of double-precision values.
+    real(real64), parameter :: REAL64_TOL = 1.0d-6
 
 ! ******************************************************************************
 ! INTERFACES

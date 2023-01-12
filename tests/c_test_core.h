@@ -6,6 +6,7 @@
 
 #define INDEX(i, j, lda) ((lda) * (j) + (i))
 #define MIN(a, b)((a) < (b) ? (a) : (b))
+#define DBL_TOL 1.0e-6
 
 // Tests to see if two matrices are equal within the specified tolerance.
 bool is_mtx_equal(int m, int n, const double *x, const double *y, double tol);

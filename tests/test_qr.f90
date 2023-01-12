@@ -14,7 +14,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r1, r2
@@ -35,7 +34,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), tol)) then
+        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 1, Part C"
         end if
@@ -46,7 +45,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), tol)) then
+        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 2, Part C"
         end if
@@ -57,7 +56,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r1, r2
@@ -78,7 +76,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), tol)) then
+        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 1, Part C"
         end if
@@ -89,7 +87,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), tol)) then
+        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 2, Part C"
         end if
@@ -100,7 +98,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r1, r2
@@ -121,7 +118,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), tol)) then
+        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 1, Part C"
         end if
@@ -132,7 +129,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), tol)) then
+        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 2, Part C"
         end if
@@ -143,7 +140,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         integer(int32) :: i, j
@@ -172,7 +168,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), tol)) then
+        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
         end if
@@ -183,7 +179,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), tol)) then
+        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
         end if
@@ -197,7 +193,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r, c1, c2, ans
@@ -223,7 +218,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Multiplication Test 1"
         end if
@@ -236,7 +231,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Multiplication Test 2"
         end if
@@ -248,7 +243,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r, c1, c2, ans
@@ -274,7 +268,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Multiplication Test 1"
         end if
@@ -287,7 +281,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Multiplication Test 2"
         end if
@@ -299,7 +293,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r, c1, c2, ans
@@ -325,7 +318,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 1"
         end if
@@ -338,7 +331,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 2"
         end if
@@ -350,7 +343,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r
@@ -377,7 +369,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right QR Multiplication Test 1"
         end if
@@ -390,7 +382,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right QR Multiplication Test 2"
         end if
@@ -402,7 +394,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r
@@ -429,7 +420,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Overdetermined QR Multiplication Test 1"
         end if
@@ -442,7 +433,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Overdetermined QR Multiplication Test 2"
         end if
@@ -454,7 +445,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r
@@ -481,7 +471,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Underdetermined QR Multiplication Test 1"
         end if
@@ -494,7 +484,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Underdetermined QR Multiplication Test 2"
         end if
@@ -506,7 +496,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, r
@@ -533,7 +522,7 @@ contains
         ans = matmul(q, c2)
 
         ! Compare
-        if (.not.is_mtx_equal(ans, c1, tol)) then
+        if (.not.is_mtx_equal(ans, c1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Vector QR Multiplication Test 1"
         end if
@@ -546,7 +535,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Compare
-        if (.not.is_mtx_equal(ans, c1, tol)) then
+        if (.not.is_mtx_equal(ans, c1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Vector QR Multiplication Test 2"
         end if
@@ -560,7 +549,6 @@ contains
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -591,7 +579,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, tol)) then
+        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 1, No Pivoting"
         end if
@@ -604,7 +592,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2a, tol)) then
+        if (.not.is_mtx_equal(ans2, b2a, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, No Pivoting"
         end if
@@ -616,7 +604,6 @@ contains
         integer(int32), parameter :: m = 100
         integer(int32), parameter :: n = 100
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -649,7 +636,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, tol)) then
+        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 1, With Pivoting"
         end if
@@ -662,7 +649,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2a, tol)) then
+        if (.not.is_mtx_equal(ans2, b2a, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
         end if
@@ -674,7 +661,6 @@ contains
         integer(int32), parameter :: m = 200
         integer(int32), parameter :: n = 100
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -707,7 +693,7 @@ contains
          call solve_qr(a2, tau, pvt, b2)
 
          ! Test
-         if (.not.is_mtx_equal(b1(1:n,:), b2(1:n,:), tol)) then
+         if (.not.is_mtx_equal(b1(1:n,:), b2(1:n,:), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Solution Test, With Pivoting"
          end if
@@ -719,7 +705,6 @@ contains
         integer(int32), parameter :: m = 5
         integer(int32), parameter :: n = 6
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, a2
@@ -749,7 +734,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, tol)) then
+        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Solution Test 1, With Pivoting"
         end if
@@ -760,7 +745,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2, tol)) then
+        if (.not.is_mtx_equal(ans2, b2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Solution Test 2, With Pivoting"
         end if
@@ -773,7 +758,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, r
@@ -803,7 +787,7 @@ contains
         call qr_rank1_update(q, r, u, v)
 
         ! Test
-        if (.not.is_mtx_equal(a1, matmul(q, r), tol)) then
+        if (.not.is_mtx_equal(a1, matmul(q, r), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Rank 1 QR Update"
         end if

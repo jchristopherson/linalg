@@ -12,7 +12,6 @@ contains
     function test_lu_factor() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 75
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, l, u, p
@@ -30,7 +29,7 @@ contains
         ! Extract L, U, and P to determine if P * A = L * U
         l = a1
         call form_lu(l, ipvt, u, p)
-        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), tol)) then
+        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Test"
         end if
@@ -41,7 +40,6 @@ contains
         ! Parameters
         integer(int32), parameter :: n = 75
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1
@@ -63,7 +61,7 @@ contains
         call solve_lu(a1, ipvt, x)
 
         ! Test by determining if A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization & Solution Test"
         end if
@@ -73,7 +71,6 @@ contains
     function test_lu_factor_cmplx() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 75
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a, a1, l, u
@@ -100,7 +97,7 @@ contains
         ! Extract L, U, and P to determine if P * A = L * U
         l = a1
         call form_lu(l, ipvt, u, p)
-        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), tol)) then
+        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization Test"
         end if
@@ -111,7 +108,6 @@ contains
         ! Parameters
         integer(int32), parameter :: n = 75
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a, a1
@@ -148,7 +144,7 @@ contains
         call solve_lu(a1, ipvt, x)
 
         ! Test by determining if A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization & Solution Test"
         end if

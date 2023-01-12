@@ -14,7 +14,6 @@ contains
         ! Parameters
         integer(int32), parameter :: n = 100
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, u, l
@@ -33,28 +32,28 @@ contains
 
         ! Test 1: A = L * L**T
         call cholesky_factor(l, .false.)
-        if (.not.is_mtx_equal(a, matmul(l, transpose(l)), tol)) then
+        if (.not.is_mtx_equal(a, matmul(l, transpose(l)), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 1"
         end if
 
         ! Test 2: A = U**T * U
         call cholesky_factor(u, .true.)
-        if (.not.is_mtx_equal(a, matmul(transpose(u), u), tol)) then
+        if (.not.is_mtx_equal(a, matmul(transpose(u), u), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 2"
         end if
 
         ! Test 3: Solve L*L**T * X = B
         call solve_cholesky(.false., l, b1)
-        if (.not.is_mtx_equal(matmul(a, b1), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, b1), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 3"
         end if
 
         ! Test 4: Solve U**T * U * X = B
         call solve_cholesky(.true., u, b2)
-        if (.not.is_mtx_equal(matmul(a, b2), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, b2), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 4"
         end if
@@ -64,7 +63,6 @@ contains
     function test_cholesky_rank1_update() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, r
@@ -88,7 +86,7 @@ contains
         call cholesky_rank1_update(r, u)
 
         ! Test
-        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Update Test 1"
         end if
@@ -98,7 +96,6 @@ contains
     function test_cholesky_rank1_downdate() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, r
@@ -125,7 +122,7 @@ contains
         call cholesky_rank1_downdate(r, u)
 
         ! Test
-        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Downdate Test 1"
         end if

@@ -14,7 +14,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
@@ -32,7 +31,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Factorization Test 1"
         end if
@@ -43,7 +42,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n), temp(m, n)
@@ -61,7 +59,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Factorization Test 1"
         end if
@@ -72,7 +70,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: ar(m, n), ai(m, n)
@@ -93,7 +90,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Factorization Test 1"
         end if
@@ -104,7 +101,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: ar(m, n), ai(m, n)
@@ -125,7 +121,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, tol)) then
+        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Factorization Test 1"
         end if
@@ -138,7 +134,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
@@ -167,7 +162,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 1"
         end if
@@ -179,7 +174,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 2"
         end if
@@ -195,7 +190,7 @@ contains
         call mtx_mult(.true., .false., 1.0d0, q, c2, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 3"
         end if
@@ -208,7 +203,7 @@ contains
         call mtx_mult(.true., 1.0d0, q, c4, 0.0d0, ans2)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 4"
         end if
@@ -219,7 +214,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
@@ -248,7 +242,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 1"
         end if
@@ -260,7 +254,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 2"
         end if
@@ -276,7 +270,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 3"
         end if
@@ -289,7 +283,7 @@ contains
         ans2 = matmul(transpose(q), c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 4"
         end if
@@ -300,7 +294,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -336,7 +329,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Multiplication Test 1"
         end if
@@ -348,7 +341,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Multiplication Test 2"
         end if
@@ -364,7 +357,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Multiplication Test 3"
         ! end if
@@ -377,7 +370,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c3, ans2, tol)) then
+        ! if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Multiplication Test 4"
         ! end if
@@ -388,7 +381,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -424,7 +416,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 1"
         end if
@@ -436,7 +428,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, tol)) then
+        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 2"
         end if
@@ -452,7 +444,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 3"
         ! end if
@@ -465,7 +457,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c3, ans2, tol)) then
+        ! if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 4"
         ! end if
@@ -476,7 +468,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: rst
@@ -503,7 +494,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Right Multiplication Test 1"
         end if
@@ -516,7 +507,7 @@ contains
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Right Multiplication Test 2"
         end if
@@ -527,7 +518,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -561,7 +551,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Right Multiplication Test 1"
         end if
@@ -575,7 +565,7 @@ contains
         !     zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Right Multiplication Test 2"
         ! end if
@@ -586,7 +576,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: rst
@@ -613,7 +602,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 1"
         end if
@@ -626,7 +615,7 @@ contains
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 2"
         end if
@@ -637,7 +626,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -671,7 +659,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, tol)) then
+        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 1"
         end if
@@ -685,7 +673,7 @@ contains
         !     zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, tol)) then
+        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 2"
         ! end if

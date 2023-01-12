@@ -13,7 +13,6 @@ contains
     function test_eigen_symm() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, vecs, x, y
@@ -34,7 +33,7 @@ contains
 
         ! ! Test
         ! y = matmul(a, vecs)
-        ! if (.not.is_mtx_equal(x, y, tol)) then
+        ! if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Symmetric Eigen Values"
         ! end if
@@ -44,7 +43,6 @@ contains
     function test_eigen_asymm() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1
@@ -70,14 +68,14 @@ contains
 
         ! Test 1
         y = matmul(a, vecs)
-        if (.not.is_mtx_equal(x, y, tol)) then
+        if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 1"
         end if
 
         ! Compute just the eigenvalues
         call eigen(a, vals1)
-        if (.not.is_mtx_equal(vals, vals1, tol)) then
+        if (.not.is_mtx_equal(vals, vals1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 2"
         end if
@@ -87,7 +85,6 @@ contains
     function test_eigen_gen() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, b, b1
@@ -113,18 +110,17 @@ contains
         y = matmul(b, y)
 
         ! Check
-        if (.not.is_mtx_equal(x, y, tol)) then
+        if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 1"
         end if
 
         ! Test 2 - Eigenvalues Only
         call eigen(a, b, vals2)
-        if (.not.is_mtx_equal(vals, vals2, tol)) then
+        if (.not.is_mtx_equal(vals, vals2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 2"
         end if
     end function
-
 
 end module

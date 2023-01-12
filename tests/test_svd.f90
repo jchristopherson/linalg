@@ -12,7 +12,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -34,7 +33,7 @@ contains
         a1 = matmul(u1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Singular Value Decomposition"
         end if
@@ -45,7 +44,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1, u2
@@ -68,7 +66,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 1"
         end if
@@ -82,7 +80,7 @@ contains
         a1 = matmul(u2, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 2"
         end if
@@ -93,7 +91,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1
@@ -117,7 +114,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Singular Value Decomposition, Test 1"
         end if

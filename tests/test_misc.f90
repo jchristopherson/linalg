@@ -15,7 +15,6 @@ contains
         integer(int32), parameter :: m = 30
         integer(int32), parameter :: n = 30
         integer(int32), parameter :: k = 30
-        real(real64), parameter :: tol = 1.0d-8
         real(real64), parameter :: alpha = 0.5d0
         real(real64), parameter :: beta = 0.25d0
 
@@ -42,7 +41,7 @@ contains
         call diag_mtx_mult(.true., .false., alpha, d1v, b1, beta, c1)
 
         ! Test
-        if (.not.is_mtx_equal(ans1, c1, tol)) then
+        if (.not.is_mtx_equal(ans1, c1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 1"
         end if
@@ -52,7 +51,7 @@ contains
         call diag_mtx_mult(.true., .true., alpha, d1v, b1, beta, c1)
 
         ! Test
-        if (.not.is_mtx_equal(ans1, c1, tol)) then
+        if (.not.is_mtx_equal(ans1, c1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 2"
         end if
@@ -62,7 +61,7 @@ contains
         call diag_mtx_mult(.true., alpha, d1v, b2)
 
         ! Test
-        if (.not.is_mtx_equal(ans2, b2, tol)) then
+        if (.not.is_mtx_equal(ans2, b2, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 3"
         end if
@@ -76,7 +75,6 @@ contains
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 20
         real(real64), parameter :: alpha = 0.5d0
-        real(real64), parameter :: tol = 1.0d-12
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, b
@@ -97,7 +95,7 @@ contains
         call rank1_update(alpha, x(:,1), y(:,1), a1)
 
         ! Compare the results
-        if (.not.is_mtx_equal(a1, b, tol)) then
+        if (.not.is_mtx_equal(a1, b, REAL64_TOL)) then
             print '(A)', "Test Failed: Rank 1 Update"
             rst = .false.
         else
@@ -137,7 +135,6 @@ contains
         integer(int32), parameter :: n = 100
         real(real64), parameter :: alpha = 1.5d0
         real(real64), parameter :: beta = -3.0d0
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: check, rst
@@ -154,7 +151,7 @@ contains
         ! Test 1 (beta = 0)
         call tri_mtx_mult(.true., alpha, a, 0.0d0, b)
         bans = alpha * matmul(transpose(a), a)
-        if (.not.is_mtx_equal(b, bans, tol)) then
+        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1A"
         end if
@@ -164,7 +161,7 @@ contains
         check = .true.
         call tri_mtx_mult(.true., alpha, a, beta, b)
         bans = alpha * matmul(transpose(a), a) + beta * bans
-        if (.not.is_mtx_equal(b, bans, tol)) then
+        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
             check = .false.
             rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1B"
@@ -177,7 +174,6 @@ contains
         integer(int32), parameter :: n = 100
         real(real64), parameter :: alpha = 1.5d0
         real(real64), parameter :: beta = -3.0d0
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         logical :: check, rst
@@ -194,7 +190,7 @@ contains
         ! Test 1 (beta = 0)
         call tri_mtx_mult(.false., alpha, a, 0.0d0, b)
         bans = alpha * matmul(a, transpose(a))
-        if (.not.is_mtx_equal(b, bans, tol)) then
+        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2A"
         end if
@@ -204,7 +200,7 @@ contains
         check = .true.
         call tri_mtx_mult(.false., alpha, a, beta, b)
         bans = alpha * matmul(a, transpose(a)) + beta * bans
-        if (.not.is_mtx_equal(b, bans, tol)) then
+        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
             check = .false.
             rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2B"
@@ -225,7 +221,6 @@ contains
         integer(int32), parameter :: k = 30
         real(real64), parameter :: alpha = 1.0d0
         real(real64), parameter :: beta = 0.0d0
-        real(real64), parameter :: tol = 1.0d-8
         real(real64) :: a(m, k), b(n, k), c(m, n), ans(m, n)
 
         ! Initialization
@@ -239,7 +234,7 @@ contains
 
         ! Test
         call mtx_mult(.false., .true., alpha, a, b, beta, c)
-        if (.not.is_mtx_equal(c, ans, tol)) then
+        if (.not.is_mtx_equal(c, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Matrix Multiplication - Test 1"
         end if
@@ -256,7 +251,6 @@ contains
         integer(int32), parameter :: n = 200
         integer(int32), parameter :: nrhs = 20
         real(real64), parameter :: alpha = 1.0d0
-        real(real64), parameter :: tol = 1.0d-8
         integer(int32) :: j
         real(real64) :: a(n,n), b1(n,nrhs), x1(n,nrhs), check1(n,nrhs)
 
@@ -276,17 +270,11 @@ contains
 
         ! Verify that A * X1 = B1
         check1 = matmul(a, x1)
-        if (.not.is_mtx_equal(b1, check1, tol)) then
+        if (.not.is_mtx_equal(b1, check1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Tri Matrix Solve - Test 1A"
         end if
     end function
-
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
+    
 ! ------------------------------------------------------------------------------
 end module

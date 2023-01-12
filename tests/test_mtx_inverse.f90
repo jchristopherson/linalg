@@ -15,7 +15,6 @@ contains
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -37,7 +36,7 @@ contains
         x = matmul(ainv, b)
 
         ! Test: A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Pseudo-Inverse Test 1"
         end if
@@ -46,9 +45,6 @@ contains
 ! ------------------------------------------------------------------------------
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
     function test_pinv_od() result(rst)
-        ! Parameters
-        real(real64), parameter :: tol = 1.0d-8
-
         ! Local Variables
         real(real64), dimension(8, 6) :: a, a1
         real(real64), dimension(6, 8) :: ainv
@@ -74,7 +70,7 @@ contains
         x1 = matmul(ainv, b)
 
         ! Test
-        if (.not.is_mtx_equal(x1, x, tol)) then
+        if (.not.is_mtx_equal(x1, x, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Pseudo-Inverse Test 1"
         end if
@@ -84,7 +80,6 @@ contains
     function test_inv() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, ainv
@@ -102,7 +97,7 @@ contains
         call mtx_pinverse(a, ainv)
 
         ! Test
-        if (.not.is_mtx_equal(ainv, a1, tol)) then
+        if (.not.is_mtx_equal(ainv, a1, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Matrix Inverse Test 1"
         end if
@@ -113,7 +108,6 @@ contains
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: ar, ai
@@ -142,7 +136,7 @@ contains
         x = matmul(ainv, b)
 
         ! Test: A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 1"
         end if
@@ -153,7 +147,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 80
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -184,7 +177,7 @@ contains
 
         ! Compute A+ * A - should = I
         check = matmul(ainv, a)
-        if (.not.is_mtx_equal(check, identity, tol)) then
+        if (.not.is_mtx_equal(check, identity, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 2"
         end if
@@ -195,7 +188,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 80
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -226,7 +218,7 @@ contains
 
         ! Compute A * A+ - should = I
         check = matmul(a, ainv)
-        if (.not.is_mtx_equal(check, identity, tol)) then
+        if (.not.is_mtx_equal(check, identity, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 3"
         end if

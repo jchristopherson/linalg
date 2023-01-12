@@ -196,9 +196,5 @@ program main
     if (.not.rst) overall = .false.
 
     ! End
-    if (overall) then
-        call exit(0)
-    else
-        call exit(1)
-    end if
+    if (.not.overall) stop 1
 end program

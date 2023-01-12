@@ -14,7 +14,6 @@ contains
 function test_dbl_ascend_sort() result(rst)
     ! Parameters
     integer(int32), parameter :: n = 200
-    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
@@ -38,7 +37,7 @@ function test_dbl_ascend_sort() result(rst)
 
     ! Compare the two arrays - we really don't have a good means of checking
     ! ind at this point
-    if (.not.is_mtx_equal(x1, x2, tol)) then
+    if (.not.is_mtx_equal(x1, x2, REAL64_TOL)) then
         rst = .false.
         print '(A)', "Test Failed: Ascending sort of a double-precision array."
     end if
@@ -59,7 +58,6 @@ end function
 function test_dbl_descend_sort() result(rst)
     ! Parameters
     integer(int32), parameter :: n = 200
-    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
@@ -83,7 +81,7 @@ function test_dbl_descend_sort() result(rst)
 
     ! Compare the two arrays - we really don't have a good means of checking
     ! ind at this point
-    if (.not.is_mtx_equal(x1, x2, tol)) then
+    if (.not.is_mtx_equal(x1, x2, REAL64_TOL)) then
         rst = .false.
         print '(A)', "Test Failed: Descending sort of a double-precision array."
     end if

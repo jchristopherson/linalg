@@ -6,11 +6,11 @@ project(
   VERSION 1.7.1
 )
 
-# Utilize the GNU installation structure
-include(GNUInstallDirs)
-
 # Get helper macros and functions
 include("${PROJECT_SOURCE_DIR}/cmake/helper.cmake")
+
+# Build the C API?
+option(BUILD_C_API "Build C API?" OFF)
 
 # Confgiure everything
 add_subdirectory(configure)

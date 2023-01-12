@@ -87,7 +87,12 @@ set(LINALG_SOURCES
     ${dir}/linalg_solve.f90
     ${dir}/linalg_sorting.f90
     ${dir}/linalg_basic.f90
-    ${dir}/linalg_c_api.f90
 )
+if (${BUILD_C_API})
+    set(LINALG_C_SOURCES
+        ${dir}/linalg_c_api.f90
+    )
+    list(APPEND LINALG_SOURCES ${LINALG_C_SOURCES})
+endif()
 list(APPEND LINALG_SOURCES ${qrupdate_sources})
 set(LINALG_SOURCES ${LINALG_SOURCES} PARENT_SCOPE)

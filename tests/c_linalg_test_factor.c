@@ -314,8 +314,8 @@ bool test_cmplx_qr_rank1_update()
     flag = la_qr_factor_cmplx(m, n, a, m, tau);
     if (flag != LA_NO_ERROR) rst = false;
 
-    // flag = la_form_qr_cmplx(true, m, n, a, m, tau, q, m);    // R is stored in A
-    // if (flag != LA_NO_ERROR) rst = false;
+    flag = la_form_qr_cmplx(true, m, n, a, m, tau, q, m);    // R is stored in A
+    if (flag != LA_NO_ERROR) rst = false;
 
     // // Perform the rank 1 update to the original matrix A
     // flag = la_rank1_update_cmplx(m, n, one, u, v, a1, m);

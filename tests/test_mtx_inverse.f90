@@ -5,6 +5,7 @@ module test_mtx_inverse
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -15,7 +16,6 @@ contains
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -26,8 +26,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
 
         ! Compute the inverse
@@ -37,7 +37,7 @@ contains
         x = matmul(ainv, b)
 
         ! Test: A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Pseudo-Inverse Test 1"
         end if
@@ -46,9 +46,6 @@ contains
 ! ------------------------------------------------------------------------------
     ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
     function test_pinv_od() result(rst)
-        ! Parameters
-        real(real64), parameter :: tol = 1.0d-8
-
         ! Local Variables
         real(real64), dimension(8, 6) :: a, a1
         real(real64), dimension(6, 8) :: ainv
@@ -74,7 +71,7 @@ contains
         x1 = matmul(ainv, b)
 
         ! Test
-        if (.not.is_mtx_equal(x1, x, tol)) then
+        if (.not.assert(x1, x, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Pseudo-Inverse Test 1"
         end if
@@ -84,7 +81,6 @@ contains
     function test_inv() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, ainv
@@ -92,7 +88,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
 
         ! Compute the inverse of A
@@ -102,7 +98,7 @@ contains
         call mtx_pinverse(a, ainv)
 
         ! Test
-        if (.not.is_mtx_equal(ainv, a1, tol)) then
+        if (.not.assert(ainv, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Matrix Inverse Test 1"
         end if
@@ -113,11 +109,8 @@ contains
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
-        real(real64), dimension(m, nrhs) :: br, bi
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, nrhs) :: b
@@ -126,14 +119,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
-
-        call random_number(br)
-        call random_number(bi)
-        b = cmplx(br, bi, real64)
 
         ! Compute the inverse
         call mtx_pinverse(a1, ainv)
@@ -142,7 +130,7 @@ contains
         x = matmul(ainv, b)
 
         ! Test: A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, tol)) then
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 1"
         end if
@@ -153,14 +141,12 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 80
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(n, n) :: identity, check
@@ -169,9 +155,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         a1 = a
 
         identity = zero
@@ -184,7 +168,7 @@ contains
 
         ! Compute A+ * A - should = I
         check = matmul(ainv, a)
-        if (.not.is_mtx_equal(check, identity, tol)) then
+        if (.not.assert(check, identity, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 2"
         end if
@@ -195,14 +179,12 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 80
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, m) :: identity, check
@@ -211,9 +193,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         a1 = a
 
         identity = zero
@@ -226,7 +206,7 @@ contains
 
         ! Compute A * A+ - should = I
         check = matmul(a, ainv)
-        if (.not.is_mtx_equal(check, identity, tol)) then
+        if (.not.assert(check, identity, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 3"
         end if

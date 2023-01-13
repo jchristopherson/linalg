@@ -5,6 +5,7 @@ module test_svd_ops
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ------------------------------------------------------------------------------
@@ -12,7 +13,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -23,7 +23,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
 
         ! Compute the full SVD of A
@@ -34,7 +34,7 @@ contains
         a1 = matmul(u1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Singular Value Decomposition"
         end if
@@ -45,7 +45,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 60
         integer(int32), parameter :: n = 50
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1, u2
@@ -56,7 +55,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
 
         ! Compute the full SVD of A
@@ -68,7 +67,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 1"
         end if
@@ -82,7 +81,7 @@ contains
         a1 = matmul(u2, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 2"
         end if
@@ -93,7 +92,6 @@ contains
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1
@@ -104,7 +102,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
         t1 = 0.0d0
 
@@ -117,7 +115,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, tol)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Singular Value Decomposition, Test 1"
         end if

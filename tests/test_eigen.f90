@@ -5,6 +5,7 @@ module test_eigen
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg
     use test_core
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -13,7 +14,6 @@ contains
     function test_eigen_symm() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, vecs, x, y
@@ -34,7 +34,7 @@ contains
 
         ! ! Test
         ! y = matmul(a, vecs)
-        ! if (.not.is_mtx_equal(x, y, tol)) then
+        ! if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Symmetric Eigen Values"
         ! end if
@@ -44,7 +44,6 @@ contains
     function test_eigen_asymm() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1
@@ -55,7 +54,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
@@ -70,14 +69,14 @@ contains
 
         ! Test 1
         y = matmul(a, vecs)
-        if (.not.is_mtx_equal(x, y, tol)) then
+        if (.not.assert(x, y, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 1"
         end if
 
         ! Compute just the eigenvalues
         call eigen(a, vals1)
-        if (.not.is_mtx_equal(vals, vals1, tol)) then
+        if (.not.assert(vals, vals1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 2"
         end if
@@ -87,7 +86,6 @@ contains
     function test_eigen_gen() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, b, b1
@@ -97,8 +95,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
         b1 = b
 
@@ -113,18 +111,17 @@ contains
         y = matmul(b, y)
 
         ! Check
-        if (.not.is_mtx_equal(x, y, tol)) then
+        if (.not.assert(x, y, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 1"
         end if
 
         ! Test 2 - Eigenvalues Only
         call eigen(a, b, vals2)
-        if (.not.is_mtx_equal(vals, vals2, tol)) then
+        if (.not.assert(vals, vals2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 2"
         end if
     end function
-
 
 end module

@@ -5,6 +5,7 @@ module test_cholesky
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -14,7 +15,6 @@ contains
         ! Parameters
         integer(int32), parameter :: n = 100
         integer(int32), parameter :: nrhs = 20
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, u, l
@@ -23,8 +23,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a1)
-        call random_number(b)
+        call create_random_array(a1)
+        call create_random_array(b)
         a = matmul(a1, transpose(a1))
         u = a
         l = a
@@ -33,28 +33,28 @@ contains
 
         ! Test 1: A = L * L**T
         call cholesky_factor(l, .false.)
-        if (.not.is_mtx_equal(a, matmul(l, transpose(l)), tol)) then
+        if (.not.assert(a, matmul(l, transpose(l)), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 1"
         end if
 
         ! Test 2: A = U**T * U
         call cholesky_factor(u, .true.)
-        if (.not.is_mtx_equal(a, matmul(transpose(u), u), tol)) then
+        if (.not.assert(a, matmul(transpose(u), u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 2"
         end if
 
         ! Test 3: Solve L*L**T * X = B
         call solve_cholesky(.false., l, b1)
-        if (.not.is_mtx_equal(matmul(a, b1), b, tol)) then
+        if (.not.assert(matmul(a, b1), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 3"
         end if
 
         ! Test 4: Solve U**T * U * X = B
         call solve_cholesky(.true., u, b2)
-        if (.not.is_mtx_equal(matmul(a, b2), b, tol)) then
+        if (.not.assert(matmul(a, b2), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 4"
         end if
@@ -64,7 +64,6 @@ contains
     function test_cholesky_rank1_update() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, r
@@ -73,8 +72,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a1)
-        call random_number(u)
+        call create_random_array(a1)
+        call create_random_array(u)
         a = matmul(a1, transpose(a1))
         r = a
 
@@ -88,7 +87,7 @@ contains
         call cholesky_rank1_update(r, u)
 
         ! Test
-        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+        if (.not.assert(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Update Test 1"
         end if
@@ -98,7 +97,6 @@ contains
     function test_cholesky_rank1_downdate() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
-        real(real64), parameter :: tol = 1.0d-8
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, r
@@ -107,8 +105,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a1)
-        call random_number(u)
+        call create_random_array(a1)
+        call create_random_array(u)
         a = matmul(a1, transpose(a1))
 
         ! Start with a positive definite matrix, and then update it
@@ -125,7 +123,7 @@ contains
         call cholesky_rank1_downdate(r, u)
 
         ! Test
-        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol)) then
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Rank 1 Downdate Test 1"
         end if

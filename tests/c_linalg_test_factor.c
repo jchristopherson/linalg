@@ -10,7 +10,6 @@ bool test_lu()
     const int nrhs = 20;
     const int nn = n * n;
     const int nnrhs = n * nrhs;
-    const double tol = 1.0e-8;
     double a[nn], a1[nn], b[nnrhs], b1[nnrhs], bref[nnrhs];
     int pvt[n];
     bool rst;
@@ -33,7 +32,7 @@ bool test_lu()
 
     // Compare by multiplying the solutions
     mtx_mult(n, nrhs, n, a1, b, bref);
-    if (!is_mtx_equal(n, nrhs, b1, bref, tol)) rst = false;
+    if (!is_mtx_equal(n, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -46,7 +45,6 @@ bool test_cmplx_lu()
     const int nrhs = 20;
     const int nn = n * n;
     const int nnrhs = n * nrhs;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[nn], a1[nn], b[nnrhs], b1[nnrhs], bref[nnrhs];
@@ -72,7 +70,7 @@ bool test_cmplx_lu()
     // Compare by multiplying the solutions
     flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, n, nrhs, n, one, 
         a1, n, b, n, zero, bref, n);
-    if (!is_cmplx_mtx_equal(n, nrhs, b1, bref, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -90,7 +88,6 @@ bool test_qr()
     const int mn = m * n;
     const int mnrhs = m * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[mn], a1[mn], b[mnrhs], b1[mnrhs], tau[minmn], bref[mnrhs];
@@ -115,7 +112,7 @@ bool test_qr()
     // Test by ensuring A * X = B
     flag = la_mtx_mult(false, false, m, nrhs, n, one, a1, m, b, m, zero, bref, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_mtx_equal(m, nrhs, b1, bref, tol)) rst = false;
+    if (!is_mtx_equal(m, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -130,7 +127,6 @@ bool test_cmplx_qr()
     const int mn = m * n;
     const int mnrhs = m * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[mn], a1[mn], b[mnrhs], b1[mnrhs], tau[minmn], bref[mnrhs];
@@ -156,7 +152,7 @@ bool test_cmplx_qr()
     flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, nrhs, n, one, 
         a1, m, b, m, zero, bref, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(m, nrhs, b1, bref, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(m, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -174,7 +170,6 @@ bool test_qr_pivot()
     const int mn = m * n;
     const int mnrhs = m * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[mn], a1[mn], b[mnrhs], b1[mnrhs], tau[minmn], bref[mnrhs];
@@ -200,7 +195,7 @@ bool test_qr_pivot()
     // Test by ensuring A * X = B
     flag = la_mtx_mult(false, false, m, nrhs, n, one, a1, m, b, m, zero, bref, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_mtx_equal(m, nrhs, b1, bref, tol)) rst = false;
+    if (!is_mtx_equal(m, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -215,7 +210,6 @@ bool test_cmplx_qr_pivot()
     const int mn = m * n;
     const int mnrhs = m * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double complex zero = 0.0;
     const double complex one = 1.0;
     double complex a[mn], a1[mn], b[mnrhs], b1[mnrhs], tau[minmn], bref[mnrhs];
@@ -242,7 +236,7 @@ bool test_cmplx_qr_pivot()
     flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, nrhs, n, one, 
         a1, m, b, m, zero, bref, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(m, nrhs, b1, bref, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(m, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -259,7 +253,6 @@ bool test_qr_rank1_update()
     const int mn = m * n;
     const int minmn = MIN(m, n);
     const int mm = m * m;
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[mn], u[m], v[n], tau[minmn], q[mm], a1[mn], ans[mn];
@@ -290,7 +283,7 @@ bool test_qr_rank1_update()
 
     // See if A1 = Q1 * R1
     flag = la_mtx_mult(false, false, m, n, m, one, q, m, a, m, zero, ans, m);
-    if (!is_mtx_equal(m, n, ans, a1, tol)) rst = false;
+    if (!is_mtx_equal(m, n, ans, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -304,7 +297,6 @@ bool test_cmplx_qr_rank1_update()
     const int mn = m * n;
     const int minmn = MIN(m, n);
     const int mm = m * m;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[mn], u[m], v[n], tau[minmn], q[mm], a1[mn], ans[mn];
@@ -335,7 +327,7 @@ bool test_cmplx_qr_rank1_update()
 
     // See if A1 = Q1 * R1
     flag = la_mtx_mult_cmplx(false, false, m, n, m, one, q, m, a, m, zero, ans, m);
-    if (!is_cmplx_mtx_equal(m, n, ans, a1, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(m, n, ans, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -352,7 +344,6 @@ bool test_cholesky()
     const int nrhs = 20;
     const int nn = n * n;
     const int nnrhs = n * nrhs;
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[nn], a1[nn], b[nnrhs], b1[nnrhs], bref[nnrhs];
@@ -379,7 +370,7 @@ bool test_cholesky()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_mtx_equal(n, nrhs, b1, bref, tol)) rst = false;
+    if (!is_mtx_equal(n, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -392,7 +383,6 @@ bool test_cmplx_cholesky()
     const int nrhs = 20;
     const int nn = n * n;
     const int nnrhs = n * nrhs;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[nn], a1[nn], b[nnrhs], b1[nnrhs], bref[nnrhs];
@@ -420,7 +410,7 @@ bool test_cmplx_cholesky()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(n, nrhs, b1, bref, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, nrhs, b1, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -434,7 +424,6 @@ bool test_cholesky_rank1_update()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[nn], a1[nn], u[n], c[nn];
@@ -462,7 +451,7 @@ bool test_cholesky_rank1_update()
     // Ensure R**T * R = A
     flag = la_mtx_mult(true, false, n, n, n, one, a, n, a, n, zero, c, n);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_mtx_equal(n, n, c, a1, tol)) rst = false;
+    if (!is_mtx_equal(n, n, c, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -473,7 +462,6 @@ bool test_cmplx_cholesky_rank1_update()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[nn], a1[nn], u[n], c[nn];
@@ -502,7 +490,7 @@ bool test_cmplx_cholesky_rank1_update()
     flag = la_mtx_mult_cmplx(LA_TRANSPOSE, LA_NO_OPERATION, n, n, n, 
         one, a, n, a, n, zero, c, n);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(n, n, c, a1, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, c, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -520,7 +508,6 @@ bool test_svd()
     const int mm = m * m;
     const int nn = n * n;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[mn], a1[mn], u[mm], s[minmn], vt[nn], us[mn];
@@ -545,7 +532,7 @@ bool test_svd()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_mtx_equal(m, n, a, a1, tol)) rst = false;
+    if (!is_mtx_equal(m, n, a, a1, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -558,7 +545,6 @@ bool test_cmplx_svd()
     const int mm = m * m;
     const int nn = n * n;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[mn], a1[mn], u[mm], vt[nn], us[mn];
@@ -586,7 +572,7 @@ bool test_cmplx_svd()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(m, n, a, a1, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(m, n, a, a1, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -599,7 +585,6 @@ bool test_inverse()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     double a[nn], a1[nn], ainv[nn];
     bool rst;
     int flag;
@@ -618,7 +603,7 @@ bool test_inverse()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_mtx_equal(n, n, a, ainv, tol)) rst = false;
+    if (!is_mtx_equal(n, n, a, ainv, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -627,7 +612,6 @@ bool test_cmplx_inverse()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     double complex a[nn], a1[nn], ainv[nn];
     bool rst;
     int flag;
@@ -646,7 +630,7 @@ bool test_cmplx_inverse()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(n, n, a, ainv, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, a, ainv, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -664,7 +648,6 @@ bool test_lq()
     const int mnrhs = m * nrhs;
     const int nnrhs = n * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs];
@@ -689,7 +672,7 @@ bool test_lq()
     // Test by ensuring A * X = B
     flag = la_mtx_mult(false, false, m, nrhs, n, one, a1, m, x, n, zero, b, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_mtx_equal(m, nrhs, b, bref, tol)) rst = false;
+    if (!is_mtx_equal(m, nrhs, b, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;
@@ -705,7 +688,6 @@ bool test_cmplx_lq()
     const int mnrhs = m * nrhs;
     const int nnrhs = n * nrhs;
     const int minmn = MIN(m, n);
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 1.0 * I;
     double complex a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs];
@@ -731,7 +713,7 @@ bool test_cmplx_lq()
     flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, nrhs, n, 
         one, a1, m, x, n, zero, b, m);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(m, nrhs, b, bref, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(m, nrhs, b, bref, DBL_TOL)) rst = false;
 
     // End
     return rst;

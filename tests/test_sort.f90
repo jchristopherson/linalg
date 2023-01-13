@@ -5,6 +5,7 @@ module test_sort
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 
 contains
@@ -14,7 +15,6 @@ contains
 function test_dbl_ascend_sort() result(rst)
     ! Parameters
     integer(int32), parameter :: n = 200
-    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
@@ -24,7 +24,7 @@ function test_dbl_ascend_sort() result(rst)
     ! Initialization
     rst = .true.
     ascend = .true.
-    call random_number(x1)
+    call create_random_array(x1)
     do i = 1, n
         x2(i) = x1(i)
         ind(i) = i
@@ -38,7 +38,7 @@ function test_dbl_ascend_sort() result(rst)
 
     ! Compare the two arrays - we really don't have a good means of checking
     ! ind at this point
-    if (.not.is_mtx_equal(x1, x2, tol)) then
+    if (.not.assert(x1, x2, tol = REAL64_TOL)) then
         rst = .false.
         print '(A)', "Test Failed: Ascending sort of a double-precision array."
     end if
@@ -59,7 +59,6 @@ end function
 function test_dbl_descend_sort() result(rst)
     ! Parameters
     integer(int32), parameter :: n = 200
-    real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
     logical :: rst, ascend
@@ -69,7 +68,7 @@ function test_dbl_descend_sort() result(rst)
     ! Initialization
     rst = .true.
     ascend = .false.
-    call random_number(x1)
+    call create_random_array(x1)
     do i = 1, n
         x2(i) = x1(i)
         ind(i) = i
@@ -83,7 +82,7 @@ function test_dbl_descend_sort() result(rst)
 
     ! Compare the two arrays - we really don't have a good means of checking
     ! ind at this point
-    if (.not.is_mtx_equal(x1, x2, tol)) then
+    if (.not.assert(x1, x2, tol = REAL64_TOL)) then
         rst = .false.
         print '(A)', "Test Failed: Descending sort of a double-precision array."
     end if

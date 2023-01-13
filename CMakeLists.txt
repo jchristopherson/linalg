@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.7.1
+  VERSION 1.7.2
 )
-
-# Utilize the GNU installation structure
-include(GNUInstallDirs)
 
 # Get helper macros and functions
 include("${PROJECT_SOURCE_DIR}/cmake/helper.cmake")
+
+# Build the C API?
+option(BUILD_C_API "Build C API?" OFF)
 
 # Confgiure everything
 add_subdirectory(configure)

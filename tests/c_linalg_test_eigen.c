@@ -8,7 +8,6 @@ bool test_eigen_symm()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     double zero = 0.0;
     double one = 1.0;
     double a[nn], a1[nn], vals[n], t[nn], t1[nn];
@@ -32,7 +31,7 @@ bool test_eigen_symm()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_mtx_equal(n, n, t, t1, tol)) rst = false;
+    if (!is_mtx_equal(n, n, t, t1, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -45,7 +44,6 @@ bool test_eigen_asymm()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     const double zero = 0.0;
     const double one = 1.0;
     double a[nn];
@@ -72,7 +70,7 @@ bool test_eigen_asymm()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(n, n, t, t1, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, t, t1, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -81,7 +79,6 @@ bool test_cmplx_eigen_asymm()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double complex a[nn], a1[nn], vals[n], vecs[nn], t[nn], t1[nn];
@@ -107,7 +104,7 @@ bool test_cmplx_eigen_asymm()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(n, n, t, t1, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, t, t1, DBL_TOL)) rst = false;
     return rst;
 }
 
@@ -119,7 +116,6 @@ bool test_eigen_gen()
     // Variables
     const int n = 50;
     const int nn = n * n;
-    const double tol = 1.0e-8;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
     double a[nn], b[nn], beta[n];
@@ -155,6 +151,6 @@ bool test_eigen_gen()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Test
-    if (!is_cmplx_mtx_equal(n, n, av, bvn, tol)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, av, bvn, DBL_TOL)) rst = false;
     return rst;
 }

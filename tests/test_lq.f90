@@ -73,15 +73,12 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64) :: ar(m, n), ai(m, n)
         complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         aref = a
 
         ! Compute the LQ factorization of A
@@ -104,15 +101,12 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64) :: ar(m, n), ai(m, n)
         complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         aref = a
 
         ! Compute the LQ factorization of A
@@ -301,17 +295,12 @@ contains
         ! Local Variables
         complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), &
             c2(n, n), ans(n, n), c3(n), c4(n), ans2(n)
-        real(real64) :: ar(m, n), ai(m, n), cr(n, n), ci(n, n)
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
-        call create_random_array(cr)
-        call create_random_array(ci)
-        c1 = cmplx(cr, ci, real64)
+        call create_random_array(a)
+        call create_random_array(c1)
         c3 = c1(:,1)
         c2 = c1
         c4 = c3
@@ -388,17 +377,12 @@ contains
         ! Local Variables
         complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), &
             c2(n, n), ans(n, n), c3(n), c4(n), ans2(n)
-        real(real64) :: ar(m, n), ai(m, n), cr(n, n), ci(n, n)
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
-        call create_random_array(cr)
-        call create_random_array(ci)
-        c1 = cmplx(cr, ci, real64)
+        call create_random_array(a)
+        call create_random_array(c1)
         c3 = c1(:,1)
         c2 = c1
         c4 = c3
@@ -526,16 +510,11 @@ contains
         logical :: rst
         complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
             c2(m, n), ans(m, n)
-        real(real64) :: ar(m, n), ai(m, n), cr(m, n), ci(m, n)
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        call create_random_array(cr)
-        call create_random_array(ci)
-        a = cmplx(ar, ai, real64)
-        c1 = cmplx(cr, ci, real64)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Compute the LQ factorization
@@ -634,16 +613,11 @@ contains
         logical :: rst
         complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
             c2(m, n), ans(m, n)
-        real(real64) :: ar(m, n), ai(m, n), cr(m, n), ci(m, n)
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        call create_random_array(cr)
-        call create_random_array(ci)
-        a = cmplx(ar, ai, real64)
-        c1 = cmplx(cr, ci, real64)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Compute the LQ factorization

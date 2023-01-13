@@ -144,7 +144,6 @@ contains
 
         ! Local Variables
         integer(int32) :: i, j
-        real(real64), dimension(m, n) :: ar, ai
         complex(real64), dimension(m, n) :: a, r1, r2
         complex(real64), dimension(m, m) :: q1, q2
         complex(real64), dimension(n, n) :: p2
@@ -154,13 +153,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        do j = 1, n
-            do i = 1, m
-                a = cmplx(ar(i,j), ai(i,j), real64)
-            end do
-        end do
+        call create_random_array(a)
         r1 = a
         r2 = a
 

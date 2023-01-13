@@ -76,21 +76,14 @@ contains
         ! Local Variables
         complex(real64), dimension(n, n) :: a, a1, l, u
         real(real64), dimension(n, n) :: p
-        real(real64) :: temp1, temp2
         integer(int32) :: i, j
         integer(int32), dimension(n) :: ipvt
         logical :: rst
 
         ! Initialization
         rst = .true.
-        do j = 1, size(a, 2)
-            do i = 1, size(a, 1)
-                call random_number(temp1)
-                call random_number(temp2)
-                a(i,j) = cmplx(temp1, temp2, real64)
-                a1(i,j) = a(i,j) ! Store a copy of the original matrix
-            end do
-        end do
+        call create_random_array(a)
+        a1 = a
 
         ! Compute the factorization
         call lu_factor(a1, ipvt)
@@ -113,30 +106,16 @@ contains
         ! Local Variables
         complex(real64), dimension(n, n) :: a, a1
         complex(real64), dimension(n, nrhs) :: b, x
-        real(real64) :: temp1, temp2
         integer(int32) :: i, j
         integer(int32), dimension(n) :: ipvt
         logical :: rst
 
         ! Initialization
         rst = .true.
-        do j = 1, size(a, 2)
-            do i = 1, size(a, 1)
-                call random_number(temp1)
-                call random_number(temp2)
-                a(i,j) = cmplx(temp1, temp2, real64)
-                a1(i,j) = a(i,j)
-            end do
-        end do
-
-        do j = 1, size(b, 2)
-            do i = 1, size(b, 1)
-                call random_number(temp1)
-                call random_number(temp2)
-                b(i,j) = cmplx(temp1, temp2, real64)
-                x(i,j) = b(i,j)
-            end do
-        end do
+        call create_random_array(a)
+        call create_random_array(b)
+        a1 = a
+        x = b
 
         ! Factor A
         call lu_factor(a1, ipvt)

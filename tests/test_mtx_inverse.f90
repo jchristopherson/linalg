@@ -111,8 +111,6 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
-        real(real64), dimension(m, nrhs) :: br, bi
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, nrhs) :: b
@@ -121,14 +119,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
-
-        call create_random_array(br)
-        call create_random_array(bi)
-        b = cmplx(br, bi, real64)
 
         ! Compute the inverse
         call mtx_pinverse(a1, ainv)
@@ -154,7 +147,6 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(n, n) :: identity, check
@@ -163,9 +155,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         a1 = a
 
         identity = zero
@@ -195,7 +185,6 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        real(real64), dimension(m, n) :: ar, ai
         complex(real64), dimension(m, n) :: a, a1
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, m) :: identity, check
@@ -204,9 +193,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array(ar)
-        call create_random_array(ai)
-        a = cmplx(ar, ai, real64)
+        call create_random_array(a)
         a1 = a
 
         identity = zero

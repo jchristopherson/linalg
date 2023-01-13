@@ -1,5 +1,5 @@
 # linalg
-A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
+A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.  There is also an optional C API that is available as part of this library.
 
 ## Status
 ![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
@@ -189,4 +189,5 @@ Here is a list of external code libraries utilized by this library.
 - [LAPACK](http://www.netlib.org/lapack/)
 - [QRUpdate](https://sourceforge.net/projects/qrupdate/)
 - [FERROR](https://github.com/jchristopherson/ferror)
+
 The dependencies do not necessarily have to be installed to be used.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.

@@ -24,12 +24,12 @@ add_test(
     COMMAND $<TARGET_FILE:linalg_test>
 )
 
-
 # C API tests
 if (${BUILD_C_API})
     include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
+        ${ferror_INCLUDE_DIR}
     )
 
     set(linalg_c_test_sources

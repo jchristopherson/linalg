@@ -43,10 +43,10 @@ int main()
     // check = test_cmplx_qr_pivot();
     // if (!check) flag = -7;
 
-    // check = test_qr_rank1_update();
-    // if (!check) flag = 8;
-    // check = test_cmplx_qr_rank1_update();
-    // if (!check) flag = -8;
+    check = test_qr_rank1_update();
+    if (!check) flag = 8;
+    check = test_cmplx_qr_rank1_update();
+    if (!check) flag = -8;
 
     check = test_cholesky();
     if (!check) flag = 9;

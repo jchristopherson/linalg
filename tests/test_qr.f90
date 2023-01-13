@@ -5,6 +5,7 @@ module test_qr
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -25,7 +26,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         r1 = a
         r2 = a
 
@@ -34,7 +35,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 1, Part C"
         end if
@@ -45,7 +46,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 2, Part C"
         end if
@@ -67,7 +68,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         r1 = a
         r2 = a
 
@@ -76,7 +77,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 1, Part C"
         end if
@@ -87,7 +88,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 2, Part C"
         end if
@@ -109,7 +110,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         r1 = a
         r2 = a
 
@@ -118,7 +119,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 1, Part C"
         end if
@@ -129,7 +130,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 2, Part C"
         end if
@@ -153,8 +154,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
+        call create_random_array(ar)
+        call create_random_array(ai)
         do j = 1, n
             do i = 1, m
                 a = cmplx(ar(i,j), ai(i,j), real64)
@@ -168,7 +169,7 @@ contains
 
         ! Extract Q and R, and then check that Q * R = A
         call form_qr(r1, tau1, q1)
-        if (.not.is_mtx_equal(a, matmul(q1, r1), REAL64_TOL)) then
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
         end if
@@ -179,7 +180,7 @@ contains
 
         ! Extract Q, R, and P, and then check that Q * R = A * P
         call form_qr(r2, tau2, pvt2, q2, p2)
-        if (.not.is_mtx_equal(matmul(a, p2), matmul(q2, r2), REAL64_TOL)) then
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
         end if
@@ -202,8 +203,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -218,7 +219,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Multiplication Test 1"
         end if
@@ -231,7 +232,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Multiplication Test 2"
         end if
@@ -252,8 +253,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -268,7 +269,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Multiplication Test 1"
         end if
@@ -281,7 +282,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Multiplication Test 2"
         end if
@@ -302,8 +303,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -318,7 +319,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 1"
         end if
@@ -331,7 +332,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 2"
         end if
@@ -353,8 +354,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -369,7 +370,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right QR Multiplication Test 1"
         end if
@@ -382,7 +383,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right QR Multiplication Test 2"
         end if
@@ -404,8 +405,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -420,7 +421,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Overdetermined QR Multiplication Test 1"
         end if
@@ -433,7 +434,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Overdetermined QR Multiplication Test 2"
         end if
@@ -455,8 +456,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Generate the QR factorization of A
@@ -471,7 +472,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Underdetermined QR Multiplication Test 1"
         end if
@@ -484,7 +485,7 @@ contains
         ans = matmul(c2, transpose(q))
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Right Underdetermined QR Multiplication Test 2"
         end if
@@ -506,8 +507,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Compute the QR factorization
@@ -522,7 +523,7 @@ contains
         ans = matmul(q, c2)
 
         ! Compare
-        if (.not.is_mtx_equal(ans, c1, REAL64_TOL)) then
+        if (.not.assert(ans, c1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Vector QR Multiplication Test 1"
         end if
@@ -535,7 +536,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Compare
-        if (.not.is_mtx_equal(ans, c1, REAL64_TOL)) then
+        if (.not.assert(ans, c1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Vector QR Multiplication Test 2"
         end if
@@ -561,9 +562,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
-        call random_number(b2a)
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(b2a)
         a1 = a
         b1 = b
         b2 = b2a
@@ -579,7 +580,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
+        if (.not.assert(ans1, b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 1, No Pivoting"
         end if
@@ -592,7 +593,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2a, REAL64_TOL)) then
+        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, No Pivoting"
         end if
@@ -618,9 +619,9 @@ contains
         ! Initialization
         rst = .true.
         pvt = 0
-        call random_number(a)
-        call random_number(b)
-        call random_number(b2a)
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(b2a)
         a1 = a
         b1 = b
         b2 = b2a
@@ -636,7 +637,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
+        if (.not.assert(ans1, b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 1, With Pivoting"
         end if
@@ -649,7 +650,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2a, REAL64_TOL)) then
+        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
         end if
@@ -675,8 +676,8 @@ contains
         ! Initialization
         rst = .true.
         pvt = 0
-        call random_number(a1)
-        call random_number(b1)
+        call create_random_array(a1)
+        call create_random_array(b1)
         a2 = a1
         b2 = b1
 
@@ -693,7 +694,7 @@ contains
          call solve_qr(a2, tau, pvt, b2)
 
          ! Test
-         if (.not.is_mtx_equal(b1(1:n,:), b2(1:n,:), REAL64_TOL)) then
+         if (.not.assert(b1(1:n,:), b2(1:n,:), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Solution Test, With Pivoting"
          end if
@@ -719,9 +720,9 @@ contains
         ! Initialization
         rst = .true.
         pvt = 0
-        call random_number(a)
-        call random_number(b)
-        call random_number(b2)
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(b2)
         a1 = a
 
         ! Compute the QR factorization of A
@@ -734,7 +735,7 @@ contains
 
         ! Test
         ans1 = matmul(a, x1)
-        if (.not.is_mtx_equal(ans1, b, REAL64_TOL)) then
+        if (.not.assert(ans1, b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Solution Test 1, With Pivoting"
         end if
@@ -745,7 +746,7 @@ contains
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.is_mtx_equal(ans2, b2, REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Solution Test 2, With Pivoting"
         end if
@@ -768,9 +769,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(u)
-        call random_number(v)
+        call create_random_array(a)
+        call create_random_array(u)
+        call create_random_array(v)
 
         ! Compute the QR factorization of A
         r = a
@@ -787,7 +788,7 @@ contains
         call qr_rank1_update(q, r, u, v)
 
         ! Test
-        if (.not.is_mtx_equal(a1, matmul(q, r), REAL64_TOL)) then
+        if (.not.assert(a1, matmul(q, r), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Rank 1 QR Update"
         end if

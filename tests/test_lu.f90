@@ -5,6 +5,7 @@ module test_lu
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION TEST
@@ -20,7 +21,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a  ! Forces us to keep a copy of the original matrix
 
         ! Compute the factorization
@@ -29,7 +30,7 @@ contains
         ! Extract L, U, and P to determine if P * A = L * U
         l = a1
         call form_lu(l, ipvt, u, p)
-        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), REAL64_TOL)) then
+        if (.not.assert(matmul(p, a), matmul(l, u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Test"
         end if
@@ -49,8 +50,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
         x = b
 
@@ -61,7 +62,7 @@ contains
         call solve_lu(a1, ipvt, x)
 
         ! Test by determining if A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization & Solution Test"
         end if
@@ -97,7 +98,7 @@ contains
         ! Extract L, U, and P to determine if P * A = L * U
         l = a1
         call form_lu(l, ipvt, u, p)
-        if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), REAL64_TOL)) then
+        if (.not.assert(matmul(p, a), matmul(l, u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization Test"
         end if
@@ -144,7 +145,7 @@ contains
         call solve_lu(a1, ipvt, x)
 
         ! Test by determining if A * X = B
-        if (.not.is_mtx_equal(matmul(a, x), b, REAL64_TOL)) then
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization & Solution Test"
         end if

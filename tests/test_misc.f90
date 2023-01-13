@@ -5,6 +5,7 @@ module test_misc
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg
     use test_core
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -28,9 +29,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(c1)
-        call random_number(b1)
-        call random_number(d1v)
+        call create_random_array(c1)
+        call create_random_array(b1)
+        call create_random_array(d1v)
         d1 = 0.0d0
         do i = 1, k
             d1(i,i) = d1v(i)
@@ -41,7 +42,7 @@ contains
         call diag_mtx_mult(.true., .false., alpha, d1v, b1, beta, c1)
 
         ! Test
-        if (.not.is_mtx_equal(ans1, c1, REAL64_TOL)) then
+        if (.not.assert(ans1, c1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 1"
         end if
@@ -51,7 +52,7 @@ contains
         call diag_mtx_mult(.true., .true., alpha, d1v, b1, beta, c1)
 
         ! Test
-        if (.not.is_mtx_equal(ans1, c1, REAL64_TOL)) then
+        if (.not.assert(ans1, c1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 2"
         end if
@@ -61,7 +62,7 @@ contains
         call diag_mtx_mult(.true., alpha, d1v, b2)
 
         ! Test
-        if (.not.is_mtx_equal(ans2, b2, REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Diagonal Matrix Multiply Test 3"
         end if
@@ -83,9 +84,9 @@ contains
         logical :: rst
 
         ! Initialization
-        call random_number(a)
-        call random_number(x)
-        call random_number(y)
+        call create_random_array(a)
+        call create_random_array(x)
+        call create_random_array(y)
         a1 = a
 
         ! Define the solution
@@ -95,7 +96,7 @@ contains
         call rank1_update(alpha, x(:,1), y(:,1), a1)
 
         ! Compare the results
-        if (.not.is_mtx_equal(a1, b, REAL64_TOL)) then
+        if (.not.assert(a1, b, tol = REAL64_TOL)) then
             print '(A)', "Test Failed: Rank 1 Update"
             rst = .false.
         else
@@ -143,7 +144,7 @@ contains
 
         ! Initialization
         check = .true.
-        call random_number(a)
+        call create_random_array(a)
         do j = 1, n
             a(j+1:n,j) = 0.0d0
         end do
@@ -151,7 +152,7 @@ contains
         ! Test 1 (beta = 0)
         call tri_mtx_mult(.true., alpha, a, 0.0d0, b)
         bans = alpha * matmul(transpose(a), a)
-        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
+        if (.not.assert(b, bans, tol = REAL64_TOL)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1A"
         end if
@@ -161,7 +162,7 @@ contains
         check = .true.
         call tri_mtx_mult(.true., alpha, a, beta, b)
         bans = alpha * matmul(transpose(a), a) + beta * bans
-        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
+        if (.not.assert(b, bans, tol = REAL64_TOL)) then
             check = .false.
             rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 1B"
@@ -182,7 +183,7 @@ contains
 
         ! Initialization
         check = .true.
-        call random_number(a)
+        call create_random_array(a)
         do j = 2, n
             a(1:j-1,j) = 0.0d0
         end do
@@ -190,7 +191,7 @@ contains
         ! Test 1 (beta = 0)
         call tri_mtx_mult(.false., alpha, a, 0.0d0, b)
         bans = alpha * matmul(a, transpose(a))
-        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
+        if (.not.assert(b, bans, tol = REAL64_TOL)) then
             check = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2A"
         end if
@@ -200,7 +201,7 @@ contains
         check = .true.
         call tri_mtx_mult(.false., alpha, a, beta, b)
         bans = alpha * matmul(a, transpose(a)) + beta * bans
-        if (.not.is_mtx_equal(b, bans, REAL64_TOL)) then
+        if (.not.assert(b, bans, tol = REAL64_TOL)) then
             check = .false.
             rst = .false.
             print '(A)', "Test Failed: Triangular Matrix Update - Test 2B"
@@ -225,16 +226,16 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
-        call random_number(c)
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(c)
 
         ! Compute the solution
         ans = alpha * matmul(a, transpose(b)) + beta * c
 
         ! Test
         call mtx_mult(.false., .true., alpha, a, b, beta, c)
-        if (.not.is_mtx_equal(c, ans, REAL64_TOL)) then
+        if (.not.assert(c, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Matrix Multiplication - Test 1"
         end if
@@ -256,12 +257,12 @@ contains
 
         ! Initialization - upper triangular systems
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         do j = 1, n
             a(j+1:n,j) = 0.0d0
             a(j,j) = 2.0d0  ! Make sure we don't have too small of diagonal
         end do
-        call random_number(b1)
+        call create_random_array(b1)
         x1 = b1
 
         ! Compute the solution to A * X1 = B1
@@ -270,7 +271,7 @@ contains
 
         ! Verify that A * X1 = B1
         check1 = matmul(a, x1)
-        if (.not.is_mtx_equal(b1, check1, REAL64_TOL)) then
+        if (.not.assert(b1, check1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Tri Matrix Solve - Test 1A"
         end if

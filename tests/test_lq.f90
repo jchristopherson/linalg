@@ -5,6 +5,7 @@ module test_lq
     use iso_fortran_env
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -21,7 +22,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         aref = a
 
         ! Compute the LQ factorization of A
@@ -31,7 +32,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
+        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Factorization Test 1"
         end if
@@ -49,7 +50,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         aref = a
 
         ! Compute the LQ factorization of A
@@ -59,7 +60,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
+        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Factorization Test 1"
         end if
@@ -78,8 +79,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
+        call create_random_array(ar)
+        call create_random_array(ai)
         a = cmplx(ar, ai, real64)
         aref = a
 
@@ -90,7 +91,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
+        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Factorization Test 1"
         end if
@@ -109,8 +110,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
+        call create_random_array(ar)
+        call create_random_array(ai)
         a = cmplx(ar, ai, real64)
         aref = a
 
@@ -121,7 +122,7 @@ contains
         call form_lq(a, tau, q)
 
         ! Perform the check
-        if (.not.is_mtx_equal(matmul(a, q), aref, REAL64_TOL)) then
+        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Factorization Test 1"
         end if
@@ -142,9 +143,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
-        call random_number(c3)
+        call create_random_array(a)
+        call create_random_array(c1)
+        call create_random_array(c3)
         c2 = c1
         c4 = c3
 
@@ -162,7 +163,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 1"
         end if
@@ -174,7 +175,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 2"
         end if
@@ -190,7 +191,7 @@ contains
         call mtx_mult(.true., .false., 1.0d0, q, c2, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 3"
         end if
@@ -203,7 +204,7 @@ contains
         call mtx_mult(.true., 1.0d0, q, c4, 0.0d0, ans2)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 4"
         end if
@@ -222,9 +223,9 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
-        call random_number(c3)
+        call create_random_array(a)
+        call create_random_array(c1)
+        call create_random_array(c3)
         c2 = c1
         c4 = c3
 
@@ -242,7 +243,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 1"
         end if
@@ -254,7 +255,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Multiplication Test 2"
         end if
@@ -270,7 +271,7 @@ contains
         ans = matmul(transpose(q), c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 3"
         end if
@@ -283,7 +284,7 @@ contains
         ans2 = matmul(transpose(q), c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Multiplication Test 4"
         end if
@@ -305,11 +306,11 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
+        call create_random_array(ar)
+        call create_random_array(ai)
         a = cmplx(ar, ai, real64)
-        call random_number(cr)
-        call random_number(ci)
+        call create_random_array(cr)
+        call create_random_array(ci)
         c1 = cmplx(cr, ci, real64)
         c3 = c1(:,1)
         c2 = c1
@@ -329,7 +330,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Multiplication Test 1"
         end if
@@ -341,7 +342,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Multiplication Test 2"
         end if
@@ -357,7 +358,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        ! if (.not.assert(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Multiplication Test 3"
         ! end if
@@ -370,7 +371,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        ! if (.not.assert(c3, ans2, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Multiplication Test 4"
         ! end if
@@ -392,11 +393,11 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
+        call create_random_array(ar)
+        call create_random_array(ai)
         a = cmplx(ar, ai, real64)
-        call random_number(cr)
-        call random_number(ci)
+        call create_random_array(cr)
+        call create_random_array(ci)
         c1 = cmplx(cr, ci, real64)
         c3 = c1(:,1)
         c2 = c1
@@ -416,7 +417,7 @@ contains
         ans = matmul(q, c2)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 1"
         end if
@@ -428,7 +429,7 @@ contains
         ans2 = matmul(q, c4)
 
         ! Test
-        if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        if (.not.assert(c3, ans2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 2"
         end if
@@ -444,7 +445,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        ! if (.not.assert(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 3"
         ! end if
@@ -457,7 +458,7 @@ contains
         ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c3, ans2, REAL64_TOL)) then
+        ! if (.not.assert(c3, ans2, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 4"
         ! end if
@@ -476,8 +477,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Compute the LQ factorization
@@ -494,7 +495,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Right Multiplication Test 1"
         end if
@@ -507,7 +508,7 @@ contains
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Right Multiplication Test 2"
         end if
@@ -529,10 +530,10 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
-        call random_number(cr)
-        call random_number(ci)
+        call create_random_array(ar)
+        call create_random_array(ai)
+        call create_random_array(cr)
+        call create_random_array(ci)
         a = cmplx(ar, ai, real64)
         c1 = cmplx(cr, ci, real64)
         c2 = c1
@@ -551,7 +552,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Right Multiplication Test 1"
         end if
@@ -565,7 +566,7 @@ contains
         !     zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        ! if (.not.assert(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Complex LQ Right Multiplication Test 2"
         ! end if
@@ -584,8 +585,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(c1)
+        call create_random_array(a)
+        call create_random_array(c1)
         c2 = c1
 
         ! Compute the LQ factorization
@@ -602,7 +603,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 1"
         end if
@@ -615,7 +616,7 @@ contains
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Right Multiplication Test 2"
         end if
@@ -637,10 +638,10 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(ar)
-        call random_number(ai)
-        call random_number(cr)
-        call random_number(ci)
+        call create_random_array(ar)
+        call create_random_array(ai)
+        call create_random_array(cr)
+        call create_random_array(ci)
         a = cmplx(ar, ai, real64)
         c1 = cmplx(cr, ci, real64)
         c2 = c1
@@ -659,7 +660,7 @@ contains
         ans = matmul(c2, q)
 
         ! Test
-        if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 1"
         end if
@@ -673,7 +674,7 @@ contains
         !     zero, ans)
 
         ! ! Test
-        ! if (.not.is_mtx_equal(c1, ans, REAL64_TOL)) then
+        ! if (.not.assert(c1, ans, REAL64_TOL)) then
         !     rst = .false.
         !     print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 2"
         ! end if

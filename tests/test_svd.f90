@@ -5,6 +5,7 @@ module test_svd_ops
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use fortran_test_helper
     implicit none
 contains
 ! ------------------------------------------------------------------------------
@@ -22,7 +23,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
 
         ! Compute the full SVD of A
@@ -33,7 +34,7 @@ contains
         a1 = matmul(u1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Singular Value Decomposition"
         end if
@@ -54,7 +55,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
 
         ! Compute the full SVD of A
@@ -66,7 +67,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 1"
         end if
@@ -80,7 +81,7 @@ contains
         a1 = matmul(u2, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 2"
         end if
@@ -101,7 +102,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
         t1 = 0.0d0
 
@@ -114,7 +115,7 @@ contains
         a1 = matmul(t1, vt1)
 
         ! Test
-        if (.not.is_mtx_equal(a, a1, REAL64_TOL)) then
+        if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Singular Value Decomposition, Test 1"
         end if

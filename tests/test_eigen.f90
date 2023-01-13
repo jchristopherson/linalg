@@ -5,6 +5,7 @@ module test_eigen
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use linalg
     use test_core
+    use fortran_test_helper
     implicit none
 contains
 ! ******************************************************************************
@@ -53,7 +54,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
+        call create_random_array(a)
         a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
@@ -68,14 +69,14 @@ contains
 
         ! Test 1
         y = matmul(a, vecs)
-        if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
+        if (.not.assert(x, y, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 1"
         end if
 
         ! Compute just the eigenvalues
         call eigen(a, vals1)
-        if (.not.is_mtx_equal(vals, vals1, REAL64_TOL)) then
+        if (.not.assert(vals, vals1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Asymmetric Eigen Values Test 2"
         end if
@@ -94,8 +95,8 @@ contains
 
         ! Initialization
         rst = .true.
-        call random_number(a)
-        call random_number(b)
+        call create_random_array(a)
+        call create_random_array(b)
         a1 = a
         b1 = b
 
@@ -110,14 +111,14 @@ contains
         y = matmul(b, y)
 
         ! Check
-        if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
+        if (.not.assert(x, y, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 1"
         end if
 
         ! Test 2 - Eigenvalues Only
         call eigen(a, b, vals2)
-        if (.not.is_mtx_equal(vals, vals2, REAL64_TOL)) then
+        if (.not.assert(vals, vals2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 2"
         end if

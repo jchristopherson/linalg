@@ -1005,33 +1005,6 @@ int la_qr_rank1_update(int m, int n, double *q, int ldq, double *r, int ldr,
     double *u, double *v);
 
 /**
- * Computes the rank 1 update to an M-by-N QR factored matrix A
- * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^H \f$ such that 
- * \f$ A1 = Q1 R1 \f$.
- *
- * @param m The number of rows in R.
- * @param n The number of columns in R.
- * @param q On input, the original M-by-K orthogonal matrix Q.  On
- *  output, the updated matrix Q1.
- * @param ldq The leading dimension of matrix Q.
- * @param r On input, the M-by-N matrix R.  On output, the updated
- *  matrix R1.
- * @param ldr The leading dimension of matrix R.
- * @param u On input, the M-element U update vector.  On output,
- *  the original content of the array is overwritten.
- * @param v On input, the N-element V update vector.  On output,
- *  the original content of the array is overwritten.
- *
- * @return An error code.  The following codes are possible.
- *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldq or @p ldr is not correct.
- *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
- *      available.
- */
-int la_qr_rank1_update_cmplx(int m, int n, double complex *q, int ldq,
-    double complex *r, int ldr, double complex *u, double complex *v);
-
-/**
  * Computes the Cholesky factorization of a symmetric, positive
  * definite matrix.
  *
@@ -1089,26 +1062,6 @@ int la_cholesky_factor_cmplx(bool upper, int n, double complex *a, int lda);
  *      there is insufficient memory available.
  */
 int la_cholesky_rank1_update(int n, double *r, int ldr, double *u);
-
-/**
- * Computes the rank 1 update to a Cholesky factored matrix (upper
- * triangular).
- *
- * @param n The dimension of the matrix.
- * @param r On input, the N-by-N upper triangular matrix R.  On
- *  output, the updated matrix R1.
- * @param ldr The leading dimension of matrix R.
- * @param u On input, the N-element update vector U.  On output,
- *  the rotation sines used to transform R to R1.
- *
- * @return An error code.  The following codes are possible.
- *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
- *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
- *      there is insufficient memory available.
- */
-int la_cholesky_rank1_update_cmplx(int n, double complex *r, int ldr, 
-    double complex *u);
 
 /**
  * Computes the rank 1 downdate to a Cholesky factored matrix (upper
@@ -1766,30 +1719,6 @@ int la_sort_eigen_cmplx(bool ascend, int n, double complex *vals,
 int la_lq_factor(int m, int n, double *a, int lda, double *tau);
 
 /**
- * Computes the LQ factorization of an M-by-N matrix without
- * pivoting.
- *
- * @param m The number of rows in the matrix.
- * @param n The number of columns in the matrix.
- * @param a  On input, the M-by-N matrix to factor.  On output, the
- *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
- *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
- *  below the diagonal, along with the array @p tau, represent the
- *  orthogonal matrix Q as a product of elementary reflectors.
- * @param lda The leading dimension of matrix A.
- * @param tau A MIN(M, N)-element array used to store the scalar
- *  factors of the elementary reflectors.
- *
- * @return An error code.  The following codes are possible.
- *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
- *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
- *      available.
- */
-int la_lq_factor_cmplx(int m, int n, double complex *a, int lda, 
-    double complex *tau);
-
-/**
  * Forms the matrix Q with orthonormal rows from the elementary
  * reflectors returned by the base QR factorization algorithm.
  *
@@ -1811,29 +1740,6 @@ int la_lq_factor_cmplx(int m, int n, double complex *a, int lda,
  */
 int la_form_lq(int m, int n, double *l, int ldl, const double *tau, double *q,
     int ldq);
-
-/**
- * Forms the matrix Q with orthonormal rows from the elementary
- * reflectors returned by the base QR factorization algorithm.
- *
- * @param m The number of rows in R.
- * @param n The number of columns in R.
- * @param l On input, the M-by-N factored matrix as returned by the
- *  LQ factorization routine.  On output, the lower triangular matrix L.
- * @param ldl The leading dimension of matrix L.
- * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  each elementary reflector defined in @p r.
- * @param q An N-by-N matrix where the Q matrix will be written.
- * @param ldq The leading dimension of matrix Q.
- *
- * @return An error code.  The following codes are possible.
- *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldl or @p ldq are not correct.
- *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
- *      available.
- */
-int la_form_lq_cmplx(int m, int n, double complex *l, int ldl, 
-    const double complex *tau, double complex *q, int ldq);
 
 /**
  * Multiplies a general matrix by the orthogonal matrix Q from a LQ
@@ -1866,8 +1772,148 @@ int la_mult_lq(bool lside, bool trans, int m, int n, int k, const double *a,
     int lda, const double *tau, double *c, int ldc);
 
 /**
+ * Solves a system of M QR-factored equations of N unknowns where
+ * N >= M.
+ *
+ * @param m The number of equations (rows in matrix A).
+ * @param n The number of unknowns (columns in matrix A).
+ * @param k The number of columns in the right-hand-side matrix.
+ * @param a On input, the M-by-N QR factored matrix as returned by
+ *  @ref lq_factor.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  the elementary reflectors as returned by @ref lq_factor.
+ * @param b On input, an N-by-K matrix containing the first M rows of the
+ *  right-hand-side matrix.  On output, the solution matrix X.
+ * @param ldb The leading dimension of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
+ *      if @p m is less than @p n.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_solve_lq(int m, int n, int k, const double *a, int lda, 
+    const double *tau, double *b, int ldb);
+
+/* ************************************************************************** */
+/*          STUFF THAT NEEDS MORE WORK BEFORE RELEASING INTO THE WILD         */
+/* ************************************************************************** */
+
+
+/**
+ * Computes the rank 1 update to an M-by-N QR factored matrix A
+ * (M >= N) where \f$ A = Q R \f$, and \f$ A1 = A + U V^H \f$ such that 
+ * \f$ A1 = Q1 R1 \f$.
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
+ *
+ * @param m The number of rows in R.
+ * @param n The number of columns in R.
+ * @param q On input, the original M-by-K orthogonal matrix Q.  On
+ *  output, the updated matrix Q1.
+ * @param ldq The leading dimension of matrix Q.
+ * @param r On input, the M-by-N matrix R.  On output, the updated
+ *  matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the M-element U update vector.  On output,
+ *  the original content of the array is overwritten.
+ * @param v On input, the N-element V update vector.  On output,
+ *  the original content of the array is overwritten.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldq or @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_qr_rank1_update_cmplx(int m, int n, double complex *q, int ldq,
+    double complex *r, int ldr, double complex *u, double complex *v);
+
+/**
+ * Computes the rank 1 update to a Cholesky factored matrix (upper
+ * triangular).
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
+ *
+ * @param n The dimension of the matrix.
+ * @param r On input, the N-by-N upper triangular matrix R.  On
+ *  output, the updated matrix R1.
+ * @param ldr The leading dimension of matrix R.
+ * @param u On input, the N-element update vector U.  On output,
+ *  the rotation sines used to transform R to R1.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldr is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
+ *      there is insufficient memory available.
+ */
+int la_cholesky_rank1_update_cmplx(int n, double complex *r, int ldr, 
+    double complex *u);
+
+/**
+ * Computes the LQ factorization of an M-by-N matrix without
+ * pivoting.
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
+ *
+ * @param m The number of rows in the matrix.
+ * @param n The number of columns in the matrix.
+ * @param a  On input, the M-by-N matrix to factor.  On output, the
+ *  elements on and above the diagonal contain the MIN(M, N)-by-N upper
+ *  trapezoidal matrix R (R is upper triangular if M >= N).  The elements
+ *  below the diagonal, along with the array @p tau, represent the
+ *  orthogonal matrix Q as a product of elementary reflectors.
+ * @param lda The leading dimension of matrix A.
+ * @param tau A MIN(M, N)-element array used to store the scalar
+ *  factors of the elementary reflectors.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda is not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_lq_factor_cmplx(int m, int n, double complex *a, int lda, 
+    double complex *tau);
+
+/**
+ * Forms the matrix Q with orthonormal rows from the elementary
+ * reflectors returned by the base QR factorization algorithm.
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
+ *
+ * @param m The number of rows in R.
+ * @param n The number of columns in R.
+ * @param l On input, the M-by-N factored matrix as returned by the
+ *  LQ factorization routine.  On output, the lower triangular matrix L.
+ * @param ldl The leading dimension of matrix L.
+ * @param tau A MIN(M, N)-element array containing the scalar factors of
+ *  each elementary reflector defined in @p r.
+ * @param q An N-by-N matrix where the Q matrix will be written.
+ * @param ldq The leading dimension of matrix Q.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if @p ldl or @p ldq are not correct.
+ *  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is insufficient memory 
+ *      available.
+ */
+int la_form_lq_cmplx(int m, int n, double complex *l, int ldl, 
+    const double complex *tau, double complex *q, int ldq);
+
+/**
  * Multiplies a general matrix by the orthogonal matrix Q from a LQ
  * factorization such that: \f$ C = op(Q) C \f$, or \f$ C = C op(Q) \f$.
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
  *
  * @param lside Set to true to apply \f$ Q \f$ or \f$ Q^H \f$ from the left; 
  * else, set to false to apply \f$ Q \f$ or \f$ Q^H \f$ from the right.
@@ -1899,32 +1945,9 @@ int la_mult_lq_cmplx(bool lside, bool trans, int m, int n, int k,
 /**
  * Solves a system of M QR-factored equations of N unknowns where
  * N >= M.
- *
- * @param m The number of equations (rows in matrix A).
- * @param n The number of unknowns (columns in matrix A).
- * @param k The number of columns in the right-hand-side matrix.
- * @param a On input, the M-by-N QR factored matrix as returned by
- *  @ref lq_factor.
- * @param lda The leading dimension of matrix A.
- * @param tau A MIN(M, N)-element array containing the scalar factors of
- *  the elementary reflectors as returned by @ref lq_factor.
- * @param b On input, an N-by-K matrix containing the first M rows of the
- *  right-hand-side matrix.  On output, the solution matrix X.
- * @param ldb The leading dimension of matrix B.
- *
- * @return An error code.  The following codes are possible.
- *  - LA_NO_ERROR: No error occurred.  Successful operation.
- *  - LA_INVALID_INPUT_ERROR: Occurs if @p lda, or @p ldb is not correct, or
- *      if @p m is less than @p n.
- *  - LA_OUT_OF_MEMORY_ERROR: Occurs if local memory must be allocated, and
- *      there is insufficient memory available.
- */
-int la_solve_lq(int m, int n, int k, const double *a, int lda, 
-    const double *tau, double *b, int ldb);
-
-/**
- * Solves a system of M QR-factored equations of N unknowns where
- * N >= M.
+ * 
+ * @par WARNING
+ * Untested code that needs more work before being ready for normal use.
  *
  * @param m The number of equations (rows in matrix A).
  * @param n The number of unknowns (columns in matrix A).

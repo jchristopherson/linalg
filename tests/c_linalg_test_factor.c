@@ -325,9 +325,9 @@ bool test_cmplx_qr_rank1_update()
     flag = la_qr_rank1_update_cmplx(m, n, q, m, a, m, u, v);
     if (flag != LA_NO_ERROR) rst = false;
 
-    // // See if A1 = Q1 * R1
-    // flag = la_mtx_mult_cmplx(false, false, m, n, m, one, q, m, a, m, zero, ans, m);
-    // if (!is_cmplx_mtx_equal(m, n, ans, a1, DBL_TOL)) rst = false;
+    // See if A1 = Q1 * R1
+    flag = la_mtx_mult_cmplx(false, false, m, n, m, one, q, m, a, m, zero, ans, m);
+    if (!is_cmplx_mtx_equal(m, n, ans, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;

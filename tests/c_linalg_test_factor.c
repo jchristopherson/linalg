@@ -311,8 +311,8 @@ bool test_cmplx_qr_rank1_update()
     cmplx_create_array(n, v);
 
     // Compute the QR factorization of A and then explicity form Q & R
-    // flag = la_qr_factor_cmplx(m, n, a, m, tau);
-    // if (flag != LA_NO_ERROR) rst = false;
+    flag = la_qr_factor_cmplx(m, n, a, m, tau);
+    if (flag != LA_NO_ERROR) rst = false;
 
     // flag = la_form_qr_cmplx(true, m, n, a, m, tau, q, m);    // R is stored in A
     // if (flag != LA_NO_ERROR) rst = false;

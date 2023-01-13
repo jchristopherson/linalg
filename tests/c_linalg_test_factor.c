@@ -321,9 +321,9 @@ bool test_cmplx_qr_rank1_update()
     flag = la_rank1_update_cmplx(m, n, one, u, v, a1, m);
     if (flag != LA_NO_ERROR) rst = false;
 
-    // // Perform the rank 1 update to the QR factored matrices
-    // flag = la_qr_rank1_update_cmplx(m, n, q, m, a, m, u, v);
-    // if (flag != LA_NO_ERROR) rst = false;
+    // Perform the rank 1 update to the QR factored matrices
+    flag = la_qr_rank1_update_cmplx(m, n, q, m, a, m, u, v);
+    if (flag != LA_NO_ERROR) rst = false;
 
     // // See if A1 = Q1 * R1
     // flag = la_mtx_mult_cmplx(false, false, m, n, m, one, q, m, a, m, zero, ans, m);

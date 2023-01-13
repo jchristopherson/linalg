@@ -1,6 +1,9 @@
 # linalg
 A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
+## Status
+![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
+
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.
 
@@ -180,18 +183,10 @@ Mode 3: (923.5669 Hz)
 ## Building LINALG
 This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
 
-## Documentation
-Documentation can be found [here](http://htmlpreview.github.io/?https://github.com/jchristopherson/linalg/blob/master/doc/html/index.html)
-
 ## External Libraries
 Here is a list of external code libraries utilized by this library.
 - [BLAS](http://www.netlib.org/blas/)
 - [LAPACK](http://www.netlib.org/lapack/)
 - [QRUpdate](https://sourceforge.net/projects/qrupdate/)
-
-## TO DO
-Additional items to accomplish:
-- Add additional test cases.
-- Add a sparse matrix class (also include associated operators allowing multiplication, addition, etc.)
-- Add sparse matrix solution routines.
-- Add sparse matrix eigenvalue/eigenvector routines.
+- [FERROR](https://github.com/jchristopherson/ferror)
+The dependencies do not necessarily have to be installed to be used.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.

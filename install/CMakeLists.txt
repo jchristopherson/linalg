@@ -19,12 +19,8 @@ install(
 
 # Install the documentation files
 install_documentation(
-    ${PROJECT_SOURCE_DIR}/doc/html
-    ${CMAKE_INSTALL_PREFIX}/doc/Fortran
-)
-install_documentation(
-    ${PROJECT_SOURCE_DIR}/doc/C/html
-    ${CMAKE_INSTALL_PREFIX}/doc/C
+    ${PROJECT_SOURCE_DIR}/docs/html
+    ${CMAKE_INSTALL_PREFIX}/docs
 )
 
 # Define the version file

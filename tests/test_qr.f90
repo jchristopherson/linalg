@@ -53,6 +53,48 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_qr_factor_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+
+        ! Local Variables
+        complex(real64), dimension(m, n) :: a, r1, r2
+        complex(real64), dimension(m, m) :: q1, q2
+        complex(real64), dimension(n, n) :: p2
+        complex(real64), dimension(n) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        r1 = a
+        r2 = a
+
+        ! Compute the QR factorization of A
+        call qr_factor(r1, tau1)
+
+        ! Extract Q and R, and then check that Q * R = A
+        call form_qr(r1, tau1, q1)
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued QR Factorization Test 1, Part C"
+        end if
+
+        ! Compute the QR factorization of A with pivoting
+        pvt2 = 0
+        call qr_factor(r2, tau2, pvt2)
+
+        ! Extract Q, R, and P, and then check that Q * R = A * P
+        call form_qr(r2, tau2, pvt2, q2, p2)
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued QR Factorization Test 2, Part C"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
     function test_qr_factor_od() result(rst)
         ! Parameters
         integer(int32), parameter :: m = 60
@@ -91,6 +133,49 @@ contains
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 2, Part C"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_qr_factor_od_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+
+        ! Local Variables
+        integer(int32) :: i, j
+        complex(real64), dimension(m, n) :: a, r1, r2
+        complex(real64), dimension(m, m) :: q1, q2
+        complex(real64), dimension(n, n) :: p2
+        complex(real64), dimension(n) :: tau1, tau2
+        integer(int32), dimension(n) :: pvt2
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        r1 = a
+        r2 = a
+
+        ! Compute the QR factorization of A
+        call qr_factor(r1, tau1)
+
+        ! Extract Q and R, and then check that Q * R = A
+        call form_qr(r1, tau1, q1)
+        if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
+        end if
+
+        ! Compute the QR factorization of A with pivoting
+        pvt2 = 0
+        call qr_factor(r2, tau2, pvt2)
+
+        ! Extract Q, R, and P, and then check that Q * R = A * P
+        call form_qr(r2, tau2, pvt2, q2, p2)
+        if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
         end if
     end function
 
@@ -137,17 +222,16 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    function test_qr_factor_od_cmplx() result(rst)
+    function test_qr_factor_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
 
         ! Local Variables
-        integer(int32) :: i, j
         complex(real64), dimension(m, n) :: a, r1, r2
         complex(real64), dimension(m, m) :: q1, q2
         complex(real64), dimension(n, n) :: p2
-        complex(real64), dimension(n) :: tau1, tau2
+        complex(real64), dimension(m) :: tau1, tau2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
@@ -164,7 +248,7 @@ contains
         call form_qr(r1, tau1, q1)
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
-            print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
+            print '(A)', "Test Failed: Complex-Valued Underdetermined QR Test 1, Part C"
         end if
 
         ! Compute the QR factorization of A with pivoting
@@ -175,7 +259,7 @@ contains
         call form_qr(r2, tau2, pvt2, q2, p2)
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
-            print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
+            print '(A)', "Test Failed: Complex-Valued Underdetermined QR Test 2, Part C"
         end if
     end function
 
@@ -232,6 +316,55 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_qr_mult_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 60
+
+        ! Local Variables
+        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
+        complex(real64), dimension(m, m) :: q
+        complex(real64), dimension(n) :: tau
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(c1)
+        c2 = c1
+
+        ! Generate the QR factorization of A
+        call qr_factor(a, tau)
+        r = a
+        call form_qr(a, tau, q)
+
+        ! Compute C = Q * C
+        call mult_qr(.true., .false., r, tau, c1)
+
+        ! Compute ANS = Q * C
+        ans = matmul(q, c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued QR Multiplication Test 1"
+        end if
+
+        ! Compute C = Q**H * C
+        c1 = c2
+        call mult_qr(.true., .true., r, tau, c1)
+
+        ! Compute ANS = Q**H * C
+        ans = matmul(conjg(transpose(q)), c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued QR Multiplication Test 2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
     ! OVERDETERMINED - LEFT
     function test_qr_mult_od() result(rst)
         ! Parameters
@@ -282,6 +415,55 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_qr_mult_od_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 60
+        integer(int32), parameter :: n = 50
+
+        ! Local Variables
+        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
+        complex(real64), dimension(m, m) :: q
+        complex(real64), dimension(n) :: tau
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(c1)
+        c2 = c1
+
+        ! Generate the QR factorization of A
+        call qr_factor(a, tau)
+        r = a
+        call form_qr(a, tau, q)
+
+        ! Compute C = Q * C
+        call mult_qr(.true., .false., r, tau, c1)
+
+        ! Compute ANS = Q * C
+        ans = matmul(q, c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Overdetermined QR Multiplication Test 1"
+        end if
+
+        ! Compute C = Q**H * C
+        c1 = c2
+        call mult_qr(.true., .true., r, tau, c1)
+
+        ! Compute ANS = Q**H * C
+        ans = matmul(conjg(transpose(q)), c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Overdetermined QR Multiplication Test 2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
     ! UNDERDETERMINED - LEFT
     function test_qr_mult_ud() result(rst)
         ! Parameters
@@ -328,6 +510,55 @@ contains
         if (.not.assert(c1, ans, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Multiplication Test 2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_qr_mult_ud_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
+
+        ! Local Variables
+        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
+        complex(real64), dimension(m, m) :: q
+        complex(real64), dimension(m) :: tau
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(c1)
+        c2 = c1
+
+        ! Generate the QR factorization of A
+        call qr_factor(a, tau)
+        r = a
+        call form_qr(a, tau, q)
+
+        ! Compute C = Q * C
+        call mult_qr(.true., .false., r, tau, c1)
+
+        ! Compute ANS = Q * C
+        ans = matmul(q, c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Underdetermined QR Multiplication Test 1"
+        end if
+
+        ! Compute C = Q**H * C
+        c1 = c2
+        call mult_qr(.true., .true., r, tau, c1)
+
+        ! Compute ANS = Q**H * C
+        ans = matmul(conjg(transpose(q)), c2)
+
+        ! Test
+        if (.not.assert(c1, ans, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Underdetermined QR Multiplication Test 2"
         end if
     end function
 

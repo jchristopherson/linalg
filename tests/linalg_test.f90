@@ -23,7 +23,13 @@ program main
     rst = test_diagonal_mtx_mult()
     if (.not.rst) overall = .false.
 
+    rst = test_diagonal_mtx_mult_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_rank1_update()
+    if (.not.rst) overall = .false.
+
+    rst = test_rank1_update_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_rank()
@@ -31,15 +37,27 @@ program main
     
     rst = test_tri_mtx_mult_1()
     if (.not.rst) overall = .false.
+
+    rst = test_tri_mtx_mult_1_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_tri_mtx_mult_2()
+    if (.not.rst) overall = .false.
+
+    rst = test_tri_mtx_mult_2_cmplx()
     if (.not.rst) overall = .false.
 
     rst = test_mtx_mult_1()
     if (.not.rst) overall = .false.
 
+    rst = test_mtx_mult_1_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_tri_mtx_solve_1()
     if (.not.rst) overall = .false.
+
+    ! rst = test_tri_mtx_solve_1_cmplx()    ! Potential OpenBLAS issue in ZTRSM???
+    ! if (.not.rst) overall = .false.
     
 
     ! LU Factorization Tests
@@ -59,23 +77,38 @@ program main
     ! QR Factorization Tests
     rst = test_qr_factor()
     if (.not.rst) overall = .false.
-    
-    rst = test_qr_factor_od()
+
+    rst = test_qr_factor_cmplx()
     if (.not.rst) overall = .false.
     
-    rst = test_qr_factor_ud()
+    rst = test_qr_factor_od()
     if (.not.rst) overall = .false.
 
     rst = test_qr_factor_od_cmplx()
     if (.not.rst) overall = .false.
     
+    rst = test_qr_factor_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_factor_ud_cmplx()
+    if (.not.rst) overall = .false.
+    
     rst = test_qr_mult()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_od()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_od_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_ud_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right()
@@ -134,9 +167,12 @@ program main
     rst = test_pinv_ud_cmplx()
     if (.not.rst) overall = .false.
     
-    ! Cholesky Factorization Tests
+    ! Cholesky Factorization Tests - TO DO: Complex-Valued Cases
     rst =  test_cholesky_factor()
     if (.not.rst) overall = .false.
+
+    ! rst = test_cholesky_factor_cmplx()
+    ! if (.not.rst) overall = .false.
     
     rst = test_cholesky_rank1_update()
     if (.not.rst) overall = .false.

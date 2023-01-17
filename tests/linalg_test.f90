@@ -261,6 +261,9 @@ program main
     rst = test_lq_factor_cmplx()
     if (.not.rst) overall = .false.
 
+    rst = test_lq_factor_ud_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_lq_mult()
     if (.not.rst) overall = .false.
 

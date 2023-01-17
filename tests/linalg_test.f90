@@ -168,11 +168,20 @@ program main
     ! SVD Tests
     rst = test_svd()
     if (.not.rst) overall = .false.
+
+    rst = test_svd_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_svd_od()
     if (.not.rst) overall = .false.
+
+    rst = test_svd_od_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_svd_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_svd_ud_cmplx()
     if (.not.rst) overall = .false.
     
     ! Matrix Inverse Tests

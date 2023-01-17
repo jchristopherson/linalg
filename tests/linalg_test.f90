@@ -56,10 +56,9 @@ program main
     rst = test_tri_mtx_solve_1()
     if (.not.rst) overall = .false.
 
-    ! rst = test_tri_mtx_solve_1_cmplx()    ! Potential OpenBLAS issue in ZTRSM???
-    ! if (.not.rst) overall = .false.
+    rst = test_tri_mtx_solve_1_cmplx()
+    if (.not.rst) overall = .false.
     
-
     ! LU Factorization Tests
     rst = test_lu_factor()
     if (.not.rst) overall = .false.

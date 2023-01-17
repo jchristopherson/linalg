@@ -143,8 +143,6 @@ contains
         rst = .true.
         call create_random_array( &
             a, &
-            xmin = (1.0d0, 0.0d0), &
-            xmax = (1.0d1, 0.0d0), &
             mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(b)
         u = a
@@ -178,6 +176,75 @@ contains
         if (.not.assert(matmul(a, b2), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 4"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_cholesky_rank1_update_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        complex(real64), dimension(n, n) :: a, r
+        complex(real64), dimension(n) :: u
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
+        call create_random_array(u)
+        r = a
+
+        ! Compute the Cholesky factorization of the original matrix
+        call cholesky_factor(r)
+
+        ! Update the original matrix
+        call rank1_update(one, u, u, a)
+
+        ! Update the factored matrix
+        call cholesky_rank1_update(r, u)
+
+        ! Test
+        if (.not.assert(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Cholesky Rank 1 Update Test 1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_cholesky_rank1_downdate_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        complex(real64), dimension(n, n) :: a, r
+        complex(real64), dimension(n) :: u
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
+        call create_random_array(u)
+
+        ! Start with a positive definite matrix, and then update it
+        call rank1_update(one, u, u, a)
+        r = a
+
+        ! Compute the Cholesky factorization of the original matrix
+        call cholesky_factor(r)
+
+        ! Update the original matrix: A = A - u * u**T
+        call rank1_update(-one, u, u, a)
+
+        ! Update the factored matrix
+        call cholesky_rank1_downdate(r, u)
+
+        ! Test
+        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Cholesky Rank 1 Downdate Test 1"
         end if
     end function
 

@@ -103,6 +103,7 @@ contains
             print '(A)', "Test Failed: Matrix Inverse Test 1"
         end if
     end function
+
 ! ------------------------------------------------------------------------------
     function test_pinv_cmplx() result(rst)
         ! Parameters
@@ -209,6 +210,33 @@ contains
         if (.not.assert(check, identity, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Pseudo-Inverse Test 3"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_inv_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+
+        ! Local Variables
+        complex(real64), dimension(n, n) :: a, a1, ainv
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        a1 = a
+
+        ! Compute the inverse of A
+        call mtx_inverse(a1)
+
+        ! Compute the inverse using the already tested pseudo-inverse
+        call mtx_pinverse(a, ainv)
+
+        ! Test
+        if (.not.assert(ainv, a1, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Matrix Inverse Test 1"
         end if
     end function
 

@@ -202,18 +202,27 @@ program main
 
     rst = test_pinv_ud_cmplx()
     if (.not.rst) overall = .false.
+
+    rst = test_inv_cmplx()
+    if (.not.rst) overall = .false.
     
-    ! Cholesky Factorization Tests - TO DO: Complex-Valued Cases
+    ! Cholesky Factorization Tests
     rst =  test_cholesky_factor()
     if (.not.rst) overall = .false.
 
-    ! rst = test_cholesky_factor_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_factor_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_cholesky_rank1_update()
     if (.not.rst) overall = .false.
+
+    rst = test_cholesky_rank1_update_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_cholesky_rank1_downdate()
+    if (.not.rst) overall = .false.
+
+    rst = test_cholesky_rank1_downdate_cmplx()
     if (.not.rst) overall = .false.
     
     ! Eigenvalue/Eigenvector Tests

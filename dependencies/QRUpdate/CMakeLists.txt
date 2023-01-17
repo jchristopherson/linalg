@@ -5,10 +5,12 @@ include(FetchContent)
 # Use an installed version, if one is found; else, import the library
 if (${qrupdate_FOUND})
     # Inform the user of what's going on
-    message(STATUS "FERROR (${qrupdate_VERSION}) library found.")
+    message(STATUS "QRUPDATE (${qrupdate_VERSION}) library found.")
 else()
     # Inform the user of what's going on
-    message(STATUS "QRUpdate library not found.  Downloading appropriate repository.")
+    message(STATUS "QRUPDATE library not found.  Downloading appropriate repository.")
+
+    # Fetch the code
     FetchContent_Declare(
         qrupdate
         GIT_REPOSITORY "https://github.com/mpimd-csc/qrupdate-ng"
@@ -18,7 +20,7 @@ else()
     FetchContent_MakeAvailable(qrupdate)
 
     if (WIN32)
-        if (BUILD_SHARED_LIBS)
+        if (${BUILD_SHARED_LIBS})
             add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different

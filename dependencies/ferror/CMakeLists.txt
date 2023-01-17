@@ -23,7 +23,7 @@ else()
     FetchContent_MakeAvailable(ferror)
 
     if (WIN32)
-        if (BUILD_SHARED_LIBS)
+        if (${BUILD_SHARED_LIBS})
             add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different

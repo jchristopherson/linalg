@@ -10,7 +10,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # By default, static library
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+# option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Export all symbols on Windows when building libraries
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)

@@ -113,29 +113,56 @@ program main
     
     rst = test_qr_mult_right()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right_od()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_od_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right_ud()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_ud_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_vector()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_vector_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_solve_no_pivot()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_no_pivot_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_solve_pivot()
     if (.not.rst) overall = .false.
 
+    rst = test_qr_solve_no_pivot_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_qr_solve_pivot_od()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_pivot_od_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_solve_pivot_ud()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_pivot_ud_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_update_1()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_update_1_cmplx()
     if (.not.rst) overall = .false.
     
     ! SVD Tests

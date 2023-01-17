@@ -231,6 +231,9 @@ program main
     
     rst = test_eigen_asymm()
     if (.not.rst) overall = .false.
+
+    rst = test_eigen_asymm_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_eigen_gen()
     if (.not.rst) overall = .false.
@@ -239,7 +242,13 @@ program main
     rst = test_dbl_ascend_sort()
     if (.not.rst) overall = .false.
 
+    rst = test_ascend_sort_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_dbl_descend_sort()
+    if (.not.rst) overall = .false.
+
+    rst = test_descend_sort_cmplx()
     if (.not.rst) overall = .false.
 
     ! LQ Factorization Tests

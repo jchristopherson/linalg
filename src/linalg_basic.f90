@@ -169,7 +169,7 @@ contains
             lda = k
         else if (opa == LA_HERMITIAN_TRANSPOSE) then
             k = size(a, 1)
-            ta = 'H'
+            ta = 'C'
             lda = k
         else
             k = size(a, 2)
@@ -180,7 +180,7 @@ contains
             tb = 'T'
             ldb = n
         else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
-            tb = 'H'
+            tb = 'C'
             ldb = n
         else
             tb = 'N'
@@ -244,7 +244,7 @@ contains
         if (opa == LA_TRANSPOSE) then
             t = 'T'
         else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
-            t = 'H'
+            t = 'C'
         else
             t = 'N'
         end if

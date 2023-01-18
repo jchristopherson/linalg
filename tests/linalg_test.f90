@@ -212,11 +212,11 @@ program main
     rst = test_cholesky_factor_cmplx()
     if (.not.rst) overall = .false.
     
-    ! rst = test_cholesky_rank1_update()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_rank1_update()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_cholesky_rank1_update_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_rank1_update_cmplx()
+    if (.not.rst) overall = .false.
     
     ! rst = test_cholesky_rank1_downdate()
     ! if (.not.rst) overall = .false.

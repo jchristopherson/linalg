@@ -75,10 +75,10 @@ c check arguments.
 c in the non-full case, we shall need the norm of u.
       if (.not.full) ru = dznrm2(m,u,1)
 c form Q'*u. In the non-full case, form also u - Q*Q'u.
-!       do i = 1,k
-!         w(i) = zdotc(m,Q(1,i),1,u,1)
-!         if (.not.full) call zaxpy(m,-w(i),Q(1,i),1,u,1)
-!       end do
+      do i = 1,k
+        w(i) = zdotc(m,Q(1,i),1,u,1)
+      !   if (.not.full) call zaxpy(m,-w(i),Q(1,i),1,u,1)
+      end do
 c generate rotations to eliminate Q'*u.
       call zqrtv1(k,w,rw)
 c apply rotations to R.

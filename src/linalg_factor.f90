@@ -1500,9 +1500,6 @@ contains
         ! Process
         call DQR1UP(m, n, k, q, m, r, m, u, v, wptr)
 
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
-
         ! Formatting
 100     format(A, I0, A)
     end subroutine
@@ -1608,9 +1605,6 @@ contains
 
         ! Process
         call ZQR1UP(m, n, k, q, m, r, m, u, v, wptr, rwptr)
-
-        ! End
-        if (allocated(wrk)) deallocate(wrk)
 
         ! Formatting
 100     format(A, I0, A)

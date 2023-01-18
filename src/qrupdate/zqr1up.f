@@ -79,29 +79,29 @@ c form Q'*u. In the non-full case, form also u - Q*Q'u.
 !         w(i) = zdotc(m,Q(1,i),1,u,1)
 !         if (.not.full) call zaxpy(m,-w(i),Q(1,i),1,u,1)
 !       end do
-! c generate rotations to eliminate Q'*u.
-!       call zqrtv1(k,w,rw)
-! c apply rotations to R.
-!       call zqrqh(k,n,R,ldr,rw,w(2))
-! c apply rotations to Q.
-!       call zqrot('B',m,k,Q,ldq,rw,w(2))
-! c update the first row of R.
-!       call zaxcpy(n,w(1),v,1,R(1,1),ldr)
-! c retriangularize R.
-!       call zqhqr(k,n,R,ldr,rw,w)
-! c apply rotations to Q.
-!       call zqrot('F',m,min(k,n+1),Q,ldq,rw,w)
-! c in the full case, we're finished
-!       if (full) return
-! c compute relative residual norm
-!       ruu = dznrm2(m,u,1)
-!       ru = ru * dlamch('e')
-!       if (ruu <= ru) return
-! c update the orthogonal basis.
-!       call zdscal(n,ruu,v,1)
-!       call zdscal(m,1d0/ruu,u,1)
-!       call zch1up(n,R,ldr,v,rw)
-!       do i = 1,n
-!         call zrot(m,Q(1,i),1,u,1,rw(i),conjg(v(i)))
-!       end do
+c generate rotations to eliminate Q'*u.
+      call zqrtv1(k,w,rw)
+c apply rotations to R.
+      call zqrqh(k,n,R,ldr,rw,w(2))
+c apply rotations to Q.
+      call zqrot('B',m,k,Q,ldq,rw,w(2))
+c update the first row of R.
+      call zaxcpy(n,w(1),v,1,R(1,1),ldr)
+c retriangularize R.
+      call zqhqr(k,n,R,ldr,rw,w)
+c apply rotations to Q.
+      call zqrot('F',m,min(k,n+1),Q,ldq,rw,w)
+c in the full case, we're finished
+      if (full) return
+c compute relative residual norm
+      ruu = dznrm2(m,u,1)
+      ru = ru * dlamch('e')
+      if (ruu <= ru) return
+c update the orthogonal basis.
+      call zdscal(n,ruu,v,1)
+      call zdscal(m,1d0/ruu,u,1)
+      call zch1up(n,R,ldr,v,rw)
+      do i = 1,n
+        call zrot(m,Q(1,i),1,u,1,rw(i),conjg(v(i)))
+      end do
       end subroutine

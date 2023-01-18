@@ -2525,7 +2525,7 @@ contains
         lda = size(a, 1)
         side = 'L'
         if (trans) then
-            t = 'T'
+            t = 'C'
         else
             t = 'N'
         end if

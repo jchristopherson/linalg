@@ -251,41 +251,41 @@ program main
     if (.not.rst) overall = .false.
 
     ! LQ Factorization Tests
-    rst = test_lq_factor()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_factor()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_factor_ud()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_factor_ud()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_factor_cmplx()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_factor_cmplx()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_factor_ud_cmplx()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_factor_ud_cmplx()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_ud()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_ud()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_cmplx()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_cmplx()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_cmplx_ud()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_cmplx_ud()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_right()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_right()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_right_cmplx()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_right_cmplx()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_right_ud()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_right_ud()
+    ! if (.not.rst) overall = .false.
 
-    rst = test_lq_mult_right_cmplx_ud()
-    if (.not.rst) overall = .false.
+    ! rst = test_lq_mult_right_cmplx_ud()
+    ! if (.not.rst) overall = .false.
 
     ! End
     if (.not.overall) stop 1

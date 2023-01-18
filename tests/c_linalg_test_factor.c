@@ -487,7 +487,7 @@ bool test_cmplx_cholesky_rank1_update()
     if (flag != LA_NO_ERROR) rst = false;
 
     // Ensure R**H * R = A
-    flag = la_mtx_mult_cmplx(LA_TRANSPOSE, LA_NO_OPERATION, n, n, n, 
+    flag = la_mtx_mult_cmplx(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, n, n, n, 
         one, a, n, a, n, zero, c, n);
     if (flag != LA_NO_ERROR) rst = false;
     if (!is_cmplx_mtx_equal(n, n, c, a1, DBL_TOL)) rst = false;

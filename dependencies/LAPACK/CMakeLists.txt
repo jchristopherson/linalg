@@ -10,7 +10,6 @@ else()
     FetchContent_Declare(
         LAPACK
         GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
-        OVERRIDE_FIND_PACKAGE
     )
 
     FetchContent_MakeAvailable(LAPACK)

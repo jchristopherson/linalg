@@ -19,7 +19,6 @@ add_subdirectory(configure)
 find_package(BLAS)
 find_package(LAPACK)
 find_package(ferror 1.4.0 QUIET)
-find_package(qrupdate QUIET)
 add_subdirectory(dependencies)
 
 # Source
@@ -36,7 +35,6 @@ target_link_libraries(
   ${PROJECT_NAME} 
   ${BLAS_LIBRARIES} 
   ${LAPACK_LIBRARIES}
-  ${qrupdate_LIBRARY}
 )
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 

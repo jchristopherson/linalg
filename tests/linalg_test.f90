@@ -158,8 +158,8 @@ program main
     rst = test_qr_solve_pivot_ud_cmplx()
     if (.not.rst) overall = .false.
     
-    ! rst = test_qr_update_1()
-    ! if (.not.rst) overall = .false.
+    rst = test_qr_update_1()
+    if (.not.rst) overall = .false.
 
     ! rst = test_qr_update_1_cmplx()
     ! if (.not.rst) overall = .false.

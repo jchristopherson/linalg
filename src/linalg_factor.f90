@@ -1532,8 +1532,8 @@ contains
         n = size(r, 2)
         k = min(m, n)
         full = size(q, 2) == m
-        lwork = max(m, k)
-        lrwork = max(m, k)
+        lwork = k
+        lrwork = k
         if (present(err)) then
             errmgr => err
         else

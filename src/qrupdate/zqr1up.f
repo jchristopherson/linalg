@@ -98,10 +98,10 @@ c compute relative residual norm
       ru = ru * dlamch('e')
       if (ruu <= ru) return
 c update the orthogonal basis.
-      call zdscal(n,ruu,v,1)
-      call zdscal(m,1d0/ruu,u,1)
-      call zch1up(n,R,ldr,v,rw)
-      do i = 1,n
-        call zrot(m,Q(1,i),1,u,1,rw(i),conjg(v(i)))
-      end do
+      ! call zdscal(n,ruu,v,1)
+      ! call zdscal(m,1d0/ruu,u,1)
+      ! call zch1up(n,R,ldr,v,rw)
+      ! do i = 1,n
+      !   call zrot(m,Q(1,i),1,u,1,rw(i),conjg(v(i)))
+      ! end do
       end subroutine

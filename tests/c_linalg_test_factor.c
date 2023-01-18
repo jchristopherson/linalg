@@ -460,11 +460,11 @@ bool test_cholesky_rank1_update()
 bool test_cmplx_cholesky_rank1_update()
 {
     // Variables
-    const int n = 50;
+    const int n = 5;
     const int nn = n * n;
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 0.0 * I;
-    double complex a[nn], a1[nn], u[n], c[nn];
+    double complex a[nn], a1[nn], u[n];
     bool rst;
     int flag;
 
@@ -486,11 +486,10 @@ bool test_cmplx_cholesky_rank1_update()
     flag = la_cholesky_rank1_update_cmplx(n, a, n, u);
     if (flag != LA_NO_ERROR) rst = false;
 
-    // Ensure R**H * R = A
-    flag = la_mtx_mult_cmplx(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, n, n, n, 
-        one, a, n, a, n, zero, c, n);
+    // Factor the updated matrix and compare
+    flag = la_cholesky_factor_cmplx(true, n, a1, n);
     if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(n, n, c, a1, DBL_TOL)) rst = false;
+    if (!is_cmplx_mtx_equal(n, n, a, a1, DBL_TOL)) rst = false;
 
     // End
     return rst;

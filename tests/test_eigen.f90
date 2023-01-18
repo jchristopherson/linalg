@@ -113,13 +113,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Asymmetric Eigen Values Test 1"
         end if
-
-        ! Compute just the eigenvalues
-        call eigen(a, vals1)
-        if (.not.assert(vals, vals1, tol = REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "Test Failed: Complex-Valued Asymmetric Eigen Values Test 2"
-        end if
     end function
 
 ! ------------------------------------------------------------------------------

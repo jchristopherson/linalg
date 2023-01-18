@@ -45,6 +45,8 @@ int main()
 
     check = test_qr_rank1_update();
     if (!check) flag = 8;
+    check = test_cmplx_qr_rank1_update();
+    if (!check) flag = -8;
 
     check = test_cholesky();
     if (!check) flag = 9;
@@ -79,9 +81,6 @@ int main()
     if (!check) flag = 16;
 
 /* STUFF THAT NEEDS MORE WORK BEFORE RELEASING INTO THE WILD */
-
-    // check = test_cmplx_qr_rank1_update();
-    // if (!check) flag = -8;
 
     // check = test_cmplx_cholesky_rank1_update();
     // if (!check) flag = -10;

@@ -1461,7 +1461,7 @@ contains
         call rank1_update(one, u, v, a1)
 
         ! Use the QR update to update the original R and Q
-        ! call qr_rank1_update(q, r, u, v)
+        call qr_rank1_update(q, r, u, v)
 
         ! Test
         ! if (.not.assert(a1, matmul(q, r), tol = REAL64_TOL)) then

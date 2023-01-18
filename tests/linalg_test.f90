@@ -218,11 +218,11 @@ program main
     rst = test_cholesky_rank1_update_cmplx()
     if (.not.rst) overall = .false.
     
-    ! rst = test_cholesky_rank1_downdate()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_rank1_downdate()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_cholesky_rank1_downdate_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_rank1_downdate_cmplx()
+    if (.not.rst) overall = .false.
     
     ! Eigenvalue/Eigenvector Tests
     rst = test_eigen_symm()

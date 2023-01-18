@@ -141,9 +141,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array( &
-            a, &
-            mtype = POSITIVE_DEFINITE_MATRIX)
+        call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(b)
         u = a
         l = a
@@ -152,14 +150,14 @@ contains
 
         ! Test 1: A = L * L**T
         call cholesky_factor(l, .false.)
-        if (.not.assert(a, matmul(l, transpose(l)), tol = REAL64_TOL)) then
+        if (.not.assert(a, matmul(l, conjg(transpose(l))), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 1"
         end if
 
         ! Test 2: A = U**T * U
         call cholesky_factor(u, .true.)
-        if (.not.assert(a, matmul(transpose(u), u), tol = REAL64_TOL)) then
+        if (.not.assert(a, matmul(conjg(transpose(u)), u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 2"
         end if
@@ -206,7 +204,7 @@ contains
         call cholesky_rank1_update(r, u)
 
         ! Test
-        if (.not.assert(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
+        if (.not.assert(a, matmul(conjg(transpose(r)), r), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Cholesky Rank 1 Update Test 1"
         end if
@@ -242,7 +240,7 @@ contains
         call cholesky_rank1_downdate(r, u)
 
         ! Test
-        if (.not.is_mtx_equal(a, matmul(transpose(r), r), tol = REAL64_TOL)) then
+        if (.not.is_mtx_equal(a, matmul(conjg(transpose(r)), r), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Cholesky Rank 1 Downdate Test 1"
         end if

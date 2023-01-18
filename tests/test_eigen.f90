@@ -94,7 +94,7 @@ contains
 
         ! Initialization
         rst = .true.
-        call create_random_array(a)
+        call create_random_array(a, mtype = SYMMETRIC_MATRIX)
         a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 

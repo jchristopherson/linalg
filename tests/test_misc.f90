@@ -490,10 +490,13 @@ contains
         integer(int32), parameter :: nrhs = 20
         complex(real64), parameter :: alpha = (1.0d0, 0.0d0)
         complex(real64) :: a(n,n), b1(n,nrhs), x1(n,nrhs), check1(n,nrhs)
+        real(real64) :: ar(n, n), ai(n, n)
 
         ! Initialization - upper triangular systems
         rst = .true.
-        call create_random_array(a, mtype = UPPER_TRIANGULAR_MATRIX)
+        call create_random_array(ar, mtype = UPPER_TRIANGULAR_MATRIX)
+        call create_random_array(ai, mtype = UPPER_TRIANGULAR_MATRIX)
+        a = cmplx(ar, ai, real64)
         call create_random_array(b1)
         x1 = b1
 

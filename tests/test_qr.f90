@@ -1286,8 +1286,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 5
-        integer(int32), parameter :: n = 6
+        integer(int32), parameter :: m = 50
+        integer(int32), parameter :: n = 60
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables

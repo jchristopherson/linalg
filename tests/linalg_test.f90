@@ -206,11 +206,11 @@ program main
     if (.not.rst) overall = .false.
     
     ! Cholesky Factorization Tests
-    ! rst =  test_cholesky_factor()
-    ! if (.not.rst) overall = .false.
+    rst =  test_cholesky_factor()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_cholesky_factor_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_cholesky_factor_cmplx()
+    if (.not.rst) overall = .false.
     
     ! rst = test_cholesky_rank1_update()
     ! if (.not.rst) overall = .false.
@@ -225,67 +225,67 @@ program main
     ! if (.not.rst) overall = .false.
     
     ! Eigenvalue/Eigenvector Tests
-    ! rst = test_eigen_symm()
-    ! if (.not.rst) overall = .false.
+    rst = test_eigen_symm()
+    if (.not.rst) overall = .false.
     
-    ! rst = test_eigen_asymm()
-    ! if (.not.rst) overall = .false.
+    rst = test_eigen_asymm()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_eigen_asymm_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_eigen_asymm_cmplx()
+    if (.not.rst) overall = .false.
     
-    ! rst = test_eigen_gen()
-    ! if (.not.rst) overall = .false.
+    rst = test_eigen_gen()
+    if (.not.rst) overall = .false.
 
     ! Sorting Tests
-    ! rst = test_dbl_ascend_sort()
-    ! if (.not.rst) overall = .false.
+    rst = test_dbl_ascend_sort()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_ascend_sort_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_ascend_sort_cmplx()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_dbl_descend_sort()
-    ! if (.not.rst) overall = .false.
+    rst = test_dbl_descend_sort()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_descend_sort_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_descend_sort_cmplx()
+    if (.not.rst) overall = .false.
 
     ! LQ Factorization Tests
-    ! rst = test_lq_factor()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_factor()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_factor_ud()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_factor_ud()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_factor_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_factor_cmplx()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_factor_ud_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_factor_ud_cmplx()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_ud()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_ud()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_cmplx()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_cmplx_ud()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_cmplx_ud()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_right()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_right()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_right_cmplx()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_right_cmplx()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_right_ud()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_right_ud()
+    if (.not.rst) overall = .false.
 
-    ! rst = test_lq_mult_right_cmplx_ud()
-    ! if (.not.rst) overall = .false.
+    rst = test_lq_mult_right_cmplx_ud()
+    if (.not.rst) overall = .false.
 
     ! End
     if (.not.overall) stop 1

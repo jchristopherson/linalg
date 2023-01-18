@@ -55,8 +55,8 @@ int main()
 
     check = test_cholesky_rank1_update();
     if (!check) flag = 10;
-    // check = test_cmplx_cholesky_rank1_update();
-    // if (!check) flag = -10;
+    check = test_cmplx_cholesky_rank1_update();
+    if (!check) flag = -10;
     
     check = test_svd();
     if (!check) flag = 11;

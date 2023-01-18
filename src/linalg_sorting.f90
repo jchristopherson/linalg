@@ -45,7 +45,7 @@ contains
         ! Local Variables
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
         integer(int32) :: n
         logical :: dir
 
@@ -64,6 +64,7 @@ contains
 
         ! Input Check
         if (size(ind) /= n) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Expected the tracking array to be of size ", n, &
                 ", but found an array of size ", size(ind), "."
@@ -111,7 +112,7 @@ contains
         ! Local Variables
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
         integer(int32) :: n
         logical :: dir
 
@@ -130,6 +131,7 @@ contains
 
         ! Input Check
         if (size(ind) /= n) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Expected the tracking array to be of size ", n, &
                 ", but found an array of size ", size(ind), "."
@@ -157,7 +159,7 @@ contains
         ! Local Variables
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
         integer(int32) :: i, n, flag
         logical :: dir
         integer(int32), allocatable, dimension(:) :: ind
@@ -178,6 +180,7 @@ contains
         n = size(vals)
         if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
             ! ARRAY SIZE ERROR
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Expected the eigenvector matrix to be of size ", n, &
                 "-by-", n, ", but found a matrix of size ", size(vecs, 1), &
@@ -219,7 +222,7 @@ contains
         ! Local Variables
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
         integer(int32) :: i, n, flag
         logical :: dir
         integer(int32), allocatable, dimension(:) :: ind
@@ -240,6 +243,7 @@ contains
         n = size(vals)
         if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
             ! ARRAY SIZE ERROR
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Expected the eigenvector matrix to be of size ", n, &
                 "-by-", n, ", but found a matrix of size ", size(vecs, 1), &

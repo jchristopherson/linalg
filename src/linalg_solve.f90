@@ -258,7 +258,7 @@ contains
         integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -280,6 +280,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_mtx", trim(errmsg), &
@@ -306,7 +307,7 @@ contains
         integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -328,6 +329,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_mtx_cmplx", trim(errmsg), &
@@ -354,7 +356,7 @@ contains
         integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -375,6 +377,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_vec", trim(errmsg), &
@@ -401,7 +404,7 @@ contains
         integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -422,6 +425,7 @@ contains
         end if
         if (flag /= 0) then
             ! One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lu_vec_cmplx", trim(errmsg), &
@@ -456,7 +460,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -480,6 +484,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_mtx", trim(errmsg), &
@@ -545,7 +550,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -569,6 +574,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_mtx_cmplx", &
@@ -632,7 +638,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -655,6 +661,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_vec", trim(errmsg), &
@@ -717,7 +724,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -740,6 +747,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_no_pivot_vec_cmplx", &
@@ -811,7 +819,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -839,6 +847,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_mtx", trim(errmsg), &
@@ -971,7 +980,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -999,6 +1008,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_mtx_cmplx", &
@@ -1130,7 +1140,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1157,6 +1167,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_vec", trim(errmsg), &
@@ -1285,7 +1296,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1312,6 +1323,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_qr_pivot_vec_cmplx", trim(errmsg), &
@@ -1429,7 +1441,7 @@ contains
         integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -1453,6 +1465,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_mtx", trim(errmsg), &
@@ -1480,7 +1493,7 @@ contains
         integer(int32) :: n, nrhs, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -1504,6 +1517,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_mtx_cmplx", trim(errmsg), &
@@ -1531,7 +1545,7 @@ contains
         integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -1554,6 +1568,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_vec", trim(errmsg), &
@@ -1581,7 +1596,7 @@ contains
         integer(int32) :: n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -1604,6 +1619,7 @@ contains
             flag = 3
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_cholesky_vec_cmplx", trim(errmsg), &
@@ -1855,7 +1871,7 @@ contains
         real(real64) :: t, tref, tolcheck
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1876,6 +1892,7 @@ contains
 
         ! Input Check
         if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "The output matrix AINV is not sized appropriately.  " // &
                 "It is expected to be ", n, "-by-", m, "."
@@ -1924,6 +1941,7 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_pinverse", errmsg, &
@@ -2006,7 +2024,7 @@ contains
         real(real64) :: t, tref, tolcheck, rtemp(1)
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2026,6 +2044,7 @@ contains
 
         ! Input Check
         if (size(ainv, 1) /= n .or. size(ainv, 2) /= m) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "The output matrix AINV is not sized appropriately.  " // &
                 "It is expected to be ", n, "-by-", m, "."
@@ -2097,6 +2116,7 @@ contains
 
         ! Check for convergence
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_pinverse_cmplx", errmsg, &
@@ -2479,7 +2499,7 @@ contains
         real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2500,6 +2520,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_pvt", &
@@ -2594,7 +2615,7 @@ contains
         real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2616,6 +2637,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_pvt_cmplx", &
@@ -2728,7 +2750,7 @@ contains
         real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2748,6 +2770,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_pvt", &
@@ -2842,7 +2865,7 @@ contains
         real(real64) :: rc
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2863,6 +2886,7 @@ contains
             flag = 2
         end if
         if (flag /= 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_pvt_cmplx", &
@@ -2970,7 +2994,7 @@ contains
         real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -2993,6 +3017,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_svd", &
@@ -3057,6 +3082,7 @@ contains
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_mtx_svd", errmsg, &
@@ -3090,7 +3116,7 @@ contains
         real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3114,6 +3140,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_mtx_svd_cmplx", &
@@ -3199,6 +3226,7 @@ contains
             rwptr, flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_mtx_svd_cmplx", &
@@ -3228,7 +3256,7 @@ contains
         real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3250,6 +3278,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_svd", &
@@ -3313,6 +3342,7 @@ contains
             flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_vec_svd", errmsg, &
@@ -3347,7 +3377,7 @@ contains
         real(real64) :: rcond
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3370,6 +3400,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_least_squares_vec_svd_cmplx", &
@@ -3455,6 +3486,7 @@ contains
             rwptr, flag)
         if (present(arnk)) arnk = rnk
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 101) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("solve_least_squares_vec_svd_cmplx", &
@@ -3487,7 +3519,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3512,6 +3544,7 @@ contains
 
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lq_mtx", trim(errmsg), &
@@ -3582,7 +3615,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3607,6 +3640,7 @@ contains
 
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lq_mtx_cmplx", trim(errmsg), &
@@ -3674,7 +3708,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3698,6 +3732,7 @@ contains
 
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lq_vec", trim(errmsg), &
@@ -3765,7 +3800,7 @@ contains
         complex(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -3789,6 +3824,7 @@ contains
 
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("solve_lq_vec_cmplx", trim(errmsg), &

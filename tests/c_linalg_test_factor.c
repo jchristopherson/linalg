@@ -684,12 +684,14 @@ bool test_cmplx_lq()
     const int n = 50;
     const int nrhs = 20;
     const int mn = m * n;
+    const int nn = n * n;
     const int mnrhs = m * nrhs;
     const int nnrhs = n * nrhs;
     const int minmn = MIN(m, n);
     const double complex zero = 0.0 + 0.0 * I;
     const double complex one = 1.0 + 1.0 * I;
-    double complex a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs];
+    double complex a[mn], a1[mn], x[nnrhs], tau[minmn], b[mnrhs], bref[mnrhs],
+        q[nn], lq[mn];
     bool rst;
     int i, j, flag;
 
@@ -704,15 +706,11 @@ bool test_cmplx_lq()
     flag = la_lq_factor_cmplx(m, n, a, m, tau);
     if (flag != LA_NO_ERROR) rst = false;
 
-    // Solve
-    flag = la_solve_lq_cmplx(m, n, nrhs, a, m, tau, x, n);
+    // Ensure L * Q = A
+    flag = la_form_lq_cmplx(m, n, a, m, tau, q, n);
     if (flag != LA_NO_ERROR) rst = false;
-
-    // Test by ensuring A * X = B
-    flag = la_mtx_mult_cmplx(LA_NO_OPERATION, LA_NO_OPERATION, m, nrhs, n, 
-        one, a1, m, x, n, zero, b, m);
-    if (flag != LA_NO_ERROR) rst = false;
-    if (!is_cmplx_mtx_equal(m, nrhs, b, bref, DBL_TOL)) rst = false;
+    cmplx_mtx_mult(m, n, m, a, q, lq);
+    if (!is_cmplx_mtx_equal(m, n, a1, lq, DBL_TOL)) rst = false;
 
     // End
     return rst;

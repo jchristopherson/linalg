@@ -82,8 +82,8 @@ int main()
     check = test_lq();
     if (!check) flag = 16;
 
-    // check = test_cmplx_lq();
-    // if (!check) flag = 17;
+    check = test_cmplx_lq();
+    if (!check) flag = 17;
 
     // End
     return flag;

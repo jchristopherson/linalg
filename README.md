@@ -179,6 +179,8 @@ Mode 3: (923.5669 Hz)
     -0.184
      0.179
 ```
+## Documentation
+The documentation can be found [here](https://jchristopherson.github.io/linalg/).
 
 ## Building LINALG
 This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).

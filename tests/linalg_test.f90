@@ -23,7 +23,13 @@ program main
     rst = test_diagonal_mtx_mult()
     if (.not.rst) overall = .false.
 
+    rst = test_diagonal_mtx_mult_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_rank1_update()
+    if (.not.rst) overall = .false.
+
+    rst = test_rank1_update_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_rank()
@@ -31,17 +37,28 @@ program main
     
     rst = test_tri_mtx_mult_1()
     if (.not.rst) overall = .false.
+
+    rst = test_tri_mtx_mult_1_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_tri_mtx_mult_2()
+    if (.not.rst) overall = .false.
+
+    rst = test_tri_mtx_mult_2_cmplx()
     if (.not.rst) overall = .false.
 
     rst = test_mtx_mult_1()
     if (.not.rst) overall = .false.
 
+    rst = test_mtx_mult_1_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_tri_mtx_solve_1()
     if (.not.rst) overall = .false.
-    
 
+    rst = test_tri_mtx_solve_1_cmplx()
+    if (.not.rst) overall = .false.
+    
     ! LU Factorization Tests
     rst = test_lu_factor()
     if (.not.rst) overall = .false.
@@ -59,60 +76,111 @@ program main
     ! QR Factorization Tests
     rst = test_qr_factor()
     if (.not.rst) overall = .false.
-    
-    rst = test_qr_factor_od()
+
+    rst = test_qr_factor_cmplx()
     if (.not.rst) overall = .false.
     
-    rst = test_qr_factor_ud()
+    rst = test_qr_factor_od()
     if (.not.rst) overall = .false.
 
     rst = test_qr_factor_od_cmplx()
     if (.not.rst) overall = .false.
     
+    rst = test_qr_factor_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_factor_ud_cmplx()
+    if (.not.rst) overall = .false.
+    
     rst = test_qr_mult()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_od()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_od_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_ud_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right_od()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_od_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_mult_right_ud()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_right_ud_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_mult_vector()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_mult_vector_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_solve_no_pivot()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_no_pivot_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_solve_pivot()
     if (.not.rst) overall = .false.
 
+    rst = test_qr_solve_no_pivot_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_qr_solve_pivot_od()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_pivot_od_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_qr_solve_pivot_ud()
     if (.not.rst) overall = .false.
+
+    rst = test_qr_solve_pivot_ud_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_qr_update_1()
+    if (.not.rst) overall = .false.
+
+    rst = test_qr_update_1_cmplx()
     if (.not.rst) overall = .false.
     
     ! SVD Tests
     rst = test_svd()
     if (.not.rst) overall = .false.
+
+    rst = test_svd_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_svd_od()
     if (.not.rst) overall = .false.
+
+    rst = test_svd_od_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_svd_ud()
+    if (.not.rst) overall = .false.
+
+    rst = test_svd_ud_cmplx()
     if (.not.rst) overall = .false.
     
     ! Matrix Inverse Tests
@@ -133,15 +201,27 @@ program main
 
     rst = test_pinv_ud_cmplx()
     if (.not.rst) overall = .false.
+
+    rst = test_inv_cmplx()
+    if (.not.rst) overall = .false.
     
     ! Cholesky Factorization Tests
     rst =  test_cholesky_factor()
     if (.not.rst) overall = .false.
+
+    rst = test_cholesky_factor_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_cholesky_rank1_update()
     if (.not.rst) overall = .false.
+
+    rst = test_cholesky_rank1_update_cmplx()
+    if (.not.rst) overall = .false.
     
     rst = test_cholesky_rank1_downdate()
+    if (.not.rst) overall = .false.
+
+    rst = test_cholesky_rank1_downdate_cmplx()
     if (.not.rst) overall = .false.
     
     ! Eigenvalue/Eigenvector Tests
@@ -149,6 +229,9 @@ program main
     if (.not.rst) overall = .false.
     
     rst = test_eigen_asymm()
+    if (.not.rst) overall = .false.
+
+    rst = test_eigen_asymm_cmplx()
     if (.not.rst) overall = .false.
     
     rst = test_eigen_gen()
@@ -158,7 +241,13 @@ program main
     rst = test_dbl_ascend_sort()
     if (.not.rst) overall = .false.
 
+    rst = test_ascend_sort_cmplx()
+    if (.not.rst) overall = .false.
+
     rst = test_dbl_descend_sort()
+    if (.not.rst) overall = .false.
+
+    rst = test_descend_sort_cmplx()
     if (.not.rst) overall = .false.
 
     ! LQ Factorization Tests
@@ -169,6 +258,9 @@ program main
     if (.not.rst) overall = .false.
 
     rst = test_lq_factor_cmplx()
+    if (.not.rst) overall = .false.
+
+    rst = test_lq_factor_ud_cmplx()
     if (.not.rst) overall = .false.
 
     rst = test_lq_mult()

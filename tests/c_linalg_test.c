@@ -45,6 +45,8 @@ int main()
 
     check = test_qr_rank1_update();
     if (!check) flag = 8;
+    check = test_cmplx_qr_rank1_update();
+    if (!check) flag = -8;
 
     check = test_cholesky();
     if (!check) flag = 9;
@@ -53,6 +55,8 @@ int main()
 
     check = test_cholesky_rank1_update();
     if (!check) flag = 10;
+    check = test_cmplx_cholesky_rank1_update();
+    if (!check) flag = -10;
     
     check = test_svd();
     if (!check) flag = 11;
@@ -78,16 +82,8 @@ int main()
     check = test_lq();
     if (!check) flag = 16;
 
-/* STUFF THAT NEEDS MORE WORK BEFORE RELEASING INTO THE WILD */
-
-    // check = test_cmplx_qr_rank1_update();
-    // if (!check) flag = -8;
-
-    // check = test_cmplx_cholesky_rank1_update();
-    // if (!check) flag = -10;
-
-    // check = test_cmplx_lq();
-    // if (!check) flag = 17;
+    check = test_cmplx_lq();
+    if (!check) flag = 17;
 
     // End
     return flag;

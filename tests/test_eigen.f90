@@ -22,22 +22,21 @@ contains
 
         ! Initialization
         rst = .true.
-        ! call random_number(a)
-        ! a = matmul(a, transpose(a))
+        call create_random_array(a, mtype = SYMMETRIC_MATRIX)
 
-        ! ! Compute the eigenvalues and eigenvectors of A
-        ! vecs = a
-        ! call eigen(.true., vecs, vals)
+        ! Compute the eigenvalues and eigenvectors of A
+        vecs = a
+        call eigen(.true., vecs, vals)
 
-        ! ! Compute vecs * vals, where vals is a diagonal matrix
-        ! call diag_mtx_mult(.false., .false., 1.0d0, vals, vecs, 0.0d0, x)
+        ! Compute vecs * vals, where vals is a diagonal matrix
+        call diag_mtx_mult(.false., .false., 1.0d0, vals, vecs, 0.0d0, x)
 
-        ! ! Test
-        ! y = matmul(a, vecs)
-        ! if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Symmetric Eigen Values"
-        ! end if
+        ! Test
+        y = matmul(a, vecs)
+        if (.not.is_mtx_equal(x, y, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Symmetric Eigen Values"
+        end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -83,6 +82,40 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_eigen_asymm_cmplx() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 100
+
+        ! Local Variables
+        complex(real64), dimension(n, n) :: a, a1, vecs, vmtx, x, y
+        complex(real64), dimension(n) :: vals, vals1
+        integer(int32) :: i
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a, mtype = SYMMETRIC_MATRIX)
+        a1 = a
+        vmtx = cmplx(0.0d0, 0.0d0, real64)
+
+        ! Compute the eigenvalues and eigenvectors of A
+        call eigen(a1, vals, vecs)
+
+        ! Compute vecs * vals, where vals is a diagonal matrix
+        do i = 1, n
+            vmtx(i,i) = vals(i)
+        end do
+        x = matmul(vecs, vmtx)
+
+        ! Test 1
+        y = matmul(a, vecs)
+        if (.not.assert(x, y, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: Complex-Valued Asymmetric Eigen Values Test 1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
     function test_eigen_gen() result(rst)
         ! Parameters
         integer(int32), parameter :: n = 100
@@ -124,4 +157,5 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
 end module

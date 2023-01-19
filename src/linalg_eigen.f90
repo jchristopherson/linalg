@@ -24,7 +24,7 @@ contains
         real(real64), dimension(1) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -48,6 +48,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_symm", trim(errmsg), &
@@ -122,7 +123,7 @@ contains
         real(real64), allocatable, target, dimension(:) :: wrk
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         jobvl = 'N'
@@ -152,6 +153,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_asymm", trim(errmsg), &
@@ -299,7 +301,7 @@ contains
         real(real64) :: eps
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         jobvl = 'N'
@@ -332,6 +334,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_gen", trim(errmsg), &
@@ -483,7 +486,7 @@ contains
 
         ! Local Variables
         character :: jobvl, jobvr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
         integer(int32) :: n, flag, lwork, lrwork
         real(real64) :: rdummy(1)
         complex(real64) :: temp(1), dummy(1), dummy_mtx(1,1)
@@ -522,6 +525,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("eigen_cmplx", trim(errmsg), &

@@ -22,7 +22,7 @@ contains
         integer(int32) :: m, n, k, lda, ldb, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -63,6 +63,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
@@ -93,7 +94,7 @@ contains
         integer(int32) :: m, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -123,6 +124,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
@@ -158,7 +160,7 @@ contains
         integer(int32) :: m, n, k, lda, ldb, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -169,7 +171,7 @@ contains
             lda = k
         else if (opa == LA_HERMITIAN_TRANSPOSE) then
             k = size(a, 1)
-            ta = 'H'
+            ta = 'C'
             lda = k
         else
             k = size(a, 2)
@@ -180,7 +182,7 @@ contains
             tb = 'T'
             ldb = n
         else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
-            tb = 'H'
+            tb = 'C'
             ldb = n
         else
             tb = 'N'
@@ -206,6 +208,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
@@ -236,7 +239,7 @@ contains
         integer(int32) :: m, n, flag
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -244,7 +247,7 @@ contains
         if (opa == LA_TRANSPOSE) then
             t = 'T'
         else if (opa ==  LA_HERMITIAN_TRANSPOSE) then
-            t = 'H'
+            t = 'C'
         else
             t = 'N'
         end if
@@ -271,6 +274,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Matrix dimensions mismatch
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) &
                 "Matrix dimension mismatch.  Input number ", flag, &
                 " was not sized correctly."
@@ -397,7 +401,7 @@ contains
         real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -440,6 +444,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx", trim(errmsg), &
@@ -605,7 +610,7 @@ contains
         complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -648,6 +653,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx3", trim(errmsg), &
@@ -758,7 +764,7 @@ contains
         complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -801,6 +807,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx4", trim(errmsg), &
@@ -933,7 +940,7 @@ contains
         complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -976,6 +983,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx_cmplx", trim(errmsg), &
@@ -1164,7 +1172,7 @@ contains
         complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(c, 1)
@@ -1207,6 +1215,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: One of the input arrays is not sized correctly
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "Input number ", flag, &
                 " is not sized correctly."
             call errmgr%report_error("diag_mtx_mult_mtx_mix", trim(errmsg), &
@@ -1452,7 +1461,7 @@ contains
         real(real64), dimension(1) :: dummy, temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1504,6 +1513,7 @@ contains
         call DGESVD('N', 'N', m, n, a, m, s, dummy, m, dummy, n, w, &
             lwork - mn, flag)
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank", errmsg, LA_CONVERGENCE_ERROR)
@@ -1568,7 +1578,7 @@ contains
         complex(real64), dimension(1) :: cdummy, temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         m = size(a, 1)
@@ -1636,6 +1646,7 @@ contains
         call ZGESVD('N', 'N', m, n, a, m, s, cdummy, m, cdummy, n, wptr, &
             lwork - mn, rw, flag)
         if (flag > 0) then
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) flag, " superdiagonals could not " // &
                 "converge to zero as part of the QR iteration process."
             call errmgr%report_warning("mtx_rank_cmplx", errmsg, LA_CONVERGENCE_ERROR)
@@ -2013,7 +2024,7 @@ contains
         real(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -2037,6 +2048,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."
@@ -2123,7 +2135,7 @@ contains
         complex(real64) :: temp
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
-        character(len = 128) :: errmsg
+        character(len = :), allocatable :: errmsg
 
         ! Initialization
         n = size(a, 1)
@@ -2147,6 +2159,7 @@ contains
         end if
         if (flag /= 0) then
             ! ERROR: Incorrectly sized matrix
+            allocate(character(len = 256) :: errmsg)
             write(errmsg, 100) "The matrix at input ", flag, &
                 " was not sized appropriately.  A matrix of ", n, "-by-", n, &
                 "was expected, but a matrix of ", d1, "-by-", d2, " was found."

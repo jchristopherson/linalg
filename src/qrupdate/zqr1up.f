@@ -49,7 +49,7 @@ c
       external zdotc,dznrm2,dlamch,zdscal,zrot
       double complex zdotc
       double precision dznrm2,dlamch,ru,ruu
-      integer info,i
+      integer info,i,j
       logical full
 c quick return if possible.
       if (k == 0 .or. n == 0) return
@@ -76,7 +76,11 @@ c in the non-full case, we shall need the norm of u.
       if (.not.full) ru = dznrm2(m,u,1)
 c form Q'*u. In the non-full case, form also u - Q*Q'u.
       do i = 1,k
-        w(i) = zdotc(m,Q(1,i),1,u,1)
+      !   w(i) = zdotc(m,Q(1,i),1,u,1) ! SEGFAULT on MacOS & GFortran
+        w(i) = (0.0d0,0.0d0)
+        do j = 1,m
+            w(i) = w(i) + conjg(Q(j,i)) * u(j)
+        end do
         if (.not.full) call zaxpy(m,-w(i),Q(1,i),1,u,1)
       end do
 c generate rotations to eliminate Q'*u.

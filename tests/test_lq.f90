@@ -95,7 +95,7 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    function test_lq_factor_cmplx_ud() result(rst)
+    function test_lq_factor_ud_cmplx() result(rst)
         ! Parameters
         integer(int32), parameter :: m = 50
         integer(int32), parameter :: n = 60

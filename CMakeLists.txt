@@ -31,7 +31,11 @@ add_fortran_library(
   ${PROJECT_VERSION_MAJOR}
   ${LINALG_SOURCES}
 )
-target_link_libraries(${PROJECT_NAME} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(
+  ${PROJECT_NAME} 
+  ${BLAS_LIBRARIES} 
+  ${LAPACK_LIBRARIES}
+)
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 
 # Installation

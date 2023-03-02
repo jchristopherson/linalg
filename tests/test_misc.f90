@@ -16,7 +16,7 @@ contains
         integer(int32), parameter :: m = 30
         integer(int32), parameter :: n = 30
         integer(int32), parameter :: k = 30
-        real(real64), parameter :: alpha = 0.5d0
+        real(real64), parameter :: alpha = 1.0d0
         real(real64), parameter :: beta = 0.25d0
 
         ! Local Variables
@@ -74,7 +74,7 @@ contains
         integer(int32), parameter :: m = 30
         integer(int32), parameter :: n = 30
         integer(int32), parameter :: k = 30
-        complex(real64), parameter :: alpha = (0.5d0, 0.0d0)
+        complex(real64), parameter :: alpha = (1.0d0, 0.0d0)
         complex(real64), parameter :: beta = (0.25d0, 0.0d0)
 
         ! Local Variables

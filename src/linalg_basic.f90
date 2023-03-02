@@ -473,7 +473,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                    c(i,:) = c(i,:) + temp * b(:,i)
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -484,7 +484,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                    c(i,:) = c(i,:) + temp * b(i,:)
                 end do
             end if
 
@@ -506,7 +506,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                    c(:,i) = c(:,i) + temp * b(i,:)
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -517,7 +517,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                    c(:,i) = c(:,i) + temp * b(:,i)
                 end do
             end if
 
@@ -578,14 +578,14 @@ contains
             ! Compute B = alpha * A * B
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(i,:) = temp * b(i,:)
+                b(i,:) = temp * b(i,:)
             end do
             if (m > k) b(k+1:m,:) = zero
         else
             ! Compute B = alpha * B * A
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(:,i) = temp * b(:,i)
+                b(:,i) = temp * b(:,i)
             end do
             if (n > k) b(:,k+1:n) = zero
         end if
@@ -682,7 +682,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                    c(i,:) = c(i,:) + temp * b(:,i)
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -693,7 +693,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                    c(i,:) = c(i,:) + temp * b(i,:)
                 end do
             end if
 
@@ -715,7 +715,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                    c(:,i) = c(:,i) + temp * b(i,:)
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -726,7 +726,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                    c(:,i) = c(:,i) + temp * b(:,i)
                 end do
             end if
 
@@ -836,7 +836,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                    c(i,:) = c(i,:) + temp * b(:,i)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
@@ -847,7 +847,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
+                    c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -858,7 +858,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                    c(i,:) = c(i,:) + temp * b(i,:)
                 end do
             end if
 
@@ -880,7 +880,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                    c(:,i) = c(:,i) + temp * b(i,:)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
@@ -891,7 +891,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
+                    c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -902,7 +902,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                    c(:,i) = c(:,i) + temp * b(:,i)
                 end do
             end if
 
@@ -1012,7 +1012,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                    c(i,:) = c(i,:) + temp * b(:,i)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
@@ -1023,7 +1023,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
+                    c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -1034,7 +1034,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                    c(i,:) = c(i,:) + temp * b(i,:)
                 end do
             end if
 
@@ -1056,7 +1056,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                    c(:,i) = c(:,i) + temp * b(i,:)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
@@ -1067,7 +1067,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
+                    c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -1078,7 +1078,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                    c(:,i) = c(:,i) + temp * b(:,i)
                 end do
             end if
 
@@ -1139,14 +1139,14 @@ contains
             ! Compute B = alpha * A * B
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(i,:) = temp * b(i,:)
+                b(i,:) = temp * b(i,:)
             end do
             if (m > k) b(k+1:m,:) = zero
         else
             ! Compute B = alpha * B * A
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(:,i) = temp * b(:,i)
+                b(:,i) = temp * b(:,i)
             end do
             if (n > k) b(:,k+1:n) = zero
         end if
@@ -1244,7 +1244,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(:,i)
+                    c(i,:) = c(i,:) + temp * b(:,i)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * A * B**H + beta * C
@@ -1255,7 +1255,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * conjg(b(:,i))
+                    c(i,:) = c(i,:) + temp * conjg(b(:,i))
                 end do
             else
                 ! Compute C = alpha * A * B + beta * C
@@ -1266,7 +1266,7 @@ contains
                         c(i,:) = beta * c(i,:)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(i,:) = c(i,:) + temp * b(i,:)
+                    c(i,:) = c(i,:) + temp * b(i,:)
                 end do
             end if
 
@@ -1288,7 +1288,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(i,:)
+                    c(:,i) = c(:,i) + temp * b(i,:)
                 end do
             else if (opb ==  LA_HERMITIAN_TRANSPOSE) then
                 ! Compute C = alpha * B**H * A + beta * C
@@ -1299,7 +1299,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * conjg(b(i,:))
+                    c(:,i) = c(:,i) + temp * conjg(b(i,:))
                 end do
             else
                 ! Compute C = alpha * B * A + beta * C
@@ -1310,7 +1310,7 @@ contains
                         c(:,i) = beta * c(:,i)
                     end if
                     temp = alpha * a(i)
-                    if (temp /= one) c(:,i) = c(:,i) + temp * b(:,i)
+                    c(:,i) = c(:,i) + temp * b(:,i)
                 end do
             end if
 
@@ -1371,14 +1371,14 @@ contains
             ! Compute B = alpha * A * B
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(i,:) = temp * b(i,:)
+                b(i,:) = temp * b(i,:)
             end do
             if (m > k) b(k+1:m,:) = zero
         else
             ! Compute B = alpha * B * A
             do i = 1, k
                 temp = alpha * a(i)
-                if (temp /= one) b(:,i) = temp * b(:,i)
+                b(:,i) = temp * b(:,i)
             end do
             if (n > k) b(:,k+1:n) = zero
         end if

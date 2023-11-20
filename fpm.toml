@@ -10,6 +10,9 @@ homepage = "https://github.com/jchristopherson/linalg"
 [library]
 source-dir = "src"
 
+[fortran]
+source-form = "default"
+
 [dependencies]
 ferror = { git = "https://github.com/jchristopherson/ferror" }
 

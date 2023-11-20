@@ -3139,7 +3139,7 @@ contains
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
+        integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         complex(real64), dimension(1) :: temp

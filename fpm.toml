@@ -12,6 +12,7 @@ source-dir = "src"
 
 [fortran]
 source-form = "default"
+implicit-external = true
 
 [dependencies]
 ferror = { git = "https://github.com/jchristopherson/ferror" }

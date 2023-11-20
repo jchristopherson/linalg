@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
 submodule (linalg) linalg_solve
+    implicit none
 contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX SOLUTION ROUTINES
@@ -2852,7 +2853,7 @@ contains
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(int32) :: m, n, maxmn, lwork, istat, flag, rnk
+        integer(int32) :: m, n, maxmn, lwork, lrwork, istat, flag, rnk
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         real(real64), pointer, dimension(:) :: rwptr

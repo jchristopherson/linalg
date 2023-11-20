@@ -1,6 +1,7 @@
 ! linalg_basic.f90
 
 submodule (linalg) linalg_basic
+    implicit none
 contains
 ! ******************************************************************************
 ! MATRIX MULTIPLICATION ROUTINES

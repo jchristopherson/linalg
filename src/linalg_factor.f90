@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides a set of matrix factorization routines.
 submodule (linalg) linalg_factor
+    implicit none
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION
@@ -3044,7 +3045,7 @@ contains
         real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
+        integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
         real(real64), pointer, dimension(:) :: wptr
         real(real64), allocatable, target, dimension(:) :: wrk
         real(real64), dimension(1) :: temp

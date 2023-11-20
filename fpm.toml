@@ -20,7 +20,6 @@ ferror = { git = "https://github.com/jchristopherson/ferror" }
 [dev-dependencies]
 fortran_test_helper = { git = "https://github.com/jchristopherson/fortran_test_helper" }
 
-
 [install]
 library = true
 

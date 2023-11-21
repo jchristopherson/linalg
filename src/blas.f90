@@ -68,5 +68,26 @@ module blas
             complex(real64), intent(in) :: a(lda,*)
             complex(real64), intent(inout) :: x(*)
         end subroutine
+
+        subroutine DSCAL(n, da, dx, incx)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx
+            real(real64), intent(in) :: da
+            real(real64), intent(inout) :: dx(*)
+        end subroutine
+
+        subroutine ZSCAL(n, za, zx, incx)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx
+            complex(real64), intent(in) :: za
+            complex(real64), intent(inout) :: zx(*)
+        end subroutine
+
+        subroutine ZDSCAL(n, da, zx, incx)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx
+            real(real64), intent(in) :: da
+            complex(real64), intent(inout) :: zx(*)
+        end subroutine
     end interface
 end module

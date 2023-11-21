@@ -46,8 +46,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 8
-        integer(int32), parameter :: n = 6
+        integer(int32), parameter :: m = 80
+        integer(int32), parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1

@@ -950,7 +950,7 @@ contains
             do i = 1, n
                 wptr(jpvt(i)) = b(i,j)
             end do
-            b(:,j) = wptr(1:n)
+            b(1:n,j) = wptr(1:n)
         end do
 
         ! Formatting
@@ -1111,7 +1111,7 @@ contains
             do i = 1, n
                 wptr(jpvt(i)) = b(i,j)
             end do
-            b(:,j) = wptr(1:n)
+            b(1:n,j) = wptr(1:n)
         end do
 
         ! Formatting

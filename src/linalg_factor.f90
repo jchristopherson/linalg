@@ -3117,7 +3117,7 @@ contains
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
         do j = 2, n
             k = min(j - 1, m)
-            q(1:j-1,j) = l(1:k,j)
+            q(1:k,j) = l(1:k,j)
             l(1:k,j) = zero
         end do
 
@@ -3212,7 +3212,7 @@ contains
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
         do j = 2, n
             k = min(j - 1, m)
-            q(1:j-1,j) = l(1:k,j)
+            q(1:k,j) = l(1:k,j)
             l(1:k,j) = zero
         end do
 

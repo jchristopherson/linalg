@@ -71,6 +71,7 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-fpm
             mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-lapack
 
       - name: fpm build
         run: |

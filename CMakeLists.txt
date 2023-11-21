@@ -18,7 +18,6 @@ add_subdirectory(configure)
 # Deal with the dependencies
 find_package(BLAS)
 find_package(LAPACK)
-find_package(ferror 1.4.0 QUIET)
 add_subdirectory(dependencies)
 
 # Source

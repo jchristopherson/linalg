@@ -5,6 +5,8 @@
 !! @par Purpose
 !! Provides a set of matrix factorization routines.
 submodule (linalg) linalg_factor
+    use lapack
+    use qrupdate
     implicit none
 contains
 ! ******************************************************************************

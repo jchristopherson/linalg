@@ -5,6 +5,8 @@
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
 submodule (linalg) linalg_solve
+    use blas
+    use lapack
     implicit none
 contains
 ! ******************************************************************************
@@ -1849,15 +1851,6 @@ contains
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
-        ! External Function Interfaces
-        interface
-            function DLAMCH(cmach) result(x)
-                use, intrinsic :: iso_fortran_env, only : real64
-                character, intent(in) :: cmach
-                real(real64) :: x
-            end function
-        end interface
-
         ! Parameters
         real(real64), parameter :: zero = 0.0d0
         real(real64), parameter :: one = 1.0d0
@@ -1999,15 +1992,6 @@ contains
         integer(int32), intent(out), optional :: olwork
         real(real64), intent(out), target, dimension(:), optional :: rwork
         class(errors), intent(inout), optional, target :: err
-
-        ! External Function Interfaces
-        interface
-            function DLAMCH(cmach) result(x)
-                use, intrinsic :: iso_fortran_env, only : real64
-                character, intent(in) :: cmach
-                real(real64) :: x
-            end function
-        end interface
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)

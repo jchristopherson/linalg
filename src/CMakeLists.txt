@@ -87,6 +87,9 @@ set(LINALG_SOURCES
     ${dir}/linalg_solve.f90
     ${dir}/linalg_sorting.f90
     ${dir}/linalg_basic.f90
+    ${dir}/blas.f90
+    ${dir}/lapack.f90
+    ${dir}/qrupdate.f90
 )
 if (${BUILD_C_API})
     set(LINALG_C_SOURCES

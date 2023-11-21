@@ -1,6 +1,8 @@
 ! linalg_basic.f90
 
 submodule (linalg) linalg_basic
+    use blas
+    use lapack
     implicit none
 contains
 ! ******************************************************************************
@@ -1444,15 +1446,6 @@ contains
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
         integer(int32) :: rnk
-
-        ! External Function Interfaces
-        interface
-            function DLAMCH(cmach) result(x)
-                use, intrinsic :: iso_fortran_env, only : real64
-                character, intent(in) :: cmach
-                real(real64) :: x
-            end function
-        end interface
 
         ! Local Variables
         integer(int32) :: i, m, n, mn, istat, lwork, flag

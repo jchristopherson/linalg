@@ -5,6 +5,7 @@
 !! @par Purpose
 !! Provides routines for computing the eigenvalues and eigenvectors of matrices.
 submodule (linalg) linalg_eigen
+    use lapack
     implicit none
 contains
 ! ------------------------------------------------------------------------------

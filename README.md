@@ -3,6 +3,7 @@ A linear algebra library that provides a user-friendly interface to several BLAS
 
 ## Status
 ![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
+[![Actions Status](https://github.com/jchristopherson/linalg/workflows/fpm/badge.svg)](https://github.com/jchristopherson/linalg/actions)
 
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.

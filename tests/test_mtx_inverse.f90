@@ -44,34 +44,34 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    ! REF: http://www.mathworks.com/help/matlab/ref/pinv.html?s_tid=srchtitle
     function test_pinv_od() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 8
+        integer(int32), parameter :: n = 6
+
         ! Local Variables
-        real(real64), dimension(8, 6) :: a, a1
-        real(real64), dimension(6, 8) :: ainv
-        real(real64), dimension(8) :: b
-        real(real64), dimension(6) :: x, x1
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(n, m) :: ainv
+        real(real64), dimension(n, n) :: identity, check
         logical :: rst
+        integer(int32) :: i
 
         ! Initialization
         rst = .true.
-        a = reshape(&
-            [64, 9, 17, 40, 32, 41, 49, 8, 2, 55, 47, 26, 34, 23, 15, 58, &
-            3, 54, 46, 27, 35, 22, 14, 59, 61, 12, 20, 37, 29, 44, 52, 5, 60, &
-            13, 21, 36, 28, 45, 53, 4, 6, 51, 43, 30, 38, 19, 11, 62], [8, 6])
-        b = 260.0d0
-        x = [1.15384615384615d0, 1.46153846153846d0, 1.38461538461539d0, &
-            1.38461538461538d0, 1.46153846153846d0, 1.15384615384615d0]
+        call create_random_array(a)
         a1 = a
 
-        ! Compute the pseudoinverse of A
+        identity = 0.0d0
+        do i = 1, size(identity, 1)
+            identity(i,i) = 1.0d0
+        end do
+
+        ! Compute the inverse
         call mtx_pinverse(a1, ainv)
 
-        ! Compute X = AINV*B
-        x1 = matmul(ainv, b)
-
-        ! Test
-        if (.not.assert(x1, x, tol = REAL64_TOL)) then
+        ! Compute A+ * A - should = I
+        check = matmul(ainv, a)
+        if (.not.assert(check, identity, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Pseudo-Inverse Test 1"
         end if

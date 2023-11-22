@@ -1990,6 +1990,15 @@ contains
         real(real64), intent(out), target, dimension(:), optional :: rwork
         class(errors), intent(inout), optional, target :: err
 
+        ! External Function Interfaces
+        interface
+            function DLAMCH(cmach) result(x)
+                use, intrinsic :: iso_fortran_env, only : real64
+                character, intent(in) :: cmach
+                real(real64) :: x
+            end function
+        end interface
+
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
@@ -2002,8 +2011,8 @@ contains
         complex(real64), pointer, dimension(:) :: wptr, w
         complex(real64), pointer, dimension(:,:) :: u, vt
         complex(real64), allocatable, target, dimension(:) :: wrk
-        complex(real64) :: temp(1)
-        real(real64) :: t, tref, tolcheck, rtemp(1), ss
+        complex(real64) :: temp(1), val
+        real(real64) :: t, tref, tolcheck, rtemp(1)
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = :), allocatable :: errmsg
@@ -2015,7 +2024,7 @@ contains
         lrwork = 6 * mn
         i1 = m * mn
         i2a = i1 + 1
-        i2b = i2a + mn * n - 1
+        i2b = i2a + n * n - 1
         i3 = i2b + 1
         tolcheck = dlamch('s')
         if (present(err)) then
@@ -2036,7 +2045,7 @@ contains
         end if
 
         ! Workspace Query
-        call ZGESVD('S', 'S', m, n, a, m, rtemp, a, m, a, n, temp, -1, &
+        call ZGESVD('S', 'A', m, n, a, m, rtemp, a, m, a, n, temp, -1, &
             rtemp, flag)
         lwork = int(temp(1), int32)
         lwork = lwork + m * mn + n * n
@@ -2088,13 +2097,13 @@ contains
             rwptr => rwrk
         end if
         u(1:m,1:mn) => wptr(1:i1)
-        vt(1:mn,1:n) => wptr(i2a:i2b)
+        vt(1:n,1:n) => wptr(i2a:i2b)
         w => wptr(i3:lwork)
         s => rwptr(1:mn)
         rw => rwptr(mn+1:lrwork)
 
         ! Compute the SVD of A
-        call ZGESVD('S', 'S', m, n, a, m, s, u, m, vt, n, w, size(w), rw, flag)
+        call ZGESVD('S', 'A', m, n, a, m, s, u, m, vt, n, w, size(w), rw, flag)
 
         ! Check for convergence
         if (flag > 0) then
@@ -2125,17 +2134,33 @@ contains
             !     "been reset to its default value.")
         end if
 
-        ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**H
+        ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**T by
+        ! first computing V * inv(S) (result is N-by-M), and store in the first
+        ! MN rows of VT in a transposed manner.
         do i = 1, mn
             ! Apply 1 / S(I) to VT(I,:)
             if (s(i) < t) then
-                ss = s(i)
+                vt(i,:) = zero
             else
-                ss = 1.0d0 / s(i)
+                ! call recip_mult_array(s(i), vt(i,1:n))
+                vt(i,1:n) = conjg(vt(i,1:n)) / s(i)
             end if
-            call ZDSCAL(m, ss, vt(i,:), 1)
         end do
-        call ZGEMM("C", "C", n, m, mn, one, vt, n, u, m, zero, ainv, n)
+
+        ! Compute (VT**T * inv(S)) * U**H
+        ! ainv = n-by-m
+        ! vt is n-by-n
+        ! u is m-by-mn such that u**H = mn-by-m
+        ! Compute ainv = vt**T * u**H
+        do j = 1, m
+            do i = 1, n
+                val = zero
+                do k = 1, mn
+                    val = val + vt(k,i) * conjg(u(j,k))
+                end do
+                ainv(i,j) = val
+            end do
+        end do
 
         ! Formatting
 100     format(A, I0, A, I0, A)

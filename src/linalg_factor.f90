@@ -5,6 +5,9 @@
 !! @par Purpose
 !! Provides a set of matrix factorization routines.
 submodule (linalg) linalg_factor
+    use lapack
+    use qrupdate
+    implicit none
 contains
 ! ******************************************************************************
 ! LU FACTORIZATION
@@ -3044,7 +3047,7 @@ contains
         real(real64), parameter :: zero = 0.0d0
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
+        integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
         real(real64), pointer, dimension(:) :: wptr
         real(real64), allocatable, target, dimension(:) :: wrk
         real(real64), dimension(1) :: temp
@@ -3114,7 +3117,7 @@ contains
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
         do j = 2, n
             k = min(j - 1, m)
-            q(1:j-1,j) = l(1:k,j)
+            q(1:k,j) = l(1:k,j)
             l(1:k,j) = zero
         end do
 
@@ -3139,7 +3142,7 @@ contains
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
         ! Local Variables
-        integer(int32) :: i, m, n, mn, k, istat, flag, lwork
+        integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         complex(real64), dimension(1) :: temp
@@ -3209,7 +3212,7 @@ contains
         ! Copy the upper triangular portion of L to Q, and then zero it out in L
         do j = 2, n
             k = min(j - 1, m)
-            q(1:j-1,j) = l(1:k,j)
+            q(1:k,j) = l(1:k,j)
             l(1:k,j) = zero
         end do
 

@@ -5,6 +5,9 @@
 !! @par Purpose
 !! Provides a set of routines for solving systems of linear equations.
 submodule (linalg) linalg_solve
+    use blas
+    use lapack
+    implicit none
 contains
 ! ******************************************************************************
 ! TRIANGULAR MATRIX SOLUTION ROUTINES
@@ -947,7 +950,7 @@ contains
             do i = 1, n
                 wptr(jpvt(i)) = b(i,j)
             end do
-            b(:,j) = wptr(1:n)
+            b(1:n,j) = wptr(1:n)
         end do
 
         ! Formatting
@@ -1108,7 +1111,7 @@ contains
             do i = 1, n
                 wptr(jpvt(i)) = b(i,j)
             end do
-            b(:,j) = wptr(1:n)
+            b(1:n,j) = wptr(1:n)
         end do
 
         ! Formatting
@@ -1848,27 +1851,18 @@ contains
         integer(int32), intent(out), optional :: olwork
         class(errors), intent(inout), optional, target :: err
 
-        ! External Function Interfaces
-        interface
-            function DLAMCH(cmach) result(x)
-                use, intrinsic :: iso_fortran_env, only : real64
-                character, intent(in) :: cmach
-                real(real64) :: x
-            end function
-        end interface
-
         ! Parameters
         real(real64), parameter :: zero = 0.0d0
         real(real64), parameter :: one = 1.0d0
 
         ! Local Variables
         integer(int32) :: i, m, n, mn, lwork, istat, flag, i1, i2a, i2b, i3a, &
-            i3b, i4
+            i3b, i4, lrwork
         real(real64), pointer, dimension(:) :: s, wptr, w
         real(real64), pointer, dimension(:,:) :: u, vt
         real(real64), allocatable, target, dimension(:) :: wrk
         real(real64), dimension(1) :: temp
-        real(real64) :: t, tref, tolcheck
+        real(real64) :: t, tref, tolcheck, ss
         class(errors), pointer :: errmgr
         type(errors), target :: deferr
         character(len = :), allocatable :: errmsg
@@ -1879,7 +1873,7 @@ contains
         mn = min(m, n)
         i1 = m * mn
         i2a = i1 + 1
-        i2b = i2a + n * n - 1
+        i2b = i2a + n * mn - 1
         i3a = i2b + 1
         i3b = i3a + mn - 1
         i4 = i3b + 1
@@ -1902,9 +1896,9 @@ contains
         end if
 
         ! Workspace Query
-        call DGESVD('S', 'A', m, n, a, m, a(1:mn,:), a, m, a, n, temp, -1, flag)
-        lwork = int(temp(1), int32)
-        lwork = lwork + m * mn + n * n + mn
+        call DGESVD('S', 'S', m, n, a, m, temp, a, m, a, n, temp, -1, flag)
+        lrwork = int(temp(1), int32)
+        lwork = lrwork + m * m + n * n + mn
         if (present(olwork)) then
             olwork = lwork
             return
@@ -1932,12 +1926,12 @@ contains
             wptr => wrk
         end if
         u(1:m,1:mn) => wptr(1:i1)
-        vt(1:n,1:n) => wptr(i2a:i2b)
+        vt(1:mn,1:n) => wptr(i2a:i2b)
         s => wptr(i3a:i3b)
         w => wptr(i4:lwork)
 
         ! Compute the SVD of A
-        call DGESVD('S', 'A', m, n, a, m, s, u, m, vt, n, w, size(w), flag)
+        call DGESVD('S', 'S', m, n, a, m, s, u, m, vt, n, w, lrwork, flag)
 
         ! Check for convergence
         if (flag > 0) then
@@ -1969,19 +1963,16 @@ contains
         end if
 
         ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**T by
-        ! first computing V * inv(S) (result is N-by-M), and store in the first
-        ! MN rows of VT in a transposed manner.
+        ! first computing inv(S) * U**T 
         do i = 1, mn
-            ! Apply 1 / S(I) to VT(I,:)
             if (s(i) < t) then
-                vt(i,:) = zero
+                ss = s(i)
             else
-                call recip_mult_array(s(i), vt(i,1:n))
+                ss = 1.0d0 / s(i)
             end if
+            call DSCAL(m, ss, u(:,i), 1)
         end do
-
-        ! Compute (VT**T * inv(S)) * U**T
-        call mtx_mult(.true., .true., one, vt(1:mn,:), u, zero, ainv)
+        call DGEMM("T", "T", n, m, mn, one, vt, n, u, m, zero, ainv, n)
 
         ! Formatting
 100     format(A, I0, A, I0, A)
@@ -2852,7 +2843,7 @@ contains
         class(errors), intent(inout), optional, target :: err
 
         ! Local Variables
-        integer(int32) :: m, n, maxmn, lwork, istat, flag, rnk
+        integer(int32) :: m, n, maxmn, lwork, lrwork, istat, flag, rnk
         complex(real64), pointer, dimension(:) :: wptr
         complex(real64), allocatable, target, dimension(:) :: wrk
         real(real64), pointer, dimension(:) :: rwptr

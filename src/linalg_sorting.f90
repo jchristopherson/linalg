@@ -5,6 +5,8 @@
 !! @par Purpose
 !! Provides sorting routines.
 submodule (linalg) linalg_sorting
+    use lapack
+    implicit none
 contains
 ! ******************************************************************************
 ! SORTING ROUTINES

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.7.2
+  VERSION 1.7.3
 )
 
 # Get helper macros and functions
@@ -18,7 +18,6 @@ add_subdirectory(configure)
 # Deal with the dependencies
 find_package(BLAS)
 find_package(LAPACK)
-find_package(ferror 1.4.0 QUIET)
 add_subdirectory(dependencies)
 
 # Source
@@ -48,6 +47,7 @@ message(STATUS "Build tests: ${BUILD_TESTING}")
 if (BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
+  add_subdirectory(tests_c)
 endif()
 
 # Examples

@@ -3,6 +3,7 @@ A linear algebra library that provides a user-friendly interface to several BLAS
 
 ## Status
 ![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
+[![Actions Status](https://github.com/jchristopherson/linalg/workflows/fpm/badge.svg)](https://github.com/jchristopherson/linalg/actions)
 
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.
@@ -183,7 +184,17 @@ Mode 3: (923.5669 Hz)
 The documentation can be found [here](https://jchristopherson.github.io/linalg/).
 
 ## Building LINALG
-This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+[CMake](https://cmake.org/)This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+
+[FPM](https://github.com/fortran-lang/fpm) can also be used to build this library using the provided fpm.toml.
+```txt
+fpm build
+```
+The LINALG library can be used within your FPM project by adding the following to your fpm.toml file.
+```toml
+[dependencies]
+linalg = { git = "https://github.com/jchristopherson/linalg" }
+```
 
 ## External Libraries
 Here is a list of external code libraries utilized by this library.

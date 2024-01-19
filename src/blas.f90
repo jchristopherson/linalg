@@ -89,5 +89,23 @@ module blas
             real(real64), intent(in) :: da
             complex(real64), intent(inout) :: zx(*)
         end subroutine
+
+        subroutine DGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
+            incy)
+            use iso_fortran_env, only : int32, real64
+            character, intent(in) :: trans
+            integer(int32), intent(in) :: m, n, kl, ku, lda, incx, incy
+            real(real64), intent(in) :: alpha, beta, a(lda,*), x(*)
+            real(real64), intent(inout) :: y(*)
+        end subroutine
+
+        subroutine ZGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
+            incy)
+            use iso_fortran_env, only : int32, real64
+            character, intent(in) :: trans
+            integer(int32), intent(in) :: m, n, kl, ku, lda, incx, incy
+            complex(real64), intent(in) :: alpha, beta, a(lda,*), x(*)
+            complex(real64), intent(inout) :: y(*)
+        end subroutine
     end interface
 end module

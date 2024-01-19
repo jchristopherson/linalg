@@ -184,6 +184,8 @@ module linalg
     public :: form_lq
     public :: mult_lq
     public :: solve_lq
+    public :: band_mtx_mult
+    public :: band_mtx_to_full_mtx
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -3796,6 +3798,148 @@ interface solve_lq
     module procedure :: solve_lq_vec_cmplx
 end interface
 
+! ------------------------------------------------------------------------------
+!> @brief Multiplies a banded matrix, A, by a vector x such that 
+!! alpha * op(A) * x + beta * y = y.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine band_mtx_mult( &
+!!  logical trans, &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  real(real64) a(:,:), &
+!!  real(real64) x(:), &
+!!  real(real64) beta, &
+!!  real(real64) y(:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @param[in] trans Set to true for op(A) == A**T; else, false for op(A) == A.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a The M-by-N matrix A storing the banded matrix in a compressed 
+!!  form supplied column by column.  The following code segment transfers 
+!!  between a full matrix to the banded matrix storage scheme.
+!! @code{.f90}
+!! do j = 1, n
+!!  k = ku + 1 - j
+!!  do i = max(1, j - ku), min(m, j + kl)
+!!      a(k + i, j) = matrix(i, j)
+!!  end do
+!! end do
+!! @endcode
+!! @param[in] x If @p trans is true, this is an M-element vector; else, if
+!!  @p trans is false, this is an N-element vector.
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] On input, the vector Y.  On output, the resulting vector.
+!!  if @p trans is true, this vector is an N-element vector; else, it is an
+!!  M-element vector.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine band_mtx_mult( &
+!!  integer(int32) trans, &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  complex(real64) a(:,:), &
+!!  complex(real64) x(:), &
+!!  complex(real64) beta, &
+!!  complex(real64) y(:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @param[in] trans set to LA_TRANSPOSE if \f$ op(A) = A^T \f$, set to 
+!!  LA_HERMITIAN_TRANSPOSE if \f$ op(A) = A^H \f$, otherwise set to 
+!!  LA_NO_OPERATION if \f$ op(A) = A \f$.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a The M-by-N matrix A storing the banded matrix in a compressed 
+!!  form supplied column by column.  The following code segment transfers 
+!!  between a full matrix to the banded matrix storage scheme.
+!! @code{.f90}
+!! do j = 1, n
+!!  k = ku + 1 - j
+!!  do i = max(1, j - ku), min(m, j + kl)
+!!      a(k + i, j) = matrix(i, j)
+!!  end do
+!! end do
+!! @endcode
+!! @param[in] x If @p trans is true, this is an M-element vector; else, if
+!!  @p trans is false, this is an N-element vector.
+!! @param[in] beta A scalar multiplier.
+!! @param[in,out] On input, the vector Y.  On output, the resulting vector.
+!!  if @p trans is true, this vector is an N-element vector; else, it is an
+!!  M-element vector.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+!!      appropriately.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+interface band_mtx_mult
+    module procedure :: band_mtx_vec_mult_dbl
+    module procedure :: band_mtx_vec_mult_cmplx
+end interface
+
+!> @brief Converts a banded matrix stored in dense form to a full matrix.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine band_mtx_to_full_mtx( &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  real(real64) b(:,:), &
+!!  real(real64) f(:,:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine band_mtx_to_full_mtx( &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  complex(real64) b(:,:), &
+!!  complex(real64) f(:,:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] b The banded matrix to convert, stored in dense form.  See
+!!  @ref band_mtx_vec_mult for details on this storage method.
+!! @param[out] f The M-by-N element full matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p b and @p f are not compatible in size.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+interface band_mtx_to_full_mtx
+    module procedure :: band_to_full_mtx_dbl
+    module procedure :: band_to_full_mtx_cmplx
+end interface
+
 ! ******************************************************************************
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
@@ -3994,6 +4138,41 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    module subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
+        y, err)
+        logical, intent(in) :: trans
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(in) :: alpha, beta
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: x
+        real(real64), intent(inout), dimension(:) :: y
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
+        beta, y, err)
+        integer(int32), intent(in) :: trans
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: y
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(in), dimension(:,:) :: b
+        real(real64), intent(out), dimension(:,:) :: f
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(out), dimension(:,:) :: f
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************

@@ -288,6 +288,12 @@ program main
     rst = test_lq_mult_right_cmplx_ud()
     if (.not.rst) flag = 85
 
+    rst = test_banded_mtx_mult_dbl()
+    if (.not.rst) flag = 86
+
+    rst = test_banded_mtx_mult_cmplx()
+    if (.not.rst) flag = 87
+
     ! End
     if (flag /= 0) stop flag
 end program

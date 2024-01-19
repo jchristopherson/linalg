@@ -513,4 +513,108 @@ contains
     end function
     
 ! ------------------------------------------------------------------------------
+    function test_banded_mtx_mult_dbl() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Local Variables
+        integer(int32), parameter :: kl = 3
+        integer(int32), parameter :: ku = 4
+        integer(int32), parameter :: mb = kl + ku + 1
+        integer(int32), parameter :: m = 52
+        integer(int32), parameter :: n = 50
+        real(real64) :: alpha, beta, a(mb,n), af(m,n), x1(n), y1(m), ans1(m)
+        real(real64) :: x2(m), y2(n), ans2(n)
+        
+        ! Initialization
+        rst = .true.
+        call random_number(alpha)
+        call random_number(beta)
+        call random_number(a)
+        call random_number(x1)
+        call random_number(y1)
+        call random_number(x2)
+        call random_number(y2)
+
+        ! Construct a full matrix from the banded matrix to use for checking
+        call band_mtx_to_full_mtx(kl, ku, a, af)
+
+        ! Test 1
+        ans1 = alpha * matmul(af, x1) + beta * y1
+        call band_mtx_mult(.false., kl, ku, alpha, a, x1, beta, y1)
+        if (.not.assert(ans1, y1, REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_banded_mtx_mult_dbl -1"
+        end if
+
+        ! Test 2
+        ans2 = alpha * matmul(transpose(af), x2) + beta * y2
+        call band_mtx_mult(.true., kl, ku, alpha, a, x2, beta, y2)
+        if (.not.assert(ans2, y2, REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_banded_mtx_mult_dbl -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_banded_mtx_mult_cmplx() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Local Variables
+        integer(int32), parameter :: kl = 3
+        integer(int32), parameter :: ku = 4
+        integer(int32), parameter :: mb = kl + ku + 1
+        integer(int32), parameter :: m = 52
+        integer(int32), parameter :: n = 50
+        complex(real64) :: alpha, beta, a(mb,n), af(m,n), x1(n), y1(m), ans1(m)
+        complex(real64) :: x2(m), y2(n), ans2(n), ans3(n)
+        real(real64) :: ar(mb,n), ai(mb,n), mr(m), mi(m), nr(n), ni(n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(ar)
+        call random_number(ai)
+        call random_number(mr)
+        call random_number(mi)
+        call random_number(nr)
+        call random_number(ni)
+        alpha = cmplx(ar(1,1), ai(1,1))
+        beta = cmplx(ar(1,2), ai(1,2))
+        a = cmplx(ar, ai)
+        x1 = cmplx(nr, ni)
+        y1 = cmplx(mr, mi)
+        x2 = cmplx(mr, mi)
+        y2 = cmplx(nr, ni)
+
+        ! Construct a full matrix from the banded matrix to use for checking
+        call band_mtx_to_full_mtx(kl, ku, a, af)
+
+        ! Test 1
+        ans1 = alpha * matmul(af, x1) + beta * y1
+        call band_mtx_mult(LA_NO_OPERATION, kl, ku, alpha, a, x1, beta, y1)
+        if (.not.assert(ans1, y1, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_banded_mtx_mult_cmplx -1"
+        end if
+
+        ! Test 2
+        ans2 = alpha * matmul(transpose(af), x2) + beta * y2
+        call band_mtx_mult(LA_TRANSPOSE, kl, ku, alpha, a, x2, beta, y2)
+        if (.not.assert(ans2, y2, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_banded_mtx_mult_cmplx -2"
+        end if
+
+        ! Test 3
+        ans3 = alpha * matmul(conjg(transpose(af)), x2) + beta * y2
+        call band_mtx_mult(LA_HERMITIAN_TRANSPOSE, kl, ku, alpha, a, x2, &
+            beta, y2)
+        if (.not.assert(ans3, y2, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_banded_mtx_mult_cmplx -3"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

@@ -186,6 +186,7 @@ module linalg
     public :: solve_lq
     public :: band_mtx_mult
     public :: band_mtx_to_full_mtx
+    public :: band_diag_mtx_mult
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -3940,6 +3941,69 @@ interface band_mtx_to_full_mtx
     module procedure :: band_to_full_mtx_cmplx
 end interface
 
+!> @brief Multiplies a banded matrix, A, with a diagonal matrix, B, such that
+!! A = alpha * A * B, or A = alpha * B * A.
+!!
+!! @par Syntax 1
+!! @code{.f90}
+!! subroutine band_diag_mtx_mult( &
+!!  logical left, &
+!!  integer(int32) m, &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  real(real64) alpha, &
+!!  real(real64) a(:,:), &
+!!  real(real64) b(:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @par Syntax 2
+!! @code{.f90}
+!! subroutine band_diag_mtx_mult( &
+!!  logical left, &
+!!  integer(int32) m, &
+!!  integer(int32) kl, &
+!!  integer(int32) ku, &
+!!  complex(real64) alpha, &
+!!  complex(real64) a(:,:), &
+!!  complex(real64) b(:), &
+!!  optional class(errors) err &
+!! )
+!! @endcode
+!!
+!! @param[in] left Set to true to compute A = alpha * A * B; else, set to false
+!!  to compute A = alpha * B * A.
+!! @param[in] m The number of rows in matrix A.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] alpha The scalar multiplier.
+!! @param[in,out] a The M-by-N matrix A storing the banded matrix in a 
+!!  compressed form supplied column by column.  The following code segment 
+!!  transfers between a full matrix to the banded matrix storage scheme.
+!! @code{.f90}
+!! do j = 1, n
+!!  k = ku + 1 - j
+!!  do i = max(1, j - ku), min(m, j + kl)
+!!      a(k + i, j) = matrix(i, j)
+!!  end do
+!! end do
+!! @endcode
+!! @param[in] b An array containing the diagonal elements of matrix B.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p a and @p b are not compatible in terms
+!!      of internal dimensions.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+interface band_diag_mtx_mult
+    module procedure :: band_diag_mtx_mult_dbl
+    module procedure :: band_diag_mtx_mult_cmplx
+end interface
+
 ! ******************************************************************************
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
@@ -4171,6 +4235,24 @@ interface
         integer(int32), intent(in) :: kl, ku
         complex(real64), intent(in), dimension(:,:) :: b
         complex(real64), intent(out), dimension(:,:) :: f
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)
+        logical, intent(in) :: left
+        integer(int32), intent(in) :: m, kl, ku
+        real(real64), intent(in) :: alpha
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)
+        logical, intent(in) :: left
+        integer(int32), intent(in) :: m, kl, ku
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
 end interface

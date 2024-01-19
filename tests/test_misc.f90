@@ -617,4 +617,101 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_band_diag_mtx_mult_dbl() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Variables
+        integer(int32), parameter :: n = 50
+        integer(int32), parameter :: kl = 3
+        integer(int32), parameter :: ku = 4
+        integer(int32), parameter :: mb = kl + ku + 1
+        integer(int32) :: i
+        real(real64) :: alpha, a(mb,n), af(n, n), d(n), df(n, n), a2(mb, n), &
+            ans1(n, n), ans2(n, n), a1f(n, n), a2f(n, n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(alpha)
+        call random_number(a)
+        call random_number(d)
+        call band_mtx_to_full_mtx(kl, ku, a, af)
+        a2 = a
+        df = 0.0d0
+        do i = 1, n
+            df(i,i) = d(i)
+        end do
+
+        ! Test 1
+        ans1 = alpha * matmul(af, df)
+        call band_diag_mtx_mult(.true., n, kl, ku, alpha, a, d)
+        call band_mtx_to_full_mtx(kl, ku, a, a1f)
+        if (.not.assert(ans1, a1f, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_band_diag_mtx_mult_dbl -1"
+        end if
+
+        ! Test 2
+        ans2 = alpha * matmul(df, af)
+        call band_diag_mtx_mult(.false., n, kl, ku, alpha, a2, d)
+        call band_mtx_to_full_mtx(kl, ku, a2, a2f)
+        if (.not.assert(ans2, a2f, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_band_diag_mtx_mult_dbl -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_band_diag_mtx_mult_cmplx() result(rst)
+        ! Arguments
+        logical :: rst
+
+        ! Variables
+        integer(int32), parameter :: n = 50
+        integer(int32), parameter :: kl = 3
+        integer(int32), parameter :: ku = 4
+        integer(int32), parameter :: mb = kl + ku + 1
+        integer(int32) :: i
+        complex(real64) :: alpha, a(mb,n), af(n, n), d(n), df(n, n), &
+            a2(mb, n), ans1(n, n), ans2(n, n), a1f(n, n), a2f(n, n)
+        real(real64) :: alphar, alphai, ar(mb,n), ai(mb,n), dr(n), di(n)
+
+        ! Initialization
+        rst = .true.
+        call random_number(alphar)
+        call random_number(alphai)
+        alpha = cmplx(alphar, alphai)
+        call random_number(ar)
+        call random_number(ai)
+        a = cmplx(ar, ai)
+        call random_number(dr)
+        call random_number(di)
+        d = cmplx(dr, di)
+        call band_mtx_to_full_mtx(kl, ku, a, af)
+        a2 = a
+        df = (0.0d0, 0.0d0)
+        do i = 1, n
+            df(i,i) = d(i)
+        end do
+
+        ! Test 1
+        ans1 = alpha * matmul(af, df)
+        call band_diag_mtx_mult(.true., n, kl, ku, alpha, a, d)
+        call band_mtx_to_full_mtx(kl, ku, a, a1f)
+        if (.not.assert(ans1, a1f, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_band_diag_mtx_mult_cmplx -1"
+        end if
+
+        ! Test 2
+        ans2 = alpha * matmul(df, af)
+        call band_diag_mtx_mult(.false., n, kl, ku, alpha, a2, d)
+        call band_mtx_to_full_mtx(kl, ku, a2, a2f)
+        if (.not.assert(ans2, a2f, tol = REAL64_TOL)) then
+            rst = .false.
+            print "(A)", "Test Failed: test_band_diag_mtx_mult_cmplx -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

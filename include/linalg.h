@@ -1971,6 +1971,165 @@ int la_mult_lq_cmplx(bool lside, bool trans, int m, int n, int k,
 int la_solve_lq_cmplx(int m, int n, int k, const double complex *a, int lda, 
     const double complex *tau, double complex *b, int ldb);
 
+/**
+ * Multiplies a banded matrix, A, by a vector x such that 
+ * alpha * op(A) * x + beta * y = y.
+ *
+ * @param trans Set to true for op(A) == A^T; else, false for op(A) == A.
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param alpha A scalar multiplier.
+ * @param a The M-by-N matrix A storing the banded matrix in a compressed 
+ *  form supplied column by column.
+ * @param x If @p trans is true, this is an M-element vector; else, if
+ *  @p trans is false, this is an N-element vector.
+ * @param beta A scalar multiplier.
+ * @param y On input, the vector Y.  On output, the resulting vector.
+ *  if @p trans is true, this vector is an N-element vector; else, it is an
+ *  M-element vector.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_mtx_vec_mult(bool trans, int m, int n, int kl, int ku, double alpha,
+    const double *a, int lda, const double *x, double beta, double *y);
+
+/**
+ * Multiplies a banded matrix, A, by a vector x such that 
+ * alpha * op(A) * x + beta * y = y.
+ *
+ * @param trans Set to LA_TRANSPOSE if op(A) = A^T, set to 
+ *  LA_HERMITIAN_TRANSPOSE if op(A) = A^H, otherwise set to 
+ *  LA_NO_OPERATION if op(A) = A.
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param alpha A scalar multiplier.
+ * @param a The M-by-N matrix A storing the banded matrix in a compressed 
+ *  form supplied column by column.
+ * @param x If @p trans is true, this is an M-element vector; else, if
+ *  @p trans is false, this is an N-element vector.
+ * @param beta A scalar multiplier.
+ * @param y On input, the vector Y.  On output, the resulting vector.
+ *  if @p trans is true, this vector is an N-element vector; else, it is an
+ *  M-element vector.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input arrays are not sized
+ *      appropriately.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_mtx_vec_mult_cmplx(int trans, int m, int n, int kl, int ku, 
+    double complex alpha, const double complex *a, int lda, 
+    const double complex *x, double complex beta, double complex *y);
+
+/**
+ * Converts a banded matrix stored in dense form to a full matrix.
+ * 
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param b The banded matrix to convert, stored in dense form.  See
+ *  @ref band_mtx_vec_mult for details on this storage method.
+ * @param f The M-by-N element full matrix.
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p b and @p f are not compatible in size.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_to_full_mtx(int m, int n, int kl, int ku, const double *b, int ldb,
+    double *f, int ldf);
+
+/**
+ * Converts a banded matrix stored in dense form to a full matrix.
+ * 
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param b The banded matrix to convert, stored in dense form.  See
+ *  @ref band_mtx_vec_mult for details on this storage method.
+ * @param f The M-by-N element full matrix.
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p b and @p f are not compatible in size.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_to_full_mtx_cmplx(int m, int n, int kl, int ku, 
+    const double complex *b, int ldb, double complex *f, int ldf);
+
+/**
+ * Multiplies a banded matrix, A, with a diagonal matrix, B, such that
+ * A = alpha * A * B, or A = alpha * B * A.
+ *
+ * @param left Set to true to compute A = alpha * A * B; else, set to false
+ *  to compute A = alpha * B * A.
+ * @param m The number of rows in matrix A.
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param alpha The scalar multiplier.
+ * @param a The M-by-N matrix A storing the banded matrix in a 
+ *  compressed form supplied column by column.  The following code segment 
+ *  transfers between a full matrix to the banded matrix storage scheme.
+ * @code{.f90}
+ * do j = 1, n
+ *  k = ku + 1 - j
+ *  do i = max(1, j - ku), min(m, j + kl)
+ *      a(k + i, j) = matrix(i, j)
+ *  end do
+ * end do
+ * @endcode
+ * @param b An array containing the diagonal elements of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p b and @p f are not compatible in size.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p a and @p b are not compatible in terms
+ *      of internal dimensions.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_diag_mtx_mult(bool left, int m, int n, int kl, int ku, double alpha,
+    double *a, int lda, const double *b);
+
+/**
+ * Multiplies a banded matrix, A, with a diagonal matrix, B, such that
+ * A = alpha * A * B, or A = alpha * B * A.
+ *
+ * @param left Set to true to compute A = alpha * A * B; else, set to false
+ *  to compute A = alpha * B * A.
+ * @param m The number of rows in matrix A.
+ * @param kl The number of subdiagonals.  Must be at least 0.
+ * @param ku The number of superdiagonals.  Must be at least 0.
+ * @param alpha The scalar multiplier.
+ * @param a The M-by-N matrix A storing the banded matrix in a 
+ *  compressed form supplied column by column.  The following code segment 
+ *  transfers between a full matrix to the banded matrix storage scheme.
+ * @code{.f90}
+ * do j = 1, n
+ *  k = ku + 1 - j
+ *  do i = max(1, j - ku), min(m, j + kl)
+ *      a(k + i, j) = matrix(i, j)
+ *  end do
+ * end do
+ * @endcode
+ * @param b An array containing the diagonal elements of matrix B.
+ *
+ * @return An error code.  The following codes are possible.
+ *  - LA_NO_ERROR: No error occurred.  Successful operation.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p b and @p f are not compatible in size.
+ *  - LA_ARRAY_SIZE_ERROR: Occurs if @p a and @p b are not compatible in terms
+ *      of internal dimensions.
+ *  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+ *      greater.
+*/
+int la_band_diag_mtx_mult_cmplx(bool left, int m, int n, int kl, int ku, 
+    double complex alpha, double complex *a, int lda, const double complex *b);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

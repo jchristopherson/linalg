@@ -3835,7 +3835,7 @@ end interface
 !! @param[in] x If @p trans is true, this is an M-element vector; else, if
 !!  @p trans is false, this is an N-element vector.
 !! @param[in] beta A scalar multiplier.
-!! @param[in,out] On input, the vector Y.  On output, the resulting vector.
+!! @param[in,out] y On input, the vector Y.  On output, the resulting vector.
 !!  if @p trans is true, this vector is an N-element vector; else, it is an
 !!  M-element vector.
 !! @param[in,out] err An optional errors-based object that if provided can be
@@ -3862,7 +3862,7 @@ end interface
 !! )
 !! @endcode
 !!
-!! @param[in] trans set to LA_TRANSPOSE if \f$ op(A) = A^T \f$, set to 
+!! @param[in] trans Set to LA_TRANSPOSE if \f$ op(A) = A^T \f$, set to 
 !!  LA_HERMITIAN_TRANSPOSE if \f$ op(A) = A^H \f$, otherwise set to 
 !!  LA_NO_OPERATION if \f$ op(A) = A \f$.
 !! @param[in] kl The number of subdiagonals.  Must be at least 0.
@@ -3882,7 +3882,7 @@ end interface
 !! @param[in] x If @p trans is true, this is an M-element vector; else, if
 !!  @p trans is false, this is an N-element vector.
 !! @param[in] beta A scalar multiplier.
-!! @param[in,out] On input, the vector Y.  On output, the resulting vector.
+!! @param[in,out] y On input, the vector Y.  On output, the resulting vector.
 !!  if @p trans is true, this vector is an N-element vector; else, it is an
 !!  M-element vector.
 !! @param[in,out] err An optional errors-based object that if provided can be

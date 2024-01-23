@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['cholesky_5ffactor_0',['cholesky_factor',['../interfacelinalg_1_1cholesky__factor.html',1,'linalg']]],
-  ['cholesky_5frank1_5fdowndate_1',['cholesky_rank1_downdate',['../interfacelinalg_1_1cholesky__rank1__downdate.html',1,'linalg']]],
-  ['cholesky_5frank1_5fupdate_2',['cholesky_rank1_update',['../interfacelinalg_1_1cholesky__rank1__update.html',1,'linalg']]]
+  ['band_5fdiag_5fmtx_5fmult_0',['band_diag_mtx_mult',['../interfacelinalg_1_1band__diag__mtx__mult.html',1,'linalg']]],
+  ['band_5fmtx_5fmult_1',['band_mtx_mult',['../interfacelinalg_1_1band__mtx__mult.html',1,'linalg']]],
+  ['band_5fmtx_5fto_5ffull_5fmtx_2',['band_mtx_to_full_mtx',['../interfacelinalg_1_1band__mtx__to__full__mtx.html',1,'linalg']]],
+  ['blas_3',['blas',['../namespaceblas.html',1,'']]]
 ];

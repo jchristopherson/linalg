@@ -1,5 +1,11 @@
 var linalg_8h =
 [
+    [ "la_band_diag_mtx_mult", "linalg_8h.html#a64c2c86dc85ca7aad74667f153ae0437", null ],
+    [ "la_band_diag_mtx_mult_cmplx", "linalg_8h.html#a910a1ec23e1112487573f35765a421ca", null ],
+    [ "la_band_mtx_vec_mult", "linalg_8h.html#ae48bdfb08cd35a8876b3dc879547686e", null ],
+    [ "la_band_mtx_vec_mult_cmplx", "linalg_8h.html#ac9e5ee0c20bacc19d1dab1c1182525f0", null ],
+    [ "la_band_to_full_mtx", "linalg_8h.html#adf4bdd1f9670b6636a55f606c5de72ea", null ],
+    [ "la_band_to_full_mtx_cmplx", "linalg_8h.html#aa53e764ecb002d381d746edfa6b2fd8f", null ],
     [ "la_cholesky_factor", "linalg_8h.html#a3967bc139cba341a513d1353bea62ac9", null ],
     [ "la_cholesky_factor_cmplx", "linalg_8h.html#a1734acc61ef569dfff9c83bcad566f67", null ],
     [ "la_cholesky_rank1_downdate", "linalg_8h.html#a292e54c48a8e7f0203bf11f02844691f", null ],

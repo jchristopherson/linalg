@@ -3409,4 +3409,226 @@ function la_solve_lq_cmplx(m, n, k, a, lda, tau, b, ldb) &
 end function
 
 ! ------------------------------------------------------------------------------
+function la_band_mtx_vec_mult(trans, m, n, kl, ku, alpha, a, lda, x, beta, y) &
+    bind(C, name = "la_band_mtx_vec_mult") result(flag)
+    ! Arguments
+    logical(c_bool), intent(in), value :: trans
+    integer(c_int), intent(in), value :: m, n, kl, ku, lda
+    real(c_double), intent(in), value :: alpha, beta
+    real(c_double), intent(in) :: a(lda,*), x(*)
+    real(c_double), intent(inout) :: y(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: nx, ny, ma
+
+    ! Initialization
+    ma = kl + ku + 1
+    if (trans) then
+        nx = m
+        ny = n
+    else
+        nx = n
+        ny = m
+    end if
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_mtx_mult(logical(trans), kl, ku, alpha, a(1:ma,1:n), x(1:nx), &
+        beta, y(1:ny), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_band_mtx_vec_mult_cmplx(trans, m, n, kl, ku, alpha, a, lda, x, &
+    beta, y) bind(C, name = "la_band_mtx_vec_mult_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: trans, m, n, kl, ku, lda
+    complex(c_double), intent(in), value :: alpha, beta
+    complex(c_double), intent(in) :: a(lda,*), x(*)
+    complex(c_double), intent(inout) :: y(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: nx, ny, ma
+
+    ! Initialization
+    ma = kl + ku + 1
+    if (trans == LA_TRANSPOSE .or. trans == LA_HERMITIAN_TRANSPOSE) then
+        nx = m
+        ny = n
+    else
+        nx = n
+        ny = m
+    end if
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_mtx_mult(trans, kl, ku, alpha, a(1:ma,1:n), x(1:nx), beta, y(1:ny), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_band_to_full_mtx(m, n, kl, ku, b, ldb, f, ldf) &
+    bind(C, name = "la_band_to_full_mtx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, kl, ku, ldb, ldf
+    real(c_double), intent(in) :: b(ldb,*)
+    real(c_double), intent(out) :: f(ldf,*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    ma = kl + ku + 1
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (ldb < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+    if (ldf < m) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_band_to_full_mtx_cmplx(m, n, kl, ku, b, ldb, f, ldf) &
+    bind(C, name = "la_band_to_full_mtx_cmplx") result(flag)
+    ! Arguments
+    integer(c_int), intent(in), value :: m, n, kl, ku, ldb, ldf
+    complex(c_double), intent(in) :: b(ldb,*)
+    complex(c_double), intent(out) :: f(ldf,*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma
+
+    ! Initialization
+    ma = kl + ku + 1
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (ldb < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+    if (ldf < m) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_band_diag_mtx_mult(left, m, n, kl, ku, alpha, a, lda, b) &
+    bind(C, name = "la_band_diag_mtx_mult") result(flag)
+    ! Arguments
+    logical(c_bool), intent(in), value :: left
+    integer(c_int), intent(in), value :: m, n, kl, ku, lda
+    real(c_double), intent(in), value :: alpha
+    real(c_double), intent(inout) :: a(lda,*)
+    real(c_double), intent(in) :: b(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma, nb
+
+    ! Initialization
+    ma = kl + ku + 1
+    if (left) then
+        nb = n
+    else
+        nb = m
+    end if
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_diag_mtx_mult(logical(left), m, kl, ku, alpha, a(1:ma,1:n), &
+        b(1:nb), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function la_band_diag_mtx_mult_cmplx(left, m, n, kl, ku, alpha, a, lda, b) &
+    bind(C, name = "la_band_diag_mtx_mult_cmplx") result(flag)
+    ! Arguments
+    logical(c_bool), intent(in), value :: left
+    integer(c_int), intent(in), value :: m, n, kl, ku, lda
+    complex(c_double), intent(in), value :: alpha
+    complex(c_double), intent(inout) :: a(lda,*)
+    complex(c_double), intent(in) :: b(*)
+    integer(c_int) :: flag
+
+    ! Local Variables
+    type(errors) :: err
+    integer(c_int) :: ma, nb
+
+    ! Initialization
+    ma = kl + ku + 1
+    if (left) then
+        nb = n
+    else
+        nb = m
+    end if
+    call err%set_exit_on_error(.false.)
+    flag = LA_NO_ERROR
+    if (lda < ma) then
+        flag = LA_INVALID_INPUT_ERROR
+        return
+    end if
+
+    ! Process
+    call band_diag_mtx_mult(logical(left), m, kl, ku, alpha, a(1:ma,1:n), &
+        b(1:nb), err)
+    if (err%has_error_occurred()) then
+        flag = err%get_error_flag()
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

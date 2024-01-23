@@ -1,4 +1,6 @@
 var namespaces_dup =
 [
-    [ "linalg", "namespacelinalg.html", "namespacelinalg" ]
+    [ "blas", "namespaceblas.html", "namespaceblas" ],
+    [ "linalg", "namespacelinalg.html", "namespacelinalg" ],
+    [ "qrupdate", "namespaceqrupdate.html", "namespaceqrupdate" ]
 ];

@@ -2223,5 +2223,505 @@ contains
 100     format(A, I0, A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
 
+! ******************************************************************************
+! BANDED MATRIX MULTIPLICATION ROUTINES
+! ------------------------------------------------------------------------------
+    module subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
+        y, err)
+        ! Arguments
+        logical, intent(in) :: trans
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(in) :: alpha, beta
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: x
+        real(real64), intent(inout), dimension(:) :: y
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: m, n
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (trans) then
+            m = size(x)
+            n = size(y)
+        else
+            m = size(y)
+            n = size(x)
+        end if
+
+        ! Input Checking
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (size(a, 1) /= kl + ku + 1) go to 30
+        if (size(a, 2) /= n) go to 30
+
+        ! Process
+        if (trans) then
+            call DGBMV("T", m, n, kl, ku, alpha, a, size(a, 1), x, 1, beta, y, 1)
+        else
+            call DGBMV("N", m, n, kl, ku, alpha, a, size(a, 1), x, 1, beta, y, 1)
+        end if
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_mtx_vec_mult_dbl", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_mtx_vec_mult_dbl", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! A is incorrectly sized
+30      continue
+        call errmgr%report_error("band_mtx_vec_mult_dbl", &
+            "The size of matrix A is not compatible with the other vectors.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
+        beta, y, err)
+        ! Arguments
+        integer(int32), intent(in) :: trans
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(in) :: alpha, beta
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: x
+        complex(real64), intent(inout), dimension(:) :: y
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        character :: op
+        logical :: trns
+        integer(int32) :: m, n
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (trans == LA_TRANSPOSE) then
+            op = "T"
+            trns = .true.
+        else if (trans == LA_HERMITIAN_TRANSPOSE) then
+            op = "C"
+            trns = .true.
+        else
+            op = "N"
+            trns = .false.
+        end if
+        if (trns) then
+            m = size(x)
+            n = size(y)
+        else
+            m = size(y)
+            n = size(x)
+        end if
+
+        ! Input Checking
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (size(a, 1) /= kl + ku + 1) go to 30
+        if (size(a, 2) /= n) go to 30
+
+        ! Process
+        call ZGBMV(op, m, n, kl, ku, alpha, a, size(a, 1), x, 1, beta, y, 1)
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_mtx_vec_mult_cmplx", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_mtx_vec_mult_cmplx", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! A is incorrectly sized
+30      continue
+        call errmgr%report_error("band_mtx_vec_mult_cmplx", &
+            "The size of matrix A is not compatible with the other vectors.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)
+        ! Arguments
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(in), dimension(:,:) :: b
+        real(real64), intent(out), dimension(:,:) :: f
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        integer(int32) :: i, j, k, m, n, i1, i2
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(f, 1)
+        n = size(f, 2)
+
+        ! Input Check
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (size(b, 2) /= n) go to 30
+        if (size(b, 1) /= kl + ku + 1) go to 40
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            i1 = max(1, j - ku)
+            i2 = min(m, j + kl)
+            do i = 1, i1 - 1
+                f(i,j) = zero
+            end do
+            do i = i1, i2
+                f(i,j) = b(k+i,j)
+            end do
+            do i = i2 + 1, m
+                f(i,j) = zero
+            end do
+        end do
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_to_full_mtx_dbl", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_to_full_mtx_dbl", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! A is incorrectly sized
+30      continue
+        call errmgr%report_error("band_to_full_mtx_dbl", &
+            "The number of columns in the banded matrix does not match " // &
+            "the number of columns in the full matrix.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+
+40      continue
+        call errmgr%report_error("band_to_full_mtx_dbl", &
+            "The number of rows in the banded matrix does not align with " // &
+            "the number of sub and super-diagonals specified.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)
+        ! Arguments
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(in), dimension(:,:) :: b
+        complex(real64), intent(out), dimension(:,:) :: f
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        integer(int32) :: i, j, k, m, n, i1, i2
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(f, 1)
+        n = size(f, 2)
+
+        ! Input Check
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (size(b, 2) /= n) go to 30
+        if (size(b, 1) /= kl + ku + 1) go to 40
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            i1 = max(1, j - ku)
+            i2 = min(m, j + kl)
+            do i = 1, i1 - 1
+                f(i,j) = zero
+            end do
+            do i = i1, i2
+                f(i,j) = b(k+i,j)
+            end do
+            do i = i2 + 1, m
+                f(i,j) = zero
+            end do
+        end do
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_to_full_mtx_cmplx", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_to_full_mtx_cmplx", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! A is incorrectly sized
+30      continue
+        call errmgr%report_error("band_to_full_mtx_cmplx", &
+            "The number of columns in the banded matrix does not match " // &
+            "the number of columns in the full matrix.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+
+40      continue
+        call errmgr%report_error("band_to_full_mtx_cmplx", &
+            "The number of rows in the banded matrix does not align with " // &
+            "the number of sub and super-diagonals specified.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: left
+        integer(int32), intent(in) :: m, kl, ku
+        real(real64), intent(in) :: alpha
+        real(real64), intent(inout), dimension(:,:) :: a
+        real(real64), intent(in), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: one = 1.0d0
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        integer(int32) :: i, i1, i2, j, k, n
+        real(real64) :: temp
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        n = size(a, 2)
+
+        ! Input Checking
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (left) then
+            if (size(b) /= n) go to 30
+        else
+            if (size(b) < m) go to 30
+        end if
+
+        ! Process
+        if (left) then
+            ! Compute A = A * B
+            do j = 1, n
+                k = ku + 1 - j
+                i1 = max(1, j - ku) + k
+                i2 = min(m, j + kl) + k
+                if (alpha == one) then
+                    temp = b(j)
+                else
+                    temp = alpha * b(j)
+                end if
+                do i = i1, i2
+                    a(i,j) = a(i,j) * temp
+                end do
+            end do
+        else
+            ! Compute A = B * A
+            do j = 1, n
+                k = ku + 1 - j
+                i1 = max(1, j - ku)
+                i2 = min(m, j + kl)
+                if (alpha == 1.0d0) then
+                    do i = i1, i2
+                        a(i+k,j) = a(i+k,j) * b(i)
+                    end do
+                else
+                    do i = i1, i2
+                        a(i+k,j) = alpha * a(i+k,j) * b(i)
+                    end do
+                end if
+            end do
+        end if
+
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_diag_mtx_mult_dbl", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_diag_mtx_mult_dbl", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! B is not sized correctly
+30      continue
+        call errmgr%report_error("band_diag_mtx_mult_dbl", &
+            "Inner matrix dimensions do not agree.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: left
+        integer(int32), intent(in) :: m, kl, ku
+        complex(real64), intent(in) :: alpha
+        complex(real64), intent(inout), dimension(:,:) :: a
+        complex(real64), intent(in), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: one = (1.0d0, 0.0d0)
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        integer(int32) :: i, i1, i2, j, k, n
+        complex(real64) :: temp
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        n = size(a, 2)
+
+        ! Input Checking
+        if (kl < 0) go to 10
+        if (ku < 0) go to 20
+        if (left) then
+            if (size(b) /= n) go to 30
+        else
+            if (size(b) < m) go to 30
+        end if
+
+        ! Process
+        if (left) then
+            ! Compute A = A * B
+            do j = 1, n
+                k = ku + 1 - j
+                i1 = max(1, j - ku) + k
+                i2 = min(m, j + kl) + k
+                if (alpha == one) then
+                    temp = b(j)
+                else
+                    temp = alpha * b(j)
+                end if
+                do i = i1, i2
+                    a(i,j) = a(i,j) * temp
+                end do
+            end do
+        else
+            ! Compute A = B * A
+            do j = 1, n
+                k = ku + 1 - j
+                i1 = max(1, j - ku)
+                i2 = min(m, j + kl)
+                if (alpha == 1.0d0) then
+                    do i = i1, i2
+                        a(i+k,j) = a(i+k,j) * b(i)
+                    end do
+                else
+                    do i = i1, i2
+                        a(i+k,j) = alpha * a(i+k,j) * b(i)
+                    end do
+                end if
+            end do
+        end if
+
+
+        ! End
+        return
+
+        ! KL < 0
+10      continue
+        call errmgr%report_error("band_diag_mtx_mult_cmplx", &
+            "The number of subdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! KU < 0
+20      continue
+        call errmgr%report_error("band_diag_mtx_mult_cmplx", &
+            "The number of superdiagonals must be at least 0.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+
+        ! B is not sized correctly
+30      continue
+        call errmgr%report_error("band_diag_mtx_mult_cmplx", &
+            "Inner matrix dimensions do not agree.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end subroutine
+
 ! ------------------------------------------------------------------------------
 end submodule

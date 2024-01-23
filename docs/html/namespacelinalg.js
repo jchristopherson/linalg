@@ -1,5 +1,8 @@
 var namespacelinalg =
 [
+    [ "band_diag_mtx_mult", "interfacelinalg_1_1band__diag__mtx__mult.html", null ],
+    [ "band_mtx_mult", "interfacelinalg_1_1band__mtx__mult.html", null ],
+    [ "band_mtx_to_full_mtx", "interfacelinalg_1_1band__mtx__to__full__mtx.html", null ],
     [ "cholesky_factor", "interfacelinalg_1_1cholesky__factor.html", null ],
     [ "cholesky_rank1_downdate", "interfacelinalg_1_1cholesky__rank1__downdate.html", null ],
     [ "cholesky_rank1_update", "interfacelinalg_1_1cholesky__rank1__update.html", null ],

@@ -1387,6 +1387,73 @@ contains
         end if
     end subroutine
 
+! ------------------------------------------------------------------------------
+    module subroutine diag_mtx_sparse_mult(lside, alpha, a, b, err)
+        ! Arguments
+        logical, intent(in) :: lside
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        type(csr_matrix), intent(inout) :: b
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: ii, k, k1, k2, nrow
+        real(real64) :: scal
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        nrow = size(b, 1)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+
+        ! Input Check
+        if (lside) then
+            if (size(a) /= nrow) then
+                ! ERROR
+            end if
+        else
+            if (size(a) /= size(b, 2)) then
+                ! ERROR
+            end if
+        end if
+
+        ! Process
+        if (lside) then
+            ! Compute B = DIAG * B
+            do ii = 1, nrow
+                k1 = b%ia(ii)
+                k2 = b%ia(ii+1) - 1
+                if (alpha == 1.0d0) then
+                    scal = a(ii)
+                else
+                    scal = alpha * a(ii)
+                end if
+                do k = k1, k2
+                    b%v(k) = b%v(k) * scal
+                end do
+            end do
+        else
+            ! Compute B = B * DIAG
+            do ii = 1, nrow
+                k1 = b%ia(ii)
+                k2 = b%ia(ii+1) - 1
+                if (alpha == 1.0d0) then
+                    do k = k1, k2
+                        b%v(k) = b%v(k) * a(b%ja(k))
+                    end do
+                else
+                    do k = k1, k2
+                        b%v(k) = alpha * b%v(k) * a(b%ja(k))
+                    end do
+                end if
+            end do
+        end if
+    end subroutine
+
 ! ******************************************************************************
 ! BASIC OPERATION ROUTINES
 ! ------------------------------------------------------------------------------

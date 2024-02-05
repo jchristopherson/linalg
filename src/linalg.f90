@@ -187,6 +187,18 @@ module linalg
     public :: band_mtx_mult
     public :: band_mtx_to_full_mtx
     public :: band_diag_mtx_mult
+    public :: csr_matrix
+    public :: size
+    public :: create_empty_csr_matrix
+    public :: nonzero_count
+    public :: dense_to_csr
+    public :: csr_to_dense
+    public :: matmul
+    public :: operator(+)
+    public :: operator(-)
+    public :: operator(*)
+    public :: operator(/)
+    public :: transpose
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -198,6 +210,25 @@ module linalg
     public :: LA_OUT_OF_MEMORY_ERROR
     public :: LA_CONVERGENCE_ERROR
     public :: LA_INVALID_OPERATION_ERROR
+
+! ******************************************************************************
+! TYPES
+! ------------------------------------------------------------------------------
+    !> @brief A sparse matrix stored in compressed sparse row (CSR) format.
+    !! The matrix is assumed to by M-by-N in dimension.
+    type :: csr_matrix
+        !> An M+1 element array containing the indices in V an JA at which the
+        !! requested row starts.
+        integer(int32), allocatable, dimension(:) :: ia
+        !> An NNZ-element array, where NNZ is the number of non-zero values,
+        !! containing the column indices of each value.
+        integer(int32), allocatable, dimension(:) :: ja
+        !> An NNZ-element array, where NNZ is the number of non-zero values,
+        !! containing the non-zero values of the matrix.
+        real(real64), allocatable, dimension(:) :: v
+        !> The number of columns in the matrix.
+        integer(int32) :: n
+    end type
 
 ! ******************************************************************************
 ! CONSTANTS
@@ -337,8 +368,8 @@ end interface
 !> @brief Multiplies a diagonal matrix with another matrix or array.
 !!
 !! @par Syntax 1
-!! Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
-!! or \f$ C = \alpha op(B) A + \beta C \f$.
+!! Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+!! or C = alpha * op(B) * A + beta * C.
 !! @code{.f90}
 !! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)
@@ -349,10 +380,10 @@ end interface
 !!
 !! @param[in] lside Set to true to apply matrix A from the left; else, set
 !!  to false to apply matrix A from the left.
-!! @param[in] trans Set to true if \f$ op(B) = B^T \f$; else, set to false for
-!!  \f$ op(B) = B\f$.  In the complex case set to LA_TRANSPOSE if 
-!!  \f$ op(B) = B^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(B) = B^H \f$, 
-!!  otherwise set to LA_NO_OPERATION if \f$ op(B) = B \f$.
+!! @param[in] trans Set to true if op(B) = B^T; else, set to false for
+!!  op(B) = B.  In the complex case set to LA_TRANSPOSE if 
+!!  op(B) = B^T, set to LA_HERMITIAN_TRANSPOSE if op(B) = B^H, 
+!!  otherwise set to LA_NO_OPERATION if op(B) = B.
 !! @param[in] alpha A scalar multiplier.
 !! @param[in] a A K-element array containing the diagonal elements of A
 !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
@@ -375,14 +406,36 @@ end interface
 !!      incorrect.
 !!
 !! @par Syntax 2
-!! Computes the matrix operation: \f$ B = \alpha A op(B) \f$, or
-!! \f$ B = \alpha op(B) * A \f$.
+!! Computes the matrix operation: B = alpha * A * B, or
+!! B = alpha B * A.
 !! @code{.f90}
 !! subroutine diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, real(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
 !! @endcode
 !!
+!! @param[in] lside Set to true to apply matrix A from the left; else, set
+!!  to false to apply matrix A from the left.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a A K-element array containing the diagonal elements of A
+!!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+!!  false, K = MIN(N,P).
+!! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
+!!  M-by-N matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Syntax 3
+!! Computes the sparse-matrix operation: B = alpha * A * B or B = alpha * B * A
+!! where A is a diagonal matrix and B is a sparse matrix.
+!! @code{.f90}
+!! subroutine diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), class(csr_matrix) b, optional class(errors) err)
+!! @endcode
 !! @param[in] lside Set to true to apply matrix A from the left; else, set
 !!  to false to apply matrix A from the left.
 !! @param[in] alpha A scalar multiplier.
@@ -472,6 +525,7 @@ interface diag_mtx_mult
     module procedure :: diag_mtx_mult_mtx2_cmplx
     module procedure :: diag_mtx_mult_mtx_mix
     module procedure :: diag_mtx_mult_mtx2_mix
+    module procedure :: diag_mtx_sparse_mult
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -4127,6 +4181,14 @@ interface
         complex(real64), intent(inout), dimension(:,:) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
+
+    module subroutine diag_mtx_sparse_mult(lside, alpha, a, b, err)
+        logical, intent(in) :: lside
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        type(csr_matrix), intent(inout) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
     
     pure module function trace_dbl(x) result(y)
         real(real64), intent(in), dimension(:,:) :: x
@@ -5052,4 +5114,205 @@ interface
 
 end interface
 
+! ******************************************************************************
+! LINALG_SPARSE.F90
+! ------------------------------------------------------------------------------
+    !> @brief Determines the number of nonzero entries in a sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! integer(int32) pure function nonzero_count(class(csr_matrix) x)
+    !! @endcode
+    !!
+    !! @param[in] x The sparse matrix.
+    !! @return The number of non-zero elements in the sparse matrix.
+    interface nonzero_count
+        module procedure :: nonzero_count_csr
+    end interface
+
+    !> @brief Determines the size of the requested dimension of the supplied
+    !! sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! integer(int32) pure function size(class(csr_matrix) x, integer(int32) dim)
+    !! @endcode
+    !!
+    !! @param[in] x The sparse matrix.
+    !! @param[in] dim Either 1 (row) or 2(column).
+    !!
+    !! @return The size of the requested dimension.
+    interface size
+        module procedure :: csr_size
+    end interface
+
+    !> @brief Performs sparse matrix multiplication C = A * B.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) function matmul(class(csr_matrix) a, class(csr_matrix) b, optional class(errors) err)
+    !! @endcode
+    !!
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b The K-by-N matrix B.
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if there is an internal dimension mismatch
+    !!      between @p a and @p b.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is a memory allocation issue.
+    !!
+    !! @return The M-by-N matrix C.
+    interface matmul
+        module procedure :: csr_mtx_mtx_mult
+    end interface
+
+    !> @brief Adds two sparse matrices.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(+)(class(csr_matrix) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(+)
+        module procedure :: csr_mtx_add
+    end interface
+
+    !> @brief Subtracts two sparse matrices.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(-)(class(csr_matrix) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(-)
+        module procedure :: csr_mtx_sub
+    end interface
+
+    !> @brief Multiplies a sparse matrix and a scalar.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(*)(class(csr_matrix) a, real(real64) b)
+    !! type(csr_matrix) operator(*)(real(real64) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(*)
+        module procedure :: csr_mtx_mult_scalar_1
+        module procedure :: csr_mtx_mult_scalar_2
+    end interface
+
+    !> @brief Multiplies a sparse matrix by a scalar.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(/)(class(csr_matrix) a, real(real64) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(/)
+        module procedure :: csr_mtx_divide_scalar_1
+    end interface
+
+    !> @brief Provides the transpose of a sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) function transpose(class(csr_matrix) a)
+    !! @endcode
+    !!
+    !! @param[in] a The input matrix.
+    !! @return The resulting matrix.
+    interface transpose
+        module procedure :: csr_transpose
+    end interface
+
+    interface
+        pure module function csr_size(x, dim) result(rst)
+            class(csr_matrix), intent(in) :: x
+            integer(int32), intent(in) :: dim
+            integer(int32) :: rst
+        end function
+
+        module function create_empty_csr_matrix(m, n, nnz, err) result(rst)
+            integer(int32), intent(in) :: m, n, nnz
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        pure module function nonzero_count_csr(x) result(rst)
+            class(csr_matrix), intent(in) :: x
+            integer(int32) :: rst
+        end function
+
+        module function dense_to_csr(a, err) result(rst)
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_to_dense(a, err) result(rst)
+            class(csr_matrix), intent(in) :: a
+            class(errors), intent(inout), optional, target :: err
+            real(real64), allocatable, dimension(:,:) :: rst
+        end function
+
+        module function csr_mtx_mtx_mult(a, b, err) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_add(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_sub(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_mult_scalar_1(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_mult_scalar_2(a, b) result(rst)
+            real(real64), intent(in) :: a
+            class(csr_matrix), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_divide_scalar_1(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_transpose(a) result(rst)
+            class(csr_matrix), intent(in) :: a
+            type(csr_matrix) :: rst
+        end function
+    end interface
+
+! ------------------------------------------------------------------------------
 end module

@@ -2,7 +2,7 @@
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Define the QRUPDATE source files
-set(qrupdate_sources
+set(QRUPDATE_SOURCES
     ${dir}/qrupdate/caxcpy.f
     ${dir}/qrupdate/cch1dn.f
     ${dir}/qrupdate/cch1up.f
@@ -79,6 +79,14 @@ set(qrupdate_sources
     ${dir}/qrupdate/zqrtv1.f
 )
 
+# Define the SPARSKIT source files
+set(SPARSEKIT_SOURCES
+    ${dir}/sparskit2/blassm.f
+    ${dir}/sparskit2/matvec.f
+    ${dir}/sparskit2/formats.f
+    ${dir}/sparskit2/unary.f
+)
+
 # Define the LINALG source files
 set(LINALG_SOURCES
     ${dir}/linalg.f90
@@ -90,6 +98,8 @@ set(LINALG_SOURCES
     ${dir}/blas.f90
     ${dir}/lapack.f90
     ${dir}/qrupdate.f90
+    ${dir}/sparskit.f90
+    ${dir}/linalg_sparse.f90
 )
 if (${BUILD_C_API})
     set(LINALG_C_SOURCES
@@ -97,5 +107,6 @@ if (${BUILD_C_API})
     )
     list(APPEND LINALG_SOURCES ${LINALG_C_SOURCES})
 endif()
-list(APPEND LINALG_SOURCES ${qrupdate_sources})
+list(APPEND LINALG_SOURCES ${QRUPDATE_SOURCES})
+list(APPEND LINALG_SOURCES ${SPARSEKIT_SOURCES})
 set(LINALG_SOURCES ${LINALG_SOURCES} PARENT_SCOPE)

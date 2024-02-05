@@ -16,6 +16,7 @@ set(linalg_test_sources
     test_lu.f90
     test_sort.f90
     test_lq.f90
+    test_sparse.f90
 )
 
 # Build the Fortran API tests

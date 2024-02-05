@@ -1413,11 +1413,15 @@ contains
         ! Input Check
         if (lside) then
             if (size(a) /= nrow) then
-                ! ERROR
+                call errmgr%report_error("diag_mtx_sparse_mult", &
+                    "Inner matrix dimension error.", LA_ARRAY_SIZE_ERROR)
+                return
             end if
         else
             if (size(a) /= size(b, 2)) then
-                ! ERROR
+                call errmgr%report_error("diag_mtx_sparse_mult", &
+                    "Inner matrix dimension error.", LA_ARRAY_SIZE_ERROR)
+                return
             end if
         end if
 

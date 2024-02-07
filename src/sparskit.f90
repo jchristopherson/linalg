@@ -130,9 +130,261 @@ module sparskit
         end subroutine
     end interface
 
-    ! MATVEC.F
+    ! ILUT.F
     interface
-    ! AMUX
-    ! ATMUXR
+        !> @brief Computes the incomplete LU factorization of a sparse matrix
+        !! in CSR format using a dual truncation mechanism.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] a The non-zero elements of matrix A.
+        !! @param[in] ja The column indices of matrix A.
+        !! @param[in] ia The index in A where the requested row starts.
+        !! @param[in] lfil The fill-in parameter.  Each row of L and each row
+        !!  of U will have a maximum of @p lfil elements, excluding the 
+        !!  diagonal element.  @p lfil must be greater than or equal to zero.
+        !! @param[in] droptol The threshold for dropping small terms in the
+        !!  factorization.
+        !! @param[out] alu The factored matrix stored in Modified Sparse Row
+        !!  (MSR) format containing the L and U factors together.  The diagonal,
+        !!  stored in ALU(1:N), is inverted.  Each i-th row of the ALU, JLU
+        !!  matrix contains the i-th row of L, excluding the diagonal entry,
+        !!  followed by the i-th row of U.
+        !! @param[out] jlu The column indices for the factored matrix.
+        !! @param[out] ju An N-element array containing the pointers to the
+        !!  beginning of each row of U in the factored matrix.
+        !! @param[in] iwk The lengths of @p alu and @p jlu.
+        !! @param[out] w An N+1 element workspace array.
+        !! @param[out] jw A 2*N element workspace array.
+        !! @param[out] ierr Error flag:
+        !!  * 0: Successful return
+        !!  * .gt. 0: Zero pivot encountered at step number IERR.
+        !!  * -1: Input matrix is incorrect.  The elimination process generated
+        !!      a row in L or U whose length is greater than N.
+        !!  * -2: The matrix L overflows the output array.
+        !!  * -3: The matrix U overflows the output array.
+        !!  * -4: Illegal value for @P lfil.
+        !!  * -5: Zero-valued row encountered.
+        subroutine ilut(n, a, ja, ia, lfil, droptol, alu, jlu, ju, iwk, w, &
+            jw, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, ja(*), ia(n+1), lfil, iwk
+            integer(int32), intent(out) :: jlu(*), ju(n), jw(2*n), ierr
+            real(real64), intent(in) :: a(*), droptol
+            real(real64), intent(out) :: alu(*), w(n+1)
+        end subroutine
+
+        !> @brief Computes the incomplete LU factorization of a sparse matrix
+        !! in CSR format using a dual truncation mechanism and pivoting.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in,out] a The non-zero elements of matrix A.  On output, the
+        !!  columns are permuted.
+        !! @param[in,out] ja The column indices of matrix A.  On output, the
+        !!  columns are permuted.
+        !! @param[in,out] ia The index in A where the requested row starts.  On 
+        !!  output, the columns are permuted.
+        !! @param[in] lfil The fill-in parameter.  Each row of L and each row
+        !!  of U will have a maximum of @p lfil elements, excluding the 
+        !!  diagonal element.  @p lfil must be greater than or equal to zero.
+        !! @param[in] droptol The threshold for dropping small terms in the
+        !!  factorization.
+        !! @param[in] permtol A tolerance ratio used to determine whether or
+        !!  not to permute two columns.  At step I, columns I and J are 
+        !!  permuted when ABS(A(I,J)) * PERMTOL .GT. ABS(A(I,I)).  Good values
+        !!  are typically between 0.1 to 0.01.
+        !! @param[in] mbloc If desired, permuting can be done only within the
+        !!  diagonal blocks of size MBLOC.  Useful for PDE problems with many
+        !!  degrees of freedom.  If this feature is not required, simply set
+        !!  MBLOC equal to N.
+        !! @param[out] alu The factored matrix stored in Modified Sparse Row
+        !!  (MSR) format containing the L and U factors together.  The diagonal,
+        !!  stored in ALU(1:N), is inverted.  Each i-th row of the ALU, JLU
+        !!  matrix contains the i-th row of L, excluding the diagonal entry,
+        !!  followed by the i-th row of U.
+        !! @param[out] jlu The column indices for the factored matrix.
+        !! @param[out] ju An N-element array containing the pointers to the
+        !!  beginning of each row of U in the factored matrix.
+        !! @param[in] iwk The lengths of @p alu and @p jlu.
+        !! @param[out] w An N+1 element workspace array.
+        !! @param[out] jw A 2*N element workspace array.
+        !! @param[out] iperm A 2*N element array containing the permutation
+        !!  arrays.  IPERM(1:N) contains the old numbers of unknowns, and 
+        !!  IPERM(N+1:) contains the new unknowns.
+        !! @param[out] ierr Error flag:
+        !!  * 0: Successful return
+        !!  * .gt. 0: Zero pivot encountered at step number IERR.
+        !!  * -1: Input matrix is incorrect.  The elimination process generated
+        !!      a row in L or U whose length is greater than N.
+        !!  * -2: The matrix L overflows the output array.
+        !!  * -3: The matrix U overflows the output array.
+        !!  * -4: Illegal value for @P lfil.
+        !!  * -5: Zero-valued row encountered.
+        !!
+        !! @par Remarks
+        !! To avoid permuting the solution vector arrays for each LU-solve, the
+        !! matrix A is permuted on return.  Similarly for the U matrix.  To
+        !! permute the matrix back to its original state, use the following
+        !! code.
+        !! @code{.f90}
+        !! do k = ia(1), ia(n+1) - 1
+        !!  ja(k) = iperm(ja(k))
+        !! end do
+        !! @endcode
+        subroutine ilutp(n, a, ja, ia, lfil, droptol, permtol, mbloc, alu, &
+            jlu, ju, iwk, w, jw, iperm, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, lfil, iwk, mbloc
+            integer(int32), intent(inout) :: ja(*), ia(n+1)
+            integer(int32), intent(out) :: jlu(*), ju(n), jw(2*n), &
+                iperm(2*n), ierr
+            real(real64), intent(in) :: droptol, permtol
+            real(real64), intent(inout) :: a(*)
+            real(real64), intent(out) :: alu(*), w(n+1)
+        end subroutine
+
+        !> @brief Computes the incomplete LU factorization of a sparse matrix
+        !! in CSR format with standard dropping strategy.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] a The non-zero elements of matrix A.
+        !! @param[in] ja The column indices of matrix A.
+        !! @param[in] ia The index in A where the requested row starts.
+        !! @param[in] alph The diagonal compensation parameter.  If ALPH = 0,
+        !!  the process is approximately equivalent to ILU with threshold; else,
+        !!  if ALPH = 1, the process is approximately equivalent to MILU with
+        !!  threshold.
+        !! @param[in] tol The threshold parameter for dropping small terms in
+        !!  the factorization.
+        !! @param[out] alu The factored matrix stored in Modified Sparse Row
+        !!  (MSR) format containing the L and U factors together.  The diagonal,
+        !!  stored in ALU(1:N), is inverted.  Each i-th row of the ALU, JLU
+        !!  matrix contains the i-th row of L, excluding the diagonal entry,
+        !!  followed by the i-th row of U.
+        !! @param[out] jlu The column indices for the factored matrix.
+        !! @param[out] ju An N-element array containing the pointers to the
+        !!  beginning of each row of U in the factored matrix.
+        !! @param[in] iwk The lengths of @p alu and @p jlu.
+        !! @param[out] w An N+1 element workspace array.
+        !! @param[out] jw A 2*N element workspace array.
+        !! @param[out] ierr Error flag:
+        !!  * 0: Successful return
+        !!  * .gt. 0: Zero pivot encountered at step number IERR.
+        !!  * -1: Input matrix is incorrect.  The elimination process generated
+        !!      a row in L or U whose length is greater than N.
+        !!  * -2: Insufficient storage for the LU factors.
+        !!  * -3: Zero-valued row encountered.
+        subroutine ilud(n, a, ja, ia, alph, tol, alu, jlu, ju, iwk, w, jw, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, iwk, ja(*), ia(n+1)
+            integer(int32), intent(out) :: jlu(*), ju(n), jw(2*n), ierr
+            real(real64), intent(in) :: a(*), alph, tol
+            real(real64), intent(out) :: alu(*), w(2*n)
+        end subroutine
+
+        !> @brief Computes the incomplete LU factorization of a sparse matrix
+        !! in CSR format with standard dropping strategy.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] a The non-zero elements of matrix A.
+        !! @param[in] ja The column indices of matrix A.
+        !! @param[in] ia The index in A where the requested row starts.
+        !! @param[in] alph The diagonal compensation parameter.  If ALPH = 0,
+        !!  the process is approximately equivalent to ILU with threshold; else,
+        !!  if ALPH = 1, the process is approximately equivalent to MILU with
+        !!  threshold.
+        !! @param[in] droptol The threshold for dropping small terms in the
+        !!  factorization.
+        !! @param[in] permtol A tolerance ratio used to determine whether or
+        !!  not to permute two columns.  At step I, columns I and J are 
+        !!  permuted when ABS(A(I,J)) * PERMTOL .GT. ABS(A(I,I)).  Good values
+        !!  are typically between 0.1 to 0.01.
+        !! @param[in] mbloc If desired, permuting can be done only within the
+        !!  diagonal blocks of size MBLOC.  Useful for PDE problems with many
+        !!  degrees of freedom.  If this feature is not required, simply set
+        !!  MBLOC equal to N.
+        !! @param[out] alu The factored matrix stored in Modified Sparse Row
+        !!  (MSR) format containing the L and U factors together.  The diagonal,
+        !!  stored in ALU(1:N), is inverted.  Each i-th row of the ALU, JLU
+        !!  matrix contains the i-th row of L, excluding the diagonal entry,
+        !!  followed by the i-th row of U.
+        !! @param[out] jlu The column indices for the factored matrix.
+        !! @param[out] ju An N-element array containing the pointers to the
+        !!  beginning of each row of U in the factored matrix.
+        !! @param[in] iwk The lengths of @p alu and @p jlu.
+        !! @param[out] w An N+1 element workspace array.
+        !! @param[out] jw A 2*N element workspace array.
+        !! @param[out] ierr Error flag:
+        !!  * 0: Successful return
+        !!  * .gt. 0: Zero pivot encountered at step number IERR.
+        !!  * -1: Input matrix is incorrect.  The elimination process generated
+        !!      a row in L or U whose length is greater than N.
+        !!  * -2: Insufficient storage for the LU factors.
+        !!  * -3: Zero-valued row encountered.
+        subroutine iludp(n, a, ja, ia, alph, droptol, permtol, mbloc, alu, &
+            jlu, ju, iwk, w, jw, iperm, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, iwk, mbloc
+            integer(int32), intent(inout) :: ja(*), ia(n+1)
+            integer(int32), intent(out) :: jlu(*), ju(n), jw(2*n), iperm(2*n), &
+                ierr
+            real(real64), intent(in) :: alph, droptol, permtol
+            real(real64), intent(inout) :: a(*)
+            real(real64), intent(out) :: alu(*), w(2*n)
+        end subroutine
+
+        !> @brief An ILUT preconditioned GMRES algorithm.  This routine utilizes
+        !! the L and U matrices generated by the ILUT routine to precondition
+        !! the GMRES algorithm.  The stopping criteria utilized is based simply 
+        !! on reducing the residual norm to the requested tolerance.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] im The size of the Krylov subspace.  This value should
+        !!  not exceed 50.
+        !! @param[in,out] rhs The N-element right-hand-side vector.  On output,
+        !!  the contents of this array are overwritten.
+        !! @param[in,out] sol On input, the N-element solution estimate.  On
+        !!  output, the computed solution.
+        !! @param[out] vv An N-by-IM+1 workspace matrix.
+        !! @param[in] eps The convergence tolerance against which the norm of
+        !!  the residual is checked.
+        !! @param[in] maxits The maximum number of iterations to allow.
+        !! @param[in] iout The device output number for printing intermediate
+        !!  results.  Set to a value less than or equal to zero to suppress
+        !!  printing.
+        !! @param[in] aa The non-zero elements of matrix A.
+        !! @param[in] ja The column indices of matrix A.
+        !! @param[in] ia The index in A where the requested row starts.
+        !! @param[in] alu The LU-factored matrix from ILUT.
+        !! @param[in] jlu The LU-factored matrix from ILUT.
+        !! @param[in] ju The LU-factored matrix from ILUT.
+        !! @param[out] ierr Error flag:
+        !!  * 0: Successful return
+        !!  * 1: Convergence not achieved.
+        !!  * -1: The initial guess seems to be the exact solution.
+        subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout, aa, ja, ia, &
+            alu, jlu, ju, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, im, maxits, iout, ja(*), ia(n+1), &
+                jlu(*), ju(n)
+            integer(int32), intent(out) :: ierr
+            real(real64), intent(in) :: aa(*), eps, alu(*)
+            real(real64), intent(inout) :: rhs(n), sol(n)
+            real(real64), intent(out) :: vv(n,*)
+        end subroutine
+
+        !> @brief Solves the LU-factored system (LU) x = y.
+        !!
+        !! @param[in] n The dimension of the system.
+        !! @param[in] y The N-element right-hand-side vector.
+        !! @param[out] x The N-element solution vector.
+        !! @param[in] alu The LU-factored matrix.
+        !! @param[in] jlu The LU-factored matrix.
+        !! @param[in] ju The LU-factored matrix.
+        subroutine lusol(n, y, x, alu, jlu, ju)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, jlu(*), ju(*)
+            real(real64), intent(in) :: y(n), alu(*)
+            real(real64), intent(out) :: x(n)
+        end subroutine
     end interface
 end module

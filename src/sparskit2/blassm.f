@@ -19,6 +19,7 @@ c Note: this module still incomplete.                                  c
 c----------------------------------------------------------------------c
        subroutine amub (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *                  c,jc,ic,nzmax,iw,ierr) 
+      integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer job,ja(*),jb(*),jc(*),ia(nrow+1),ib(*),ic(*),iw(ncol)
 c-----------------------------------------------------------------------
@@ -111,6 +112,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplb (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
+      integer nrow,ncol,ierr
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1),
      *     iw(ncol)
@@ -201,6 +203,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine aplb1(nrow,ncol,job,a,ja,ia,b,jb,ib,c,jc,ic,nzmax,ierr)
+      integer nrow,ncol,job,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1)
 c-----------------------------------------------------------------------
@@ -302,6 +305,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
       subroutine aplsb (nrow,ncol,a,ja,ia,s,b,jb,ib,c,jc,ic,nzmax,
      *     iw,ierr)
+      integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1),
      *     iw(ncol)
@@ -393,6 +397,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplsb1 (nrow,ncol,a,ja,ia,s,b,jb,ib,c,jc,ic,
      *     nzmax,ierr)
+      integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1)
 c-----------------------------------------------------------------------
@@ -504,6 +509,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine apmbt (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
+      integer nrow,ncol,job,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(ncol+1),ic(*),iw(*) 
 c-----------------------------------------------------------------------
@@ -640,6 +646,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplsbt(nrow,ncol,a,ja,ia,s,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
+      integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(ncol+1),ic(*),iw(*)
 c-----------------------------------------------------------------------
@@ -762,6 +769,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine diamua (nrow,job, a, ja, ia, diag, b, jb, ib)
+      integer nrow,job
       real*8 a(*), b(*), diag(nrow), scal
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1) 
 c-----------------------------------------------------------------------
@@ -819,6 +827,7 @@ c-----------------------------------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine amudia (nrow,job, a, ja, ia, diag, b, jb, ib)
+      integer nrow,job
       real*8 a(*), b(*), diag(nrow) 
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1) 
 c-----------------------------------------------------------------------
@@ -874,6 +883,7 @@ c-----------end-of-amudiag----------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine aplsca (nrow, a, ja, ia, scal,iw) 
+      integer nrow
       real*8 a(*), scal
       integer ja(*), ia(nrow+1),iw(*)
 c-----------------------------------------------------------------------
@@ -971,6 +981,7 @@ c----------end-of-aplsca------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine apldia (nrow, job, a, ja, ia, diag, b, jb, ib, iw) 
+      integer nrow,job
       real*8 a(*), b(*), diag(nrow) 
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1), iw(*)
 c-----------------------------------------------------------------------

@@ -50,6 +50,7 @@ c csrkvstc:  Finds block column partitioning of matrix in CSR format   c
 c kvstmerge: Merges block partitionings, for conformal row/col pattern c
 c----------------------------------------------------------------------c
       subroutine submat (job,i1,i2,j1,j2,a,ja,ia,nr,nc,ao,jao,iao)
+      implicit none
       integer job,i1,i2,j1,j2,nr,nc,ia(*),ja(*),jao(*),iao(*)
       real*8 a(*),ao(*) 
 c-----------------------------------------------------------------------
@@ -87,6 +88,7 @@ c	of the row,in arrays a,ja.
 c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
+      integer i,ii,j,k,k1,k2,klen
       nr = i2-i1+1
       nc = j2-j1+1
 c     
@@ -118,6 +120,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine filter(n,job,drptol,a,ja,ia,b,jb,ib,len,ierr)
+      implicit none
       real*8 a(*),b(*),drptol
       integer ja(*),jb(*),ia(*),ib(*),n,job,len,ierr
 c-----------------------------------------------------------------------
@@ -210,6 +213,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine filterm (n,job,drop,a,ja,b,jb,len,ierr)
+      implicit none
       real*8 a(*),b(*),drop
       integer ja(*),jb(*),n,job,len,ierr
 c-----------------------------------------------------------------------
@@ -299,6 +303,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csort (n,a,ja,ia,values) 
+      implicit none
       logical values
       integer n, ja(*), ia(n+1)
       real*8 a(*) 
@@ -356,6 +361,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine clncsr(job,value2,nrow,a,ja,ia,indu,iwk)
+      implicit none
 c     .. Scalar Arguments ..
       integer job, nrow, value2
 c     ..
@@ -521,6 +527,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine copmat (nrow,a,ja,ia,ao,jao,iao,ipos,job) 
+      implicit none
       real*8 a(*),ao(*) 
       integer nrow, ia(*),ja(*),jao(*),iao(*), ipos, job 
 c----------------------------------------------------------------------
@@ -569,6 +576,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine msrcop (nrow,a,ja,ao,jao,job) 
+      implicit none
       real*8 a(*),ao(*) 
       integer nrow, ja(*),jao(*), job 
 c----------------------------------------------------------------------
@@ -649,6 +657,7 @@ c     note: the inputs i and j are not checked for validity.
 c-----------------------------------------------------------------------
 c     noel m. nachtigal october 28, 1990 -- youcef saad jan 20, 1991.
 c----------------------------------------------------------------------- 
+      implicit none
       integer i, ia(*), iadd, j, ja(*)
       double precision a(*)
       logical sorted 
@@ -714,6 +723,7 @@ c-----------------------------------------------------------------------
       end 
 c-----------------------------------------------------------------------
       subroutine getdia (nrow,ncol,job,a,ja,ia,len,diag,idiag,ioff)
+      implicit none
       real*8 diag(*),a(*)
       integer nrow, ncol, job, len, ioff, ia(*), ja(*), idiag(*)
 c-----------------------------------------------------------------------
@@ -824,6 +834,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine transp (nrow,ncol,a,ja,ia,iwk,ierr)
+      implicit none
       integer nrow, ncol, ia(*), ja(*), iwk(*), ierr
       real*8 a(*) 
 c------------------------------------------------------------------------
@@ -879,6 +890,7 @@ c  modified Oct. 11, 1989.                                             c
 c----------------------------------------------------------------------c
 c local variables
       real*8 t, t1
+      integer i,j,nnz,jcol,k,init,l,inext
       ierr = 0
       nnz = ia(nrow+1)-1
 c
@@ -961,6 +973,7 @@ c------------------------------------------------------------------------
       end 
 c------------------------------------------------------------------------ 
       subroutine getl (n,a,ja,ia,ao,jao,iao)
+      implicit none
       integer n, ia(*), ja(*), iao(*), jao(*)
       real*8 a(*), ao(*)
 c------------------------------------------------------------------------
@@ -1021,6 +1034,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine getu (n,a,ja,ia,ao,jao,iao)
+      implicit none
       integer n, ia(*), ja(*), iao(*), jao(*)
       real*8 a(*), ao(*)
 c------------------------------------------------------------------------
@@ -1076,6 +1090,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine levels (n, jal, ial, nlev, lev, ilev, levnum)
+      implicit none
+      integer n,nlev
       integer jal(*),ial(*), levnum(*), ilev(*), lev(*) 
 c-----------------------------------------------------------------------
 c levels gets the level structure of a lower triangular matrix 
@@ -1104,6 +1120,7 @@ c-------------
 c levnum   = integer array of length n (containing the level numbers
 c            of each unknown on return)
 c-----------------------------------------------------------------------
+      integer i,j,levi
       do 10 i = 1, n
          levnum(i) = 0
  10   continue
@@ -1153,6 +1170,8 @@ c-----------------------------------------------------------------------
       subroutine amask (nrow,ncol,a,ja,ia,jmask,imask,
      *                  c,jc,ic,iw,nzmax,ierr)
 c---------------------------------------------------------------------
+      implicit none
+      integer nrow,ncol,nzmax,ierr
       real*8 a(*),c(*) 
       integer ia(nrow+1),ja(*),jc(*),ic(nrow+1),jmask(*),imask(nrow+1) 
       logical iw(ncol)
@@ -1200,6 +1219,7 @@ c a, ja, ia in which cas the code will overwrite the matrix c
 c on a, ja, ia
 c
 c-----------------------------------------------------------------------
+      integer len,ii,j,k1,k2,k
       ierr = 0
       len = 0
       do 1 j=1, ncol
@@ -1240,6 +1260,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine rperm (nrow,a,ja,ia,ao,jao,iao,perm,job)
+      implicit none
       integer nrow,ja(*),ia(nrow+1),jao(*),iao(nrow+1),perm(nrow),job
       real*8 a(*),ao(*) 
 c-----------------------------------------------------------------------
@@ -1277,6 +1298,7 @@ c----------------------------------------------------------------------c
 c           Y. Saad, May  2, 1990                                      c
 c----------------------------------------------------------------------c
       logical values
+      integer i,j,ii,ko,k
       values = (job .eq. 1) 
 c     
 c     determine pointers for output matix. 
@@ -1313,6 +1335,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine cperm (nrow,a,ja,ia,ao,jao,iao,perm,job) 
+      implicit none
       integer nrow,ja(*),ia(nrow+1),jao(*),iao(nrow+1),perm(*), job
       real*8 a(*), ao(*) 
 c-----------------------------------------------------------------------
@@ -1381,6 +1404,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine dperm (nrow,a,ja,ia,ao,jao,iao,perm,qperm,job)
+      implicit none
       integer nrow,ja(*),ia(nrow+1),jao(*),iao(nrow+1),perm(nrow),
      +        qperm(*),job
       real*8 a(*),ao(*) 
@@ -1457,7 +1481,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine dperm1 (i1,i2,a,ja,ia,b,jb,ib,perm,ipos,job)
-      integer i1,i2,job,ja(*),ia(*),jb(*),ib(*),perm(*)
+      implicit none
+      integer i1,i2,job,ja(*),ia(*),jb(*),ib(*),perm(*),ipos
       real*8 a(*),b(*)
 c----------------------------------------------------------------------- 
 c     general submatrix extraction routine.
@@ -1495,7 +1520,7 @@ c  algorithm is NOT in place
 c----------------------------------------------------------------------- 
 c local variables
 c
-      integer ko,irow,k 
+      integer ko,irow,k,i
       logical values
 c-----------------------------------------------------------------------
       values = (job .eq. 1) 
@@ -1517,6 +1542,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dperm2 (i1,i2,a,ja,ia,b,jb,ib,cperm,rperm,istart,
      *        ipos,job)
+      implicit none
+      integer ipos
       integer i1,i2,job,istart,ja(*),ia(*),jb(*),ib(*),cperm(*),rperm(*) 
       real*8 a(*),b(*)
 c----------------------------------------------------------------------- 
@@ -1585,7 +1612,7 @@ c     may be on entry.
 c----------------------------------------------------------------------- 
 c local variables
 c
-      integer ko,irow,k 
+      integer ko,irow,k,i
       logical values
 c-----------------------------------------------------------------------
       values = (job .eq. 1) 
@@ -1606,6 +1633,7 @@ c-----------------------------------------------------------------------
       end 
 c-----------------------------------------------------------------------
       subroutine dmperm (nrow,a,ja,ao,jao,perm,job)
+      implicit none
       integer nrow,ja(*),jao(*),perm(nrow),job
       real*8 a(*),ao(*) 
 c-----------------------------------------------------------------------
@@ -1647,7 +1675,7 @@ c     on entry.
 c----------------------------------------------------------------------c
 c     local variables
 c     
-      integer n1, n2
+      integer n1, n2, j
       n1 = nrow+1
       n2 = n1+1
 c      
@@ -1667,6 +1695,7 @@ c--------end-of-dmperm--------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine dvperm (n, x, perm) 
+      implicit none
       integer n, perm(n) 
       real*8 x(n)
 c-----------------------------------------------------------------------
@@ -1692,6 +1721,7 @@ c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
 c local variables 
       real*8 tmp, tmp1
+      integer init,ii,k,next,j
 c
       init      = 1
       tmp       = x(init)        
@@ -1741,7 +1771,8 @@ c-------------------end-of-dvperm---------------------------------------
 c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
-      subroutine ivperm (n, ix, perm) 
+      subroutine ivperm (n, ix, perm)
+      implicit none 
       integer n, perm(n), ix(n)
 c-----------------------------------------------------------------------
 c this subroutine performs an in-place permutation of an integer vector 
@@ -1765,7 +1796,7 @@ c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
 c local variables
-      integer tmp, tmp1
+      integer tmp,tmp1,init,ii,k,next,j
 c
       init      = 1
       tmp        = ix(init)        
@@ -1816,6 +1847,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------  
       subroutine retmx (n,a,ja,ia,dd)
+      implicit none
       real*8 a(*),dd(*)
       integer n,ia(*),ja(*)
 c-----------------------------------------------------------------------
@@ -1867,7 +1899,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine diapos  (n,ja,ia,idiag) 
-      integer ia(n+1), ja(*), idiag(n) 
+      implicit none
+      integer n,ia(n+1), ja(*), idiag(n) 
 c-----------------------------------------------------------------------
 c this subroutine returns the positions of the diagonal elements of a
 c sparse matrix a, ja, ia, in the array idiag.
@@ -1888,6 +1921,7 @@ c          if no diagonal element is found the entry is set to 0.
 c----------------------------------------------------------------------c
 c           Y. Saad, March, 1990
 c----------------------------------------------------------------------c
+      integer i,k
       do 1 i=1, n 
          idiag(i) = 0
  1    continue
@@ -1905,6 +1939,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine dscaldg (n,a,ja,ia,diag,job)
+      implicit none
+      integer n,job
       real*8 a(*), diag(*),t
       integer ia(*),ja(*)
 c----------------------------------------------------------------------- 
@@ -1918,6 +1954,7 @@ c (no scaling)..
 c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
+      integer j,k1,k2,k,i
       goto (12,11,10) job+1
  10   do 110 j=1,n
          k1= ia(j)
@@ -2016,7 +2053,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine getbwd(n,ja,ia,ml,mu)
-      integer ja(*),ia(n+1),ml,mu
+      implicit none
+      integer n,ja(*),ia(n+1),ml,mu
 c-----------------------------------------------------------------------
 c gets the bandwidth of lower part and upper part of A.
 c does not assume that A is sorted.
@@ -2059,6 +2097,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine blkfnd (nrow,ja,ia,nblk)
+      implicit none
+      integer nrow,nblk
 c-----------------------------------------------------------------------
 c This routine attemptps to determine whether or not  the input
 c matrix has a block structure and finds the blocks size
@@ -2093,6 +2133,8 @@ c criterion used here is a simple one: scan rows and  determine groups
 c of rows that have the same length and such that the first column 
 c number and the last column number are identical. 
 c----------------------------------------------------------------------- 
+      integer minlen,irow,i,len,iblk,len0,jfirst,jlast,jrow
+      integer i1,i2,jf,jl,imsg
       minlen = ia(2)-ia(1)
       irow   = 1
       do 1 i=2,nrow
@@ -2140,6 +2182,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine blkchk (nrow,ja,ia,nblk,imsg)
+      implicit none
+      integer nrow,nblk,imsg
 c----------------------------------------------------------------------- 
 c This routine checks whether the input matrix is a block
 c matrix with block size of nblk. A block matrix is one which is
@@ -2174,7 +2218,8 @@ c             two rows in same group have different lengths
 c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
-      integer ia(nrow+1),ja(*) 
+      integer ia(nrow+1),ja(*)
+      integer nr,irow,ii,i1,j2,lena,len,i,k,jstart,j
 c---------------------------------------------------------------------- 
 c first part of code will find candidate block sizes.
 c this is not guaranteed to work . so a check is done at the end
@@ -2235,7 +2280,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine infdia (n,ja,ia,ind,idiag) 
-      integer ia(*), ind(*), ja(*)
+      implicit none
+      integer n,idiag,ia(*), ind(*), ja(*)
 c-----------------------------------------------------------------------
 c     obtains information on the diagonals of A. 
 c----------------------------------------------------------------------- 
@@ -2263,6 +2309,7 @@ c         whose offset wrt the main diagonal is = - n + k.
 c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
+      integer n2,i,j,k
       n2= n+n-1
       do 1 i=1,n2
          ind(i) = 0
@@ -2284,7 +2331,9 @@ c------end-of-infdia ---------------------------------------------------
 c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
-      subroutine amubdg (nrow,ncol,ncolb,ja,ia,jb,ib,ndegr,nnz,iw) 
+      subroutine amubdg (nrow,ncol,ncolb,ja,ia,jb,ib,ndegr,nnz,iw)
+      implicit none 
+      integer nrow,ncol,ncolb,nnz
       integer ja(*),jb(*),ia(nrow+1),ib(ncol+1),ndegr(nrow),iw(ncolb) 
 c-----------------------------------------------------------------------
 c gets the number of nonzero elements in each row of A*B and the total 
@@ -2317,6 +2366,7 @@ c work arrays:
 c-------------
 c iw	= integer work array of length ncolb. 
 c-----------------------------------------------------------------------
+      integer k,ii,ldg,last,j,jr,jc
       do 1 k=1, ncolb 
          iw(k) = 0 
  1    continue
@@ -2379,6 +2429,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine aplbdg (nrow,ncol,ja,ia,jb,ib,ndegr,nnz,iw) 
+      implicit none
+      integer nrow,ncol,nnz
       integer ja(*),jb(*),ia(nrow+1),ib(nrow+1),iw(ncol),ndegr(nrow) 
 c-----------------------------------------------------------------------
 c gets the number of nonzero elements in each row of A+B and the total 
@@ -2409,6 +2461,7 @@ c------------
 c iw	= integer work array of length equal to ncol. 
 c
 c-----------------------------------------------------------------------
+      integer k,ii,ldg,last,j,jr,jc
       do 1 k=1, ncol 
          iw(k) = 0 
  1    continue
@@ -2472,6 +2525,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine rnrms (nrow, nrm, a, ia, diag) 
+      implicit none
+      integer nrow,nrm
       real*8 a(*), diag(nrow), scal 
       integer ia(nrow+1) 
 c-----------------------------------------------------------------------
@@ -2494,6 +2549,7 @@ c
 c diag = real vector of length nrow containing the norms
 c
 c-----------------------------------------------------------------
+      integer ii,k1,k2,k
       do 1 ii=1,nrow
 c
 c     compute the norm if each element.
@@ -2523,6 +2579,8 @@ c-------------end-of-rnrms----------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine cnrms   (nrow, nrm, a, ja, ia, diag) 
+      implicit none
+      integer nrow,nrm
       real*8 a(*), diag(nrow) 
       integer ja(*), ia(nrow+1) 
 c-----------------------------------------------------------------------
@@ -2548,6 +2606,7 @@ c nrow .ne. ncol -- diag must be of size max(nrow,ncol) even
 c though only the ncol first entries will be filled.. 
 c [report E. Canot 10/20/05 ] 
 c-----------------------------------------------------------------
+      integer k,ii,k1,k2,j
       do 10 k=1, nrow 
          diag(k) = 0.0d0
  10   continue
@@ -2576,6 +2635,7 @@ c------------end-of-cnrms-----------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine roscal(nrow,job,nrm,a,ja,ia,diag,b,jb,ib,ierr) 
+      implicit none
       real*8 a(*), b(*), diag(nrow) 
       integer nrow,job,nrm,ja(*),jb(*),ia(nrow+1),ib(nrow+1),ierr 
 c-----------------------------------------------------------------------
@@ -2614,6 +2674,7 @@ c-------
 c 1)        The column dimension of A is not needed. 
 c 2)        algorithm in place (B can take the place of A).
 c-----------------------------------------------------------------
+      integer j
       call rnrms (nrow,nrm,a,ia,diag)
       ierr = 0
       do 1 j=1, nrow
@@ -2632,6 +2693,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine coscal(nrow,job,nrm,a,ja,ia,diag,b,jb,ib,ierr) 
 c----------------------------------------------------------------------- 
+      implicit none
+      integer nrm
       real*8 a(*),b(*),diag(nrow) 
       integer nrow,job,ja(*),jb(*),ia(nrow+1),ib(nrow+1),ierr 
 c-----------------------------------------------------------------------
@@ -2671,6 +2734,7 @@ c-------
 c 1)     The column dimension of A is not needed. 
 c 2)     algorithm in place (B can take the place of A).
 c-----------------------------------------------------------------
+      integer j
       call cnrms (nrow,nrm,a,ja,ia,diag)
       ierr = 0
       do 1 j=1, nrow
@@ -2690,6 +2754,7 @@ c-----------------------------------------------------------------------
       subroutine addblk(nrowa, ncola, a, ja, ia, ipos, jpos, job,
      & nrowb, ncolb, b, jb, ib, nrowc, ncolc, c, jc, ic, nzmx, ierr)
 c      implicit none
+      implicit none
       integer nrowa, nrowb, nrowc, ncola, ncolb, ncolc, ipos, jpos
       integer nzmx, ierr, job
       integer ja(1:*), ia(1:*), jb(1:*), ib(1:*), jc(1:*), ic(1:*)
@@ -2809,6 +2874,7 @@ c---------end-of-addblk-------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine get1up (n,ja,ia,ju)
+      implicit none
       integer  n, ja(*),ia(*),ju(*)
 c----------------------------------------------------------------------
 c obtains the first element of each row of the upper triangular part
@@ -2853,6 +2919,7 @@ c-----end-of-get1up-----------------------------------------------------
       end 
 c----------------------------------------------------------------------
       subroutine xtrows (i1,i2,a,ja,ia,ao,jao,iao,iperm,job)
+      implicit none
       integer i1,i2,ja(*),ia(*),jao(*),iao(*),iperm(*),job
       real*8 a(*),ao(*) 
 c-----------------------------------------------------------------------
@@ -2893,6 +2960,7 @@ c----------------------------------------------------------------------c
 c           Y. Saad, revised May  2, 1990                              c
 c----------------------------------------------------------------------c
       logical values
+      integer ko,j,ii,k
       values = (job .eq. 1) 
 c
 c copying 
@@ -2919,6 +2987,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csrkvstr(n, ia, ja, nr, kvstr)
 c-----------------------------------------------------------------------
+      implicit none
       integer n, ia(n+1), ja(*), nr, kvstr(*)
 c-----------------------------------------------------------------------
 c     Finds block row partitioning of matrix in CSR format.
@@ -2969,6 +3038,7 @@ c-----------------------------------------------------------------------
 c------------------------end-of-csrkvstr--------------------------------
       subroutine csrkvstc(n, ia, ja, nc, kvstc, iwk)
 c-----------------------------------------------------------------------
+      implicit none
       integer n, ia(n+1), ja(*), nc, kvstc(*), iwk(*)
 c-----------------------------------------------------------------------
 c     Finds block column partitioning of matrix in CSR format.
@@ -3034,6 +3104,7 @@ c------------------------end-of-csrkvstc--------------------------------
 c-----------------------------------------------------------------------
       subroutine kvstmerge(nr, kvstr, nc, kvstc, n, kvst)
 c-----------------------------------------------------------------------
+      implicit none
       integer nr, kvstr(nr+1), nc, kvstc(nc+1), n, kvst(*)
 c-----------------------------------------------------------------------
 c     Merges block partitionings, for conformal row/col pattern.

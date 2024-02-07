@@ -85,6 +85,9 @@ set(SPARSEKIT_SOURCES
     ${dir}/sparskit2/matvec.f
     ${dir}/sparskit2/formats.f
     ${dir}/sparskit2/unary.f
+    ${dir}/sparskit2/iters.f
+    ${dir}/sparskit2/distdot.f
+    ${dir}/sparskit2/ilut.f
 )
 
 # Define the LINALG source files

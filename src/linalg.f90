@@ -199,6 +199,7 @@ module linalg
     public :: operator(*)
     public :: operator(/)
     public :: transpose
+    public :: sparse_direct_solve
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -5148,25 +5149,28 @@ end interface
 
     !> @brief Performs sparse matrix multiplication C = A * B.
     !!
-    !! @par Syntax
+    !! @par Syntax 1
     !! @code{.f90}
-    !! type(csr_matrix) function matmul(class(csr_matrix) a, class(csr_matrix) b, optional class(errors) err)
+    !! type(csr_matrix) function matmul(class(csr_matrix) a, class(csr_matrix) b)
     !! @endcode
     !!
     !! @param[in] a The M-by-K matrix A.
     !! @param[in] b The K-by-N matrix B.
-    !! @param[in,out] err An optional errors-based object that if provided can 
-    !!  be used to retrieve information relating to any errors encountered 
-    !!  during execution.  If not provided, a default implementation of the 
-    !!  errors class is used internally to provide error handling.  Possible 
-    !!  errors and warning messages that may be encountered are as follows.
-    !!  - LA_ARRAY_SIZE_ERROR: Occurs if there is an internal dimension mismatch
-    !!      between @p a and @p b.
-    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is a memory allocation issue.
     !!
     !! @return The M-by-N matrix C.
+    !!
+    !! @par Syntax 2
+    !! @code{.f90}
+    !! real(real64)(:) function matmul(class(csr_matrix) a, real(real64) b(:))
+    !! @endcode
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The N-element array B.
+    !!
+    !! @return The M-element array C.
     interface matmul
         module procedure :: csr_mtx_mtx_mult
+        module procedure :: csr_mtx_vec_mult
     end interface
 
     !> @brief Adds two sparse matrices.
@@ -5244,6 +5248,34 @@ end interface
         module procedure :: csr_transpose
     end interface
 
+    !> @brief Provides a direct solution to a square, sparse system.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! subroutine solve_direct_sparse(class(csr_matrix) a, real(real64) b(:), real(real64) x(:), optional real(real64) droptol, optional class(errors) err)
+    !! @endcode
+    !!
+    !! @param[in] a The N-by-N sparse matrix to factor.
+    !! @param[in] b The N-element right-hand-side array.
+    !! @param[out] x The N-element solution array.
+    !! @param[in] droptol An optional threshold value used to determine when
+    !!  to drop small terms as part of the factorization of matrix A.  The
+    !!  default value is set to the square root of machine precision (~1e-8).
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p is not square, or if there is a
+    !!      mismatch in dimensions between @p a, @p x, and @p b.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is improperly formatted.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p a is singular.
+    interface sparse_direct_solve
+        module procedure :: csr_solve_sparse_direct
+    end interface
+
     interface
         pure module function csr_size(x, dim) result(rst)
             class(csr_matrix), intent(in) :: x
@@ -5274,10 +5306,15 @@ end interface
             real(real64), allocatable, dimension(:,:) :: rst
         end function
 
-        module function csr_mtx_mtx_mult(a, b, err) result(rst)
+        module function csr_mtx_mtx_mult(a, b) result(rst)
             class(csr_matrix), intent(in) :: a, b
-            class(errors), intent(inout), optional, target :: err
             type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_vec_mult(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in), dimension(:) :: b
+            real(real64), allocatable, dimension(:) :: rst
         end function
 
         module function csr_mtx_add(a, b) result(rst)
@@ -5312,6 +5349,14 @@ end interface
             class(csr_matrix), intent(in) :: a
             type(csr_matrix) :: rst
         end function
+
+        module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in), dimension(:) :: b
+            real(real64), intent(out), dimension(:) :: x
+            real(real64), intent(in), optional :: droptol
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
     end interface
 
 ! ------------------------------------------------------------------------------

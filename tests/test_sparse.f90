@@ -363,13 +363,23 @@ function test_csr_diag_mult_1() result(rst)
     d = [diag(1,1), diag(2,2), diag(3,3), diag(4,4)]
     sa = dense_to_csr(a)
 
-    ! Test
+    ! Test 1
     ans = alpha * matmul(diag, a)
     call diag_mtx_mult(.true., alpha, d, sa)
     dense = csr_to_dense(sa)
     if (.not.assert(dense, ans)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_1 -1"
+    end if
+
+    ! Test 2
+    sa = dense_to_csr(a)
+    ans = matmul(diag, a)
+    call diag_mtx_mult(.true., 1.0d0, d, sa)
+    dense = csr_to_dense(sa)
+    if (.not.assert(dense, ans)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_diag_mult_1 -2"
     end if
 end function
 
@@ -395,13 +405,56 @@ function test_csr_diag_mult_2() result(rst)
     call random_number(diag)
     sa = dense_to_csr(a)
 
-    ! Test
+    ! Test 1
     call diag_mtx_mult(.false., alpha, diag, a) ! solution
     call diag_mtx_mult(.false., alpha, diag, sa)
     dense = csr_to_dense(sa)
     if (.not.assert(dense, a)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_2 -1"
+    end if
+
+    ! Test 2
+    sa = dense_to_csr(a)
+    call diag_mtx_mult(.false., 1.0d0, diag, a) ! solution
+    call diag_mtx_mult(.false., 1.0d0, diag, sa)
+    dense = csr_to_dense(sa)
+    if (.not.assert(dense, a)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_diag_mult_2 -2"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function test_csr_sparse_direct_solve_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32) :: ipiv(4)
+    real(real64) :: a(4, 4), b(4), x(4), ans(4)
+    type(csr_matrix) :: sa
+
+    ! Initialization
+    rst = .true.
+    a = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 6.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+    call random_number(b)
+    sa = dense_to_csr(a)
+
+    ! Compute the solution
+    ans = b
+    call lu_factor(a, ipiv)
+    call solve_lu(a, ipiv, ans)
+
+    ! Test
+    call sparse_direct_solve(sa, b, x)
+    if (.not.assert(x, ans, tol = 1.0d-6)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_sparse_direct_solve_1 -1"
     end if
 end function
 

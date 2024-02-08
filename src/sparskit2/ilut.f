@@ -1791,9 +1791,10 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
        subroutine ilu0(n, a, ja, ia, alu, jlu, ju, iw, ierr)
-       implicit real*8 (a-h,o-z)
+c       implicit real*8 (a-h,o-z)
+       implicit none
        real*8 a(*), alu(*)
-       integer ja(*), ia(*), ju(*), jlu(*), iw(*)
+       integer ja(*), ia(*), ju(*), jlu(*), iw(*), n, ierr
 c------------------ right preconditioner ------------------------------*
 c                    ***   ilu(0) preconditioner.   ***                *
 c----------------------------------------------------------------------*
@@ -1840,6 +1841,8 @@ c    elements of a, ja, ia prior to calling ilu0. This can be
 c    achieved by transposing the matrix twice using csrcsc.
 c
 c-----------------------------------------------------------------------
+       integer ju0,i,j,ii,js,jcol,jf,jm,jj,jrow,jw
+       real*8 tl
         ju0 = n+2
         jlu(1) = ju0
 c
@@ -1915,9 +1918,10 @@ c-----------------------------------------------------------------------
            end
 c----------------------------------------------------------------------
        subroutine milu0(n, a, ja, ia, alu, jlu, ju, iw, ierr)
-       implicit real*8 (a-h,o-z)
+c       implicit real*8 (a-h,o-z)
+       implicit none
        real*8 a(*), alu(*)
-       integer ja(*), ia(*), ju(*), jlu(*), iw(*)
+       integer n, ja(*), ia(*), ju(*), jlu(*), iw(*), ierr
 c----------------------------------------------------------------------*
 c                *** simple milu(0) preconditioner. ***                *
 c----------------------------------------------------------------------*
@@ -1963,6 +1967,8 @@ c    column number. It may therefore be necessary to sort the
 c    elements of a, ja, ia prior to calling milu0. This can be
 c    achieved by transposing the matrix twice using csrcsc.
 c-----------------------------------------------------------
+       integer ju0,i,ii,j,js,jcol,jf,jm,jrow,jj,jw
+       real*8 s,tl
           ju0 = n+2
           jlu(1) = ju0
 c initialize work vector to zero's
@@ -2032,7 +2038,8 @@ c-----------------------------------------------------------------------
        subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout,
      *                    aa, ja, ia, alu, jlu, ju, ierr)
 c-----------------------------------------------------------------------
-       implicit real*8 (a-h,o-z)
+c       implicit real*8 (a-h,o-z)
+       implicit none
        integer n, im, maxits, iout, ierr, ja(*), ia(n+1), jlu(*), ju(n)
        real*8 vv(n,*), rhs(n), sol(n), aa(*), alu(*), eps
 c----------------------------------------------------------------------*
@@ -2118,8 +2125,12 @@ c          delivers y=Ax, given x  -- see SPARSKIT/BLASSM/amux         *
 c lusol : combined forward and backward solves (Preconditioning ope.) *
 c BLAS1  routines.                                                     *
 c----------------------------------------------------------------------*
+       integer kmax,its,j,i,i1,k1,k,ii,jj
        parameter (kmax=50)
        real*8 hh(kmax+1,kmax), c(kmax), s(kmax), rs(kmax+1),t
+       real*8 epsmac,eps1,ro,gam,dnrm2,ddot
+       external dnrm2
+       external ddot
 c-------------------------------------------------------------
 c arnoldi size should not exceed kmax=50 in this version..
 c to reset modify paramter kmax accordingly.

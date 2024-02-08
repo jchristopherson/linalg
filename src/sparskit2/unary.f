@@ -1986,9 +1986,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine extbdg (n,a,ja,ia,bdiag,nblk,ao,jao,iao)
-      implicit real*8 (a-h,o-z)
+c      implicit real*8 (a-h,o-z)
+      implicit none
       real*8 bdiag(*),a(*),ao(*)
-      integer ia(*),ja(*),jao(*),iao(*) 
+      integer n,ia(*),ja(*),jao(*),iao(*),nblk
 c-----------------------------------------------------------------------
 c this subroutine extracts the main diagonal blocks of a 
 c matrix stored in compressed sparse row format and puts the result
@@ -2015,6 +2016,7 @@ C iao   = remainder of the matrix stored in csr format.
 c----------------------------------------------------------------------c
 c           Y. Saad, Sep. 21 1989                                      c
 c----------------------------------------------------------------------c
+      integer m,ltr,l,i,ko,kb,jj,j1,j2,j,k
       m = 1 + (n-1)/nblk
 c this version is sequential -- there is a more parallel version
 c that goes through the structure twice ....

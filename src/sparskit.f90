@@ -130,6 +130,30 @@ module sparskit
         end subroutine
     end interface
 
+    ! UNARY.F
+    interface
+        !> @brief Gets element A(i,j) of matrix A for any pair (i,j).
+        !!
+        !! @param[in] i The row index.
+        !! @param[in] j The column index.
+        !! @param[in] a The non-zero elements of matrix A.
+        !! @param[in] ja The column indices of matrix A.
+        !! @param[in] ia The index in A where the requested row starts.
+        !! @param[out] iadd The address of element A(i,j) in arrays A & JA, if 
+        !!  found; else, zero if not found.
+        !! @param[in] sorted Indicates whether the matrix is known to be sorted.
+        !!
+        !! @return The requested value.
+        function getelm(i, j, a, ja, ia, iadd, sorted) result(rst)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: i, j, ia(*), ja(*)
+            real(real64), intent(in) :: a(*)
+            integer(int32), intent(out) :: iadd
+            logical, intent(in) :: sorted
+            real(real64) :: rst
+        end function
+    end interface
+
     ! ILUT.F
     interface
         !> @brief Computes the incomplete LU factorization of a sparse matrix

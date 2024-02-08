@@ -192,6 +192,7 @@ module linalg
     public :: create_empty_csr_matrix
     public :: nonzero_count
     public :: dense_to_csr
+    public :: diag_to_csr
     public :: csr_to_dense
     public :: matmul
     public :: operator(+)
@@ -229,6 +230,9 @@ module linalg
         real(real64), allocatable, dimension(:) :: v
         !> The number of columns in the matrix.
         integer(int32) :: n
+    contains
+        !> @brief Gets the requested element from the matrix.
+        procedure, public :: get => csr_get_element
     end type
 
 ! ******************************************************************************
@@ -5277,6 +5281,11 @@ end interface
     end interface
 
     interface
+        module function csr_get_element(this, i, j) result(rst)
+            class(csr_matrix), intent(in) :: this
+            integer(int32), intent(in) :: i, j
+            real(real64) :: rst
+        end function
         pure module function csr_size(x, dim) result(rst)
             class(csr_matrix), intent(in) :: x
             integer(int32), intent(in) :: dim
@@ -5357,6 +5366,13 @@ end interface
             real(real64), intent(in), optional :: droptol
             class(errors), intent(inout), optional, target :: err
         end subroutine
+
+        module function diag_to_csr(a, err) result(rst)
+            ! Arguments
+            real(real64), intent(in), dimension(:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
     end interface
 
 ! ------------------------------------------------------------------------------

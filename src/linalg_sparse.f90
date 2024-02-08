@@ -4,6 +4,31 @@ submodule (linalg) linalg_sparse
     implicit none
 contains
 ! ------------------------------------------------------------------------------
+module function csr_get_element(this, i, j) result(rst)
+    ! Arguments
+    class(csr_matrix), intent(in) :: this
+    integer(int32), intent(in) :: i, j
+    real(real64) :: rst
+
+    ! Local Variables
+    integer(int32) :: iadd
+    logical :: sorted
+
+    ! Initialization
+    sorted = .false.
+
+    ! Process
+    if (.not.allocated(this%ia) .or. &
+        .not.allocated(this%ja) .or. &
+        .not.allocated(this%v)) &
+    then
+        rst = 0.0d0
+        return
+    end if
+    rst = getelm(i, j, this%v, this%ja, this%ia, iadd, sorted)
+end function
+
+! ------------------------------------------------------------------------------
 pure module function csr_size(x, dim) result(rst)
     ! Arguments
     class(csr_matrix), intent(in) :: x
@@ -183,6 +208,45 @@ module function csr_to_dense(a, err) result(rst)
             rst(i,j) = a%v(k)
         end do
     end do
+end function
+
+! ------------------------------------------------------------------------------
+module function diag_to_csr(a, err) result(rst)
+    ! Arguments
+    real(real64), intent(in), dimension(:) :: a
+    class(errors), intent(inout), optional, target :: err
+    type(csr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: i, n, n1, flag
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    n = size(a)
+    n1 = n + 1
+
+    ! Allocation
+    allocate(rst%ia(n1), rst%ja(n), stat = flag)
+    if (flag == 0) allocate(rst%v(n), source = a, stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("diag_to_csr", "Memory allocation error.", &
+            LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+    rst%n = n
+
+    ! Populate IA & JA
+    do i = 1, n
+        rst%ja(i) = i
+        rst%ia(i) = i
+    end do
+    rst%ia(n1) = n1
 end function
 
 ! ------------------------------------------------------------------------------

@@ -336,6 +336,9 @@ program main
     rst = test_csr_sparse_direct_solve_1()
     if (.not.rst) flag = 100
 
+    rst = test_diag_to_csr_1()
+    if (.not.rst) flag = 101
+
     ! End
     if (flag /= 0) stop flag
 end program

@@ -459,4 +459,32 @@ function test_csr_sparse_direct_solve_1() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_diag_to_csr_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32), parameter :: n = 20
+    integer(int32) :: i
+    real(real64) :: d(n), diag(n,n), dense(n,n)
+    type(csr_matrix) :: sd
+
+    ! Initialization
+    rst = .true.
+    call random_number(d)
+    diag = 0.0d0
+    do i = 1, n
+        diag(i,i) = d(i)
+    end do
+
+    ! Test 1
+    sd = diag_to_csr(d)
+    dense = csr_to_dense(sd)
+    if (.not.assert(dense, diag)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_diag_to_csr_1 -1"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

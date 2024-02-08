@@ -19,6 +19,7 @@ c Note: this module still incomplete.                                  c
 c----------------------------------------------------------------------c
        subroutine amub (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *                  c,jc,ic,nzmax,iw,ierr) 
+      implicit none
       integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer job,ja(*),jb(*),jc(*),ia(nrow+1),ib(*),ic(*),iw(ncol)
@@ -69,6 +70,7 @@ c
 c----------------------------------------------------------------------- 
       real*8 scal 
       logical values
+      integer len,ii,j,ka,kb,jj,jcol,jpos,k
       values = (job .ne. 0) 
       len = 0
       ic(1) = 1 
@@ -112,7 +114,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplb (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
-      integer nrow,ncol,ierr
+      implicit none
+      integer nrow,ncol,ierr,job,nzmax
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1),
      *     iw(ncol)
@@ -158,6 +161,7 @@ c         columns in A.
 c
 c-----------------------------------------------------------------------
       logical values
+      integer len,j,ii,ka,jcol,kb,jpos,k
       values = (job .ne. 0) 
       ierr = 0
       len = 0
@@ -203,6 +207,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine aplb1(nrow,ncol,job,a,ja,ia,b,jb,ib,c,jc,ic,nzmax,ierr)
+      implicit none
       integer nrow,ncol,job,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1)
@@ -251,6 +256,7 @@ c-------
 c     this will not work if any of the two input matrices is not sorted
 c-----------------------------------------------------------------------
       logical values
+      integer i,ka,kb,kc,kamax,kbmax,j1,j2
       values = (job .ne. 0) 
       ierr = 0
       kc = 1
@@ -305,6 +311,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
       subroutine aplsb (nrow,ncol,a,ja,ia,s,b,jb,ib,c,jc,ic,nzmax,
      *     iw,ierr)
+      implicit none
       integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1),
@@ -352,6 +359,7 @@ c         columns in A.
 c note: expanded  row implementation. Does not require column indices to
 c       be sorted.
 c-----------------------------------------------------------------------
+      integer len,j,ii,ka,jcol,kb,jpos,k
       ierr = 0
       len = 0
       ic(1) = 1 
@@ -397,6 +405,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplsb1 (nrow,ncol,a,ja,ia,s,b,jb,ib,c,jc,ic,
      *     nzmax,ierr)
+      implicit none
       integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(nrow+1),ic(nrow+1)
@@ -443,6 +452,7 @@ c Notes:
 c-------
 c     this will not work if any of the two input matrices is not sorted
 c-----------------------------------------------------------------------
+      integer i,ka,kb,kc,kamax,kbmax,j1,j2
       ierr = 0
       kc = 1
       ic(1) = kc 
@@ -509,6 +519,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine apmbt (nrow,ncol,job,a,ja,ia,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
+      implicit none
       integer nrow,ncol,job,nzmax,ierr
       real*8 a(*), b(*), c(*) 
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(ncol+1),ic(*),iw(*) 
@@ -565,6 +576,7 @@ c        the matrix is internally converted in coordinate format.
 c        
 c-----------------------------------------------------------------------
       logical values
+      integer j,nnza,nnzb,len,ljob,ipos,k,ii,ka,jcol,jpos,i
       values = (job .ne. 0) 
 c
       ierr = 0
@@ -646,6 +658,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine aplsbt(nrow,ncol,a,ja,ia,s,b,jb,ib,
      *     c,jc,ic,nzmax,iw,ierr)
+      implicit none
       integer nrow,ncol,nzmax,ierr
       real*8 a(*), b(*), c(*), s
       integer ja(*),jb(*),jc(*),ia(nrow+1),ib(ncol+1),ic(*),iw(*)
@@ -697,6 +710,7 @@ c        and jc are assumed to be of length nnz(c). This is because
 c        the matrix is internally converted in coordinate format.
 c        
 c-----------------------------------------------------------------------
+      integer j,nnza,nnzb,len,ljob,ipos,k,ii,ka,jcol,jpos,i
       ierr = 0
       do 1 j=1, ncol
          iw(j) = 0
@@ -769,6 +783,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine diamua (nrow,job, a, ja, ia, diag, b, jb, ib)
+      implicit none
       integer nrow,job
       real*8 a(*), b(*), diag(nrow), scal
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1) 
@@ -801,6 +816,7 @@ c 1)        The column dimension of A is not needed.
 c 2)        algorithm in place (B can take the place of A).
 c           in this case use job=0.
 c-----------------------------------------------------------------
+      integer ii,k1,k2,k
       do 1 ii=1,nrow
 c     
 c     normalize each row 
@@ -827,6 +843,7 @@ c-----------------------------------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine amudia (nrow,job, a, ja, ia, diag, b, jb, ib)
+      implicit none
       integer nrow,job
       real*8 a(*), b(*), diag(nrow) 
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1) 
@@ -858,6 +875,7 @@ c-------
 c 1)        The column dimension of A is not needed. 
 c 2)        algorithm in place (B can take the place of A).
 c-----------------------------------------------------------------
+      integer ii,k1,k2,k
       do 1 ii=1,nrow
 c     
 c     scale each element 
@@ -883,6 +901,7 @@ c-----------end-of-amudiag----------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine aplsca (nrow, a, ja, ia, scal,iw) 
+      implicit none
       integer nrow
       real*8 a(*), scal
       integer ja(*), ia(nrow+1),iw(*)
@@ -923,6 +942,7 @@ c     elemnts.
 c     coded by Y. Saad. Latest version July, 19, 1990
 c-----------------------------------------------------------------------
       logical test
+      integer j,icount,ko,ii,k,k1,k2
 c
       call diapos (nrow,ja,ia,iw)
       icount = 0
@@ -981,6 +1001,7 @@ c----------end-of-aplsca------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine apldia (nrow, job, a, ja, ia, diag, b, jb, ib, iw) 
+      implicit none
       integer nrow,job
       real*8 a(*), b(*), diag(nrow) 
       integer ja(*),jb(*), ia(nrow+1),ib(nrow+1), iw(*)
@@ -1030,6 +1051,7 @@ c
 c coded by Y. Saad. Latest version July, 19, 1990
 c-----------------------------------------------------------------
       logical test
+      integer nnz,k,icount,j,ko,ii,k1,k2
 c
 c     copy integer arrays into b's data structure if required
 c

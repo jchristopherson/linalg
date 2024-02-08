@@ -54,6 +54,7 @@ c cooell  : converts coordinate to Ellpack/Itpack format               c
 c dcsort  : sorting routine used by crsjad                             c
 c----------------------------------------------------------------------c
       subroutine csrdns(nrow,ncol,a,ja,ia,dns,ndns,ierr) 
+      implicit none
       integer nrow,ncol,ndns,ja(*),ia(*),ierr
       real*8 dns(ndns,*),a(*)
 c-----------------------------------------------------------------------
@@ -84,6 +85,7 @@ c         ierr .eq. i  means that the code has stopped when processing
 c         row number i, because it found a column number .gt. ncol.
 c 
 c----------------------------------------------------------------------- 
+      integer i,j,k
       ierr = 0
       do 1 i=1, nrow
          do 2 j=1,ncol
@@ -107,6 +109,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine dnscsr(nrow,ncol,nzmax,dns,ndns,a,ja,ia,ierr)
+      implicit none
       integer nrow,ncol,nzmax,ndns,ierr
       real*8 dns(ndns,*),a(*)
       integer ia(*),ja(*)
@@ -141,6 +144,7 @@ c         ierr .eq. i means that the the code stopped while
 c         processing row number i, because there was no space left in
 c         a, and ja (as defined by parameter nzmax).
 c----------------------------------------------------------------------- 
+      integer next,i,j
       ierr = 0
       next = 1
       ia(1) = 1
@@ -164,6 +168,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
       subroutine coocsr(nrow,nnz,a,ir,jc,ao,jao,iao)
 c----------------------------------------------------------------------- 
+      implicit none
       integer nrow,nnz
       real*8 a(*),ao(*),x
       integer ir(*),jc(*),jao(*),iao(*)
@@ -199,6 +204,7 @@ c       On return the entries  of each row are NOT sorted by increasing
 c       column number
 c
 c------------------------------------------------------------------------
+      integer k,j,k0,i,iad
       do 1 k=1,nrow+1
          iao(k) = 0
  1    continue
@@ -234,7 +240,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine coicsr (n,nnz,job,a,ja,ia,iwk)
-      integer n,nnz,ia(*),ja(nnz),iwk(n+1) 
+      implicit none
+      integer n,nnz,ia(*),ja(nnz),iwk(n+1),job
       real*8 a(*)
 c------------------------------------------------------------------------
 c IN-PLACE coo-csr conversion routine.
@@ -274,6 +281,7 @@ c  Coded by Y. Saad, Sep. 26 1989                                      c
 c----------------------------------------------------------------------c
       real*8 t,tnext 
       logical values
+      integer i,k,init,j,ipos,inext,jnext
 c----------------------------------------------------------------------- 
       t = 0.0
       tnext = 0.0
@@ -337,6 +345,7 @@ c------------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csrcoo (nrow,job,nzmax,a,ja,ia,nnz,ao,ir,jc,ierr)
 c-----------------------------------------------------------------------
+      implicit none
       integer nrow,job,nzmax,nnz,ierr
       real*8 a(*),ao(*) 
       integer ir(*),jc(*),ja(*),ia(nrow+1) 
@@ -384,6 +393,7 @@ c         ao being the same array as as a, and jc the same array as ja.
 c         but ir CANNOT be the same as ia. 
 c         2) note the order in the output arrays, 
 c------------------------------------------------------------------------
+      integer k,i,k1,k2
       ierr = 0
       nnz = ia(nrow+1)-1
       if (nnz .gt. nzmax) then
@@ -414,6 +424,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine csrssr (nrow,a,ja,ia,nzmax,ao,jao,iao,ierr)
+      implicit none
       integer nrow,nzmax,ierr
       real*8 a(*), ao(*), t
       integer ia(*), ja(*), iao(*), jao(*)
@@ -450,6 +461,7 @@ c          row number i, because there is not enough space in ao, jao
 c          (according to the value of nzmax) 
 c
 c----------------------------------------------------------------------- 
+      integer i,ko,kold,kdiag,k
       ierr = 0
       ko = 0
 c-----------------------------------------------------------------------
@@ -489,6 +501,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
       subroutine ssrcsr(job, value2, nrow, a, ja, ia, nzmax,
      &                  ao, jao, iao, indu, iwk, ierr)
+      implicit none
 c     .. Scalar Arguments ..
       integer            ierr, job, nrow, nzmax, value2
 c     ..
@@ -757,6 +770,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine xssrcsr (nrow,a,ja,ia,nzmax,ao,jao,iao,indu,ierr)
+      implicit none
       integer nrow,nzmax,ierr
       integer ia(nrow+1),iao(nrow+1),ja(*),jao(nzmax),indu(nrow+1)
       real*8 a(*),ao(nzmax)
@@ -802,6 +816,7 @@ c         ao, jao exceeds nzmax, ierr returns the minimum value
 c         needed for nzmax. otherwise ierr=0 (normal return).
 c 
 c----------------------------------------------------------------------- 
+      integer i,j,k,lenrow,nnz,kosav,klast,kfirst,ko,ipos
       ierr = 0
       do 1 i=1,nrow+1
          indu(i) = 0     
@@ -871,7 +886,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csrell (nrow,a,ja,ia,maxcol,coef,jcoef,ncoef,
      *                   ndiag,ierr)
-      integer nrow,maxcol,ierr,ncoef
+      implicit none
+      integer nrow,maxcol,ierr,ncoef,ndiag
       integer ia(nrow+1), ja(*), jcoef(ncoef,1)  
       real*8 a(*), coef(ncoef,1)
 c----------------------------------------------------------------------- 
@@ -906,6 +922,7 @@ c	  return this means that the number of diagonals found
 c         (ndiag) exceeds maxcol.
 c
 c----------------------------------------------------------------------- 
+      integer i,k,j,k1,k2
 c first determine the length of each row of lower-part-of(A)
       ierr = 0
       ndiag = 0
@@ -944,9 +961,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine ellcsr(nrow,coef,jcoef,ncoef,ndiag,a,ja,ia,nzmax,ierr)
+      implicit none
       integer nrow,ncoef,ndiag,nzmax,ierr
       integer ia(nrow+1), ja(*), jcoef(ncoef,1) 
       real*8 a(*), coef(ncoef,1)
+      integer i,k,kpos
 c----------------------------------------------------------------------- 
 c  Ellpack - Itpack format  to  Compressed Sparse Row
 c----------------------------------------------------------------------- 
@@ -1007,6 +1026,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine csrmsr (n,a,ja,ia,ao,jao,wk,iwk)
+      implicit none
       integer n
       real*8 a(*),ao(*),wk(n)
       integer ia(n+1),ja(*),jao(*),iwk(n+1)
@@ -1069,6 +1089,7 @@ c        are OK.
 c--------
 c coded by Y. Saad Sep. 1989. Rechecked Feb 27, 1990.
 c-----------------------------------------------------------------------
+      integer icount,i,k,iptr,ii,j
       icount = 0
 c
 c store away diagonal elements and count nonzero diagonal elements.
@@ -1115,6 +1136,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine msrcsr (n,a,ja,ao,jao,iao,wk,iwk)
+      implicit none
       integer n
       real*8 a(*),ao(*),wk(n)
       integer ja(*),jao(*),iao(n+1),iwk(n+1)
@@ -1151,6 +1173,7 @@ c   The original version had ja instead of iwk everywhere in
 c   loop 500.  Modified  Sun 29 May 1994 by R. Bramley (Indiana).
 c   
 c----------------------------------------------------------------------- 
+      integer i,iptr,ii,idiag,k,j
       logical added
       do 1 i=1,n
          wk(i) = a(i)
@@ -1195,6 +1218,8 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine csrcsc (n,job,ipos,a,ja,ia,ao,jao,iao)
+      implicit none
+      integer n,job,ipos
       integer ia(n+1),iao(n+1),ja(*),jao(*)
       real*8  a(*),ao(*)
 c-----------------------------------------------------------------------
@@ -1237,6 +1262,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine csrcsc2 (n,n2,job,ipos,a,ja,ia,ao,jao,iao)
+      implicit none
       integer n,n2,job,ipos
       integer ia(n+1),iao(n2+1),ja(*),jao(*)
       real*8  a(*),ao(*)
@@ -1280,6 +1306,7 @@ c iao	= integer array of size n+1 containing the "ia" index array of
 c	  the transpose. 
 c
 c----------------------------------------------------------------------- 
+      integer i,j,k,next
 c----------------- compute lengths of rows of transp(A) ----------------
       do 1 i=1,n2+1
          iao(i) = 0
@@ -1315,6 +1342,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine csrlnk (n,ia,link) 
+      implicit none
       integer n,  ia(n+1), link(*)
 c----------------------------------------------------------------------- 
 c      Compressed Sparse Row         to    Linked storage format. 
@@ -1366,7 +1394,7 @@ c notes:
 c ------ ia may be altered on return.
 c----------------------------------------------------------------------- 
 c local variables
-      integer i, k
+      integer i,k,istart,iend
 c
 c loop through all rows
 c
@@ -1389,6 +1417,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine lnkcsr (n, a, jcol, istart, link, ao, jao, iao) 
+      implicit none
       real*8 a(*), ao(*) 
       integer n, jcol(*), istart(n), link(*), jao(*), iao(*) 
 c----------------------------------------------------------------------- 
@@ -1460,7 +1489,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csrdia (n,idiag,job,a,ja,ia,ndiag,
      *                   diag,ioff,ao,jao,iao,ind)
-      integer n,ndiag,idiag
+      implicit none
+      integer n,ndiag,idiag,job
       real*8 diag(ndiag,idiag), a(*), ao(*)
       integer ia(*), ind(*), ja(*), jao(*), iao(*), ioff(*)
 c----------------------------------------------------------------------- 
@@ -1537,6 +1567,7 @@ c       the selection of the diagonals is done from left to right
 c       as a result if several diagonals have the same weight (number 
 c       of nonzero elemnts) the leftmost one is selected first.
 c-----------------------------------------------------------------------
+      integer job1,job2,n2,idum,ii,k,j,i,ko,l,jmax
       job1 = job/10
       job2 = job-job1*10
       if (job1 .eq. 0) goto 50
@@ -1601,6 +1632,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine diacsr (n,job,idiag,diag,ndiag,ioff,a,ja,ia)
+      implicit none
       integer n,job,ndiag,idiag
       real*8 diag(ndiag,idiag), a(*), t
       integer ia(*), ja(*), ioff(*)
@@ -1644,6 +1676,7 @@ c Note:
 c ----- the arrays a and ja should be of length n*idiag.
 c
 c----------------------------------------------------------------------- 
+      integer ko,i,jj,j
       ia(1) = 1
       ko = 1
       do 80 i=1, n
@@ -1961,6 +1994,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine csrbnd (n,a,ja,ia,job,abd,nabd,lowd,ml,mu,ierr)
+      implicit none
       integer n,job,nabd,lowd,ml,mu,ierr
       real*8 a(*),abd(nabd,n)
       integer ia(n+1),ja(*)
@@ -2073,6 +2107,7 @@ c
 c----------------------------------------------------------------------*
 c first determine ml and mu.
 c----------------------------------------------------------------------- 
+      integer m,i,ii,j,mdiag,k
       ierr = 0
 c-----------
       if (job .eq. 1) call getbwd(n,ja,ia,ml,mu)
@@ -2102,6 +2137,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine bndcsr (n,abd,nabd,lowd,ml,mu,a,ja,ia,len,ierr)
+      implicit none
       integer n,nabd,lowd,ml,mu,len,ierr
       real*8 a(*),abd(nabd,*), t
       integer ia(n+1),ja(*)
@@ -2159,6 +2195,7 @@ c         The resulting may not be identical to a csr matrix
 c         originally transformed to a bnd format.
 c          
 c----------------------------------------------------------------------- 
+      integer k0,irow,i,j,ko
       ierr = 0
 c-----------
       if (lowd .gt. nabd .or. lowd .le. 0) then 
@@ -2194,6 +2231,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine csrssk (n,imod,a,ja,ia,asky,isky,nzmax,ierr)
+      implicit none
       integer n, imod, nzmax, ierr, ia(n+1), isky(n+1), ja(*)
       real*8 a(*),asky(nzmax) 
 c----------------------------------------------------------------------- 
@@ -2253,6 +2291,7 @@ c
 c----------------------------------------------------------------------- 
 c first determine individial bandwidths and pointers.
 c----------------------------------------------------------------------- 
+      integer i,ml,k,nnz,j,kend
       ierr = 0
       isky(1) = 0
       do 3 i=1,n
@@ -2307,6 +2346,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine sskssr (n,imod,asky,isky,ao,jao,iao,nzmax,ierr)
+      implicit none
       integer n, imod,nzmax,ierr, isky(n+1),iao(n+1),jao(nzmax) 
       real*8 asky(*),ao(nzmax) 
 c----------------------------------------------------------------------- 
@@ -2363,7 +2403,7 @@ c-------
 c This module is in place: ao and iao can be the same as asky, and isky.
 c-----------------------------------------------------------------------
 c local variables
-      integer next, kend, kstart, i, j 
+      integer next, kend, kstart, i, j, k
       ierr = 0
 c
 c check for validity of imod
@@ -2420,6 +2460,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine csrjad (nrow, a, ja, ia, idiag, iperm, ao, jao, iao) 
+      implicit none
       integer idiag
       integer nrow, ja(*), jao(*), ia(nrow+1), iperm(nrow), iao(nrow) 
       real*8 a(*), ao(*)
@@ -2471,7 +2512,7 @@ c-----------------------------------------------------------------------
 c     ---- define initial iperm and get lengths of each row
 c     ---- jao is used a work vector to store tehse lengths
 c     
-      integer ilo
+      integer ilo, j, len, k, i, k1, k0, jj
       idiag = 0
       ilo = nrow 
       do 10 j=1, nrow
@@ -2520,6 +2561,7 @@ c-----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine jadcsr (nrow, idiag, a, ja, ia, iperm, ao, jao, iao) 
+      implicit none
       integer nrow,idiag
       integer ja(*), jao(*), ia(idiag+1), iperm(nrow), iao(nrow+1) 
       real*8 a(*), ao(*)
@@ -2548,6 +2590,7 @@ c
 c ao, jao,
 c iao     = matrix in CSR format.
 c-----------------------------------------------------------------------
+      integer i,j,len,k,kpos,jj,k1
 c determine first the pointers for output matrix. Go through the
 c structure once:
 c
@@ -2600,6 +2643,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c     Specifications for arguments:
 c     ----------------------------
+      implicit none
       integer n, ilo, ihi, ival(n), icnt(ilo:ihi), index(n)
 c-----------------------------------------------------------------------
 c    This routine computes a permutation which, when applied to the
@@ -2779,6 +2823,7 @@ c
 c-----end-of-cooell-----------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine xcooell(n,nnz,a,ja,ia,ac,jac,nac,ner,ncmax,ierr)
+      implicit none
       integer n,nnz,nac,ner,ncmax,ierr
 C-----------------------------------------------------------------------
 C   coordinate format to ellpack format.
@@ -2892,6 +2937,7 @@ C
 C---------------------------------------------------------------------
       real*8 a(nnz), ac(nac,ner)
       integer ja(nnz), ia(nnz), jac(nac,ner), icount
+      integer in,innz,is,k,ii,inn
 c
 c- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 c   Initial error parameter to zero:
@@ -2972,6 +3018,7 @@ c------------- end of xcooell -------------------------------------------
       end
 c----------------------------------------------------------------------- 
       subroutine csruss (nrow,a,ja,ia,diag,al,jal,ial,au,jau,iau) 
+      implicit none
       real*8 a(*),al(*),diag(*),au(*) 
       integer nrow,ja(*),ia(nrow+1),jal(*),ial(nrow+1),jau(*),
      *     iau(nrow+1)
@@ -3064,6 +3111,7 @@ c-----------------------------------------------------------------------
       end 
 c-----------------------------------------------------------------------
       subroutine usscsr (nrow,a,ja,ia,diag,al,jal,ial,au,jau,iau) 
+      implicit none
       integer nrow
       real*8 a(*),al(*),diag(*),au(*) 
       integer ja(*),ia(nrow+1),jal(*),ial(nrow+1),jau(*),iau(nrow+1)
@@ -3092,6 +3140,7 @@ c ia    = integer array of length n+1 containing the pointers to
 c         beginning of each row in arrays a, ja.
 c 
 c-----------------------------------------------------------------------
+      integer i,j,k,ka,jak
 c
 c count elements in lower part + diagonal 
 c 
@@ -3155,6 +3204,7 @@ c----------end-of-usscsr------------------------------------------------
       end 
 c----------------------------------------------------------------------- 
       subroutine csrsss (nrow,a,ja,ia,sorted,diag,al,jal,ial,au)
+      implicit none
       integer nrow,ja(*),ia(nrow+1),jal(*),ial(nrow+1)
       real*8 a(*),al(*),diag(*),au(*)
       logical sorted 
@@ -3186,6 +3236,7 @@ c al,jal,ial = matrix in csr format storing the strict lower
 c              trangular part of A.
 c au    = values of the strict upper trangular part of A, column wise.
 c----------------------------------------------------------------------- 
+      integer kl,ku,i,k,jak
 c 
 c     extract lower part and diagonal.
 c
@@ -3242,6 +3293,7 @@ c-----------------------------------------------------------------------
       end 
 c
       subroutine ssscsr (nrow,a,ja,ia,diag,al,jal,ial,au) 
+      implicit none
       integer nrow
       real*8 a(*),al(*),diag(*),au(*) 
       integer ja(*),ia(nrow+1),jal(*),ial(nrow+1) 
@@ -3269,6 +3321,7 @@ c ia    = integer array of length n+1 containing the pointers to
 c         beginning of each row in arrays a, ja.
 c 
 c-----------------------------------------------------------------------
+      integer i,j,k,ka,jak
 c
 c count elements in lower part + diagonal 
 c 
@@ -3333,6 +3386,7 @@ c-----------------------------------------------------------------------
       subroutine csrvbr(n,ia,ja,a,nr,nc,kvstr,kvstc,ib,jb,kb,
      &     b, job, iwk, nkmax, nzmax, ierr )
 c-----------------------------------------------------------------------
+      implicit none
       integer kvstr(*), kvstc(*), job, iwk(*), nkmax, nzmax, ierr
       integer n, ia(n+1), ja(*), nr, nc, ib(*), jb(nkmax-1), kb(nkmax)
       real*8  a(*), b(nzmax)
@@ -3604,6 +3658,7 @@ c----------------------------------------------------------------------c
       subroutine vbrcsr(ia, ja, a, nr, kvstr, kvstc, ib, jb, kb,
      &   b, nzmax, ierr)
 c-----------------------------------------------------------------------
+      implicit none
       integer ia(*), ja(*), nr, ib(nr+1), jb(*), kb(*)
       integer kvstr(nr+1), kvstc(*), nzmax, ierr
       real*8  a(*), b(nzmax)
@@ -3706,6 +3761,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine csorted(n, ia, ja, sorted)
 c-----------------------------------------------------------------------
+      implicit none
       integer n, ia(n+1), ja(*)
       logical sorted
 c-----------------------------------------------------------------------

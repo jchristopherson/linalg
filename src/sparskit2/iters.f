@@ -3145,6 +3145,7 @@ c
 c-----end-of-dbcg-------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine implu(np,umm,beta,ypiv,u,permut,full)
+      implicit none
       real*8 umm,beta,ypiv(*),u(*),x, xpiv
       logical full, perm, permut(*)
       integer np,k,npm1
@@ -3188,6 +3189,7 @@ c-----end-of-implu
       end
 c-----------------------------------------------------------------------
       subroutine uppdir(n,p,np,lbp,indp,y,u,usav,flops)
+      implicit none
       real*8 p(n,lbp), y(*), u(*), usav(*), x, flops
       integer k,np,n,npm1,j,ju,indp,lbp
 c-----------------------------------------------------------------------
@@ -3223,6 +3225,7 @@ c-----------------------------------------------------------------------
 c-------end-of-uppdir---------------------------------------------------
       end
       subroutine givens(x,y,c,s)
+      implicit none
       real*8 x,y,c,s
 c-----------------------------------------------------------------------
 c     Given x and y, this subroutine generates a Givens' rotation c, s.

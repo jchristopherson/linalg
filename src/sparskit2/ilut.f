@@ -383,7 +383,7 @@ c----------------------------------------------------------------------
       subroutine ilutp(n,a,ja,ia,lfil,droptol,permtol,mbloc,alu,
      *     jlu,ju,iwk,w,jw,iperm,ierr)
 c-----------------------------------------------------------------------
-c     implicit none
+      implicit none
       integer n,ja(*),ia(n+1),lfil,jlu(*),ju(n),jw(2*n),iwk,
      *     iperm(2*n),ierr
       real*8 a(*), alu(*), w(n+1), droptol
@@ -1793,7 +1793,7 @@ c----------------------------------------------------------------------
        subroutine ilu0(n, a, ja, ia, alu, jlu, ju, iw, ierr)
        implicit real*8 (a-h,o-z)
        real*8 a(*), alu(*)
-        integer ja(*), ia(*), ju(*), jlu(*), iw(*)
+       integer ja(*), ia(*), ju(*), jlu(*), iw(*)
 c------------------ right preconditioner ------------------------------*
 c                    ***   ilu(0) preconditioner.   ***                *
 c----------------------------------------------------------------------*
@@ -2318,6 +2318,7 @@ c-----------------------------------------------------------------------
        end
 c-----------------------------------------------------------------------
        subroutine lutsol(n, y, x, alu, jlu, ju) 
+       implicit none
         real*8 x(n), y(n), alu(*)
        integer n, jlu(*), ju(*)
 c-----------------------------------------------------------------------
@@ -2371,6 +2372,7 @@ c-----------------------------------------------------------------------
        end
 c----------------------------------------------------------------------- 
         subroutine qsplit(a,ind,n,ncut)
+        implicit none
         real*8 a(n)
         integer ind(n), n, ncut
 c-----------------------------------------------------------------------
@@ -2384,7 +2386,7 @@ c
 c     ind(1:n) is an integer array which permuted in the same way as a(*).
 c-----------------------------------------------------------------------
         real*8 tmp, abskey
-        integer itmp, first, last
+        integer itmp, first, last, j, mid
 c-----
         first = 1
         last = n

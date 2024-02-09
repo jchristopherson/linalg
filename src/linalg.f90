@@ -5365,6 +5365,7 @@ end interface
     !> @brief Assigns a sparse matrix to a dense matrix.
     interface assignment(=)
         module procedure :: csr_assign_to_dense
+        module procedure :: dense_assign_to_csr
     end interface
 
     !> @brief Provides the transpose of a sparse matrix.
@@ -5517,6 +5518,11 @@ end interface
         module subroutine csr_assign_to_dense(dense, sparse)
             real(real64), intent(out), dimension(:,:) :: dense
             class(csr_matrix), intent(in) :: sparse
+        end subroutine
+
+        module subroutine dense_assign_to_csr(sparse, dense)
+            type(csr_matrix), intent(out) :: sparse
+            real(real64), intent(in), dimension(:,:) :: dense
         end subroutine
     end interface
 

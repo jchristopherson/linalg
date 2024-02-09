@@ -327,6 +327,16 @@ module subroutine csr_assign_to_dense(dense, sparse)
 end subroutine
 
 ! ------------------------------------------------------------------------------
+module subroutine dense_assign_to_csr(sparse, dense)
+    ! Arguments
+    type(csr_matrix), intent(out) :: sparse
+    real(real64), intent(in), dimension(:,:) :: dense
+
+    ! Process
+    sparse = dense_to_csr(dense)
+end subroutine
+
+! ------------------------------------------------------------------------------
 module function csr_mtx_mtx_mult(a, b) result(rst)
     ! Arguments
     class(csr_matrix), intent(in) :: a, b

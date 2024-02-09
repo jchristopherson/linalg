@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.7.4
+  VERSION 1.8.0
 )
 
 # Get helper macros and functions

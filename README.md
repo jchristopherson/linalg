@@ -21,7 +21,7 @@ The LINALG library can be used within your FPM project by adding the following t
 linalg = { git = "https://github.com/jchristopherson/linalg" }
 ```
 
-## Example 1
+## Standard Solution Example
 This example solves a normally defined system of 3 equations of 3 unknowns.
 
 ```fortran
@@ -72,8 +72,8 @@ LU Solution: X =
   0.0000
 ```
 
-## Example 2
-This example solves an overdefined system of 3 equations of 2 uknowns.
+## Overdetermined System Example
+This example solves an overdetermined system of 3 equations of 2 uknowns.
 
 ```fortran
 program example
@@ -116,7 +116,7 @@ Least Squares Solution: X =
  -0.57895
 ```
 
-## Example 3
+## Eigen Analysis Example
 This example computes the eigenvalues and eigenvectors of a mechanical system consisting of several masses connected by springs.
 
 ```fortran

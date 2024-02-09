@@ -5362,7 +5362,7 @@ end interface
         module procedure :: csr_mtx_divide_scalar_1
     end interface
 
-    !> @brief Assigns a sparse matrix to a dense matrix.
+    !> @brief Assigns a sparse matrix to a dense matrix, or vice-versa.
     interface assignment(=)
         module procedure :: csr_assign_to_dense
         module procedure :: dense_assign_to_csr

@@ -1429,29 +1429,29 @@ contains
         if (lside) then
             ! Compute B = DIAG * B
             do ii = 1, nrow
-                k1 = b%ia(ii)
-                k2 = b%ia(ii+1) - 1
+                k1 = b%row_indices(ii)
+                k2 = b%row_indices(ii+1) - 1
                 if (alpha == 1.0d0) then
                     scal = a(ii)
                 else
                     scal = alpha * a(ii)
                 end if
                 do k = k1, k2
-                    b%v(k) = b%v(k) * scal
+                    b%values(k) = b%values(k) * scal
                 end do
             end do
         else
             ! Compute B = B * DIAG
             do ii = 1, nrow
-                k1 = b%ia(ii)
-                k2 = b%ia(ii+1) - 1
+                k1 = b%row_indices(ii)
+                k2 = b%row_indices(ii+1) - 1
                 if (alpha == 1.0d0) then
                     do k = k1, k2
-                        b%v(k) = b%v(k) * a(b%ja(k))
+                        b%values(k) = b%values(k) * a(b%column_indices(k))
                     end do
                 else
                     do k = k1, k2
-                        b%v(k) = alpha * b%v(k) * a(b%ja(k))
+                        b%values(k) = alpha * b%values(k) * a(b%column_indices(k))
                     end do
                 end if
             end do

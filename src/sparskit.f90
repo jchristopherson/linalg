@@ -154,6 +154,47 @@ module sparskit
             real(real64), intent(out) :: a(*)
             integer(int32), intent(out) :: ia(n+1), ja(*), ierr
         end subroutine
+
+        !> @brief Converts a CSR matrix to an MSR matrix.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in,out] a The non-zero elements of matrix A.
+        !! @param[in,out] ja The column indices of matrix A.
+        !! @param[in,out] ia The index in A where the requested row starts.
+        !! @param[out] ao An NNZ-element array containing the non-zero elements
+        !!  for the MSR matrix.
+        !! @param[out] jao An NNZ-element index tracking array for the MSR
+        !!  matrix.
+        !! @param[out] wk An N-element workspace array.
+        !! @param[out] iwk An N+1 element workspace array.
+        subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n
+            integer(int32), intent(inout) :: ja(*), ia(n+1)
+            integer(int32), intent(out) :: jao(*), iwk(n+1)
+            real(real64), intent(inout) :: a(*)
+            real(real64), intent(out) :: ao(*), wk(n)
+        end subroutine
+
+        !> @brief Converts and MSR matrix to a CSR matrix.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] a An NNZ-element array containing the non-zero elements
+        !!  for the MSR matrix.
+        !! @param[in] ja An NNZ-element index tracking array for the MSR
+        !!  matrix.
+        !! @param[out] ao The non-zero elements of matrix A.
+        !! @param[out] jao The column indices of matrix A.
+        !! @param[out] iao The index in A where the requested row starts.
+        !! @param[out] wk An N-element workspace array.
+        !! @param[out] iwk An N+1 element workspace array.
+        subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, ja(*)
+            integer(int32), intent(out) :: jao(*), iao(n+1), iwk(n+1)
+            real(real64), intent(in) :: a(*)
+            real(real64), intent(out) :: ao(*), wk(n)
+        end subroutine
     end interface
 
     ! UNARY.F

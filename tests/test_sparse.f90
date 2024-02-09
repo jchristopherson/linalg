@@ -39,25 +39,21 @@ function test_csr_1() result(rst)
     sparse = dense_to_csr(dense)
 
     ! Test
-    if (.not.assert(v, sparse%v)) then
+    if (.not.assert(v, sparse%values)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_1 -1"
     end if
-    if (.not.assert(ja, sparse%ja)) then
+    if (.not.assert(ja, sparse%column_indices)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_1 -2"
     end if
-    if (.not.assert(ia, sparse%ia)) then
+    if (.not.assert(ia, sparse%row_indices)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_1 -3"
     end if
-    if (sparse%n /= n) then
-        rst = .false.
-        print "(A)", "Test Failed: test_csr_1 -4"
-    end if
     if (nonzero_count(sparse) /= nnz) then
         rst = .false.
-        print "(A)", "Test Failed: test_csr_1 -5"
+        print "(A)", "Test Failed: test_csr_1 -4"
     end if
 
     ! Convert back to dense

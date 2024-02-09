@@ -191,13 +191,18 @@ module linalg
     public :: dense_to_banded
     public :: extract_diagonal
     public :: csr_matrix
+    public :: msr_matrix
     public :: size
     public :: create_empty_csr_matrix
+    public :: create_empty_msr_matrix
     public :: nonzero_count
     public :: dense_to_csr
     public :: diag_to_csr
     public :: banded_to_csr
     public :: csr_to_dense
+    public :: csr_to_msr
+    public :: msr_to_csr
+    public :: dense_to_msr
     public :: matmul
     public :: operator(+)
     public :: operator(-)
@@ -222,22 +227,38 @@ module linalg
 ! TYPES
 ! ------------------------------------------------------------------------------
     !> @brief A sparse matrix stored in compressed sparse row (CSR) format.
-    !! The matrix is assumed to by M-by-N in dimension.
     type :: csr_matrix
         !> An M+1 element array containing the indices in V an JA at which the
         !! requested row starts.
-        integer(int32), allocatable, dimension(:) :: ia
+        integer(int32), allocatable, dimension(:) :: row_indices
         !> An NNZ-element array, where NNZ is the number of non-zero values,
         !! containing the column indices of each value.
-        integer(int32), allocatable, dimension(:) :: ja
+        integer(int32), allocatable, dimension(:) :: column_indices
         !> An NNZ-element array, where NNZ is the number of non-zero values,
         !! containing the non-zero values of the matrix.
-        real(real64), allocatable, dimension(:) :: v
+        real(real64), allocatable, dimension(:) :: values
         !> The number of columns in the matrix.
-        integer(int32) :: n
+        integer(int32), private :: n = 0
     contains
         !> @brief Gets the requested element from the matrix.
         procedure, public :: get => csr_get_element
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief A sparse matrix stored in modified sparse row format.  This format
+    !! is convenient for situations where the diagonal is fully populated.
+    type :: msr_matrix
+        !> @brief An NNZ-element array containing the index information.
+        integer(int32), allocatable, dimension(:) :: indices
+        !> @brief An NNZ-element array containing the non-zero values from the
+        !! matrix.  The first MIN(M,N) elements contain the diagonal.
+        real(real64), allocatable, dimension(:) :: values
+        !> @brief The number of rows in the matrix.
+        integer(int32), private :: m = 0
+        !> @brief The number of columns in the matrix.
+        integer(int32), private :: n = 0
+        !> @brief The number of nonzero values in the matrix.
+        integer(int32), private :: nnz = 0
     end type
 
 ! ******************************************************************************
@@ -5250,12 +5271,14 @@ end interface
     !! @par Syntax
     !! @code{.f90}
     !! integer(int32) pure function nonzero_count(class(csr_matrix) x)
+    !! integer(int32) pure function nonzero_count(class(msr_matrix) x)
     !! @endcode
     !!
     !! @param[in] x The sparse matrix.
     !! @return The number of non-zero elements in the sparse matrix.
     interface nonzero_count
         module procedure :: nonzero_count_csr
+        module procedure :: nonzero_count_msr
     end interface
 
     !> @brief Determines the size of the requested dimension of the supplied
@@ -5264,6 +5287,7 @@ end interface
     !! @par Syntax
     !! @code{.f90}
     !! integer(int32) pure function size(class(csr_matrix) x, integer(int32) dim)
+    !! integer(int32) pure function size(class(msr_matrix) x, integer(int32) dim)
     !! @endcode
     !!
     !! @param[in] x The sparse matrix.
@@ -5272,6 +5296,7 @@ end interface
     !! @return The size of the requested dimension.
     interface size
         module procedure :: csr_size
+        module procedure :: msr_size
     end interface
 
     !> @brief Performs sparse matrix multiplication C = A * B.
@@ -5524,6 +5549,41 @@ end interface
             type(csr_matrix), intent(out) :: sparse
             real(real64), intent(in), dimension(:,:) :: dense
         end subroutine
+
+        pure module function msr_size(x, dim) result(rst)
+            class(msr_matrix), intent(in) :: x
+            integer(int32), intent(in) :: dim
+            integer(int32) :: rst
+        end function
+
+        pure module function nonzero_count_msr(x) result(rst)
+            class(msr_matrix), intent(in) :: x
+            integer(int32) :: rst
+        end function
+
+        module function create_empty_msr_matrix(m, n, nnz, err) result(rst)
+            integer(int32), intent(in) :: m, n, nnz
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
+
+        module function csr_to_msr(a, err) result(rst)
+            class(csr_matrix), intent(in) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
+
+        module function msr_to_csr(a, err) result(rst)
+            class(msr_matrix), intent(in) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module function dense_to_msr(a, err) result(rst)
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
     end interface
 
 ! ------------------------------------------------------------------------------

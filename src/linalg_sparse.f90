@@ -3,6 +3,8 @@ submodule (linalg) linalg_sparse
     use blas
     implicit none
 contains
+! ******************************************************************************
+! CSR ROUTINES
 ! ------------------------------------------------------------------------------
 module function csr_get_element(this, i, j) result(rst)
     ! Arguments
@@ -18,14 +20,15 @@ module function csr_get_element(this, i, j) result(rst)
     sorted = .false.
 
     ! Process
-    if (.not.allocated(this%ia) .or. &
-        .not.allocated(this%ja) .or. &
-        .not.allocated(this%v)) &
+    if (.not.allocated(this%row_indices) .or. &
+        .not.allocated(this%column_indices) .or. &
+        .not.allocated(this%values)) &
     then
         rst = 0.0d0
         return
     end if
-    rst = getelm(i, j, this%v, this%ja, this%ia, iadd, sorted)
+    rst = getelm(i, j, this%values, this%column_indices, this%row_indices, &
+        iadd, sorted)
 end function
 
 ! ------------------------------------------------------------------------------
@@ -38,8 +41,8 @@ pure module function csr_size(x, dim) result(rst)
     ! Process
     select case (dim)
     case (1)
-        if (allocated(x%ia)) then
-            rst = size(x%ia) - 1
+        if (allocated(x%row_indices)) then
+            rst = size(x%row_indices) - 1
         else
             rst = 0
         end if
@@ -56,12 +59,9 @@ pure module function nonzero_count_csr(x) result(rst)
     class(csr_matrix), intent(in) :: x
     integer(int32) :: rst
 
-    ! Local Variables
-    integer(int32) :: m1
-
     ! Process
-    if (allocated(x%v)) then
-        rst = size(x%v)
+    if (allocated(x%values)) then
+        rst = size(x%values)
     else
         rst = 0
     end if
@@ -73,9 +73,6 @@ module function create_empty_csr_matrix(m, n, nnz, err) result(rst)
     integer(int32), intent(in) :: m, n, nnz
     class(errors), intent(inout), optional, target :: err
     type(csr_matrix) :: rst
-
-    ! Parameters
-    integer(int32), parameter :: zero = 0
 
     ! Local Variables
     integer(int32) :: flag, m1
@@ -112,14 +109,14 @@ module function create_empty_csr_matrix(m, n, nnz, err) result(rst)
 
     ! Allocation
     rst%n = n
-    allocate(rst%ia(m1), rst%ja(nnz), source = zero, stat = flag)
-    if (flag == 0) allocate(rst%v(nnz), source = 0.0d0, stat = flag)
+    allocate(rst%row_indices(m1), rst%column_indices(nnz), source = 0, &
+        stat = flag)
+    if (flag == 0) allocate(rst%values(nnz), source = 0.0d0, stat = flag)
     if (flag /= 0) then
         call errmgr%report_error("create_empty_csr_matrix", &
             "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
         return
     end if
-    rst%ia(m1) = nnz
 end function
 
 ! ------------------------------------------------------------------------------
@@ -161,15 +158,15 @@ module function dense_to_csr(a, err) result(rst)
 
     ! Store the non-zero values
     k = 1
-    rst%ia(1) = 1
+    rst%row_indices(1) = 1
     do i = 1, m
         inner_loop : do j = 1, n
             if (abs(a(i,j)) < t) cycle inner_loop
-            rst%ja(k) = j
-            rst%v(k) = a(i,j)
+            rst%column_indices(k) = j
+            rst%values(k) = a(i,j)
             k = k + 1
         end do inner_loop
-        rst%ia(i+1) = k
+        rst%row_indices(i+1) = k
     end do
 end function
 
@@ -221,9 +218,10 @@ module function banded_to_csr(m, ml, mu, a, err) result(rst)
     nnz = ia(m + 1) - 1
 
     ! Put into the sparse matrix structure
-    allocate(rst%ia(m + 1), source = ia, stat = flag)
-    if (flag == 0) allocate(rst%ja(nnz), source = ja(:nnz), stat = flag)
-    if (flag == 0) allocate(rst%v(nnz), source = v(:nnz), stat = flag)
+    allocate(rst%row_indices(m + 1), source = ia, stat = flag)
+    if (flag == 0) allocate(rst%column_indices(nnz), source = ja(:nnz), &
+        stat = flag)
+    if (flag == 0) allocate(rst%values(nnz), source = v(:nnz), stat = flag)
     if (flag /= 0) go to 10
     rst%n = n
 
@@ -270,9 +268,9 @@ module subroutine csr_to_dense(a, x, err)
     ! Process
     do i = 1, m
         x(i,:) = 0.0d0
-        do k = a%ia(i), a%ia(i+1) - 1
-            j = a%ja(k)
-            x(i,j) = a%v(k)
+        do k = a%row_indices(i), a%row_indices(i+1) - 1
+            j = a%column_indices(k)
+            x(i,j) = a%values(k)
         end do
     end do
 end subroutine
@@ -299,8 +297,8 @@ module function diag_to_csr(a, err) result(rst)
     n1 = n + 1
 
     ! Allocation
-    allocate(rst%ia(n1), rst%ja(n), stat = flag)
-    if (flag == 0) allocate(rst%v(n), source = a, stat = flag)
+    allocate(rst%row_indices(n1), rst%column_indices(n), stat = flag)
+    if (flag == 0) allocate(rst%values(n), source = a, stat = flag)
     if (flag /= 0) then
         call errmgr%report_error("diag_to_csr", "Memory allocation error.", &
             LA_OUT_OF_MEMORY_ERROR)
@@ -310,10 +308,10 @@ module function diag_to_csr(a, err) result(rst)
 
     ! Populate IA & JA
     do i = 1, n
-        rst%ja(i) = i
-        rst%ia(i) = i
+        rst%column_indices(i) = i
+        rst%row_indices(i) = i
     end do
-    rst%ia(n1) = n1
+    rst%row_indices(n1) = n1
 end function
 
 ! ------------------------------------------------------------------------------
@@ -370,7 +368,8 @@ module function csr_mtx_mtx_mult(a, b) result(rst)
     if (flag /= 0) go to 10
 
     ! Determine the structure of C
-    call amub(m, n, sym_mult, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, jc, ic, &
+    call amub(m, n, sym_mult, a%values, a%column_indices, a%row_indices, &
+        b%values, b%column_indices, b%row_indices, dummy, jc, ic, &
         nnzc, iw, ierr)
     if (ierr /= 0) then
         ! NNZC was too small - try increasing it
@@ -379,8 +378,9 @@ module function csr_mtx_mtx_mult(a, b) result(rst)
             nnzc = nnzc + nnza + nnzb
             allocate(jc(nnzc), stat = flag)
             if (flag /= 0) go to 10
-            call amub(m, n, sym_mult, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, &
-                jc, ic, nnzc, iw, ierr)
+            call amub(m, n, sym_mult, a%values, a%column_indices, &
+                a%row_indices, b%values, b%column_indices, b%row_indices, &
+                dummy, jc, ic, nnzc, iw, ierr)
         end do
     end if
 
@@ -392,8 +392,9 @@ module function csr_mtx_mtx_mult(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the actual product
-    call amub(m, n, full_mult, a%v, a%ja, a%ia, b%v, b%ja, b%ia, rst%v, &
-        rst%ja, rst%ia, nnzc, iw, ierr)
+    call amub(m, n, full_mult, a%values, a%column_indices, a%row_indices, &
+        b%values, b%column_indices, b%row_indices, rst%values, &
+        rst%column_indices, rst%row_indices, nnzc, iw, ierr)
 
     ! End
     return
@@ -439,10 +440,10 @@ module function csr_mtx_vec_mult(a, b) result(rst)
     ! Process
     do i = 1, n
         t = 0.0d0
-        k1 = a%ia(i)
-        k2 = a%ia(i+1) - 1
+        k1 = a%row_indices(i)
+        k2 = a%row_indices(i+1) - 1
         do k = k1, k2
-            t = t + a%v(k) * b(a%ja(k))
+            t = t + a%values(k) * b(a%column_indices(k))
         end do
         rst(i) = t
     end do
@@ -481,7 +482,8 @@ module function csr_mtx_add(a, b) result(rst)
     if (flag /= 0) go to 10
 
     ! Determine the structure of C
-    call aplb(m, n, sym_add, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, jc, ic, &
+    call aplb(m, n, sym_add, a%values, a%column_indices, a%row_indices, &
+        b%values, b%column_indices, b%row_indices, dummy, jc, ic, &
         nnzc, iw, ierr)
     if (ierr /= 0) then
         ! NNZC was too small - try increasing it
@@ -490,8 +492,9 @@ module function csr_mtx_add(a, b) result(rst)
             nnzc = nnzc + nnza + nnzb
             allocate(jc(nnzc), stat = flag)
             if (flag /= 0) go to 10
-            call aplb(m, n, sym_add, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, &
-                jc, ic, nnzc, iw, ierr)
+            call aplb(m, n, sym_add, a%values, a%column_indices, &
+                a%row_indices, b%values, b%column_indices, b%row_indices, &
+                dummy, jc, ic, nnzc, iw, ierr)
         end do
     end if
 
@@ -503,8 +506,9 @@ module function csr_mtx_add(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the actual sum
-    call aplb(m, n, full_add, a%v, a%ja, a%ia, b%v, b%ja, b%ia, rst%v, rst%ja, &
-        rst%ia, nnzc, iw, ierr)
+    call aplb(m, n, full_add, a%values, a%column_indices, a%row_indices, &
+        b%values, b%column_indices, b%row_indices, rst%values, &
+        rst%column_indices, rst%row_indices, nnzc, iw, ierr)
 
     ! End
     return
@@ -548,7 +552,8 @@ module function csr_mtx_sub(a, b) result(rst)
     if (flag /= 0) go to 10
 
     ! Determine the structure of C
-    call aplb(m, n, sym_add, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, jc, ic, &
+    call aplb(m, n, sym_add, a%values, a%column_indices, a%row_indices, &
+        b%values, b%column_indices, b%row_indices, dummy, jc, ic, &
         nnzc, iw, ierr)
     if (ierr /= 0) then
         ! NNZC was too small - try increasing it
@@ -557,8 +562,9 @@ module function csr_mtx_sub(a, b) result(rst)
             nnzc = nnzc + nnza + nnzb
             allocate(jc(nnzc), stat = flag)
             if (flag /= 0) go to 10
-            call aplb(m, n, sym_add, a%v, a%ja, a%ia, b%v, b%ja, b%ia, dummy, &
-                jc, ic, nnzc, iw, ierr)
+            call aplb(m, n, sym_add, a%values, a%column_indices, &
+                a%row_indices, b%values, b%column_indices, b%row_indices, &
+                dummy, jc, ic, nnzc, iw, ierr)
         end do
     end if
 
@@ -570,8 +576,9 @@ module function csr_mtx_sub(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the actual sum
-    call aplsb(m, n, a%v, a%ja, a%ia, -1.0d0, b%v, b%ja, b%ia, rst%v, rst%ja, &
-        rst%ia, nnzc, iw, ierr)
+    call aplsb(m, n, a%values, a%column_indices, a%row_indices, -1.0d0, &
+        b%values, b%column_indices, b%row_indices, rst%values, &
+        rst%column_indices, rst%row_indices, nnzc, iw, ierr)
 
     ! End
     return
@@ -604,9 +611,9 @@ module function csr_mtx_mult_scalar_1(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the product
-    rst%ia = a%ia
-    rst%ja = a%ja
-    rst%v = b * a%v
+    rst%row_indices = a%row_indices
+    rst%column_indices = a%column_indices
+    rst%values = b * a%values
 end function
 
 ! ------------------------------------------------------------------------------
@@ -630,9 +637,9 @@ module function csr_mtx_mult_scalar_2(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the product
-    rst%ia = b%ia
-    rst%ja = b%ja
-    rst%v = a * b%v
+    rst%row_indices = b%row_indices
+    rst%column_indices = b%column_indices
+    rst%values = a * b%values
 end function
 
 ! ------------------------------------------------------------------------------
@@ -656,9 +663,9 @@ module function csr_mtx_divide_scalar_1(a, b) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Compute the product
-    rst%ia = a%ia
-    rst%ja = a%ja
-    rst%v = a%v / b
+    rst%row_indices = a%row_indices
+    rst%column_indices = a%column_indices
+    rst%values = a%values / b
 end function
 
 ! ------------------------------------------------------------------------------
@@ -679,7 +686,8 @@ module function csr_transpose(a) result(rst)
     if (errmgr%has_error_occurred()) return
 
     ! Process
-    call csrcsc2(m, n, 1, 1, a%v, a%ja, a%ia, rst%v, rst%ja, rst%ia)
+    call csrcsc2(m, n, 1, 1, a%values, a%column_indices, a%row_indices, &
+        rst%values, rst%column_indices, rst%row_indices)
 end function
 
 ! ------------------------------------------------------------------------------
@@ -722,7 +730,8 @@ module subroutine extract_diagonal_csr(a, diag, err)
     end if
 
     ! Process
-    call getdia(m, n, 0, a%v, a%ja, a%ia, len, diag, idiag, 0)
+    call getdia(m, n, 0, a%values, a%column_indices, a%row_indices, len, &
+        diag, idiag, 0)
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -778,7 +787,7 @@ module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
     ! Parameter Determination
     lfil = 1
     do i = 1, m
-        lfil = max(lfil, a%ia(i+1) - a%ia(i))
+        lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))
     end do
     iwk = max(lfil * m, nnz)  ! somewhat arbitrary - can be adjusted
 
@@ -789,7 +798,8 @@ module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
     ! Factorization
     do
         ! Factor the matrix
-        call ilut(n, a%v, a%ja, a%ia, lfil, dt, alu, jlu, ju, iwk, w, jw, ierr)
+        call ilut(n, a%values, a%column_indices, a%row_indices, lfil, dt, &
+            alu, jlu, ju, iwk, w, jw, ierr)
 
         ! Check the error flag
         if (ierr == 0) then
@@ -858,6 +868,236 @@ module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
         "A zero pivot was encountered.", LA_SINGULAR_MATRIX_ERROR)
     return
 end subroutine
+
+! ******************************************************************************
+! MSR ROUTINES
+! ------------------------------------------------------------------------------
+! TO DO: MSR_GET_ELEMENT
+
+! ------------------------------------------------------------------------------
+pure module function msr_size(x, dim) result(rst)
+    ! Arguments
+    class(msr_matrix), intent(in) :: x
+    integer(int32), intent(in) :: dim
+    integer(int32) :: rst
+
+    ! Process
+    select case (dim)
+    case (1)
+        rst = x%m
+    case (2)
+        rst = x%n
+    case default
+        rst = 0
+    end select
+end function
+
+! ------------------------------------------------------------------------------
+pure module function nonzero_count_msr(x) result(rst)
+    ! Arguments
+    class(msr_matrix), intent(in) :: x
+    integer(int32) :: rst
+
+    ! Process
+    rst = x%nnz
+end function
+
+! ------------------------------------------------------------------------------
+module function create_empty_msr_matrix(m, n, nnz, err) result(rst)
+    ! Arguments
+    integer(int32), intent(in) :: m, n, nnz
+    class(errors), intent(inout), optional, target :: err
+    type(msr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: nelem, mn, flag
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+
+    ! Input Checking
+    if (m < 0) then
+        call errmgr%report_error("create_empty_msr_matrix", &
+            "The number of rows must be a positive value.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+    end if
+    if (n < 0) then
+        call errmgr%report_error("create_empty_msr_matrix", &
+            "The number of columns must be a positive value.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+    end if
+    if (nnz < 0) then
+        call errmgr%report_error("create_empty_msr_matrix", &
+            "The number of non-zero values must be a positive value.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+    end if
+
+    ! Allocation
+    rst%m = m
+    rst%n = n
+    rst%nnz = n
+    mn = min(m, n)
+    nelem = m + 1 + nnz - mn
+    allocate(rst%indices(nelem), source = 0, stat = flag)
+    if (flag == 0) allocate(rst%values(nelem), source = 0.0d0, stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("create_empty_msr_matrix", &
+            "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+module function csr_to_msr(a, err) result(rst)
+    ! Arguments
+    class(csr_matrix), intent(in) :: a
+    class(errors), intent(inout), optional, target :: err
+    type(msr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: m, n, nnz, flag
+    integer(int32), allocatable, dimension(:) :: iwork, jc, ic
+    real(real64), allocatable, dimension(:) :: work, ac
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    m = size(a, 1)
+    n = size(a, 2)
+    nnz = nonzero_count(a)
+
+    ! Memory Allocation
+    rst = create_empty_msr_matrix(m, n, nnz, errmgr)
+    if (errmgr%has_error_occurred()) return
+    allocate(work(m), iwork(m + 1), stat = flag)
+    if (flag == 0) allocate(ac(nnz), source = a%values, stat = flag)
+    if (flag == 0) allocate(jc(nnz), source = a%column_indices, stat = flag)
+    if (flag == 0) allocate(ic(m+1), source = a%row_indices, stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("csr_to_msr", "Memory allocation error.", &
+            LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+
+    ! Perform the conversion
+    call csrmsr(m, ac, jc, ic, rst%values, rst%indices, work, iwork)
+end function
+
+! ------------------------------------------------------------------------------
+module function msr_to_csr(a, err) result(rst)
+    ! Arguments
+    class(msr_matrix), intent(in) :: a
+    class(errors), intent(inout), optional, target :: err
+    type(csr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: m, n, nnz, flag
+    integer(int32), allocatable, dimension(:) :: iwork
+    real(real64), allocatable, dimension(:) :: work
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    m = size(a, 1)
+    n = size(a, 2)
+    nnz = nonzero_count(a)
+
+    ! Memory Allocation
+    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
+    if (errmgr%has_error_occurred()) return
+    allocate(work(m), iwork(m+1), stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("msr_to_csr", "Memory allocation error.", &
+            LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+
+    ! Process
+    call msrcsr(m, a%values, a%indices, rst%values, rst%column_indices, &
+        rst%row_indices, work, iwork)
+end function
+
+! ------------------------------------------------------------------------------
+module function dense_to_msr(a, err) result(rst)
+    ! Arguments
+    real(real64), intent(in), dimension(:,:) :: a
+    class(errors), intent(inout), optional, target :: err
+    type(msr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: i, ii, j, k, m, n, nnz, mn
+    real(real64) :: t
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    t = 2.0d0 * epsilon(t)
+    m = size(a, 1)
+    n = size(a, 2)
+    mn = min(m, n)
+    nnz = 0
+
+    ! Determine the number of non-zero entries
+    do j = 1, n
+        do i = 1, m
+            if (abs(a(i,j)) > t .and. i /= j) then
+                ! Only counting the off-diagonals
+                nnz = nnz + 1
+            end if
+        end do
+    end do
+    nnz = nnz + mn  ! include the diagonal, assuming a dense diagonal
+
+    ! Memory Allocation
+    rst = create_empty_msr_matrix(m, n, nnz, errmgr)
+    if (errmgr%has_error_occurred()) return
+
+    ! Store the diagonal
+    do i = 1, mn
+        rst%values(i) = a(i,i)
+    end do
+
+    ! Store the non-zero values
+    k = 1
+    ii = m + 2
+    rst%indices(1) = 1
+    do i = 1, m
+        inner_loop : do j = 1, n
+            if (abs(a(i,j)) < t) cycle inner_loop
+            rst%indices(ii) = j
+            rst%values(ii) = a(i,j)
+            k = k + 1
+            ii = ii + 1
+        end do inner_loop
+        rst%indices(i+1) = k
+    end do
+end function
+
+! ------------------------------------------------------------------------------
 
 ! ------------------------------------------------------------------------------
 end submodule

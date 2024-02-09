@@ -128,6 +128,32 @@ module sparskit
             real(real64), intent(in) :: a(*)
             real(real64), intent(out) :: a0(*)
         end subroutine
+
+        !> @brief Converts the LINPACK, BLAS, LAPACK banded matrix format into
+        !! a CSR format.
+        !!
+        !! @param[in] n The row dimension of the matrix.
+        !! @param[in] abd The banded matrix.
+        !! @param[in] nabd The leading dimension of @p abd.
+        !! @param[in] lowd The row index where the lowest diagonal (leftmost) of
+        !!  A is located.  LINPACK uses LOWD = 2 * ML + MU + 1.
+        !! @param[in] ml The bandwidth of the strict lower part of A.
+        !! @param[in] mu The bandwidth of the strict upper part of A.
+        !! @param[out] a The non-zero elements of matrix A.
+        !! @param[out] ja The column indices of matrix A.
+        !! @param[out] ia The index in A where the requested row starts.
+        !! @param[in] len The length of @p a and @p ja.
+        !! @param[out] ierr Error message output.
+        !!  * 0: Normal return.
+        !!  * -1: Invalid @p lowd value.
+        !!  * Positive Valued: Not enough storage in @p a and @p ja.
+        subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, nabd, lowd, ml, mu, len
+            real(real64), intent(in) :: abd(nabd,*)
+            real(real64), intent(out) :: a(*)
+            integer(int32), intent(out) :: ia(n+1), ja(*), ierr
+        end subroutine
     end interface
 
     ! UNARY.F
@@ -152,6 +178,25 @@ module sparskit
             logical, intent(in) :: sorted
             real(real64) :: rst
         end function
+
+        !> @brief Extracts the diagonal from a matrix.
+        !!
+        !! @param[in] nrow The number of rows.
+        !! @param[in] ncol The number of columns.
+        !! @param[in] job Set to 0 to not alter @p a, @p ja, and @p ia; else,
+        !! set to a non-zero value to perform this as an in-place operation.
+        !! @param[out] len The number of non-zero elements found in @p diag.
+        !! @param[out] idiag An array of length @p len containing the original
+        !!  positions in the original arrays @p a and @p ja of the diagonal
+        !!  elements collected in diagl.
+        !! @param[in] ioff The offset of the wanted diagonal.
+        subroutine getdia(nrow, ncol, job, a, ja, ia, len, diag, idiag, ioff)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: nrow, ncol, job, ja(*), ia(*), ioff
+            integer(int32), intent(out) :: len, idiag(*)
+            real(real64), intent(in) :: a(*)
+            real(real64), intent(out) :: diag(*)
+        end subroutine
     end interface
 
     ! ILUT.F

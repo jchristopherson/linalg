@@ -339,6 +339,12 @@ program main
     rst = test_diag_to_csr_1()
     if (.not.rst) flag = 101
 
+    rst = test_banded_to_csr_1()
+    if (.not.rst) flag = 102
+
+    rst = test_extract_diagonal_csr_1()
+    if (.not.rst) flag = 103
+
     ! End
     if (flag /= 0) stop flag
 end program

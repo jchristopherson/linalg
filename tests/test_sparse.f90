@@ -14,9 +14,8 @@ function test_csr_1() result(rst)
     integer(int32), parameter :: m = 4
     integer(int32), parameter :: n = 6
     integer(int32), parameter :: nnz = 8
-    real(real64) :: dense(m, n), v(nnz)
+    real(real64) :: dense(m, n), v(nnz), check(m, n)
     integer(int32) :: ja(nnz), ia(m + 1)
-    real(real64), allocatable, dimension(:,:) :: check
     type(csr_matrix) :: sparse
 
     ! Initialization
@@ -62,7 +61,7 @@ function test_csr_1() result(rst)
     end if
 
     ! Convert back to dense
-    check = csr_to_dense(sparse)
+    check = sparse
 
     ! Test
     if (.not.assert(dense, check)) then
@@ -98,7 +97,7 @@ function test_csr_mult_1() result(rst)
     ans = matmul(a, a)
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test
     if (.not.assert(dense, ans)) then
@@ -142,7 +141,7 @@ function test_csr_mult_2() result(rst)
     ans = matmul(a, b)
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test
     if (.not.assert(dense, ans)) then
@@ -178,7 +177,7 @@ function test_csr_add_1() result(rst)
     ans = a + a
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test
     if (.not.assert(dense, ans)) then
@@ -213,7 +212,7 @@ function test_csr_subtract_1() result(rst)
     sc = sa + sa - sa
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test
     if (.not.assert(dense, a)) then
@@ -250,7 +249,7 @@ function test_csr_scalar_mult_1() result(rst)
     ans = s * a
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test 1
     if (.not.assert(dense, ans)) then
@@ -260,7 +259,7 @@ function test_csr_scalar_mult_1() result(rst)
 
     ! Test 2
     sc = sa * s
-    dense = csr_to_dense(sc)
+    dense = sc
     if (.not.assert(dense, ans)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_scalar_mult_1 -2"
@@ -295,7 +294,7 @@ function test_csr_scalar_divide_1() result(rst)
     ans = a / s
 
     ! Convert the sparse matrix to a dense matrix for testing purposes
-    dense = csr_to_dense(sc)
+    dense = sc
 
     ! Test 1
     if (.not.assert(dense, ans)) then
@@ -327,7 +326,7 @@ function test_csr_transpose_1() result(rst)
 
     ! Operation
     sat = transpose(sa)
-    dense = csr_to_dense(sat)
+    dense = sat
 
     ! Test 1
     if (.not.assert(dense, ans)) then
@@ -366,7 +365,7 @@ function test_csr_diag_mult_1() result(rst)
     ! Test 1
     ans = alpha * matmul(diag, a)
     call diag_mtx_mult(.true., alpha, d, sa)
-    dense = csr_to_dense(sa)
+    dense = sa
     if (.not.assert(dense, ans)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_1 -1"
@@ -376,7 +375,7 @@ function test_csr_diag_mult_1() result(rst)
     sa = dense_to_csr(a)
     ans = matmul(diag, a)
     call diag_mtx_mult(.true., 1.0d0, d, sa)
-    dense = csr_to_dense(sa)
+    dense = sa
     if (.not.assert(dense, ans)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_1 -2"
@@ -408,7 +407,7 @@ function test_csr_diag_mult_2() result(rst)
     ! Test 1
     call diag_mtx_mult(.false., alpha, diag, a) ! solution
     call diag_mtx_mult(.false., alpha, diag, sa)
-    dense = csr_to_dense(sa)
+    dense = sa
     if (.not.assert(dense, a)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_2 -1"
@@ -418,7 +417,7 @@ function test_csr_diag_mult_2() result(rst)
     sa = dense_to_csr(a)
     call diag_mtx_mult(.false., 1.0d0, diag, a) ! solution
     call diag_mtx_mult(.false., 1.0d0, diag, sa)
-    dense = csr_to_dense(sa)
+    dense = sa
     if (.not.assert(dense, a)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_diag_mult_2 -2"
@@ -479,10 +478,80 @@ function test_diag_to_csr_1() result(rst)
 
     ! Test 1
     sd = diag_to_csr(d)
-    dense = csr_to_dense(sd)
+    dense = sd
     if (.not.assert(dense, diag)) then
         rst = .false.
         print "(A)", "Test Failed: test_diag_to_csr_1 -1"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function test_banded_to_csr_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32), parameter :: kl = 4
+    integer(int32), parameter :: ku = 5
+    integer(int32), parameter :: m = 15
+    integer(int32), parameter :: n = 15
+    real(real64) :: banded(kl+ku+1,n), dense(m,n), check(m,n)
+    type(csr_matrix) :: sparse
+
+    ! Initialization
+    rst = .true.
+    call random_number(banded)
+
+    ! Construct the dense matrix directly from the banded matrix
+    call banded_to_dense(m, kl, ku, banded, dense)
+
+    ! Construct the sparse matrix directly from the banded matrix
+    sparse = banded_to_csr(m, kl, ku, banded)
+
+    ! Test
+    check = sparse
+    if (.not.assert(dense, check)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_banded_to_csr_1 -1"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+function test_extract_diagonal_csr_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32), parameter :: n = 100
+    integer(int32) :: i
+    real(real64) :: diag(n), ans(n), dense(n,n), densediag(n)
+    type(csr_matrix) :: sparse
+
+    ! Initialization
+    rst = .true.
+    call random_number(ans)
+    dense = 0.0d0
+    do i = 1, n
+        dense(i,i) = ans(i)
+    end do
+    sparse = dense_to_csr(dense)
+
+    ! Extract the diagonal from the sparse matrix
+    call extract_diagonal(sparse, diag)
+
+    ! Test 1
+    if (.not.assert(diag, ans)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_extract_diagonal_csr_1 -1"
+    end if
+
+    ! Ensure the dense extract routine works as well
+    call extract_diagonal(dense, densediag)
+
+    ! Test 2
+    if (.not.assert(densediag, ans)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_extract_diagonal_csr_1 -2"
     end if
 end function
 

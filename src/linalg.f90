@@ -187,18 +187,23 @@ module linalg
     public :: band_mtx_mult
     public :: band_mtx_to_full_mtx
     public :: band_diag_mtx_mult
+    public :: banded_to_dense
+    public :: dense_to_banded
+    public :: extract_diagonal
     public :: csr_matrix
     public :: size
     public :: create_empty_csr_matrix
     public :: nonzero_count
     public :: dense_to_csr
     public :: diag_to_csr
+    public :: banded_to_csr
     public :: csr_to_dense
     public :: matmul
     public :: operator(+)
     public :: operator(-)
     public :: operator(*)
     public :: operator(/)
+    public :: assignment(=)
     public :: transpose
     public :: sparse_direct_solve
     public :: LA_NO_OPERATION
@@ -4063,6 +4068,82 @@ interface band_diag_mtx_mult
     module procedure :: band_diag_mtx_mult_cmplx
 end interface
 
+!> @brief Converts a banded matrix to a dense matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine banded_to_dense(integer(int32) m, integer(int32) kl, integer(int32) ku, real(real64) a(:,:), real(real64) x(:,:), optional class(errors) err)
+!! subroutine banded_to_dense(integer(int32) m, integer(int32) kl, integer(int32) ku, complex(real64) a(:,:), complex(real64) x(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] m The number of rows in the matrix.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] a The (KL+KU+1)-by-N banded matrix.
+!! @param[out] x The M-by-N dense matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+!!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p ku + @p kl + 1 is not equal to
+!!      size(a, 2).
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x is not sized correctly.
+interface banded_to_dense
+    module procedure :: banded_to_dense_dbl
+    module procedure :: banded_to_dense_cmplx
+end interface
+
+!> @brief Converts a dense matrix to a banded matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine dense_to_banded(real(real64) a(:,:), integer(int32) kl, integer(int32) ku, real(real64) x(:,:), optional class(errors) err)
+!! subroutine dense_to_banded(complex(real64) a(:,:), integer(int32) kl, integer(int32) ku, complex(real64) x(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] m The M-by-N dense matrix.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[out] x The (KL+KU+1)-by-N banded matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x is not sized correctly.
+interface dense_to_banded
+    module procedure :: dense_to_banded_dbl
+    module procedure :: dense_to_banded_cmplx
+end interface
+
+!> @brief Extracts the diagonal of a matrix.
+!! 
+!! @par Syntax
+!! @code{.f90}
+!! subroutine extract_diagonal(real(real64) a(:,:), real(real64) diag(:), optional class(errors) err)
+!! subroutine extract_diagonal(complex(real64) a(:,:), complex(real64) diag(:), optional class(errors) err)
+!! subroutine extract_diagonal(class(csr_matrix) a, real(real64) diag(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] a The M-by-N matrix.
+!! @param[out] diag: The MIN(M, N) element array for the diagonal elements.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @diag is not sized correctly.
+interface extract_diagonal
+    module procedure :: extract_diagonal_dbl
+    module procedure :: extract_diagonal_cmplx
+    module procedure :: extract_diagonal_csr
+end interface
+
 ! ******************************************************************************
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
@@ -4320,6 +4401,48 @@ interface
         complex(real64), intent(in) :: alpha
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(in), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)
+        integer(int32), intent(in) :: m, kl, ku
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)
+        integer(int32), intent(in) :: m, kl, ku
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine dense_to_banded_dbl(a, kl, ku, x, err)
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine dense_to_banded_cmplx(a, kl, ku, x, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine extract_diagonal_dbl(a, diag, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: diag
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine extract_diagonal_cmplx(a, diag, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: diag
         class(errors), intent(inout), optional, target :: err
     end subroutine
 end interface
@@ -5239,6 +5362,11 @@ end interface
         module procedure :: csr_mtx_divide_scalar_1
     end interface
 
+    !> @brief Assigns a sparse matrix to a dense matrix.
+    interface assignment(=)
+        module procedure :: csr_assign_to_dense
+    end interface
+
     !> @brief Provides the transpose of a sparse matrix.
     !!
     !! @par Syntax
@@ -5309,11 +5437,11 @@ end interface
             type(csr_matrix) :: rst
         end function
 
-        module function csr_to_dense(a, err) result(rst)
+        module subroutine csr_to_dense(a, x, err)
             class(csr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:,:) :: x
             class(errors), intent(inout), optional, target :: err
-            real(real64), allocatable, dimension(:,:) :: rst
-        end function
+        end subroutine
 
         module function csr_mtx_mtx_mult(a, b) result(rst)
             class(csr_matrix), intent(in) :: a, b
@@ -5359,6 +5487,12 @@ end interface
             type(csr_matrix) :: rst
         end function
 
+        module subroutine extract_diagonal_csr(a, diag, err)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:) :: diag
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
         module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
             class(csr_matrix), intent(in) :: a
             real(real64), intent(in), dimension(:) :: b
@@ -5368,11 +5502,22 @@ end interface
         end subroutine
 
         module function diag_to_csr(a, err) result(rst)
-            ! Arguments
             real(real64), intent(in), dimension(:) :: a
             class(errors), intent(inout), optional, target :: err
             type(csr_matrix) :: rst
         end function
+
+        module function banded_to_csr(m, ml, mu, a, err) result(rst)
+            integer(int32), intent(in) :: m, ml, mu
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module subroutine csr_assign_to_dense(dense, sparse)
+            real(real64), intent(out), dimension(:,:) :: dense
+            class(csr_matrix), intent(in) :: sparse
+        end subroutine
     end interface
 
 ! ------------------------------------------------------------------------------

@@ -2795,4 +2795,282 @@ contains
     end subroutine
 
 ! ------------------------------------------------------------------------------
+    module subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)
+        ! Arguments
+        integer(int32), intent(in) :: m, kl, ku
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        real(real64), parameter :: zero = 0.0d0
+
+        ! Local Variables
+        integer(int32) :: i, j, k, n, i1, i2
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        n = size(a, 2)
+
+        ! Input Checking
+        if (kl < 0 .or. ku < 0) then
+            call errmgr%report_error("banded_to_dense_dbl", &
+                "The bandwidth dimensions must not be negative-valued.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+        if (size(a, 1) /= kl + ku + 1) then
+            call errmgr%report_error("banded_to_dense_dbl", "The size of " // &
+                "the input matrix does not match the specified bandwidth.", &
+                LA_MATRIX_FORMAT_ERROR)
+            return
+        end if
+        if (size(x, 1) /= m .or. size(x, 2) /= n) then
+            call errmgr%report_error("banded_to_dense_dbl", &
+                "The output matrix dimensions are not correct.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            i1 = max(1, j - ku)
+            i2 = min(m, j + kl)
+            x(:i1-1,j) = zero
+            do i = i1, i2
+                x(i, j) = a(k + i, j)
+            end do
+            x(i2+1:,j) = zero
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)
+        ! Arguments
+        integer(int32), intent(in) :: m, kl, ku
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+
+        ! Parameters
+        complex(real64), parameter :: zero = (0.0d0, 0.0d0)
+
+        ! Local Variables
+        integer(int32) :: i, j, k, n, i1, i2
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        n = size(a, 2)
+
+        ! Input Checking
+        if (kl < 0 .or. ku < 0) then
+            call errmgr%report_error("banded_to_dense_cmplx", &
+                "The bandwidth dimensions must not be negative-valued.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+        if (size(a, 1) /= kl + ku + 1) then
+            call errmgr%report_error("banded_to_dense_cmplx", "The size of " // &
+                "the input matrix does not match the specified bandwidth.", &
+                LA_MATRIX_FORMAT_ERROR)
+            return
+        end if
+        if (size(x, 1) /= m .or. size(x, 2) /= n) then
+            call errmgr%report_error("banded_to_dense_cmplx", &
+                "The output matrix dimensions are not correct.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            i1 = max(1, j - ku)
+            i2 = min(m, j + kl)
+            x(:i1-1,j) = zero
+            do i = i1, i2
+                x(i, j) = a(k + i, j)
+            end do
+            x(i2+1:,j) = zero
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine dense_to_banded_dbl(a, kl, ku, x, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: i, j, k, m, n, mm, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(a, 1)
+        n = size(a, 2)
+        mm = kl + ku + 1
+
+        ! Input Check
+        if (kl < 0 .or. ku < 0) then
+            call errmgr%report_error("dense_to_banded_dbl", &
+                "The bandwidth dimensions must not be negative-valued.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+        if (size(x, 1) /= mm .or. size(x, 2) /= n) then
+            call errmgr%report_error("dense_to_banded_dbl", &
+                "The output matrix dimensions are not correct.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            do i = max(1, j - ku), min(m, j + kl)
+                x(k + i, j) = a(i,j)
+            end do
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine dense_to_banded_cmplx(a, kl, ku, x, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: i, j, k, m, n, mm, flag
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(a, 1)
+        n = size(a, 2)
+        mm = kl + ku + 1
+
+        ! Input Check
+        if (kl < 0 .or. ku < 0) then
+            call errmgr%report_error("dense_to_banded_cmplx", &
+                "The bandwidth dimensions must not be negative-valued.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+        if (size(x, 1) /= mm .or. size(x, 2) /= n) then
+            call errmgr%report_error("dense_to_banded_cmplx", &
+                "The output matrix dimensions are not correct.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do j = 1, n
+            k = ku + 1 - j
+            do i = max(1, j - ku), min(m, j + kl)
+                x(k + i, j) = a(i,j)
+            end do
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine extract_diagonal_dbl(a, diag, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: diag
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+
+        ! Input Checking
+        if (size(diag) /= mn) then
+            call errmgr%report_error("extract_diagonal_dbl", &
+                "The is expected to have MIN(M, N) elements.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do i = 1, mn
+            diag(i) = a(i,i)
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine extract_diagonal_cmplx(a, diag, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: diag
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        integer(int32) :: i, m, n, mn
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        
+        ! Initialization
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+
+        ! Input Checking
+        if (size(diag) /= mn) then
+            call errmgr%report_error("extract_diagonal_cmplx", &
+                "The is expected to have MIN(M, N) elements.", &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+
+        ! Process
+        do i = 1, mn
+            diag(i) = a(i,i)
+        end do
+    end subroutine
+
+! ------------------------------------------------------------------------------
 end submodule

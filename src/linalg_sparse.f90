@@ -174,11 +174,75 @@ module function dense_to_csr(a, err) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-module function csr_to_dense(a, err) result(rst)
+module function banded_to_csr(m, ml, mu, a, err) result(rst)
+    ! Arguments
+    integer(int32), intent(in) :: m, ml, mu
+    real(real64), intent(in), dimension(:,:) :: a
+    class(errors), intent(inout), optional, target :: err
+    type(csr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: n, nnz, flag, lowd, lda
+    integer(int32), allocatable, dimension(:) :: ia, ja
+    real(real64), allocatable, dimension(:) :: v
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    lda = size(a, 1)
+    n = size(a, 2)
+    nnz = lda * n
+    lowd = ml + mu + 1
+
+    ! Input Checking
+    if (ml < 0 .or. mu < 0) then
+        call errmgr%report_error("banded_to_csr", "The bandwidth " // &
+            "dimensions cannot be negative.", LA_INVALID_INPUT_ERROR)
+        return
+    end if
+    if (lda /= ml + mu + 1) then
+        call errmgr%report_error("banded_to_csr", "The number of rows in " // &
+            "the banded matrix does not match the supplied bandwidth " // &
+            "dimensions.", LA_MATRIX_FORMAT_ERROR)
+        return
+    end if
+
+    ! Allocation
+    allocate(ia(m + 1), ja(nnz), v(nnz), stat = flag)
+    if (flag /= 0) go to 10
+
+    ! Process
+    call bndcsr(m, a, lda, lowd, ml, mu, v, ja, ia, nnz, flag)
+    nnz = ia(m + 1) - 1
+
+    ! Put into the sparse matrix structure
+    allocate(rst%ia(m + 1), source = ia, stat = flag)
+    if (flag == 0) allocate(rst%ja(nnz), source = ja(:nnz), stat = flag)
+    if (flag == 0) allocate(rst%v(nnz), source = v(:nnz), stat = flag)
+    if (flag /= 0) go to 10
+    rst%n = n
+
+    ! End
+    return
+
+    ! Memory Error
+10  continue
+    call errmgr%report_error("banded_to_csr", "Memory allocation error.", &
+        LA_OUT_OF_MEMORY_ERROR)
+    return
+end function
+
+! ------------------------------------------------------------------------------
+module subroutine csr_to_dense(a, x, err)
     ! Arguments
     class(csr_matrix), intent(in) :: a
+    real(real64), intent(out), dimension(:,:) :: x
     class(errors), intent(inout), optional, target :: err
-    real(real64), allocatable, dimension(:,:) :: rst
 
     ! Local Variables
     integer(int32) :: i, j, k, m, n, nnz, flag
@@ -194,21 +258,24 @@ module function csr_to_dense(a, err) result(rst)
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
-    allocate(rst(m, n), source = 0.0d0, stat = flag)
-    if (flag /= 0) then
-        call errmgr%report_error("csr_to_dense", "Memory allocation error.", &
-            LA_OUT_OF_MEMORY_ERROR)
+    
+    ! Input Check
+    if (size(x, 1) /= m .or. size(x, 2) /= n) then
+        call errmgr%report_error("csr_to_dense", &
+            "The output matrix dimensions are not correct.", &
+            LA_ARRAY_SIZE_ERROR)
         return
     end if
 
     ! Process
     do i = 1, m
+        x(i,:) = 0.0d0
         do k = a%ia(i), a%ia(i+1) - 1
             j = a%ja(k)
-            rst(i,j) = a%v(k)
+            x(i,j) = a%v(k)
         end do
     end do
-end function
+end subroutine
 
 ! ------------------------------------------------------------------------------
 module function diag_to_csr(a, err) result(rst)
@@ -248,6 +315,16 @@ module function diag_to_csr(a, err) result(rst)
     end do
     rst%ia(n1) = n1
 end function
+
+! ------------------------------------------------------------------------------
+module subroutine csr_assign_to_dense(dense, sparse)
+    ! Arguments
+    real(real64), intent(out), dimension(:,:) :: dense
+    class(csr_matrix), intent(in) :: sparse
+
+    ! Process
+    call csr_to_dense(sparse, dense)
+end subroutine
 
 ! ------------------------------------------------------------------------------
 module function csr_mtx_mtx_mult(a, b) result(rst)
@@ -594,6 +671,49 @@ module function csr_transpose(a) result(rst)
     ! Process
     call csrcsc2(m, n, 1, 1, a%v, a%ja, a%ia, rst%v, rst%ja, rst%ia)
 end function
+
+! ------------------------------------------------------------------------------
+module subroutine extract_diagonal_csr(a, diag, err)
+    ! Arguments
+    class(csr_matrix), intent(in) :: a
+    real(real64), intent(out), dimension(:) :: diag
+    class(errors), intent(inout), optional, target :: err
+
+    ! Local Variables
+    integer(int32) :: m, n, mn, len, flag
+    integer(int32), allocatable, dimension(:) :: idiag
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    m = size(a, 1)
+    n = size(a, 2)
+    mn = min(m, n)
+
+    ! Input Check
+    if (size(diag) /= mn) then
+        call errmgr%report_error("extract_diagonal_csr", &
+            "The is expected to have MIN(M, N) elements.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+
+    ! Memory Allocation
+    allocate(idiag(mn), stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("extract_diagonal_csr", &
+            "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+
+    ! Process
+    call getdia(m, n, 0, a%v, a%ja, a%ia, len, diag, idiag, 0)
+end subroutine
 
 ! ------------------------------------------------------------------------------
 module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)

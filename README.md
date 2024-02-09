@@ -5,6 +5,22 @@ A linear algebra library that provides a user-friendly interface to several BLAS
 ![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
 [![Actions Status](https://github.com/jchristopherson/linalg/workflows/fpm/badge.svg)](https://github.com/jchristopherson/linalg/actions)
 
+## Documentation
+The documentation can be found [here](https://jchristopherson.github.io/linalg/).
+
+## Building LINALG
+[CMake](https://cmake.org/)This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+
+[FPM](https://github.com/fortran-lang/fpm) can also be used to build this library using the provided fpm.toml.
+```txt
+fpm build
+```
+The LINALG library can be used within your FPM project by adding the following to your fpm.toml file.
+```toml
+[dependencies]
+linalg = { git = "https://github.com/jchristopherson/linalg" }
+```
+
 ## Example 1
 This example solves a normally defined system of 3 equations of 3 unknowns.
 
@@ -180,20 +196,64 @@ Mode 3: (923.5669 Hz)
     -0.184
      0.179
 ```
-## Documentation
-The documentation can be found [here](https://jchristopherson.github.io/linalg/).
 
-## Building LINALG
-[CMake](https://cmake.org/)This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+## Sparse Matrix Example
+The following example solves a sparse system of equations using a direct solver.  The solution is compared to the solution of the same system of equations but in dense format for comparison.
+```fortran
+program example
+    use iso_fortran_env
+    use linalg
+    implicit none
 
-[FPM](https://github.com/fortran-lang/fpm) can also be used to build this library using the provided fpm.toml.
-```txt
-fpm build
+    ! Local Variables
+    integer(int32) :: ipiv(4)
+    real(real64) :: dense(4, 4), b(4), x(4), bc(4)
+    type(csr_matrix) :: sparse
+
+    ! Build the matrices as dense matrices
+    dense = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 6.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+    b = [2.0d0, -1.5d0, 8.0d0, 1.0d0]
+
+    ! Convert to sparse (CSR format)
+    ! Note, the assignment operator is overloaded to allow conversion.
+    sparse = dense
+
+    ! Compute the solution to the sparse equations
+    call sparse_direct_solve(sparse, b, x)  ! Results stored in x
+
+    ! Print the solution
+    print "(A)", "Sparse Solution:"
+    print *, x
+
+    ! Perform a sanity check on the solution
+    ! Note, matmul is overloaded to allow multiplication with sparse matrices
+    bc = matmul(sparse, x)
+    print "(A)", "Computed RHS:"
+    print *, bc
+    print "(A)", "Original RHS:"
+    print *, b
+
+    ! For comparison, solve the dense system via LU decomposition
+    call lu_factor(dense, ipiv)
+    call solve_lu(dense, ipiv, b)   ! Results stored in b
+    print "(A)", "Dense Solution:"
+    print *, b
+end program
 ```
-The LINALG library can be used within your FPM project by adding the following to your fpm.toml file.
-```toml
-[dependencies]
-linalg = { git = "https://github.com/jchristopherson/linalg" }
+The above program produces the following output.
+```text
+Sparse Solution:
+  0.40000000000000002      -0.18750000000000000        2.6666666666666665       0.42500000000000004     
+Computed RHS:
+   2.0000000000000000       -1.5000000000000000        8.0000000000000000        1.0000000000000000
+Original RHS:
+   2.0000000000000000       -1.5000000000000000        8.0000000000000000        1.0000000000000000
+Dense Solution:
+  0.40000000000000002      -0.18750000000000000        2.6666666666666665       0.42499999999999999
 ```
 
 ## External Libraries
@@ -202,5 +262,6 @@ Here is a list of external code libraries utilized by this library.
 - [LAPACK](http://www.netlib.org/lapack/)
 - [QRUpdate](https://sourceforge.net/projects/qrupdate/)
 - [FERROR](https://github.com/jchristopherson/ferror)
+- [SPARSKIT](https://www-users.cse.umn.edu/~saad/software/SPARSKIT/)
 
 The dependencies do not necessarily have to be installed to be used.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.

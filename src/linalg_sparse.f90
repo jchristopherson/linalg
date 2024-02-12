@@ -944,7 +944,7 @@ module function create_empty_msr_matrix(m, n, nnz, err) result(rst)
     ! Allocation
     rst%m = m
     rst%n = n
-    rst%nnz = n
+    rst%nnz = nnz
     mn = min(m, n)
     nelem = m + 1 + nnz - mn
     allocate(rst%indices(nelem), source = 0, stat = flag)

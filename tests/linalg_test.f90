@@ -348,6 +348,9 @@ program main
     rst = test_msr_1()
     if (.not.rst) flag = 104
 
+    rst = test_csr_lu_factor_1()
+    if (.not.rst) flag = 105
+
     ! End
     if (flag /= 0) stop flag
 end program

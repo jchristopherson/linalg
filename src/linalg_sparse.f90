@@ -1138,5 +1138,193 @@ module subroutine msr_assign_to_csr(csr, msr)
     csr = msr_to_csr(msr)
 end subroutine
 
+! ******************************************************************************
+! LU PRECONDITIONER ROUTINES
+! ------------------------------------------------------------------------------
+module subroutine csr_lu_factor(a, lu, ju, droptol, err)
+    ! Arguments
+    class(csr_matrix), intent(in) :: a
+    type(msr_matrix), intent(out) :: lu
+    integer(int32), intent(out), dimension(:) :: ju
+    real(real64), intent(in), optional :: droptol
+    class(errors), intent(inout), optional, target :: err
+
+    ! Local Variables
+    integer(int32) :: i, m, n, nn, nnz, lfil, iwk, ierr, flag
+    integer(int32), allocatable, dimension(:) :: jlu, jw
+    real(real64), allocatable, dimension(:) :: alu, w
+    real(real64) :: dt
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    if (present(droptol)) then
+        dt = droptol
+    else
+        dt = sqrt(epsilon(dt))
+    end if
+    m = size(a, 1)
+    n = size(a, 2)
+    nnz = nonzero_count(a)
+
+    ! Input Check
+    if (size(ju) /= m) then
+        call errmgr%report_error("csr_lu_factor", &
+            "U row tracking array is not sized correctly.", LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+
+    ! Parameter Determination
+    lfil = 1
+    do i = 1, m
+        lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))
+    end do
+    iwk = max(lfil * m, nnz)  ! somewhat arbitrary - can be adjusted
+
+    ! Local Memory Allocation
+    allocate(alu(iwk), w(n+1), jlu(iwk), jw(2 * n), stat = flag)
+    if (flag /= 0) go to 10
+
+    ! Factorization
+    do
+        ! Factor the matrix
+        call ilut(n, a%values, a%column_indices, a%row_indices, lfil, dt, &
+            alu, jlu, ju, iwk, w, jw, ierr)
+
+        ! Check the error flag
+        if (ierr == 0) then
+            ! Success
+            exit
+        else if (ierr > 0) then
+            ! Zero pivot
+        else if (ierr == -1) then
+            ! The input matrix is not formatted correctly
+            go to 20
+        else if (ierr == -2 .or. ierr == -3) then
+            ! ALU and JLU are too small - try something larger
+            ! This is the main reason for the loop - to offload worrying about
+            ! workspace size from the user
+            iwk = min(iwk + m + n, m * n)
+            deallocate(alu)
+            deallocate(jlu)
+            allocate(alu(iwk), jlu(iwk), stat = flag)
+            if (flag /= 0) go to 10
+        else if (ierr == -4) then
+            ! Illegal value for LFIL - reset and try again
+            lfil = n
+        else if (ierr == -5) then
+            ! Zero row encountered
+            go to 30
+        else
+            ! We should never get here, but just in case
+            go to 40
+        end if
+    end do
+
+    ! Determine the actual number of non-zero elements
+    nnz = jlu(m+1) - 1
+
+    ! Copy the contents to the output arrays
+    lu%m = m
+    lu%n = n
+    lu%nnz = nnz
+    nn = m + 1 + nnz - min(m, n)
+    allocate(lu%values(nn), source = alu(:nn), stat = flag)
+    if (flag /= 0) go to 10
+    allocate(lu%indices(nn), source = jlu(:nn), stat = flag)
+
+    ! End
+    return
+
+    ! Memory Error
+10  continue
+    call errmgr%report_error("csr_lu_factor", &
+        "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
+    return
+
+    ! Matrix Format Error
+20  continue
+    call errmgr%report_error("csr_lu_factor", &
+        "The input matrix was incorrectly formatted.  A row with more " // &
+        "than N entries was found.", LA_MATRIX_FORMAT_ERROR)
+    return
+
+    ! Zero Row Error
+30  continue
+    call errmgr%report_error("csr_lu_factor", &
+        "A row with all zeros was encountered in the matrix.", &
+        LA_SINGULAR_MATRIX_ERROR)
+    return
+
+    ! Unknown Error
+40  continue
+    call errmgr%report_error("csr_solve_sparse_direct", "ILUT encountered " // &
+        "an unknown error.  The error code from the ILUT routine is " // &
+        "provided in the output.", ierr)
+    return
+
+    ! Zero Pivot Error
+50  continue
+    call errmgr%report_error("csr_lu_factor", &
+        "A zero pivot was encountered.", LA_SINGULAR_MATRIX_ERROR)
+    return
+end subroutine
+
+! ------------------------------------------------------------------------------
+module subroutine csr_lu_solve(lu, b, ju, x, err)
+    ! Arguments
+    class(msr_matrix), intent(in) :: lu
+    real(real64), intent(in), dimension(:) :: b
+    integer(int32), intent(in), dimension(:) :: ju
+    real(real64), intent(out), dimension(:) :: x
+    class(errors), intent(inout), optional, target :: err
+
+    ! Local Variables
+    integer(int32) :: m, n
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    m = size(lu, 1)
+    n = size(lu, 2)
+
+    ! Input Check
+    if (m /= n) then
+        call errmgr%report_error("csr_lu_solve", &
+            "The input matrix is expected to be square.", LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+    if (size(x) /= m) then
+        call errmgr%report_error("csr_lu_solve", &
+            "Inner matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+    if (size(b) /= m) then
+        call errmgr%report_error("csr_lu_solve", &
+            "The output array dimension does not match the rest of the problem.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+    if (size(ju) /= m) then
+        call errmgr%report_error("csr_lu_solve", &
+            "The U row tracking array is not sized correctly.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+
+    ! Process
+    call lusol(m, b, x, lu%values, lu%indices, ju)
+end subroutine
+
 ! ------------------------------------------------------------------------------
 end submodule

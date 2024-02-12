@@ -582,4 +582,54 @@ function test_msr_1() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_csr_lu_factor_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32) :: i, ipiv(4), ju(4)
+    real(real64) :: dense(4, 4), check(4, 4), x(4), b(4)
+    type(csr_matrix) :: sparse
+    type(msr_matrix) :: slu
+
+    ! Initialization
+    rst = .true.
+    dense = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 6.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+    sparse = dense
+    call random_number(b)
+
+    ! Compute the factorization of the sparse matrix
+    call lu_factor(sparse, slu, ju)
+
+    ! Compute the factorization of the dense matrix
+    call lu_factor(dense, ipiv)
+
+    ! Test - the diagonal must be inverted
+    check = slu
+    do i = 1, size(check, 1)
+        check(i,i) = 1.0d0 / check(i,i)
+    end do
+    if (.not.assert(check, dense)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_lu_factor_1 -1"
+    end if
+
+    ! Solve the sparse system
+    call solve_lu(slu, b, ju, x)
+
+    ! Now solve the dense system for comparison
+    call solve_lu(dense, ipiv, b)
+
+    ! Test
+    if (.not.assert(x, b)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_lu_factor_1 -2"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

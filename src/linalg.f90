@@ -758,8 +758,32 @@ end interface
 !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
 !!      singular.
 !!
+!! @par Syntax (Sparse Matrices)
+!! @code{.f90}
+!! subroutine lu_factor(class(csr_matrix) a, type(msr_matrix) lu, integer(int32) ju(:), optional real(real64) droptol, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] a The M-by-N sparse matrix to factor.
+!! @param[out] lu The factored matrix, stored in MSR format.  The diagonal is
+!!  stored inverted.
+!! @param[out] ju An M-element array used to track the starting row index of
+!!  the U matrix.
+!! @param[in] droptol An optional threshold value used to determine when
+    !!  to drop small terms as part of the factorization of matrix A.  The
+    !!  default value is set to the square root of machine precision (~1e-8).
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ju is not sized correctly.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is improperly formatted.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p a is singular.
+!!
 !! @par Notes
-!! This routine utilizes the LAPACK routine DGETRF.
+!! The dense routine utilizes the LAPACK routine DGETRF.
 !!
 !! @par See Also
 !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
@@ -818,6 +842,7 @@ end interface
 interface lu_factor
     module procedure :: lu_factor_dbl
     module procedure :: lu_factor_cmplx
+    module procedure :: csr_lu_factor
 end interface
 
 !> @brief Extracts the L and U matrices from the condensed [L\\U] storage
@@ -2379,6 +2404,7 @@ interface solve_lu
     module procedure :: solve_lu_mtx_cmplx
     module procedure :: solve_lu_vec
     module procedure :: solve_lu_vec_cmplx
+    module procedure :: csr_lu_solve
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -5615,6 +5641,22 @@ end interface
         module subroutine msr_assign_to_csr(csr, msr)
             type(csr_matrix), intent(out) :: csr
             class(msr_matrix), intent(in) :: msr
+        end subroutine
+
+        module subroutine csr_lu_factor(a, lu, ju, droptol, err)
+            class(csr_matrix), intent(in) :: a
+            type(msr_matrix), intent(out) :: lu
+            integer(int32), intent(out), dimension(:) :: ju
+            real(real64), intent(in), optional :: droptol
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine csr_lu_solve(lu, b, ju, x, err)
+            class(msr_matrix), intent(in) :: lu
+            real(real64), intent(in), dimension(:) :: b
+            integer(int32), intent(in), dimension(:) :: ju
+            real(real64), intent(out), dimension(:) :: x
+            class(errors), intent(inout), optional, target :: err
         end subroutine
     end interface
 

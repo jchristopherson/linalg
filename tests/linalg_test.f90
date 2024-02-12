@@ -345,6 +345,9 @@ program main
     rst = test_extract_diagonal_csr_1()
     if (.not.rst) flag = 103
 
+    rst = test_msr_1()
+    if (.not.rst) flag = 104
+
     ! End
     if (flag /= 0) stop flag
 end program

@@ -552,4 +552,34 @@ function test_extract_diagonal_csr_1() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_msr_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    real(real64) :: a(4,4), dense(4,4)
+    type(msr_matrix) :: msr
+
+    ! Initialization
+    rst = .true.
+    a = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 6.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+
+    ! Convert from dense to MSR
+    msr = dense_to_msr(a)
+
+    ! Convert from MSR to dense
+    dense = msr
+
+    ! Check
+    if (.not.assert(dense, a)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_msr_1 -1"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

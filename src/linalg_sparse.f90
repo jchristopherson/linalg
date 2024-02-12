@@ -1044,8 +1044,7 @@ module function dense_to_msr(a, err) result(rst)
     type(msr_matrix) :: rst
 
     ! Local Variables
-    integer(int32) :: i, ii, j, k, m, n, nnz, mn
-    real(real64) :: t
+    type(csr_matrix) :: csr
     class(errors), pointer :: errmgr
     type(errors), target :: deferr
     
@@ -1055,49 +1054,89 @@ module function dense_to_msr(a, err) result(rst)
     else
         errmgr => deferr
     end if
-    t = 2.0d0 * epsilon(t)
-    m = size(a, 1)
-    n = size(a, 2)
-    mn = min(m, n)
-    nnz = 0
 
-    ! Determine the number of non-zero entries
-    do j = 1, n
-        do i = 1, m
-            if (abs(a(i,j)) > t .and. i /= j) then
-                ! Only counting the off-diagonals
-                nnz = nnz + 1
-            end if
-        end do
-    end do
-    nnz = nnz + mn  ! include the diagonal, assuming a dense diagonal
+    ! Convert to CSR, and then from CSR to MSR
+    csr = dense_to_csr(a, errmgr)
 
-    ! Memory Allocation
-    rst = create_empty_msr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
-
-    ! Store the diagonal
-    do i = 1, mn
-        rst%values(i) = a(i,i)
-    end do
-
-    ! Store the non-zero values
-    k = 1
-    ii = m + 2
-    rst%indices(1) = 1
-    do i = 1, m
-        inner_loop : do j = 1, n
-            if (abs(a(i,j)) < t) cycle inner_loop
-            rst%indices(ii) = j
-            rst%values(ii) = a(i,j)
-            k = k + 1
-            ii = ii + 1
-        end do inner_loop
-        rst%indices(i+1) = k
-    end do
+    ! Convert to MSR
+    rst = csr_to_msr(csr, errmgr)
 end function
 
 ! ------------------------------------------------------------------------------
+module subroutine msr_to_dense(a, x, err)
+    ! Arguments
+    class(msr_matrix), intent(in) :: a
+    real(real64), intent(out), dimension(:,:) :: x
+    class(errors), intent(inout), optional, target :: err
+
+    ! Local Variables
+    integer(int32) :: m, n, flag
+    type(csr_matrix) :: csr
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    m = size(a, 1)
+    n = size(a, 2)
+
+    ! Input Check
+    if (size(x, 1) /= m .or. size(x, 2) /= n) then
+        call errmgr%report_error("msr_to_dense", &
+            "The output matrix dimensions are not correct.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+
+    ! Process
+    csr = msr_to_csr(a, errmgr)
+    if (errmgr%has_error_occurred()) return
+    call csr_to_dense(csr, x, errmgr)
+end subroutine
+
+! ------------------------------------------------------------------------------
+module subroutine msr_assign_to_dense(dense, msr)
+    ! Arguments
+    real(real64), intent(out), dimension(:,:) :: dense
+    class(msr_matrix), intent(in) :: msr
+
+    ! Process
+    call msr_to_dense(msr, dense)
+end subroutine
+
+! ------------------------------------------------------------------------------
+module subroutine dense_assign_to_msr(msr, dense)
+    ! Arguments
+    type(msr_matrix), intent(out) :: msr
+    real(real64), intent(in), dimension(:,:) :: dense
+
+    ! Process
+    msr = dense_to_msr(dense)
+end subroutine
+
+! ------------------------------------------------------------------------------
+module subroutine csr_assign_to_msr(msr, csr)
+    ! Arguments
+    type(msr_matrix), intent(out) :: msr
+    class(csr_matrix), intent(in) :: csr
+
+    ! Process
+    msr = csr_to_msr(csr)
+end subroutine
+
+! ------------------------------------------------------------------------------
+module subroutine msr_assign_to_csr(csr, msr)
+    ! Arguments
+    type(csr_matrix), intent(out) :: csr
+    class(msr_matrix), intent(in) :: msr
+
+    ! Process
+    csr = msr_to_csr(msr)
+end subroutine
 
 ! ------------------------------------------------------------------------------
 end submodule

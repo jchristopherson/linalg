@@ -203,6 +203,7 @@ module linalg
     public :: csr_to_msr
     public :: msr_to_csr
     public :: dense_to_msr
+    public :: msr_to_dense
     public :: matmul
     public :: operator(+)
     public :: operator(-)
@@ -5391,6 +5392,10 @@ end interface
     interface assignment(=)
         module procedure :: csr_assign_to_dense
         module procedure :: dense_assign_to_csr
+        module procedure :: msr_assign_to_dense
+        module procedure :: dense_assign_to_msr
+        module procedure :: csr_assign_to_msr
+        module procedure :: msr_assign_to_csr
     end interface
 
     !> @brief Provides the transpose of a sparse matrix.
@@ -5584,6 +5589,33 @@ end interface
             class(errors), intent(inout), optional, target :: err
             type(msr_matrix) :: rst
         end function
+
+        module subroutine msr_to_dense(a, x, err)
+            ! Arguments
+            class(msr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:,:) :: x
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine msr_assign_to_dense(dense, msr)
+            real(real64), intent(out), dimension(:,:) :: dense
+            class(msr_matrix), intent(in) :: msr
+        end subroutine
+
+        module subroutine dense_assign_to_msr(msr, dense)
+            type(msr_matrix), intent(out) :: msr
+            real(real64), intent(in), dimension(:,:) :: dense
+        end subroutine
+
+        module subroutine csr_assign_to_msr(msr, csr)
+            type(msr_matrix), intent(out) :: msr
+            class(csr_matrix), intent(in) :: csr
+        end subroutine
+
+        module subroutine msr_assign_to_csr(csr, msr)
+            type(csr_matrix), intent(out) :: csr
+            class(msr_matrix), intent(in) :: msr
+        end subroutine
     end interface
 
 ! ------------------------------------------------------------------------------

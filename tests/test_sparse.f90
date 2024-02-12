@@ -619,7 +619,7 @@ function test_csr_lu_factor_1() result(rst)
     end if
 
     ! Solve the sparse system
-    call solve_lu(slu, b, ju, x)
+    call solve_lu(slu, ju, b, x)
 
     ! Now solve the dense system for comparison
     call solve_lu(dense, ipiv, b)

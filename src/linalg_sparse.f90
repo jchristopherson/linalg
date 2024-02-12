@@ -1276,11 +1276,11 @@ module subroutine csr_lu_factor(a, lu, ju, droptol, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine csr_lu_solve(lu, b, ju, x, err)
+module subroutine csr_lu_solve(lu, ju, b, x, err)
     ! Arguments
     class(msr_matrix), intent(in) :: lu
-    real(real64), intent(in), dimension(:) :: b
     integer(int32), intent(in), dimension(:) :: ju
+    real(real64), intent(in), dimension(:) :: b
     real(real64), intent(out), dimension(:) :: x
     class(errors), intent(inout), optional, target :: err
 

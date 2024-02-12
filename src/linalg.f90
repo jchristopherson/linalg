@@ -2341,9 +2341,26 @@ end interface
 !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
 !!      incorrect.
 !!
+!! @par Sparse Syntax
+!! @code{.f90}
+!! subroutine solve_lu(class(msr_matrix) lu, integer(int32) ju(:), real(real64) b(:), real(real64) x(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lu The N-by-N LU-factored matrix from @ref lu_factor.
+!! @param[in] ju The N-element U row tracking array from @ref lu_factor.
+!! @param[in] b The N-element right-hand-side array.
+!! @param[out] x The N-element solution array.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
 !! @par Notes
-!! The routine is based upon the LAPACK routine DGETRS (ZGETRS in the complex
-!! case).
+!! The dense routine is based upon the LAPACK routine DGETRS (ZGETRS in the 
+!! complex case).
 !!
 !! @par Usage
 !! To solve a system of 3 equations of 3 unknowns using LU factorization,
@@ -5651,10 +5668,10 @@ end interface
             class(errors), intent(inout), optional, target :: err
         end subroutine
 
-        module subroutine csr_lu_solve(lu, b, ju, x, err)
+        module subroutine csr_lu_solve(lu, ju, b, x, err)
             class(msr_matrix), intent(in) :: lu
-            real(real64), intent(in), dimension(:) :: b
             integer(int32), intent(in), dimension(:) :: ju
+            real(real64), intent(in), dimension(:) :: b
             real(real64), intent(out), dimension(:) :: x
             class(errors), intent(inout), optional, target :: err
         end subroutine

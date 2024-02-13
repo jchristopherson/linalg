@@ -1326,5 +1326,88 @@ module subroutine csr_lu_solve(lu, ju, b, x, err)
     call lusol(m, b, x, lu%values, lu%indices, ju)
 end subroutine
 
+! ******************************************************************************
+! ITERATIVE SOLVERS
+! ------------------------------------------------------------------------------
+subroutine pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
+    ! Arguments
+    class(csr_matrix), intent(in) :: a
+    class(msr_matrix), intent(in) :: lu
+    integer(int32), intent(in), dimension(:) :: ju
+    real(real64), intent(in), dimension(:) :: b
+    real(real64), intent(out), dimension(:) :: x
+    integer(int32), intent(in), optional :: im, maxits, iout
+    real(real64), intent(in), optional :: tol
+    class(errors), intent(inout), optional, target :: err
+
+    ! Local Variables
+    integer(int32) :: n, ierr, flag, io, mit, krylov
+    real(real64) :: eps
+    real(real64), allocatable, dimension(:,:) :: vv
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    if (present(im)) then
+        krylov = im
+    else
+        krylov = 10
+    end if
+    if (present(tol)) then
+        eps = tol
+    else
+        eps = sqrt(epsilon(eps))
+    end if
+    if (present(maxits)) then
+        mit = maxits
+    else
+        mit = 100
+    end if
+    if (present(iout)) then
+        io = iout
+    else
+        io = 0
+    end if
+    n = size(a, 1)
+
+    ! Input Checking
+    if (size(a, 2) /= n) then
+        ! ERROR - input not square
+    end if
+    if (size(lu, 1) /= n .or. size(lu, 2) /= n) then
+        ! ERROR: LU factored matrix incompatible size
+    end if
+    if (size(b) /= n) then
+        ! ERROR: RHS not sized correctly.
+    end if
+    if (size(x) /= n) then
+        ! ERROR: Solution not sized correctly.
+    end if
+    if (eps < epsilon(eps)) then
+        ! ERROR: Tolerance too small
+    end if
+    if (mit < 1) then
+        ! ERROR: Too few iterations allowed
+    end if
+    if (krylov < 1) then
+        ! ERROR: Krylov subspace size too small
+    end if
+
+    ! Memory Allocation
+    allocate(vv(n,krylov+1), stat = flag)
+    if (flag /= 0) then
+        ! ERROR: Memory allocation issue
+    end if
+
+    ! Process
+    call pgmres(n, krylov, b, x, vv, eps, mit, io, a%values, a%column_indices, &
+        a%row_indices, lu%values, lu%indices, ju, ierr)
+end subroutine
+
 ! ------------------------------------------------------------------------------
 end submodule

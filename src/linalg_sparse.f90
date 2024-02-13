@@ -1329,6 +1329,8 @@ end subroutine
 ! ******************************************************************************
 ! ITERATIVE SOLVERS
 ! ------------------------------------------------------------------------------
+! Additional References:
+! - https://www.diva-portal.org/smash/get/diva2:360739/FULLTEXT01.pdf
 module subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
     ! Arguments
     class(csr_matrix), intent(in) :: a

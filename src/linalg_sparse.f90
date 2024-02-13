@@ -1329,12 +1329,12 @@ end subroutine
 ! ******************************************************************************
 ! ITERATIVE SOLVERS
 ! ------------------------------------------------------------------------------
-subroutine pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
+module subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
     ! Arguments
     class(csr_matrix), intent(in) :: a
     class(msr_matrix), intent(in) :: lu
     integer(int32), intent(in), dimension(:) :: ju
-    real(real64), intent(in), dimension(:) :: b
+    real(real64), intent(inout), dimension(:) :: b
     real(real64), intent(out), dimension(:) :: x
     integer(int32), intent(in), optional :: im, maxits, iout
     real(real64), intent(in), optional :: tol
@@ -1348,6 +1348,7 @@ subroutine pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
     type(errors), target :: deferr
     
     ! Initialization
+    n = size(a, 1)
     if (present(err)) then
         errmgr => err
     else
@@ -1356,7 +1357,7 @@ subroutine pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
     if (present(im)) then
         krylov = im
     else
-        krylov = 10
+        krylov = min(n, 50)
     end if
     if (present(tol)) then
         eps = tol
@@ -1373,40 +1374,64 @@ subroutine pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
     else
         io = 0
     end if
-    n = size(a, 1)
 
     ! Input Checking
     if (size(a, 2) /= n) then
-        ! ERROR - input not square
+        call errmgr%report_error("csr_pgmres_solver", &
+            "The input matrix is not square.", LA_ARRAY_SIZE_ERROR)
+        return
     end if
     if (size(lu, 1) /= n .or. size(lu, 2) /= n) then
-        ! ERROR: LU factored matrix incompatible size
+        call errmgr%report_error("csr_pgmres_solver", &
+            "The LU factored matrix size is not compatible with the " // &
+            "input matrix.", LA_ARRAY_SIZE_ERROR)
+        return
     end if
     if (size(b) /= n) then
-        ! ERROR: RHS not sized correctly.
+        call errmgr%report_error("csr_pgmres_solver", &
+            "The output array dimension does not match the rest of the problem.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
     end if
     if (size(x) /= n) then
-        ! ERROR: Solution not sized correctly.
+        call errmgr%report_error("csr_pgmres_solver", &
+            "Inner matrix dimension mismatch.", LA_ARRAY_SIZE_ERROR)
+        return
     end if
     if (eps < epsilon(eps)) then
-        ! ERROR: Tolerance too small
+        call errmgr%report_error("csr_pgmres_solver", &
+            "The convergence tolerance is too small.", LA_INVALID_INPUT_ERROR)
+        return
     end if
     if (mit < 1) then
-        ! ERROR: Too few iterations allowed
+        call errmgr%report_error("csr_pgmres_solver", &
+            "Too few iterations allowed.", LA_INVALID_INPUT_ERROR)
+        return
     end if
     if (krylov < 1) then
-        ! ERROR: Krylov subspace size too small
+        call errmgr%report_error("csr_pgmres_solver", &
+            "The requested Krylov subspace size is too small.", &
+            LA_INVALID_INPUT_ERROR)
+        return
     end if
 
     ! Memory Allocation
     allocate(vv(n,krylov+1), stat = flag)
     if (flag /= 0) then
-        ! ERROR: Memory allocation issue
+        call errmgr%report_error("csr_pgmres_solver", &
+            "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
+        return
     end if
 
     ! Process
     call pgmres(n, krylov, b, x, vv, eps, mit, io, a%values, a%column_indices, &
         a%row_indices, lu%values, lu%indices, ju, ierr)
+    if (ierr == 1) then
+        call errmgr%report_error("csr_pgmres_solver", &
+            "Convergence could not be achieved to the requested tolerance " // &
+            "in the allowed number of iterations.", LA_CONVERGENCE_ERROR)
+        return
+    end if
 end subroutine
 
 ! ------------------------------------------------------------------------------

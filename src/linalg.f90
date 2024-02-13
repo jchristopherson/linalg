@@ -212,6 +212,7 @@ module linalg
     public :: assignment(=)
     public :: transpose
     public :: sparse_direct_solve
+    public :: pgmres_solver
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -5482,6 +5483,56 @@ end interface
         module procedure :: csr_solve_sparse_direct
     end interface
 
+    !> @brief A preconditioned GMRES solver.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! subroutine pgmres_solver( &
+    !!  class(csr_matrix) a, &
+    !!  class(msr_matrix) lu, &
+    !!  integer(int32) ju(:), &
+    !!  real(real64) b(:), &
+    !!  real(real64) x(:), &
+    !!  optional integer(int32) im, &
+    !!  optional real(real64) tol, &
+    !!  optional integer(int32) maxits, &
+    !!  optional integer(int32) iout, &
+    !!  optional class(errors) err)
+    !! @endcode
+    !!
+    !! @param[in] a The original N-by-N matrix.
+    !! @param[in] lu The N-by-N LU-factored matrix of the approximation to the
+    !!  system as output by @ref lu_factor.
+    !! @param[in] ju The N-element U row tracking array output by 
+    !!  @ref lu_factor.
+    !! @param[in,out] b On input, the N-element right-hand-side array.  On 
+    !!  output, this array is overwritten as it is used as in-place storage
+    !!  by the PGMRES algorithm.
+    !! @param[out] x The N-element solution array.
+    !! @param[in] im An optional parameter specifying the size of the Krylov
+    !!  subspace.  This value should not exceed 50.
+    !! @param[in] tol An optional parameter specifying the convergence tolerance
+    !!  against which the Euclidean norm of the residual is checked.  The 
+    !!  default value is the square root of machine precision.
+    !! @param[in] maxits An optional parameter specifying the maximum number
+    !!  of iterations allowed.  The default is 100.
+    !! @param[in] iout An optional parameter used to specify the device to 
+    !!  which status updates will be written.  If no updates are requested,
+    !!  a value less than or equal to zero should be supplied.  The default
+    !!  is zero such that no updates will be provided.
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the arrays and/or matrices are
+    !!      not sized correctly.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    interface pgmres_solver
+        module procedure :: csr_pgmres_solver
+    end interface
+
     interface
         module function csr_get_element(this, i, j) result(rst)
             class(csr_matrix), intent(in) :: this
@@ -5673,6 +5724,18 @@ end interface
             integer(int32), intent(in), dimension(:) :: ju
             real(real64), intent(in), dimension(:) :: b
             real(real64), intent(out), dimension(:) :: x
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, &
+            iout, err)
+            class(csr_matrix), intent(in) :: a
+            class(msr_matrix), intent(in) :: lu
+            integer(int32), intent(in), dimension(:) :: ju
+            real(real64), intent(inout), dimension(:) :: b
+            real(real64), intent(out), dimension(:) :: x
+            integer(int32), intent(in), optional :: im, maxits, iout
+            real(real64), intent(in), optional :: tol
             class(errors), intent(inout), optional, target :: err
         end subroutine
     end interface

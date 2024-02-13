@@ -351,6 +351,9 @@ program main
     rst = test_csr_lu_factor_1()
     if (.not.rst) flag = 105
 
+    rst = test_pgmres_1()
+    if (.not.rst) flag = 106
+
     ! End
     if (flag /= 0) stop flag
 end program

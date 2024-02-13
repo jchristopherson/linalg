@@ -632,4 +632,49 @@ function test_csr_lu_factor_1() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_pgmres_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Local Variables
+    integer(int32) :: ju(4), ipiv(4)
+    real(real64) :: dense(4, 4), m(4, 4), b(4), bc(4), x(4)
+    type(csr_matrix) :: a, am
+    type(msr_matrix) :: lu
+
+    ! Initialization
+    rst = .true.
+    dense = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 6.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+    m = reshape([ &
+        5.0d0, 0.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 8.0d0, 0.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 3.0d0, 0.0d0, &
+        0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
+    a = dense
+    am = m
+    call random_number(b)
+    bc = b
+
+    ! Compute the preconditioner
+    call lu_factor(am, lu, ju)
+
+    ! Solve the sparse system
+    call pgmres_solver(a, lu, ju, b, x)
+
+    ! Solve the dense system directly
+    call lu_factor(dense, ipiv)
+    call solve_lu(dense, ipiv, bc)
+
+    ! Test
+    if (.not.assert(x, bc)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_pgmres_1 -1"
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

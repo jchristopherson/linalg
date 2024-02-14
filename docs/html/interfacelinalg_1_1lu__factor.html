@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.7.4</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -117,6 +117,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5cbf7bb2dabecf16354f80c6c504f647" id="r_a5cbf7bb2dabecf16354f80c6c504f647"><td class="memItemLeft" align="right" valign="top"><a id="a5cbf7bb2dabecf16354f80c6c504f647" name="a5cbf7bb2dabecf16354f80c6c504f647"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>lu_factor_cmplx</b></td></tr>
 <tr class="separator:a5cbf7bb2dabecf16354f80c6c504f647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab73284a90f558b8e8fef69dc12560496" id="r_ab73284a90f558b8e8fef69dc12560496"><td class="memItemLeft" align="right" valign="top"><a id="ab73284a90f558b8e8fef69dc12560496" name="ab73284a90f558b8e8fef69dc12560496"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>csr_lu_factor</b></td></tr>
+<tr class="separator:ab73284a90f558b8e8fef69dc12560496"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Computes the LU factorization of an M-by-N matrix. </p>
@@ -135,7 +138,25 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Notes</dt><dd>This routine utilizes the LAPACK routine DGETRF.</dd></dl>
+<dl class="section user"><dt>Syntax (Sparse Matrices)</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>lu_factor(class(csr_matrix) a, type(msr_matrix) lu, integer(int32) ju(:), optional real(real64) droptol, optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The M-by-N sparse matrix to factor. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">lu</td><td>The factored matrix, stored in MSR format. The diagonal is stored inverted. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ju</td><td>An M-element array used to track the starting row index of the U matrix. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">droptol</td><td>An optional threshold value used to determine when to drop small terms as part of the factorization of matrix A. The default value is set to the square root of machine precision (~1e-8). </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if <code>ju</code> is not sized correctly.</li>
+<li>LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal memory allocations.</li>
+<li>LA_MATRIX_FORMAT_ERROR: Occurs if <code>a</code> is improperly formatted.</li>
+<li>LA_SINGULAR_MATRIX_ERROR: Occurs if <code>a</code> is singular.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>The dense routine utilizes the LAPACK routine DGETRF.</dd></dl>
 <dl class="section user"><dt>See Also</dt><dd><ul>
 <li><a href="https://en.wikipedia.org/wiki/LU_decomposition">Wikipedia</a></li>
 <li><a href="http://mathworld.wolfram.com/LUDecomposition.html">Wolfram MathWorld</a></li>
@@ -179,8 +200,8 @@ Public Member Functions</h2></td></tr>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00732">linalg.f90:732</a></div></div>
-<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02291">linalg.f90:2291</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00843">linalg.f90:843</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02420">linalg.f90:2420</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 </div><!-- fragment --> The program generates the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line"> 0.3333</div>
@@ -188,7 +209,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"> 0.0000</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l00732">732</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l00843">843</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg_8f90_source.html">linalg.f90</a></li>
 </ul>

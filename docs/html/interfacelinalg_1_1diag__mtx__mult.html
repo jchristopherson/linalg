@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.7.4</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -135,10 +135,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c38623124bd032c2f6b68c9f94f7be1" id="r_a2c38623124bd032c2f6b68c9f94f7be1"><td class="memItemLeft" align="right" valign="top"><a id="a2c38623124bd032c2f6b68c9f94f7be1" name="a2c38623124bd032c2f6b68c9f94f7be1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>diag_mtx_mult_mtx2_mix</b></td></tr>
 <tr class="separator:a2c38623124bd032c2f6b68c9f94f7be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd77a8d03e32ee546964664535b4915d" id="r_abd77a8d03e32ee546964664535b4915d"><td class="memItemLeft" align="right" valign="top"><a id="abd77a8d03e32ee546964664535b4915d" name="abd77a8d03e32ee546964664535b4915d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>diag_mtx_sparse_mult</b></td></tr>
+<tr class="separator:abd77a8d03e32ee546964664535b4915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Multiplies a diagonal matrix with another matrix or array. </p>
-<dl class="section user"><dt>Syntax 1</dt><dd>Computes the matrix operation: \( C = \alpha A op(B) + \beta C \), or \( C = \alpha op(B) A + \beta C \). <div class="fragment"><div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, logical trans, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)</div>
+<dl class="section user"><dt>Syntax 1</dt><dd>Computes the matrix operation: C = alpha * A * op(B) + beta * C, or C = alpha * op(B) * A + beta * C. <div class="fragment"><div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, logical trans, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), real(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, logical trans, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), complex(real64) beta, complex(real64) c(:,:), optional class(errors) err)</div>
@@ -147,7 +150,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">lside</td><td>Set to true to apply matrix A from the left; else, set to false to apply matrix A from the left. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">trans</td><td>Set to true if \( op(B) = B^T \); else, set to false for \( op(B) = B\). In the complex case set to LA_TRANSPOSE if \( op(B) = B^T \), set to LA_HERMITIAN_TRANSPOSE if \( op(B) = B^H \), otherwise set to LA_NO_OPERATION if \( op(B) = B \). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">trans</td><td>Set to true if op(B) = B^T; else, set to false for op(B) = B. In the complex case set to LA_TRANSPOSE if op(B) = B^T, set to LA_HERMITIAN_TRANSPOSE if op(B) = B^H, otherwise set to LA_NO_OPERATION if op(B) = B. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>A scalar multiplier. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>A K-element array containing the diagonal elements of A where K = MIN(M,P) if <code>lside</code> is true; else, if <code>lside</code> is false, K = MIN(N,P). </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The LDB-by-TDB matrix B where (LDB = leading dimension of B, and TDB = trailing dimension of B):<ul>
@@ -166,10 +169,25 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Syntax 2</dt><dd>Computes the matrix operation: \( B = \alpha A op(B) \), or \( B = \alpha op(B) * A \). <div class="fragment"><div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), optional class(errors) err)</div>
+<dl class="section user"><dt>Syntax 2</dt><dd>Computes the matrix operation: B = alpha * A * B, or B = alpha B * A. <div class="fragment"><div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), optional class(errors) err)</div>
 <div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, complex(real64) alpha, real(real64) a(:), complex(real64) b(:,:), optional class(errors) err)</div>
 </div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lside</td><td>Set to true to apply matrix A from the left; else, set to false to apply matrix A from the left. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>A scalar multiplier. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>A K-element array containing the diagonal elements of A where K = MIN(M,P) if <code>lside</code> is true; else, if <code>lside</code> is false, K = MIN(N,P). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>On input, the M-by-N matrix B. On output, the resulting M-by-N matrix. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Syntax 3</dt><dd>Computes the sparse-matrix operation: B = alpha * A * B or B = alpha * B * A where A is a diagonal matrix and B is a sparse matrix. <div class="fragment"><div class="line"><span class="keyword">subroutine </span>diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), class(csr_matrix) b, optional class(errors) err)</div>
+</div><!-- fragment --> </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">lside</td><td>Set to true to apply matrix A from the left; else, set to false to apply matrix A from the left. </td></tr>
@@ -218,14 +236,15 @@ Public Member Functions</h2></td></tr>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Compute U * S * V**T</span></div>
 <div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1diag__mtx__mult.html">diag_mtx_mult</a>(.true., 1.0d0, s, vt) <span class="comment">! Compute: VT = S * V**T</span></div>
-<div class="line">    ac = matmul(u(:,1:2), vt)</div>
+<div class="line">    ac = <a class="code hl_interface" href="interfacelinalg_1_1matmul.html">matmul</a>(u(:,1:2), vt)</div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;U * S * V**T =&quot;</span></div>
 <div class="line">    <span class="keywordflow">do</span> i = 1, <span class="keyword">size</span>(ac, 1)</div>
 <div class="line">        print *, ac(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg_1_1diag__mtx__mult_html"><div class="ttname"><a href="interfacelinalg_1_1diag__mtx__mult.html">linalg::diag_mtx_mult</a></div><div class="ttdoc">Multiplies a diagonal matrix with another matrix or array.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00466">linalg.f90:466</a></div></div>
-<div class="ttc" id="ainterfacelinalg_1_1svd_html"><div class="ttname"><a href="interfacelinalg_1_1svd.html">linalg::svd</a></div><div class="ttdoc">Computes the singular value decomposition of a matrix A. The SVD is defined as: , where  is an M-by-M...</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02069">linalg.f90:2069</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1diag__mtx__mult_html"><div class="ttname"><a href="interfacelinalg_1_1diag__mtx__mult.html">linalg::diag_mtx_mult</a></div><div class="ttdoc">Multiplies a diagonal matrix with another matrix or array.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00552">linalg.f90:552</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1matmul_html"><div class="ttname"><a href="interfacelinalg_1_1matmul.html">linalg::matmul</a></div><div class="ttdoc">Performs sparse matrix multiplication C = A * B.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l05368">linalg.f90:5368</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1svd_html"><div class="ttname"><a href="interfacelinalg_1_1svd.html">linalg::svd</a></div><div class="ttdoc">Computes the singular value decomposition of a matrix A. The SVD is defined as: , where  is an M-by-M...</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02181">linalg.f90:2181</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">U =</div>
 <div class="line"> -0.47411577501825380      -0.81850539032073777      -0.32444284226152509</div>
@@ -243,7 +262,7 @@ Public Member Functions</h2></td></tr>
 <div class="line">  -1.0000000000000000       0.99999999999999967</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l00466">466</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l00552">552</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg_8f90_source.html">linalg.f90</a></li>
 </ul>

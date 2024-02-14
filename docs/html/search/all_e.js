@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['u_0',['u',['../structlinalg__immutable_1_1lu__results.html#ab1af96c7808037f63563e1bf912c4dad',1,'linalg_immutable::lu_results::u()'],['../structlinalg__immutable_1_1lu__results__cmplx.html#a7488afe2004b11c8fed4c517400fde98',1,'linalg_immutable::lu_results_cmplx::u()'],['../structlinalg__immutable_1_1svd__results.html#a582822c9765048fcb8632d72a6ed506a',1,'linalg_immutable::svd_results::u()'],['../structlinalg__immutable_1_1svd__results__cmplx.html#ae65cfdf6d19c3bbb3a7e425db266cb3c',1,'linalg_immutable::svd_results_cmplx::u()']]]
+  ['rank1_5fupdate_0',['rank1_update',['../interfacelinalg_1_1rank1__update.html',1,'linalg']]],
+  ['recip_5fmult_5farray_1',['recip_mult_array',['../interfacelinalg_1_1recip__mult__array.html',1,'linalg']]],
+  ['row_5findices_2',['row_indices',['../structlinalg_1_1csr__matrix.html#a1a2f379ce437fed824e6eca3627bd1de',1,'linalg::csr_matrix']]],
+  ['rz_5ffactor_3',['rz_factor',['../interfacelinalg_1_1rz__factor.html',1,'linalg']]]
 ];

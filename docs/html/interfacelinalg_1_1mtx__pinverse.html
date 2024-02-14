@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.7.4</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -170,7 +170,7 @@ Public Member Functions</h2></td></tr>
 <div class="line">    <span class="keyword">call </span><a class="code hl_interface" href="interfacelinalg_1_1mtx__pinverse.html">mtx_pinverse</a>(a, ai)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Notice, A**-1 * A is an identity matrix.</span></div>
-<div class="line">    c = matmul(ai, ao)</div>
+<div class="line">    c = <a class="code hl_interface" href="interfacelinalg_1_1matmul.html">matmul</a>(ai, ao)</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">! Display the inverse</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;Inverse:&quot;</span></div>
@@ -184,7 +184,8 @@ Public Member Functions</h2></td></tr>
 <div class="line">        print *, c(i,:)</div>
 <div class="line"><span class="keywordflow">    end do</span></div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg_1_1mtx__pinverse_html"><div class="ttname"><a href="interfacelinalg_1_1mtx__pinverse.html">linalg::mtx_pinverse</a></div><div class="ttdoc">Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix using the singular value decomposition o...</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l03026">linalg.f90:3026</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1matmul_html"><div class="ttname"><a href="interfacelinalg_1_1matmul.html">linalg::matmul</a></div><div class="ttdoc">Performs sparse matrix multiplication C = A * B.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l05368">linalg.f90:5368</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1mtx__pinverse_html"><div class="ttname"><a href="interfacelinalg_1_1mtx__pinverse.html">linalg::mtx_pinverse</a></div><div class="ttdoc">Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix using the singular value decomposition o...</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l03156">linalg.f90:3156</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 </div><!-- fragment --> The above program produces the following output. <div class="fragment"><div class="line">Inverse:</div>
 <div class="line"> 1.0000000000000000        0.0000000000000000        0.0000000000000000</div>
@@ -194,7 +195,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"> 0.0000000000000000       0.99999999999999967</div>
 </div><!-- fragment --> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l03026">3026</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l03156">3156</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg_8f90_source.html">linalg.f90</a></li>
 </ul>

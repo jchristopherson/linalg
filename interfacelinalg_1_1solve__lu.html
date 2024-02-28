@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.7.4</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -123,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afad4301d7bdc6341c9d14569c14214f8" id="r_afad4301d7bdc6341c9d14569c14214f8"><td class="memItemLeft" align="right" valign="top"><a id="afad4301d7bdc6341c9d14569c14214f8" name="afad4301d7bdc6341c9d14569c14214f8"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>solve_lu_vec_cmplx</b></td></tr>
 <tr class="separator:afad4301d7bdc6341c9d14569c14214f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ec5160a8bca4a734262bb308f9a72d" id="r_a76ec5160a8bca4a734262bb308f9a72d"><td class="memItemLeft" align="right" valign="top"><a id="a76ec5160a8bca4a734262bb308f9a72d" name="a76ec5160a8bca4a734262bb308f9a72d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>csr_lu_solve</b></td></tr>
+<tr class="separator:a76ec5160a8bca4a734262bb308f9a72d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Solves a system of LU-factored equations. </p>
@@ -143,7 +146,22 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section user"><dt>Notes</dt><dd>The routine is based upon the LAPACK routine DGETRS (ZGETRS in the complex case).</dd></dl>
+<dl class="section user"><dt>Sparse Syntax</dt><dd><div class="fragment"><div class="line"><span class="keyword">subroutine </span>solve_lu(class(msr_matrix) lu, integer(int32) ju(:), real(real64) b(:), real(real64) x(:), optional class(errors) err)</div>
+</div><!-- fragment --></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lu</td><td>The N-by-N LU-factored matrix from <a class="el" href="interfacelinalg_1_1lu__factor.html">lu_factor</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ju</td><td>The N-element U row tracking array from <a class="el" href="interfacelinalg_1_1lu__factor.html">lu_factor</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The N-element right-hand-side array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>The N-element solution array. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">err</td><td>An optional errors-based object that if provided can be used to retrieve information relating to any errors encountered during execution. If not provided, a default implementation of the errors class is used internally to provide error handling. Possible errors and warning messages that may be encountered are as follows.<ul>
+<li>LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are incorrect.</li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Notes</dt><dd>The dense routine is based upon the LAPACK routine DGETRS (ZGETRS in the complex case).</dd></dl>
 <dl class="section user"><dt>Usage</dt><dd>To solve a system of 3 equations of 3 unknowns using LU factorization, the following code will suffice. <div class="fragment"><div class="line"><span class="keyword">program</span> example</div>
 <div class="line">    <span class="keywordtype">use </span>iso_fortran_env</div>
 <div class="line">    <span class="keywordtype">use </span><a class="code hl_namespace" href="namespacelinalg.html">linalg</a></div>
@@ -182,8 +200,8 @@ Public Member Functions</h2></td></tr>
 <div class="line">    print <span class="stringliteral">&#39;(A)&#39;</span>, <span class="stringliteral">&quot;LU Solution: X = &quot;</span></div>
 <div class="line">    print <span class="stringliteral">&#39;(F8.4)&#39;</span>, (b(i), i = 1, <span class="keyword">size</span>(b))</div>
 <div class="line"><span class="keyword">end program</span></div>
-<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00732">linalg.f90:732</a></div></div>
-<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02291">linalg.f90:2291</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1lu__factor_html"><div class="ttname"><a href="interfacelinalg_1_1lu__factor.html">linalg::lu_factor</a></div><div class="ttdoc">Computes the LU factorization of an M-by-N matrix.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00843">linalg.f90:843</a></div></div>
+<div class="ttc" id="ainterfacelinalg_1_1solve__lu_html"><div class="ttname"><a href="interfacelinalg_1_1solve__lu.html">linalg::solve_lu</a></div><div class="ttdoc">Solves a system of LU-factored equations.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l02420">linalg.f90:2420</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 </div><!-- fragment --> The program generates the following output. <div class="fragment"><div class="line">LU Solution: X =</div>
 <div class="line"> 0.3333</div>
@@ -196,7 +214,7 @@ Public Member Functions</h2></td></tr>
 </ul>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l02291">2291</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linalg_8f90_source.html#l02420">2420</a> of file <a class="el" href="linalg_8f90_source.html">linalg.f90</a>.</p>
 </div><hr/>The documentation for this interface was generated from the following file:<ul>
 <li>D:/Code/linalg/src/<a class="el" href="linalg_8f90_source.html">linalg.f90</a></li>
 </ul>

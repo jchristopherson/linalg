@@ -1,5 +1,6 @@
 var namespaceblas =
 [
+    [ "ddot", "interfaceblas_1_1ddot.html", null ],
     [ "dgbmv", "interfaceblas_1_1dgbmv.html", null ],
     [ "dgemm", "interfaceblas_1_1dgemm.html", null ],
     [ "dgemv", "interfaceblas_1_1dgemv.html", null ],

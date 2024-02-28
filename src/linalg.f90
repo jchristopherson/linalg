@@ -187,6 +187,32 @@ module linalg
     public :: band_mtx_mult
     public :: band_mtx_to_full_mtx
     public :: band_diag_mtx_mult
+    public :: banded_to_dense
+    public :: dense_to_banded
+    public :: extract_diagonal
+    public :: csr_matrix
+    public :: msr_matrix
+    public :: size
+    public :: create_empty_csr_matrix
+    public :: create_empty_msr_matrix
+    public :: nonzero_count
+    public :: dense_to_csr
+    public :: diag_to_csr
+    public :: banded_to_csr
+    public :: csr_to_dense
+    public :: csr_to_msr
+    public :: msr_to_csr
+    public :: dense_to_msr
+    public :: msr_to_dense
+    public :: matmul
+    public :: operator(+)
+    public :: operator(-)
+    public :: operator(*)
+    public :: operator(/)
+    public :: assignment(=)
+    public :: transpose
+    public :: sparse_direct_solve
+    public :: pgmres_solver
     public :: LA_NO_OPERATION
     public :: LA_TRANSPOSE
     public :: LA_HERMITIAN_TRANSPOSE
@@ -198,6 +224,44 @@ module linalg
     public :: LA_OUT_OF_MEMORY_ERROR
     public :: LA_CONVERGENCE_ERROR
     public :: LA_INVALID_OPERATION_ERROR
+
+! ******************************************************************************
+! TYPES
+! ------------------------------------------------------------------------------
+    !> @brief A sparse matrix stored in compressed sparse row (CSR) format.
+    type :: csr_matrix
+        !> An M+1 element array containing the indices in V an JA at which the
+        !! requested row starts.
+        integer(int32), allocatable, dimension(:) :: row_indices
+        !> An NNZ-element array, where NNZ is the number of non-zero values,
+        !! containing the column indices of each value.
+        integer(int32), allocatable, dimension(:) :: column_indices
+        !> An NNZ-element array, where NNZ is the number of non-zero values,
+        !! containing the non-zero values of the matrix.
+        real(real64), allocatable, dimension(:) :: values
+        !> The number of columns in the matrix.
+        integer(int32), private :: n = 0
+    contains
+        !> @brief Gets the requested element from the matrix.
+        procedure, public :: get => csr_get_element
+    end type
+
+! ------------------------------------------------------------------------------
+    !> @brief A sparse matrix stored in modified sparse row format.  This format
+    !! is convenient for situations where the diagonal is fully populated.
+    type :: msr_matrix
+        !> @brief An NNZ-element array containing the index information.
+        integer(int32), allocatable, dimension(:) :: indices
+        !> @brief An NNZ-element array containing the non-zero values from the
+        !! matrix.  The first MIN(M,N) elements contain the diagonal.
+        real(real64), allocatable, dimension(:) :: values
+        !> @brief The number of rows in the matrix.
+        integer(int32), private :: m = 0
+        !> @brief The number of columns in the matrix.
+        integer(int32), private :: n = 0
+        !> @brief The number of nonzero values in the matrix.
+        integer(int32), private :: nnz = 0
+    end type
 
 ! ******************************************************************************
 ! CONSTANTS
@@ -337,8 +401,8 @@ end interface
 !> @brief Multiplies a diagonal matrix with another matrix or array.
 !!
 !! @par Syntax 1
-!! Computes the matrix operation: \f$ C = \alpha A op(B) + \beta C \f$,
-!! or \f$ C = \alpha op(B) A + \beta C \f$.
+!! Computes the matrix operation: C = alpha * A * op(B) + beta * C,
+!! or C = alpha * op(B) * A + beta * C.
 !! @code{.f90}
 !! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), real(real64) beta, real(real64) c(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, logical trans, real(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), real(real64) beta, complex(real64) c(:,:), optional class(errors) err)
@@ -349,10 +413,10 @@ end interface
 !!
 !! @param[in] lside Set to true to apply matrix A from the left; else, set
 !!  to false to apply matrix A from the left.
-!! @param[in] trans Set to true if \f$ op(B) = B^T \f$; else, set to false for
-!!  \f$ op(B) = B\f$.  In the complex case set to LA_TRANSPOSE if 
-!!  \f$ op(B) = B^T \f$, set to LA_HERMITIAN_TRANSPOSE if \f$ op(B) = B^H \f$, 
-!!  otherwise set to LA_NO_OPERATION if \f$ op(B) = B \f$.
+!! @param[in] trans Set to true if op(B) = B^T; else, set to false for
+!!  op(B) = B.  In the complex case set to LA_TRANSPOSE if 
+!!  op(B) = B^T, set to LA_HERMITIAN_TRANSPOSE if op(B) = B^H, 
+!!  otherwise set to LA_NO_OPERATION if op(B) = B.
 !! @param[in] alpha A scalar multiplier.
 !! @param[in] a A K-element array containing the diagonal elements of A
 !!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
@@ -375,14 +439,36 @@ end interface
 !!      incorrect.
 !!
 !! @par Syntax 2
-!! Computes the matrix operation: \f$ B = \alpha A op(B) \f$, or
-!! \f$ B = \alpha op(B) * A \f$.
+!! Computes the matrix operation: B = alpha * A * B, or
+!! B = alpha B * A.
 !! @code{.f90}
 !! subroutine diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), real(real64) b(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, complex(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
 !! subroutine diag_mtx_mult(logical lside, complex(real64) alpha, real(real64) a(:), complex(real64) b(:,:), optional class(errors) err)
 !! @endcode
 !!
+!! @param[in] lside Set to true to apply matrix A from the left; else, set
+!!  to false to apply matrix A from the left.
+!! @param[in] alpha A scalar multiplier.
+!! @param[in] a A K-element array containing the diagonal elements of A
+!!  where K = MIN(M,P) if @p lside is true; else, if @p lside is
+!!  false, K = MIN(N,P).
+!! @param[in] b On input, the M-by-N matrix B.  On output, the resulting
+!!  M-by-N matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
+!! @par Syntax 3
+!! Computes the sparse-matrix operation: B = alpha * A * B or B = alpha * B * A
+!! where A is a diagonal matrix and B is a sparse matrix.
+!! @code{.f90}
+!! subroutine diag_mtx_mult(logical lside, real(real64) alpha, real(real64) a(:), class(csr_matrix) b, optional class(errors) err)
+!! @endcode
 !! @param[in] lside Set to true to apply matrix A from the left; else, set
 !!  to false to apply matrix A from the left.
 !! @param[in] alpha A scalar multiplier.
@@ -472,6 +558,7 @@ interface diag_mtx_mult
     module procedure :: diag_mtx_mult_mtx2_cmplx
     module procedure :: diag_mtx_mult_mtx_mix
     module procedure :: diag_mtx_mult_mtx2_mix
+    module procedure :: diag_mtx_sparse_mult
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -672,8 +759,32 @@ end interface
 !!  - LA_SINGULAR_MATRIX_ERROR: Occurs as a warning if @p a is found to be
 !!      singular.
 !!
+!! @par Syntax (Sparse Matrices)
+!! @code{.f90}
+!! subroutine lu_factor(class(csr_matrix) a, type(msr_matrix) lu, integer(int32) ju(:), optional real(real64) droptol, optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] a The M-by-N sparse matrix to factor.
+!! @param[out] lu The factored matrix, stored in MSR format.  The diagonal is
+!!  stored inverted.
+!! @param[out] ju An M-element array used to track the starting row index of
+!!  the U matrix.
+!! @param[in] droptol An optional threshold value used to determine when
+    !!  to drop small terms as part of the factorization of matrix A.  The
+    !!  default value is set to the square root of machine precision (~1e-8).
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p ju is not sized correctly.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is improperly formatted.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p a is singular.
+!!
 !! @par Notes
-!! This routine utilizes the LAPACK routine DGETRF.
+!! The dense routine utilizes the LAPACK routine DGETRF.
 !!
 !! @par See Also
 !! - [Wikipedia](https://en.wikipedia.org/wiki/LU_decomposition)
@@ -732,6 +843,7 @@ end interface
 interface lu_factor
     module procedure :: lu_factor_dbl
     module procedure :: lu_factor_cmplx
+    module procedure :: csr_lu_factor
 end interface
 
 !> @brief Extracts the L and U matrices from the condensed [L\\U] storage
@@ -2230,9 +2342,26 @@ end interface
 !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
 !!      incorrect.
 !!
+!! @par Sparse Syntax
+!! @code{.f90}
+!! subroutine solve_lu(class(msr_matrix) lu, integer(int32) ju(:), real(real64) b(:), real(real64) x(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] lu The N-by-N LU-factored matrix from @ref lu_factor.
+!! @param[in] ju The N-element U row tracking array from @ref lu_factor.
+!! @param[in] b The N-element right-hand-side array.
+!! @param[out] x The N-element solution array.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the input array sizes are
+!!      incorrect.
+!!
 !! @par Notes
-!! The routine is based upon the LAPACK routine DGETRS (ZGETRS in the complex
-!! case).
+!! The dense routine is based upon the LAPACK routine DGETRS (ZGETRS in the 
+!! complex case).
 !!
 !! @par Usage
 !! To solve a system of 3 equations of 3 unknowns using LU factorization,
@@ -2293,6 +2422,7 @@ interface solve_lu
     module procedure :: solve_lu_mtx_cmplx
     module procedure :: solve_lu_vec
     module procedure :: solve_lu_vec_cmplx
+    module procedure :: csr_lu_solve
 end interface
 
 ! ------------------------------------------------------------------------------
@@ -4004,6 +4134,82 @@ interface band_diag_mtx_mult
     module procedure :: band_diag_mtx_mult_cmplx
 end interface
 
+!> @brief Converts a banded matrix to a dense matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine banded_to_dense(integer(int32) m, integer(int32) kl, integer(int32) ku, real(real64) a(:,:), real(real64) x(:,:), optional class(errors) err)
+!! subroutine banded_to_dense(integer(int32) m, integer(int32) kl, integer(int32) ku, complex(real64) a(:,:), complex(real64) x(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] m The number of rows in the matrix.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[in] a The (KL+KU+1)-by-N banded matrix.
+!! @param[out] x The M-by-N dense matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+!!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p ku + @p kl + 1 is not equal to
+!!      size(a, 2).
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x is not sized correctly.
+interface banded_to_dense
+    module procedure :: banded_to_dense_dbl
+    module procedure :: banded_to_dense_cmplx
+end interface
+
+!> @brief Converts a dense matrix to a banded matrix.
+!!
+!! @par Syntax
+!! @code{.f90}
+!! subroutine dense_to_banded(real(real64) a(:,:), integer(int32) kl, integer(int32) ku, real(real64) x(:,:), optional class(errors) err)
+!! subroutine dense_to_banded(complex(real64) a(:,:), integer(int32) kl, integer(int32) ku, complex(real64) x(:,:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] m The M-by-N dense matrix.
+!! @param[in] kl The number of subdiagonals.  Must be at least 0.
+!! @param[in] ku The number of superdiagonals.  Must be at least 0.
+!! @param[out] x The (KL+KU+1)-by-N banded matrix.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_INVALID_INPUT_ERROR: Occurs if either @p ku or @p kl are not zero or
+!!      greater.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @p x is not sized correctly.
+interface dense_to_banded
+    module procedure :: dense_to_banded_dbl
+    module procedure :: dense_to_banded_cmplx
+end interface
+
+!> @brief Extracts the diagonal of a matrix.
+!! 
+!! @par Syntax
+!! @code{.f90}
+!! subroutine extract_diagonal(real(real64) a(:,:), real(real64) diag(:), optional class(errors) err)
+!! subroutine extract_diagonal(complex(real64) a(:,:), complex(real64) diag(:), optional class(errors) err)
+!! subroutine extract_diagonal(class(csr_matrix) a, real(real64) diag(:), optional class(errors) err)
+!! @endcode
+!!
+!! @param[in] a The M-by-N matrix.
+!! @param[out] diag: The MIN(M, N) element array for the diagonal elements.
+!! @param[in,out] err An optional errors-based object that if provided can be
+!!  used to retrieve information relating to any errors encountered during
+!!  execution.  If not provided, a default implementation of the errors
+!!  class is used internally to provide error handling.  Possible errors and
+!!  warning messages that may be encountered are as follows.
+!!  - LA_ARRAY_SIZE_ERROR: Occurs if @diag is not sized correctly.
+interface extract_diagonal
+    module procedure :: extract_diagonal_dbl
+    module procedure :: extract_diagonal_cmplx
+    module procedure :: extract_diagonal_csr
+end interface
+
 ! ******************************************************************************
 ! LINALG_BASIC.F90
 ! ------------------------------------------------------------------------------
@@ -4125,6 +4331,14 @@ interface
         complex(real64), intent(in) :: alpha
         real(real64), intent(in), dimension(:) :: a
         complex(real64), intent(inout), dimension(:,:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine diag_mtx_sparse_mult(lside, alpha, a, b, err)
+        logical, intent(in) :: lside
+        real(real64), intent(in) :: alpha
+        real(real64), intent(in), dimension(:) :: a
+        type(csr_matrix), intent(inout) :: b
         class(errors), intent(inout), optional, target :: err
     end subroutine
     
@@ -4253,6 +4467,48 @@ interface
         complex(real64), intent(in) :: alpha
         complex(real64), intent(inout), dimension(:,:) :: a
         complex(real64), intent(in), dimension(:) :: b
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)
+        integer(int32), intent(in) :: m, kl, ku
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)
+        integer(int32), intent(in) :: m, kl, ku
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine dense_to_banded_dbl(a, kl, ku, x, err)
+        real(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        real(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine dense_to_banded_cmplx(a, kl, ku, x, err)
+        complex(real64), intent(in), dimension(:,:) :: a
+        integer(int32), intent(in) :: kl, ku
+        complex(real64), intent(out), dimension(:,:) :: x
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine extract_diagonal_dbl(a, diag, err)
+        ! Arguments
+        real(real64), intent(in), dimension(:,:) :: a
+        real(real64), intent(out), dimension(:) :: diag
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
+
+    module subroutine extract_diagonal_cmplx(a, diag, err)
+        ! Arguments
+        complex(real64), intent(in), dimension(:,:) :: a
+        complex(real64), intent(out), dimension(:) :: diag
         class(errors), intent(inout), optional, target :: err
     end subroutine
 end interface
@@ -5052,4 +5308,437 @@ interface
 
 end interface
 
+! ******************************************************************************
+! LINALG_SPARSE.F90
+! ------------------------------------------------------------------------------
+    !> @brief Determines the number of nonzero entries in a sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! integer(int32) pure function nonzero_count(class(csr_matrix) x)
+    !! integer(int32) pure function nonzero_count(class(msr_matrix) x)
+    !! @endcode
+    !!
+    !! @param[in] x The sparse matrix.
+    !! @return The number of non-zero elements in the sparse matrix.
+    interface nonzero_count
+        module procedure :: nonzero_count_csr
+        module procedure :: nonzero_count_msr
+    end interface
+
+    !> @brief Determines the size of the requested dimension of the supplied
+    !! sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! integer(int32) pure function size(class(csr_matrix) x, integer(int32) dim)
+    !! integer(int32) pure function size(class(msr_matrix) x, integer(int32) dim)
+    !! @endcode
+    !!
+    !! @param[in] x The sparse matrix.
+    !! @param[in] dim Either 1 (row) or 2(column).
+    !!
+    !! @return The size of the requested dimension.
+    interface size
+        module procedure :: csr_size
+        module procedure :: msr_size
+    end interface
+
+    !> @brief Performs sparse matrix multiplication C = A * B.
+    !!
+    !! @par Syntax 1
+    !! @code{.f90}
+    !! type(csr_matrix) function matmul(class(csr_matrix) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The M-by-K matrix A.
+    !! @param[in] b The K-by-N matrix B.
+    !!
+    !! @return The M-by-N matrix C.
+    !!
+    !! @par Syntax 2
+    !! @code{.f90}
+    !! real(real64)(:) function matmul(class(csr_matrix) a, real(real64) b(:))
+    !! @endcode
+    !!
+    !! @param[in] a The M-by-N matrix A.
+    !! @param[in] b The N-element array B.
+    !!
+    !! @return The M-element array C.
+    interface matmul
+        module procedure :: csr_mtx_mtx_mult
+        module procedure :: csr_mtx_vec_mult
+    end interface
+
+    !> @brief Adds two sparse matrices.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(+)(class(csr_matrix) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(+)
+        module procedure :: csr_mtx_add
+    end interface
+
+    !> @brief Subtracts two sparse matrices.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(-)(class(csr_matrix) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(-)
+        module procedure :: csr_mtx_sub
+    end interface
+
+    !> @brief Multiplies a sparse matrix and a scalar.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(*)(class(csr_matrix) a, real(real64) b)
+    !! type(csr_matrix) operator(*)(real(real64) a, class(csr_matrix) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(*)
+        module procedure :: csr_mtx_mult_scalar_1
+        module procedure :: csr_mtx_mult_scalar_2
+    end interface
+
+    !> @brief Multiplies a sparse matrix by a scalar.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) operator(/)(class(csr_matrix) a, real(real64) b)
+    !! @endcode
+    !!
+    !! @param[in] a The left-hand-side argument.
+    !! @param[in] b The right-hand-side argument.
+    !!
+    !! @return The resulting matrix.
+    interface operator(/)
+        module procedure :: csr_mtx_divide_scalar_1
+    end interface
+
+    !> @brief Assigns a sparse matrix to a dense matrix, or vice-versa.
+    interface assignment(=)
+        module procedure :: csr_assign_to_dense
+        module procedure :: dense_assign_to_csr
+        module procedure :: msr_assign_to_dense
+        module procedure :: dense_assign_to_msr
+        module procedure :: csr_assign_to_msr
+        module procedure :: msr_assign_to_csr
+    end interface
+
+    !> @brief Provides the transpose of a sparse matrix.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! type(csr_matrix) function transpose(class(csr_matrix) a)
+    !! @endcode
+    !!
+    !! @param[in] a The input matrix.
+    !! @return The resulting matrix.
+    interface transpose
+        module procedure :: csr_transpose
+    end interface
+
+    !> @brief Provides a direct solution to a square, sparse system.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! subroutine solve_direct_sparse(class(csr_matrix) a, real(real64) b(:), real(real64) x(:), optional real(real64) droptol, optional class(errors) err)
+    !! @endcode
+    !!
+    !! @param[in] a The N-by-N sparse matrix to factor.
+    !! @param[in] b The N-element right-hand-side array.
+    !! @param[out] x The N-element solution array.
+    !! @param[in] droptol An optional threshold value used to determine when
+    !!  to drop small terms as part of the factorization of matrix A.  The
+    !!  default value is set to the square root of machine precision (~1e-8).
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if @p is not square, or if there is a
+    !!      mismatch in dimensions between @p a, @p x, and @p b.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    !!  - LA_MATRIX_FORMAT_ERROR: Occurs if @p a is improperly formatted.
+    !!  - LA_SINGULAR_MATRIX_ERROR: Occurs if @p a is singular.
+    interface sparse_direct_solve
+        module procedure :: csr_solve_sparse_direct
+    end interface
+
+    !> @brief A preconditioned GMRES solver.
+    !!
+    !! @par Syntax
+    !! @code{.f90}
+    !! subroutine pgmres_solver( &
+    !!  class(csr_matrix) a, &
+    !!  class(msr_matrix) lu, &
+    !!  integer(int32) ju(:), &
+    !!  real(real64) b(:), &
+    !!  real(real64) x(:), &
+    !!  optional integer(int32) im, &
+    !!  optional real(real64) tol, &
+    !!  optional integer(int32) maxits, &
+    !!  optional integer(int32) iout, &
+    !!  optional class(errors) err)
+    !! @endcode
+    !!
+    !! @param[in] a The original N-by-N matrix.
+    !! @param[in] lu The N-by-N LU-factored matrix of the approximation to the
+    !!  system as output by @ref lu_factor.
+    !! @param[in] ju The N-element U row tracking array output by 
+    !!  @ref lu_factor.
+    !! @param[in,out] b On input, the N-element right-hand-side array.  On 
+    !!  output, this array is overwritten as it is used as in-place storage
+    !!  by the PGMRES algorithm.
+    !! @param[out] x The N-element solution array.
+    !! @param[in] im An optional parameter specifying the size of the Krylov
+    !!  subspace.  This value should not exceed 50.
+    !! @param[in] tol An optional parameter specifying the convergence tolerance
+    !!  against which the Euclidean norm of the residual is checked.  The 
+    !!  default value is the square root of machine precision.
+    !! @param[in] maxits An optional parameter specifying the maximum number
+    !!  of iterations allowed.  The default is 100.
+    !! @param[in] iout An optional parameter used to specify the device to 
+    !!  which status updates will be written.  If no updates are requested,
+    !!  a value less than or equal to zero should be supplied.  The default
+    !!  is zero such that no updates will be provided.
+    !! @param[in,out] err An optional errors-based object that if provided can 
+    !!  be used to retrieve information relating to any errors encountered 
+    !!  during execution.  If not provided, a default implementation of the 
+    !!  errors class is used internally to provide error handling.  Possible 
+    !!  errors and warning messages that may be encountered are as follows.
+    !!  - LA_ARRAY_SIZE_ERROR: Occurs if any of the arrays and/or matrices are
+    !!      not sized correctly.
+    !!  - LA_OUT_OF_MEMORY_ERROR: Occurs if there is an issue with internal
+    !!      memory allocations.
+    interface pgmres_solver
+        module procedure :: csr_pgmres_solver
+    end interface
+
+    interface
+        module function csr_get_element(this, i, j) result(rst)
+            class(csr_matrix), intent(in) :: this
+            integer(int32), intent(in) :: i, j
+            real(real64) :: rst
+        end function
+        pure module function csr_size(x, dim) result(rst)
+            class(csr_matrix), intent(in) :: x
+            integer(int32), intent(in) :: dim
+            integer(int32) :: rst
+        end function
+
+        module function create_empty_csr_matrix(m, n, nnz, err) result(rst)
+            integer(int32), intent(in) :: m, n, nnz
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        pure module function nonzero_count_csr(x) result(rst)
+            class(csr_matrix), intent(in) :: x
+            integer(int32) :: rst
+        end function
+
+        module function dense_to_csr(a, err) result(rst)
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module subroutine csr_to_dense(a, x, err)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:,:) :: x
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module function csr_mtx_mtx_mult(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_vec_mult(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in), dimension(:) :: b
+            real(real64), allocatable, dimension(:) :: rst
+        end function
+
+        module function csr_mtx_add(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_sub(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a, b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_mult_scalar_1(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_mult_scalar_2(a, b) result(rst)
+            real(real64), intent(in) :: a
+            class(csr_matrix), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_mtx_divide_scalar_1(a, b) result(rst)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in) :: b
+            type(csr_matrix) :: rst
+        end function
+
+        module function csr_transpose(a) result(rst)
+            class(csr_matrix), intent(in) :: a
+            type(csr_matrix) :: rst
+        end function
+
+        module subroutine extract_diagonal_csr(a, diag, err)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:) :: diag
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
+            class(csr_matrix), intent(in) :: a
+            real(real64), intent(in), dimension(:) :: b
+            real(real64), intent(out), dimension(:) :: x
+            real(real64), intent(in), optional :: droptol
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module function diag_to_csr(a, err) result(rst)
+            real(real64), intent(in), dimension(:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module function banded_to_csr(m, ml, mu, a, err) result(rst)
+            integer(int32), intent(in) :: m, ml, mu
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module subroutine csr_assign_to_dense(dense, sparse)
+            real(real64), intent(out), dimension(:,:) :: dense
+            class(csr_matrix), intent(in) :: sparse
+        end subroutine
+
+        module subroutine dense_assign_to_csr(sparse, dense)
+            type(csr_matrix), intent(out) :: sparse
+            real(real64), intent(in), dimension(:,:) :: dense
+        end subroutine
+
+        pure module function msr_size(x, dim) result(rst)
+            class(msr_matrix), intent(in) :: x
+            integer(int32), intent(in) :: dim
+            integer(int32) :: rst
+        end function
+
+        pure module function nonzero_count_msr(x) result(rst)
+            class(msr_matrix), intent(in) :: x
+            integer(int32) :: rst
+        end function
+
+        module function create_empty_msr_matrix(m, n, nnz, err) result(rst)
+            integer(int32), intent(in) :: m, n, nnz
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
+
+        module function csr_to_msr(a, err) result(rst)
+            class(csr_matrix), intent(in) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
+
+        module function msr_to_csr(a, err) result(rst)
+            class(msr_matrix), intent(in) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
+
+        module function dense_to_msr(a, err) result(rst)
+            real(real64), intent(in), dimension(:,:) :: a
+            class(errors), intent(inout), optional, target :: err
+            type(msr_matrix) :: rst
+        end function
+
+        module subroutine msr_to_dense(a, x, err)
+            ! Arguments
+            class(msr_matrix), intent(in) :: a
+            real(real64), intent(out), dimension(:,:) :: x
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine msr_assign_to_dense(dense, msr)
+            real(real64), intent(out), dimension(:,:) :: dense
+            class(msr_matrix), intent(in) :: msr
+        end subroutine
+
+        module subroutine dense_assign_to_msr(msr, dense)
+            type(msr_matrix), intent(out) :: msr
+            real(real64), intent(in), dimension(:,:) :: dense
+        end subroutine
+
+        module subroutine csr_assign_to_msr(msr, csr)
+            type(msr_matrix), intent(out) :: msr
+            class(csr_matrix), intent(in) :: csr
+        end subroutine
+
+        module subroutine msr_assign_to_csr(csr, msr)
+            type(csr_matrix), intent(out) :: csr
+            class(msr_matrix), intent(in) :: msr
+        end subroutine
+
+        module subroutine csr_lu_factor(a, lu, ju, droptol, err)
+            class(csr_matrix), intent(in) :: a
+            type(msr_matrix), intent(out) :: lu
+            integer(int32), intent(out), dimension(:) :: ju
+            real(real64), intent(in), optional :: droptol
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine csr_lu_solve(lu, ju, b, x, err)
+            class(msr_matrix), intent(in) :: lu
+            integer(int32), intent(in), dimension(:) :: ju
+            real(real64), intent(in), dimension(:) :: b
+            real(real64), intent(out), dimension(:) :: x
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+
+        module subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, &
+            iout, err)
+            class(csr_matrix), intent(in) :: a
+            class(msr_matrix), intent(in) :: lu
+            integer(int32), intent(in), dimension(:) :: ju
+            real(real64), intent(inout), dimension(:) :: b
+            real(real64), intent(out), dimension(:) :: x
+            integer(int32), intent(in), optional :: im, maxits, iout
+            real(real64), intent(in), optional :: tol
+            class(errors), intent(inout), optional, target :: err
+        end subroutine
+    end interface
+
+! ------------------------------------------------------------------------------
 end module

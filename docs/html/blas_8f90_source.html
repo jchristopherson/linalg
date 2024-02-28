@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.7.4</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -242,8 +242,18 @@ $(function(){initNavTree('blas_8f90_source.html',''); initResizable(); });
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="keywordtype">complex(real64)</span>, <span class="keywordtype">intent(inout)</span> :: y(*)</div>
 </div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">end interface</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">end module</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="" data-end="">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="interfaceblas_1_1ddot.html">  111</a></span>        <span class="keyword">function </span><a class="code hl_interface" href="interfaceblas_1_1ddot.html">ddot</a>(n, dx, incx, dy, incy) <span class="keyword">result</span>(rst)</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keywordtype">use </span>iso_fortran_env, <span class="keywordtype">only</span> : int32, real64</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span> :: n, incx, incy</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keywordtype">            real</span>(real64), <span class="keywordtype">intent(in)</span> :: dx(*), dy(*)</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keywordtype">            real</span>(real64) :: rst</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">end function</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">end interface</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">end module</span></div>
+<div class="ttc" id="ainterfaceblas_1_1ddot_html"><div class="ttname"><a href="interfaceblas_1_1ddot.html">blas::ddot</a></div><div class="ttdef"><b>Definition</b> <a href="#l00111">blas.f90:111</a></div></div>
 <div class="ttc" id="ainterfaceblas_1_1dgbmv_html"><div class="ttname"><a href="interfaceblas_1_1dgbmv.html">blas::dgbmv</a></div><div class="ttdef"><b>Definition</b> <a href="#l00093">blas.f90:93</a></div></div>
 <div class="ttc" id="ainterfaceblas_1_1dgemm_html"><div class="ttname"><a href="interfaceblas_1_1dgemm.html">blas::dgemm</a></div><div class="ttdef"><b>Definition</b> <a href="#l00006">blas.f90:6</a></div></div>
 <div class="ttc" id="ainterfaceblas_1_1dgemv_html"><div class="ttname"><a href="interfaceblas_1_1dgemv.html">blas::dgemv</a></div><div class="ttdef"><b>Definition</b> <a href="#l00015">blas.f90:15</a></div></div>

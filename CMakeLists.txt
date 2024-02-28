@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.7.4
+  VERSION 1.8.0
 )
 
 # Get helper macros and functions
@@ -36,9 +36,6 @@ target_link_libraries(
   ${LAPACK_LIBRARIES}
 )
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
-
-# Installation
-add_subdirectory(install)
 
 # Testing
 option(BUILD_TESTING "Build tests")

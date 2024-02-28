@@ -1,14 +1,13 @@
 var searchData=
 [
-  ['solve_5fcholesky_0',['solve_cholesky',['../interfacelinalg_1_1solve__cholesky.html',1,'linalg']]],
-  ['solve_5fleast_5fsquares_1',['solve_least_squares',['../interfacelinalg_1_1solve__least__squares.html',1,'linalg']]],
-  ['solve_5fleast_5fsquares_5ffull_2',['solve_least_squares_full',['../interfacelinalg_1_1solve__least__squares__full.html',1,'linalg']]],
-  ['solve_5fleast_5fsquares_5fsvd_3',['solve_least_squares_svd',['../interfacelinalg_1_1solve__least__squares__svd.html',1,'linalg']]],
-  ['solve_5flq_4',['solve_lq',['../interfacelinalg_1_1solve__lq.html',1,'linalg']]],
-  ['solve_5flu_5',['solve_lu',['../interfacelinalg_1_1solve__lu.html',1,'linalg']]],
-  ['solve_5fqr_6',['solve_qr',['../interfacelinalg_1_1solve__qr.html',1,'linalg']]],
-  ['solve_5ftriangular_5fsystem_7',['solve_triangular_system',['../interfacelinalg_1_1solve__triangular__system.html',1,'linalg']]],
-  ['sort_8',['sort',['../interfacelinalg_1_1sort.html',1,'linalg']]],
-  ['svd_9',['svd',['../interfacelinalg_1_1svd.html',1,'linalg']]],
-  ['swap_10',['swap',['../interfacelinalg_1_1swap.html',1,'linalg']]]
+  ['matmul_0',['matmul',['../interfacelinalg_1_1matmul.html',1,'linalg']]],
+  ['msr_5fmatrix_1',['msr_matrix',['../structlinalg_1_1msr__matrix.html',1,'linalg']]],
+  ['msrcsr_2',['msrcsr',['../interfacesparskit_1_1msrcsr.html',1,'sparskit']]],
+  ['mtx_5finverse_3',['mtx_inverse',['../interfacelinalg_1_1mtx__inverse.html',1,'linalg']]],
+  ['mtx_5fmult_4',['mtx_mult',['../interfacelinalg_1_1mtx__mult.html',1,'linalg']]],
+  ['mtx_5fpinverse_5',['mtx_pinverse',['../interfacelinalg_1_1mtx__pinverse.html',1,'linalg']]],
+  ['mtx_5frank_6',['mtx_rank',['../interfacelinalg_1_1mtx__rank.html',1,'linalg']]],
+  ['mult_5flq_7',['mult_lq',['../interfacelinalg_1_1mult__lq.html',1,'linalg']]],
+  ['mult_5fqr_8',['mult_qr',['../interfacelinalg_1_1mult__qr.html',1,'linalg']]],
+  ['mult_5frz_9',['mult_rz',['../interfacelinalg_1_1mult__rz.html',1,'linalg']]]
 ];

@@ -35,7 +35,12 @@ var NAVTREE =
     ] ],
     [ "Data Types", "annotated.html", [
       [ "Data Types List", "annotated.html", "annotated_dup" ],
-      [ "Data Type Index", "classes.html", null ]
+      [ "Data Type Index", "classes.html", null ],
+      [ "Data Fields", "functions.html", [
+        [ "All", "functions.html", null ],
+        [ "Functions/Subroutines", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ]
+      ] ]
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
@@ -50,7 +55,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"linalg__basic_8f90_source.html"
+"linalg_8h.html#a3c958fe274f8d1663dd0188455a5fe15"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

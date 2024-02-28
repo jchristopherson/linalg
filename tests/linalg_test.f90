@@ -12,6 +12,7 @@ program main
     use test_lu
     use test_sort
     use test_lq
+    use test_sparse
 
     ! Local Variables
     logical :: rst
@@ -288,6 +289,7 @@ program main
     rst = test_lq_mult_right_cmplx_ud()
     if (.not.rst) flag = 85
 
+    ! Banded Matrices
     rst = test_banded_mtx_mult_dbl()
     if (.not.rst) flag = 86
 
@@ -299,6 +301,58 @@ program main
 
     rst = test_band_diag_mtx_mult_cmplx()
     if (.not.rst) flag = 89
+
+    ! Sparse Matrices
+    rst = test_csr_1()
+    if (.not.rst) flag = 90
+
+    rst = test_csr_mult_1()
+    if (.not.rst) flag = 91
+
+    rst = test_csr_mult_2()
+    if (.not.rst) flag = 92
+
+    rst = test_csr_add_1()
+    if (.not.rst) flag = 93
+
+    rst = test_csr_subtract_1()
+    if (.not.rst) flag = 94
+
+    rst = test_csr_scalar_mult_1()
+    if (.not.rst) flag = 95
+
+    rst = test_csr_scalar_divide_1()
+    if (.not.rst) flag = 96
+
+    rst = test_csr_transpose_1()
+    if (.not.rst) flag = 97
+
+    rst = test_csr_diag_mult_1()
+    if (.not.rst) flag = 98
+
+    rst = test_csr_diag_mult_2()
+    if (.not.rst) flag = 99
+
+    rst = test_csr_sparse_direct_solve_1()
+    if (.not.rst) flag = 100
+
+    rst = test_diag_to_csr_1()
+    if (.not.rst) flag = 101
+
+    rst = test_banded_to_csr_1()
+    if (.not.rst) flag = 102
+
+    rst = test_extract_diagonal_csr_1()
+    if (.not.rst) flag = 103
+
+    rst = test_msr_1()
+    if (.not.rst) flag = 104
+
+    rst = test_csr_lu_factor_1()
+    if (.not.rst) flag = 105
+
+    rst = test_pgmres_1()
+    if (.not.rst) flag = 106
 
     ! End
     if (flag /= 0) stop flag

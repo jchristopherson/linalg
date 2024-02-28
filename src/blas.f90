@@ -107,5 +107,12 @@ module blas
             complex(real64), intent(in) :: alpha, beta, a(lda,*), x(*)
             complex(real64), intent(inout) :: y(*)
         end subroutine
+
+        function DDOT(n, dx, incx, dy, incy) result(rst)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx, incy
+            real(real64), intent(in) :: dx(*), dy(*)
+            real(real64) :: rst
+        end function
     end interface
 end module

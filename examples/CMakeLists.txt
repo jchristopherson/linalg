@@ -66,11 +66,17 @@ target_link_libraries(lq_mult_example linalg)
 add_executable(lq_example linalg_lq_example.f90)
 target_link_libraries(lq_example linalg)
 
+# Sparse Direct Solve Example
+add_executable(sparse_direct_example linalg_sparse_direct_example.f90)
+target_link_libraries(sparse_direct_example linalg)
+
 # --------------------
 # C API Eigenvalue Example
-include_directories(${PROJECT_SOURCE_DIR}/include)
-add_executable(c_eigen_example c_linalg_eigen_example.c)
-target_link_libraries(c_eigen_example linalg)
+if (${BUILD_C_API})
+    include_directories(${PROJECT_SOURCE_DIR}/include)
+    add_executable(c_eigen_example c_linalg_eigen_example.c)
+    target_link_libraries(c_eigen_example linalg)
 
-add_executable(c_lu_example c_linalg_lu_example.c)
-target_link_libraries(c_lu_example linalg)
+    add_executable(c_lu_example c_linalg_lu_example.c)
+    target_link_libraries(c_lu_example linalg)
+endif()

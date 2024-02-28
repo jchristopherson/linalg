@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['trace_0',['trace',['../interfacelinalg_1_1trace.html',1,'linalg']]],
-  ['tri_5fmtx_5fmult_1',['tri_mtx_mult',['../interfacelinalg_1_1tri__mtx__mult.html',1,'linalg']]]
+  ['operator_28_2a_29_0',['operator(*)',['../interfacelinalg_1_1operator_07_5_08.html',1,'linalg']]],
+  ['operator_28_2b_29_1',['operator(+)',['../interfacelinalg_1_1operator_07_09_08.html',1,'linalg']]],
+  ['operator_28_2d_29_2',['operator(-)',['../interfacelinalg_1_1operator_07-_08.html',1,'linalg']]],
+  ['operator_28_2f_29_3',['operator(/)',['../interfacelinalg_1_1operator_07_2_08.html',1,'linalg']]]
 ];

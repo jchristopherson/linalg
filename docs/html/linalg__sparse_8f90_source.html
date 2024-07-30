@@ -34,7 +34,7 @@ MathJax.Hub.Config({
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.0</span>
+   <div id="projectname">linalg<span id="projectnumber">&#160;1.8.1</span>
    </div>
    <div id="projectbrief">A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</div>
   </td>
@@ -1247,318 +1247,393 @@ $(function(){initNavTree('linalg__sparse_8f90_source.html',''); initResizable();
 <div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>    csr = msr_to_csr(msr)</div>
 <div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span><span class="keyword">end subroutine</span></div>
 <div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span> </div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span><span class="comment">! ******************************************************************************</span></div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span><span class="comment">! LU PRECONDITIONER ROUTINES</span></div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span><span class="keyword">module</span> subroutine csr_lu_factor(a, lu, ju, droptol, err)</div>
-<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>    <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>    <span class="keywordtype">class</span>(csr_matrix), <span class="keywordtype">intent(in)</span> :: a</div>
-<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>    <span class="keywordtype">type</span>(msr_matrix), <span class="keywordtype">intent(out)</span> :: lu</div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: droptol</div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span> </div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>    <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>    <span class="keywordtype">integer(int32)</span> :: i, m, n, nn, nnz, lfil, iwk, ierr, flag</div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:)</span> :: jlu, jw</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:)</span> :: alu, w</div>
-<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span><span class="keywordtype">    real</span>(real64) :: dt</div>
-<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>    </div>
-<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>    <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        errmgr =&gt; err</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>        errmgr =&gt; deferr</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(droptol)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>        dt = droptol</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        dt = sqrt(epsilon(dt))</div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span><span class="keyword">module</span> function create_csr_matrix(m, n, rows, cols, vals, err) result(rst)</div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>    <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span> :: m, n</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: rows, cols</div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: vals</div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>    <span class="keywordtype">type</span>(csr_matrix) :: rst</div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span> </div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>    <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>    <span class="keywordtype">integer(int32)</span> :: i, flag, nnz</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:)</span> :: ir</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>    </div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>    <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        errmgr =&gt; err</div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>        errmgr =&gt; deferr</div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>    nnz = <span class="keyword">size</span>(rows)</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span> </div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>    <span class="comment">! Input Checking</span></div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>    <span class="keywordflow">if</span> (m &lt; 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>            <span class="stringliteral">&quot;The number of rows must be a positive value.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>            la_invalid_input_error)</div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        <span class="keywordflow">return</span></div>
 <div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>    m = <span class="keyword">size</span>(a, 1)</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>    n = <span class="keyword">size</span>(a, 2)</div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>    nnz = nonzero_count(a)</div>
-<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span> </div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>    <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(ju) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>            <span class="stringliteral">&quot;U row tracking array is not sized correctly.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span> </div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>    <span class="comment">! Parameter Determination</span></div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>    lfil = 1</div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>    <span class="keywordflow">do</span> i = 1, m</div>
-<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>        lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))</div>
-<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span><span class="keywordflow">    end do</span></div>
-<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>    iwk = max(lfil * m, nnz)  <span class="comment">! somewhat arbitrary - can be adjusted</span></div>
-<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span> </div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    <span class="comment">! Local Memory Allocation</span></div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>    <span class="keyword">allocate</span>(alu(iwk), w(n+1), jlu(iwk), jw(2 * n), stat = flag)</div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span> </div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>    <span class="comment">! Factorization</span></div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>    <span class="keywordflow">do</span></div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>        <span class="comment">! Factor the matrix</span></div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>        <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1ilut.html">ilut</a>(n, a%values, a%column_indices, a%row_indices, lfil, dt, &amp;</div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>            alu, jlu, ju, iwk, w, jw, ierr)</div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span> </div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        <span class="comment">! Check the error flag</span></div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>        <span class="keywordflow">if</span> (ierr == 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>            <span class="comment">! Success</span></div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>            <span class="keywordflow">exit</span></div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr &gt; 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>            <span class="comment">! Zero pivot</span></div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -1) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>            <span class="comment">! The input matrix is not formatted correctly</span></div>
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>            <span class="keywordflow">go to</span> 20</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -2 .or. ierr == -3) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>            <span class="comment">! ALU and JLU are too small - try something larger</span></div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>            <span class="comment">! This is the main reason for the loop - to offload worrying about</span></div>
-<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>            <span class="comment">! workspace size from the user</span></div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>            iwk = min(iwk + m + n, m * n)</div>
-<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>            <span class="keyword">deallocate</span>(alu)</div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>            <span class="keyword">deallocate</span>(jlu)</div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>            <span class="keyword">allocate</span>(alu(iwk), jlu(iwk), stat = flag)</div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>            <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
-<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -4) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>            <span class="comment">! Illegal value for LFIL - reset and try again</span></div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>            lfil = n</div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -5) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>            <span class="comment">! Zero row encountered</span></div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>            <span class="keywordflow">go to</span> 30</div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>            <span class="comment">! We should never get here, but just in case</span></div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>            <span class="keywordflow">go to</span> 40</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span><span class="keywordflow">        end if</span></div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span><span class="keywordflow">    end do</span></div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span> </div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>    <span class="comment">! Determine the actual number of non-zero elements</span></div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>    nnz = jlu(m+1) - 1</div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span> </div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>    <span class="comment">! Copy the contents to the output arrays</span></div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>    lu%m = m</div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>    lu%n = n</div>
-<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>    lu%nnz = nnz</div>
-<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>    nn = m + 1 + nnz - min(m, n)</div>
-<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>    <span class="keyword">allocate</span>(lu%values(nn), source = alu(:nn), stat = flag)</div>
-<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
-<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>    <span class="keyword">allocate</span>(lu%indices(nn), source = jlu(:nn), stat = flag)</div>
-<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span> </div>
-<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>    <span class="comment">! End</span></div>
-<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span> </div>
-<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>    <span class="comment">! Memory Error</span></div>
-<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>10  <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
-<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>        <span class="stringliteral">&quot;Memory allocation error.&quot;</span>, la_out_of_memory_error)</div>
-<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span> </div>
-<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>    <span class="comment">! Matrix Format Error</span></div>
-<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>20  <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
-<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>        <span class="stringliteral">&quot;The input matrix was incorrectly formatted.  A row with more &quot;</span> // &amp;</div>
-<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>        <span class="stringliteral">&quot;than N entries was found.&quot;</span>, la_matrix_format_error)</div>
-<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span> </div>
-<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>    <span class="comment">! Zero Row Error</span></div>
-<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span>30  <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
-<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>        <span class="stringliteral">&quot;A row with all zeros was encountered in the matrix.&quot;</span>, &amp;</div>
-<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span>        la_singular_matrix_error)</div>
-<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span> </div>
-<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>    <span class="comment">! Unknown Error</span></div>
-<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span>40  <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_solve_sparse_direct&quot;</span>, <span class="stringliteral">&quot;ILUT encountered &quot;</span> // &amp;</div>
-<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>        <span class="stringliteral">&quot;an unknown error.  The error code from the ILUT routine is &quot;</span> // &amp;</div>
-<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>        <span class="stringliteral">&quot;provided in the output.&quot;</span>, ierr)</div>
-<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span> </div>
-<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>    <span class="comment">! Zero Pivot Error</span></div>
-<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>50  <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
-<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>        <span class="stringliteral">&quot;A zero pivot was encountered.&quot;</span>, la_singular_matrix_error)</div>
-<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>    <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span><span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span> </div>
-<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span><span class="keyword">module</span> subroutine csr_lu_solve(lu, ju, b, x, err)</div>
-<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span>    <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>    <span class="keywordtype">class</span>(msr_matrix), <span class="keywordtype">intent(in)</span> :: lu</div>
-<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
-<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: b</div>
-<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: x</div>
-<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span> </div>
-<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span>    <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>    <span class="keywordtype">integer(int32)</span> :: m, n</div>
-<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span>    </div>
-<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span>    <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span>        errmgr =&gt; err</div>
-<div class="line"><a id="l01295" name="l01295"></a><span class="lineno"> 1295</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>        errmgr =&gt; deferr</div>
-<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01298" name="l01298"></a><span class="lineno"> 1298</span>    m = <span class="keyword">size</span>(lu, 1)</div>
-<div class="line"><a id="l01299" name="l01299"></a><span class="lineno"> 1299</span>    n = <span class="keyword">size</span>(lu, 2)</div>
-<div class="line"><a id="l01300" name="l01300"></a><span class="lineno"> 1300</span> </div>
-<div class="line"><a id="l01301" name="l01301"></a><span class="lineno"> 1301</span>    <span class="comment">! Input Check</span></div>
-<div class="line"><a id="l01302" name="l01302"></a><span class="lineno"> 1302</span>    <span class="keywordflow">if</span> (m /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01303" name="l01303"></a><span class="lineno"> 1303</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
-<div class="line"><a id="l01304" name="l01304"></a><span class="lineno"> 1304</span>            <span class="stringliteral">&quot;The input matrix is expected to be square.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01305" name="l01305"></a><span class="lineno"> 1305</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01307" name="l01307"></a><span class="lineno"> 1307</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(x) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
-<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span>            <span class="stringliteral">&quot;Inner matrix dimension mismatch.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01310" name="l01310"></a><span class="lineno"> 1310</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01311" name="l01311"></a><span class="lineno"> 1311</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01312" name="l01312"></a><span class="lineno"> 1312</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(b) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01313" name="l01313"></a><span class="lineno"> 1313</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
-<div class="line"><a id="l01314" name="l01314"></a><span class="lineno"> 1314</span>            <span class="stringliteral">&quot;The output array dimension does not match the rest of the problem.&quot;</span>, &amp;</div>
-<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"> 1315</span>            la_array_size_error)</div>
-<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(ju) /= m) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
-<div class="line"><a id="l01320" name="l01320"></a><span class="lineno"> 1320</span>            <span class="stringliteral">&quot;The U row tracking array is not sized correctly.&quot;</span>, &amp;</div>
-<div class="line"><a id="l01321" name="l01321"></a><span class="lineno"> 1321</span>            la_array_size_error)</div>
-<div class="line"><a id="l01322" name="l01322"></a><span class="lineno"> 1322</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01323" name="l01323"></a><span class="lineno"> 1323</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01324" name="l01324"></a><span class="lineno"> 1324</span> </div>
-<div class="line"><a id="l01325" name="l01325"></a><span class="lineno"> 1325</span>    <span class="comment">! Process</span></div>
-<div class="line"><a id="l01326" name="l01326"></a><span class="lineno"> 1326</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1lusol.html">lusol</a>(m, b, x, lu%values, lu%indices, ju)</div>
-<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"> 1327</span><span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span> </div>
-<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span><span class="comment">! ******************************************************************************</span></div>
-<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span><span class="comment">! ITERATIVE SOLVERS</span></div>
-<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span><span class="comment">! Additional References:</span></div>
-<div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span><span class="comment">! - https://www.diva-portal.org/smash/get/diva2:360739/FULLTEXT01.pdf</span></div>
-<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span><span class="keyword">module</span> subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)</div>
-<div class="line"><a id="l01335" name="l01335"></a><span class="lineno"> 1335</span>    <span class="comment">! Arguments</span></div>
-<div class="line"><a id="l01336" name="l01336"></a><span class="lineno"> 1336</span>    <span class="keywordtype">class</span>(csr_matrix), <span class="keywordtype">intent(in)</span> :: a</div>
-<div class="line"><a id="l01337" name="l01337"></a><span class="lineno"> 1337</span>    <span class="keywordtype">class</span>(msr_matrix), <span class="keywordtype">intent(in)</span> :: lu</div>
-<div class="line"><a id="l01338" name="l01338"></a><span class="lineno"> 1338</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
-<div class="line"><a id="l01339" name="l01339"></a><span class="lineno"> 1339</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: b</div>
-<div class="line"><a id="l01340" name="l01340"></a><span class="lineno"> 1340</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: x</div>
-<div class="line"><a id="l01341" name="l01341"></a><span class="lineno"> 1341</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: im, maxits, iout</div>
-<div class="line"><a id="l01342" name="l01342"></a><span class="lineno"> 1342</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: tol</div>
-<div class="line"><a id="l01343" name="l01343"></a><span class="lineno"> 1343</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
-<div class="line"><a id="l01344" name="l01344"></a><span class="lineno"> 1344</span> </div>
-<div class="line"><a id="l01345" name="l01345"></a><span class="lineno"> 1345</span>    <span class="comment">! Local Variables</span></div>
-<div class="line"><a id="l01346" name="l01346"></a><span class="lineno"> 1346</span>    <span class="keywordtype">integer(int32)</span> :: n, ierr, flag, io, mit, krylov</div>
-<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span><span class="keywordtype">    real</span>(real64) :: eps</div>
-<div class="line"><a id="l01348" name="l01348"></a><span class="lineno"> 1348</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:,:)</span> :: vv</div>
-<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
-<div class="line"><a id="l01350" name="l01350"></a><span class="lineno"> 1350</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
-<div class="line"><a id="l01351" name="l01351"></a><span class="lineno"> 1351</span>    </div>
-<div class="line"><a id="l01352" name="l01352"></a><span class="lineno"> 1352</span>    <span class="comment">! Initialization</span></div>
-<div class="line"><a id="l01353" name="l01353"></a><span class="lineno"> 1353</span>    n = <span class="keyword">size</span>(a, 1)</div>
-<div class="line"><a id="l01354" name="l01354"></a><span class="lineno"> 1354</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01355" name="l01355"></a><span class="lineno"> 1355</span>        errmgr =&gt; err</div>
-<div class="line"><a id="l01356" name="l01356"></a><span class="lineno"> 1356</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01357" name="l01357"></a><span class="lineno"> 1357</span>        errmgr =&gt; deferr</div>
-<div class="line"><a id="l01358" name="l01358"></a><span class="lineno"> 1358</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01359" name="l01359"></a><span class="lineno"> 1359</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(im)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span>        krylov = im</div>
-<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span>        krylov = min(n, 50)</div>
-<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(tol)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>        eps = tol</div>
-<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>        eps = sqrt(epsilon(eps))</div>
-<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(maxits)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span>        mit = maxits</div>
-<div class="line"><a id="l01371" name="l01371"></a><span class="lineno"> 1371</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01372" name="l01372"></a><span class="lineno"> 1372</span>        mit = 100</div>
-<div class="line"><a id="l01373" name="l01373"></a><span class="lineno"> 1373</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01374" name="l01374"></a><span class="lineno"> 1374</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(iout)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01375" name="l01375"></a><span class="lineno"> 1375</span>        io = iout</div>
-<div class="line"><a id="l01376" name="l01376"></a><span class="lineno"> 1376</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01377" name="l01377"></a><span class="lineno"> 1377</span>        io = 0</div>
-<div class="line"><a id="l01378" name="l01378"></a><span class="lineno"> 1378</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01379" name="l01379"></a><span class="lineno"> 1379</span> </div>
-<div class="line"><a id="l01380" name="l01380"></a><span class="lineno"> 1380</span>    <span class="comment">! Input Checking</span></div>
-<div class="line"><a id="l01381" name="l01381"></a><span class="lineno"> 1381</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 2) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01382" name="l01382"></a><span class="lineno"> 1382</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01383" name="l01383"></a><span class="lineno"> 1383</span>            <span class="stringliteral">&quot;The input matrix is not square.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01384" name="l01384"></a><span class="lineno"> 1384</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01385" name="l01385"></a><span class="lineno"> 1385</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01386" name="l01386"></a><span class="lineno"> 1386</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(lu, 1) /= n .or. <span class="keyword">size</span>(lu, 2) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01387" name="l01387"></a><span class="lineno"> 1387</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01388" name="l01388"></a><span class="lineno"> 1388</span>            <span class="stringliteral">&quot;The LU factored matrix size is not compatible with the &quot;</span> // &amp;</div>
-<div class="line"><a id="l01389" name="l01389"></a><span class="lineno"> 1389</span>            <span class="stringliteral">&quot;input matrix.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01390" name="l01390"></a><span class="lineno"> 1390</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01391" name="l01391"></a><span class="lineno"> 1391</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(b) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>            <span class="stringliteral">&quot;The output array dimension does not match the rest of the problem.&quot;</span>, &amp;</div>
-<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>            la_array_size_error)</div>
-<div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(x) /= n) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01399" name="l01399"></a><span class="lineno"> 1399</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01400" name="l01400"></a><span class="lineno"> 1400</span>            <span class="stringliteral">&quot;Inner matrix dimension mismatch.&quot;</span>, la_array_size_error)</div>
-<div class="line"><a id="l01401" name="l01401"></a><span class="lineno"> 1401</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01402" name="l01402"></a><span class="lineno"> 1402</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span>    <span class="keywordflow">if</span> (eps &lt; epsilon(eps)) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>            <span class="stringliteral">&quot;The convergence tolerance is too small.&quot;</span>, la_invalid_input_error)</div>
-<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>    <span class="keywordflow">if</span> (mit &lt; 1) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>            <span class="stringliteral">&quot;Too few iterations allowed.&quot;</span>, la_invalid_input_error)</div>
-<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>    <span class="keywordflow">if</span> (krylov &lt; 1) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>            <span class="stringliteral">&quot;The requested Krylov subspace size is too small.&quot;</span>, &amp;</div>
-<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>            la_invalid_input_error)</div>
-<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span> </div>
-<div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span>    <span class="comment">! Memory Allocation</span></div>
-<div class="line"><a id="l01421" name="l01421"></a><span class="lineno"> 1421</span>    <span class="keyword">allocate</span>(vv(n,krylov+1), stat = flag)</div>
-<div class="line"><a id="l01422" name="l01422"></a><span class="lineno"> 1422</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01423" name="l01423"></a><span class="lineno"> 1423</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01424" name="l01424"></a><span class="lineno"> 1424</span>            <span class="stringliteral">&quot;Memory allocation error.&quot;</span>, la_out_of_memory_error)</div>
-<div class="line"><a id="l01425" name="l01425"></a><span class="lineno"> 1425</span>        <span class="keywordflow">return</span></div>
-<div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span> </div>
-<div class="line"><a id="l01428" name="l01428"></a><span class="lineno"> 1428</span>    <span class="comment">! Process</span></div>
-<div class="line"><a id="l01429" name="l01429"></a><span class="lineno"> 1429</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1pgmres.html">pgmres</a>(n, krylov, b, x, vv, eps, mit, io, a%values, a%column_indices, &amp;</div>
-<div class="line"><a id="l01430" name="l01430"></a><span class="lineno"> 1430</span>        a%row_indices, lu%values, lu%indices, ju, ierr)</div>
-<div class="line"><a id="l01431" name="l01431"></a><span class="lineno"> 1431</span>    <span class="keywordflow">if</span> (ierr == 1) <span class="keywordflow">then</span></div>
-<div class="line"><a id="l01432" name="l01432"></a><span class="lineno"> 1432</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
-<div class="line"><a id="l01433" name="l01433"></a><span class="lineno"> 1433</span>            <span class="stringliteral">&quot;Convergence could not be achieved to the requested tolerance &quot;</span> // &amp;</div>
-<div class="line"><a id="l01434" name="l01434"></a><span class="lineno"> 1434</span>            <span class="stringliteral">&quot;in the allowed number of iterations.&quot;</span>, la_convergence_error)</div>
-<div class="line"><a id="l01435" name="l01435"></a><span class="lineno"> 1435</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>    <span class="keywordflow">if</span> (n &lt; 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>            <span class="stringliteral">&quot;The number of columns must be a positive value.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>            la_invalid_input_error)</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(cols) /= nnz .or. <span class="keyword">size</span>(vals) /= nnz) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>            <span class="stringliteral">&quot;The size of the input arrays must be the same.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>            la_array_size_error)</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>    <span class="keywordflow">do</span> i = 1, nnz</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>        <span class="keywordflow">if</span> (rows(i) &lt; 1 .or. rows(i) &gt; m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>                <span class="stringliteral">&quot;All row indices must be within the bounds of the matrix.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>                la_invalid_input_error)</div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>        <span class="keywordflow">if</span> (cols(i) &lt; 1 .or. cols(i) &gt; n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>            <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>                <span class="stringliteral">&quot;All column indices must be within the bounds of the matrix.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>                la_invalid_input_error)</div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span><span class="keywordflow">    end do</span></div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>    <span class="keyword">allocate</span>(ir(nnz), source = rows, stat = flag)</div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;create_csr_matrix&quot;</span>, &amp;</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>            <span class="stringliteral">&quot;Memory allocation error.&quot;</span>, la_out_of_memory_error)</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span> </div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    <span class="comment">! Create an empty matrix</span></div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>    rst = create_empty_csr_matrix(m, n, nnz, errmgr)</div>
+<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>    <span class="keywordflow">if</span> (errmgr%has_error_occurred()) <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span> </div>
+<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>    <span class="comment">! Populate the empty matrix</span></div>
+<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1coocsr.html">coocsr</a>(m, nnz, vals, ir, cols, rst%values, rst%column_indices, &amp;</div>
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>        rst%row_indices)</div>
+<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1csort.html">csort</a>(m, rst%values, rst%column_indices, rst%row_indices, .true.)</div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span><span class="keyword">end function</span></div>
+<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span> </div>
+<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span><span class="comment">! ******************************************************************************</span></div>
+<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span><span class="comment">! LU PRECONDITIONER ROUTINES</span></div>
+<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span><span class="keyword">module</span> subroutine csr_lu_factor(a, lu, ju, droptol, err)</div>
+<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>    <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>    <span class="keywordtype">class</span>(csr_matrix), <span class="keywordtype">intent(in)</span> :: a</div>
+<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>    <span class="keywordtype">type</span>(msr_matrix), <span class="keywordtype">intent(out)</span> :: lu</div>
+<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
+<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: droptol</div>
+<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span> </div>
+<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>    <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>    <span class="keywordtype">integer(int32)</span> :: i, m, n, nn, nnz, lfil, iwk, ierr, flag</div>
+<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:)</span> :: jlu, jw</div>
+<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:)</span> :: alu, w</div>
+<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span><span class="keywordtype">    real</span>(real64) :: dt</div>
+<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>    </div>
+<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>    <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>        errmgr =&gt; err</div>
+<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>        errmgr =&gt; deferr</div>
+<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(droptol)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span>        dt = droptol</div>
+<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>        dt = sqrt(epsilon(dt))</div>
+<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>    m = <span class="keyword">size</span>(a, 1)</div>
+<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>    n = <span class="keyword">size</span>(a, 2)</div>
+<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>    nnz = nonzero_count(a)</div>
+<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span> </div>
+<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>    <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(ju) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
+<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>            <span class="stringliteral">&quot;U row tracking array is not sized correctly.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span> </div>
+<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>    <span class="comment">! Parameter Determination</span></div>
+<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>    lfil = 1</div>
+<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>    <span class="keywordflow">do</span> i = 1, m</div>
+<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span>        lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))</div>
+<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span><span class="keywordflow">    end do</span></div>
+<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>    iwk = max(lfil * m, nnz)  <span class="comment">! somewhat arbitrary - can be adjusted</span></div>
+<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span> </div>
+<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>    <span class="comment">! Local Memory Allocation</span></div>
+<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>    <span class="keyword">allocate</span>(alu(iwk), w(n+1), jlu(iwk), jw(2 * n), stat = flag)</div>
+<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
+<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span> </div>
+<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>    <span class="comment">! Factorization</span></div>
+<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>    <span class="keywordflow">do</span></div>
+<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>        <span class="comment">! Factor the matrix</span></div>
+<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>        <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1ilut.html">ilut</a>(n, a%values, a%column_indices, a%row_indices, lfil, dt, &amp;</div>
+<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>            alu, jlu, ju, iwk, w, jw, ierr)</div>
+<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span> </div>
+<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>        <span class="comment">! Check the error flag</span></div>
+<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>        <span class="keywordflow">if</span> (ierr == 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>            <span class="comment">! Success</span></div>
+<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>            <span class="keywordflow">exit</span></div>
+<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr &gt; 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>            <span class="comment">! Zero pivot</span></div>
+<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -1) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span>            <span class="comment">! The input matrix is not formatted correctly</span></div>
+<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span>            <span class="keywordflow">go to</span> 20</div>
+<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -2 .or. ierr == -3) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>            <span class="comment">! ALU and JLU are too small - try something larger</span></div>
+<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>            <span class="comment">! This is the main reason for the loop - to offload worrying about</span></div>
+<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span>            <span class="comment">! workspace size from the user</span></div>
+<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>            iwk = min(iwk + m + n, m * n)</div>
+<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span>            <span class="keyword">deallocate</span>(alu)</div>
+<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span>            <span class="keyword">deallocate</span>(jlu)</div>
+<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>            <span class="keyword">allocate</span>(alu(iwk), jlu(iwk), stat = flag)</div>
+<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>            <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
+<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -4) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span>            <span class="comment">! Illegal value for LFIL - reset and try again</span></div>
+<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span>            lfil = n</div>
+<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ierr == -5) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span>            <span class="comment">! Zero row encountered</span></div>
+<div class="line"><a id="l01295" name="l01295"></a><span class="lineno"> 1295</span>            <span class="keywordflow">go to</span> 30</div>
+<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span>            <span class="comment">! We should never get here, but just in case</span></div>
+<div class="line"><a id="l01298" name="l01298"></a><span class="lineno"> 1298</span>            <span class="keywordflow">go to</span> 40</div>
+<div class="line"><a id="l01299" name="l01299"></a><span class="lineno"> 1299</span><span class="keywordflow">        end if</span></div>
+<div class="line"><a id="l01300" name="l01300"></a><span class="lineno"> 1300</span><span class="keywordflow">    end do</span></div>
+<div class="line"><a id="l01301" name="l01301"></a><span class="lineno"> 1301</span> </div>
+<div class="line"><a id="l01302" name="l01302"></a><span class="lineno"> 1302</span>    <span class="comment">! Determine the actual number of non-zero elements</span></div>
+<div class="line"><a id="l01303" name="l01303"></a><span class="lineno"> 1303</span>    nnz = jlu(m+1) - 1</div>
+<div class="line"><a id="l01304" name="l01304"></a><span class="lineno"> 1304</span> </div>
+<div class="line"><a id="l01305" name="l01305"></a><span class="lineno"> 1305</span>    <span class="comment">! Copy the contents to the output arrays</span></div>
+<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span>    lu%m = m</div>
+<div class="line"><a id="l01307" name="l01307"></a><span class="lineno"> 1307</span>    lu%n = n</div>
+<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span>    lu%nnz = nnz</div>
+<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span>    nn = m + 1 + nnz - min(m, n)</div>
+<div class="line"><a id="l01310" name="l01310"></a><span class="lineno"> 1310</span>    <span class="keyword">allocate</span>(lu%values(nn), source = alu(:nn), stat = flag)</div>
+<div class="line"><a id="l01311" name="l01311"></a><span class="lineno"> 1311</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">go to</span> 10</div>
+<div class="line"><a id="l01312" name="l01312"></a><span class="lineno"> 1312</span>    <span class="keyword">allocate</span>(lu%indices(nn), source = jlu(:nn), stat = flag)</div>
+<div class="line"><a id="l01313" name="l01313"></a><span class="lineno"> 1313</span> </div>
+<div class="line"><a id="l01314" name="l01314"></a><span class="lineno"> 1314</span>    <span class="comment">! End</span></div>
+<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"> 1315</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span> </div>
+<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span>    <span class="comment">! Memory Error</span></div>
+<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span>10  <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
+<div class="line"><a id="l01320" name="l01320"></a><span class="lineno"> 1320</span>        <span class="stringliteral">&quot;Memory allocation error.&quot;</span>, la_out_of_memory_error)</div>
+<div class="line"><a id="l01321" name="l01321"></a><span class="lineno"> 1321</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01322" name="l01322"></a><span class="lineno"> 1322</span> </div>
+<div class="line"><a id="l01323" name="l01323"></a><span class="lineno"> 1323</span>    <span class="comment">! Matrix Format Error</span></div>
+<div class="line"><a id="l01324" name="l01324"></a><span class="lineno"> 1324</span>20  <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l01325" name="l01325"></a><span class="lineno"> 1325</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
+<div class="line"><a id="l01326" name="l01326"></a><span class="lineno"> 1326</span>        <span class="stringliteral">&quot;The input matrix was incorrectly formatted.  A row with more &quot;</span> // &amp;</div>
+<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"> 1327</span>        <span class="stringliteral">&quot;than N entries was found.&quot;</span>, la_matrix_format_error)</div>
+<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span> </div>
+<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span>    <span class="comment">! Zero Row Error</span></div>
+<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span>30  <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
+<div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span>        <span class="stringliteral">&quot;A row with all zeros was encountered in the matrix.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span>        la_singular_matrix_error)</div>
+<div class="line"><a id="l01335" name="l01335"></a><span class="lineno"> 1335</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01336" name="l01336"></a><span class="lineno"> 1336</span> </div>
+<div class="line"><a id="l01337" name="l01337"></a><span class="lineno"> 1337</span>    <span class="comment">! Unknown Error</span></div>
+<div class="line"><a id="l01338" name="l01338"></a><span class="lineno"> 1338</span>40  <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l01339" name="l01339"></a><span class="lineno"> 1339</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_solve_sparse_direct&quot;</span>, <span class="stringliteral">&quot;ILUT encountered &quot;</span> // &amp;</div>
+<div class="line"><a id="l01340" name="l01340"></a><span class="lineno"> 1340</span>        <span class="stringliteral">&quot;an unknown error.  The error code from the ILUT routine is &quot;</span> // &amp;</div>
+<div class="line"><a id="l01341" name="l01341"></a><span class="lineno"> 1341</span>        <span class="stringliteral">&quot;provided in the output.&quot;</span>, ierr)</div>
+<div class="line"><a id="l01342" name="l01342"></a><span class="lineno"> 1342</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01343" name="l01343"></a><span class="lineno"> 1343</span> </div>
+<div class="line"><a id="l01344" name="l01344"></a><span class="lineno"> 1344</span>    <span class="comment">! Zero Pivot Error</span></div>
+<div class="line"><a id="l01345" name="l01345"></a><span class="lineno"> 1345</span>50  <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l01346" name="l01346"></a><span class="lineno"> 1346</span>    <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_factor&quot;</span>, &amp;</div>
+<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span>        <span class="stringliteral">&quot;A zero pivot was encountered.&quot;</span>, la_singular_matrix_error)</div>
+<div class="line"><a id="l01348" name="l01348"></a><span class="lineno"> 1348</span>    <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span><span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l01350" name="l01350"></a><span class="lineno"> 1350</span> </div>
+<div class="line"><a id="l01351" name="l01351"></a><span class="lineno"> 1351</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l01352" name="l01352"></a><span class="lineno"> 1352</span><span class="keyword">module</span> subroutine csr_lu_solve(lu, ju, b, x, err)</div>
+<div class="line"><a id="l01353" name="l01353"></a><span class="lineno"> 1353</span>    <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l01354" name="l01354"></a><span class="lineno"> 1354</span>    <span class="keywordtype">class</span>(msr_matrix), <span class="keywordtype">intent(in)</span> :: lu</div>
+<div class="line"><a id="l01355" name="l01355"></a><span class="lineno"> 1355</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
+<div class="line"><a id="l01356" name="l01356"></a><span class="lineno"> 1356</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: b</div>
+<div class="line"><a id="l01357" name="l01357"></a><span class="lineno"> 1357</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: x</div>
+<div class="line"><a id="l01358" name="l01358"></a><span class="lineno"> 1358</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l01359" name="l01359"></a><span class="lineno"> 1359</span> </div>
+<div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span>    <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>    <span class="keywordtype">integer(int32)</span> :: m, n</div>
+<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>    </div>
+<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>    <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>        errmgr =&gt; err</div>
+<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span>        errmgr =&gt; deferr</div>
+<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01371" name="l01371"></a><span class="lineno"> 1371</span>    m = <span class="keyword">size</span>(lu, 1)</div>
+<div class="line"><a id="l01372" name="l01372"></a><span class="lineno"> 1372</span>    n = <span class="keyword">size</span>(lu, 2)</div>
+<div class="line"><a id="l01373" name="l01373"></a><span class="lineno"> 1373</span> </div>
+<div class="line"><a id="l01374" name="l01374"></a><span class="lineno"> 1374</span>    <span class="comment">! Input Check</span></div>
+<div class="line"><a id="l01375" name="l01375"></a><span class="lineno"> 1375</span>    <span class="keywordflow">if</span> (m /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01376" name="l01376"></a><span class="lineno"> 1376</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
+<div class="line"><a id="l01377" name="l01377"></a><span class="lineno"> 1377</span>            <span class="stringliteral">&quot;The input matrix is expected to be square.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01378" name="l01378"></a><span class="lineno"> 1378</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01379" name="l01379"></a><span class="lineno"> 1379</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01380" name="l01380"></a><span class="lineno"> 1380</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(x) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01381" name="l01381"></a><span class="lineno"> 1381</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
+<div class="line"><a id="l01382" name="l01382"></a><span class="lineno"> 1382</span>            <span class="stringliteral">&quot;Inner matrix dimension mismatch.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01383" name="l01383"></a><span class="lineno"> 1383</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01384" name="l01384"></a><span class="lineno"> 1384</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01385" name="l01385"></a><span class="lineno"> 1385</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(b) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01386" name="l01386"></a><span class="lineno"> 1386</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
+<div class="line"><a id="l01387" name="l01387"></a><span class="lineno"> 1387</span>            <span class="stringliteral">&quot;The output array dimension does not match the rest of the problem.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01388" name="l01388"></a><span class="lineno"> 1388</span>            la_array_size_error)</div>
+<div class="line"><a id="l01389" name="l01389"></a><span class="lineno"> 1389</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01390" name="l01390"></a><span class="lineno"> 1390</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01391" name="l01391"></a><span class="lineno"> 1391</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(ju) /= m) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_lu_solve&quot;</span>, &amp;</div>
+<div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span>            <span class="stringliteral">&quot;The U row tracking array is not sized correctly.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>            la_array_size_error)</div>
+<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span> </div>
+<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <span class="comment">! Process</span></div>
+<div class="line"><a id="l01399" name="l01399"></a><span class="lineno"> 1399</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1lusol.html">lusol</a>(m, b, x, lu%values, lu%indices, ju)</div>
+<div class="line"><a id="l01400" name="l01400"></a><span class="lineno"> 1400</span><span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l01401" name="l01401"></a><span class="lineno"> 1401</span> </div>
+<div class="line"><a id="l01402" name="l01402"></a><span class="lineno"> 1402</span><span class="comment">! ******************************************************************************</span></div>
+<div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span><span class="comment">! ITERATIVE SOLVERS</span></div>
+<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span><span class="comment">! Additional References:</span></div>
+<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span><span class="comment">! - https://www.diva-portal.org/smash/get/diva2:360739/FULLTEXT01.pdf</span></div>
+<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span><span class="keyword">module</span> subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)</div>
+<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>    <span class="comment">! Arguments</span></div>
+<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>    <span class="keywordtype">class</span>(csr_matrix), <span class="keywordtype">intent(in)</span> :: a</div>
+<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>    <span class="keywordtype">class</span>(msr_matrix), <span class="keywordtype">intent(in)</span> :: lu</div>
+<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">dimension(:)</span> :: ju</div>
+<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">dimension(:)</span> :: b</div>
+<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(out)</span>, <span class="keywordtype">dimension(:)</span> :: x</div>
+<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>    <span class="keywordtype">integer(int32)</span>, <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: im, maxits, iout</div>
+<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">intent(in)</span>, <span class="keywordtype">optional</span> :: tol</div>
+<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">intent(inout)</span>, <span class="keywordtype">optional</span>, <span class="keywordtype">target</span> :: err</div>
+<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span> </div>
+<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span>    <span class="comment">! Local Variables</span></div>
+<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span>    <span class="keywordtype">integer(int32)</span> :: n, ierr, flag, io, mit, krylov</div>
+<div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span><span class="keywordtype">    real</span>(real64) :: eps</div>
+<div class="line"><a id="l01421" name="l01421"></a><span class="lineno"> 1421</span><span class="keywordtype">    real</span>(real64), <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension(:,:)</span> :: vv</div>
+<div class="line"><a id="l01422" name="l01422"></a><span class="lineno"> 1422</span>    <span class="keywordtype">class</span>(errors), <span class="keywordtype">pointer</span> :: errmgr</div>
+<div class="line"><a id="l01423" name="l01423"></a><span class="lineno"> 1423</span>    <span class="keywordtype">type</span>(errors), <span class="keywordtype">target</span> :: deferr</div>
+<div class="line"><a id="l01424" name="l01424"></a><span class="lineno"> 1424</span>    </div>
+<div class="line"><a id="l01425" name="l01425"></a><span class="lineno"> 1425</span>    <span class="comment">! Initialization</span></div>
+<div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span>    n = <span class="keyword">size</span>(a, 1)</div>
+<div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(err)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01428" name="l01428"></a><span class="lineno"> 1428</span>        errmgr =&gt; err</div>
+<div class="line"><a id="l01429" name="l01429"></a><span class="lineno"> 1429</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01430" name="l01430"></a><span class="lineno"> 1430</span>        errmgr =&gt; deferr</div>
+<div class="line"><a id="l01431" name="l01431"></a><span class="lineno"> 1431</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01432" name="l01432"></a><span class="lineno"> 1432</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(im)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01433" name="l01433"></a><span class="lineno"> 1433</span>        krylov = im</div>
+<div class="line"><a id="l01434" name="l01434"></a><span class="lineno"> 1434</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01435" name="l01435"></a><span class="lineno"> 1435</span>        krylov = min(n, 50)</div>
 <div class="line"><a id="l01436" name="l01436"></a><span class="lineno"> 1436</span><span class="keywordflow">    end if</span></div>
-<div class="line"><a id="l01437" name="l01437"></a><span class="lineno"> 1437</span><span class="keyword">end subroutine</span></div>
-<div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span> </div>
-<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span><span class="keyword">end </span>submodule</div>
+<div class="line"><a id="l01437" name="l01437"></a><span class="lineno"> 1437</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(tol)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span>        eps = tol</div>
+<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span>        eps = sqrt(epsilon(eps))</div>
+<div class="line"><a id="l01441" name="l01441"></a><span class="lineno"> 1441</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01442" name="l01442"></a><span class="lineno"> 1442</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(maxits)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01443" name="l01443"></a><span class="lineno"> 1443</span>        mit = maxits</div>
+<div class="line"><a id="l01444" name="l01444"></a><span class="lineno"> 1444</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01445" name="l01445"></a><span class="lineno"> 1445</span>        mit = 100</div>
+<div class="line"><a id="l01446" name="l01446"></a><span class="lineno"> 1446</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01447" name="l01447"></a><span class="lineno"> 1447</span>    <span class="keywordflow">if</span> (<span class="keyword">present</span>(iout)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01448" name="l01448"></a><span class="lineno"> 1448</span>        io = iout</div>
+<div class="line"><a id="l01449" name="l01449"></a><span class="lineno"> 1449</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01450" name="l01450"></a><span class="lineno"> 1450</span>        io = 0</div>
+<div class="line"><a id="l01451" name="l01451"></a><span class="lineno"> 1451</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01452" name="l01452"></a><span class="lineno"> 1452</span> </div>
+<div class="line"><a id="l01453" name="l01453"></a><span class="lineno"> 1453</span>    <span class="comment">! Input Checking</span></div>
+<div class="line"><a id="l01454" name="l01454"></a><span class="lineno"> 1454</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(a, 2) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01455" name="l01455"></a><span class="lineno"> 1455</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01456" name="l01456"></a><span class="lineno"> 1456</span>            <span class="stringliteral">&quot;The input matrix is not square.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01457" name="l01457"></a><span class="lineno"> 1457</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01458" name="l01458"></a><span class="lineno"> 1458</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01459" name="l01459"></a><span class="lineno"> 1459</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(lu, 1) /= n .or. <span class="keyword">size</span>(lu, 2) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01460" name="l01460"></a><span class="lineno"> 1460</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01461" name="l01461"></a><span class="lineno"> 1461</span>            <span class="stringliteral">&quot;The LU factored matrix size is not compatible with the &quot;</span> // &amp;</div>
+<div class="line"><a id="l01462" name="l01462"></a><span class="lineno"> 1462</span>            <span class="stringliteral">&quot;input matrix.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01463" name="l01463"></a><span class="lineno"> 1463</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(b) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>            <span class="stringliteral">&quot;The output array dimension does not match the rest of the problem.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>            la_array_size_error)</div>
+<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>    <span class="keywordflow">if</span> (<span class="keyword">size</span>(x) /= n) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>            <span class="stringliteral">&quot;Inner matrix dimension mismatch.&quot;</span>, la_array_size_error)</div>
+<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>    <span class="keywordflow">if</span> (eps &lt; epsilon(eps)) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span>            <span class="stringliteral">&quot;The convergence tolerance is too small.&quot;</span>, la_invalid_input_error)</div>
+<div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>    <span class="keywordflow">if</span> (mit &lt; 1) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>            <span class="stringliteral">&quot;Too few iterations allowed.&quot;</span>, la_invalid_input_error)</div>
+<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>    <span class="keywordflow">if</span> (krylov &lt; 1) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span>            <span class="stringliteral">&quot;The requested Krylov subspace size is too small.&quot;</span>, &amp;</div>
+<div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>            la_invalid_input_error)</div>
+<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01491" name="l01491"></a><span class="lineno"> 1491</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01492" name="l01492"></a><span class="lineno"> 1492</span> </div>
+<div class="line"><a id="l01493" name="l01493"></a><span class="lineno"> 1493</span>    <span class="comment">! Memory Allocation</span></div>
+<div class="line"><a id="l01494" name="l01494"></a><span class="lineno"> 1494</span>    <span class="keyword">allocate</span>(vv(n,krylov+1), stat = flag)</div>
+<div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span>    <span class="keywordflow">if</span> (flag /= 0) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span>            <span class="stringliteral">&quot;Memory allocation error.&quot;</span>, la_out_of_memory_error)</div>
+<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span> </div>
+<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span>    <span class="comment">! Process</span></div>
+<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span>    <span class="keyword">call </span><a class="code hl_interface" href="interfacesparskit_1_1pgmres.html">pgmres</a>(n, krylov, b, x, vv, eps, mit, io, a%values, a%column_indices, &amp;</div>
+<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"> 1503</span>        a%row_indices, lu%values, lu%indices, ju, ierr)</div>
+<div class="line"><a id="l01504" name="l01504"></a><span class="lineno"> 1504</span>    <span class="keywordflow">if</span> (ierr == 1) <span class="keywordflow">then</span></div>
+<div class="line"><a id="l01505" name="l01505"></a><span class="lineno"> 1505</span>        <span class="keyword">call </span>errmgr%report_error(<span class="stringliteral">&quot;csr_pgmres_solver&quot;</span>, &amp;</div>
+<div class="line"><a id="l01506" name="l01506"></a><span class="lineno"> 1506</span>            <span class="stringliteral">&quot;Convergence could not be achieved to the requested tolerance &quot;</span> // &amp;</div>
+<div class="line"><a id="l01507" name="l01507"></a><span class="lineno"> 1507</span>            <span class="stringliteral">&quot;in the allowed number of iterations.&quot;</span>, la_convergence_error)</div>
+<div class="line"><a id="l01508" name="l01508"></a><span class="lineno"> 1508</span>        <span class="keywordflow">return</span></div>
+<div class="line"><a id="l01509" name="l01509"></a><span class="lineno"> 1509</span><span class="keywordflow">    end if</span></div>
+<div class="line"><a id="l01510" name="l01510"></a><span class="lineno"> 1510</span><span class="keyword">end subroutine</span></div>
+<div class="line"><a id="l01511" name="l01511"></a><span class="lineno"> 1511</span> </div>
+<div class="line"><a id="l01512" name="l01512"></a><span class="lineno"> 1512</span><span class="comment">! ------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l01513" name="l01513"></a><span class="lineno"> 1513</span><span class="keyword">end </span>submodule</div>
 <div class="ttc" id="ainterfacesparskit_1_1amub_html"><div class="ttname"><a href="interfacesparskit_1_1amub.html">sparskit::amub</a></div><div class="ttdoc">Computes the matrix product: C = A * B.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00031">sparskit.f90:31</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1aplb_html"><div class="ttname"><a href="interfacesparskit_1_1aplb.html">sparskit::aplb</a></div><div class="ttdoc">Computes the matrix sum: C = A + B, where the matrices are given in CSR format.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00063">sparskit.f90:63</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1aplsb_html"><div class="ttname"><a href="interfacesparskit_1_1aplsb.html">sparskit::aplsb</a></div><div class="ttdoc">Computes the matrix sum: C = A + s * B, where the matrices are given in CSR format.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00096">sparskit.f90:96</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1bndcsr_html"><div class="ttname"><a href="interfacesparskit_1_1bndcsr.html">sparskit::bndcsr</a></div><div class="ttdoc">Converts the LINPACK, BLAS, LAPACK banded matrix format into a CSR format.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00150">sparskit.f90:150</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1coocsr_html"><div class="ttname"><a href="interfacesparskit_1_1coocsr.html">sparskit::coocsr</a></div><div class="ttdoc">Converte a matrix stored in coordinate format to CSR format.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00212">sparskit.f90:212</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1csort_html"><div class="ttname"><a href="interfacesparskit_1_1csort.html">sparskit::csort</a></div><div class="ttdoc">Sorces the elements of a CSR matrix in increasing order of their column indices within each row.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00273">sparskit.f90:273</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1csrcsc2_html"><div class="ttname"><a href="interfacesparskit_1_1csrcsc2.html">sparskit::csrcsc2</a></div><div class="ttdoc">Converts a CSR matrix into a CSC matrix (transposition).</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00124">sparskit.f90:124</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1csrmsr_html"><div class="ttname"><a href="interfacesparskit_1_1csrmsr.html">sparskit::csrmsr</a></div><div class="ttdoc">Converts a CSR matrix to an MSR matrix.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00170">sparskit.f90:170</a></div></div>
-<div class="ttc" id="ainterfacesparskit_1_1getdia_html"><div class="ttname"><a href="interfacesparskit_1_1getdia.html">sparskit::getdia</a></div><div class="ttdoc">Extracts the diagonal from a matrix.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00234">sparskit.f90:234</a></div></div>
-<div class="ttc" id="ainterfacesparskit_1_1getelm_html"><div class="ttname"><a href="interfacesparskit_1_1getelm.html">sparskit::getelm</a></div><div class="ttdoc">Gets element A(i,j) of matrix A for any pair (i,j).</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00214">sparskit.f90:214</a></div></div>
-<div class="ttc" id="ainterfacesparskit_1_1ilut_html"><div class="ttname"><a href="interfacesparskit_1_1ilut.html">sparskit::ilut</a></div><div class="ttdoc">Computes the incomplete LU factorization of a sparse matrix in CSR format using a dual truncation mec...</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00277">sparskit.f90:277</a></div></div>
-<div class="ttc" id="ainterfacesparskit_1_1lusol_html"><div class="ttname"><a href="interfacesparskit_1_1lusol.html">sparskit::lusol</a></div><div class="ttdoc">Solves the LU-factored system (LU) x = y.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00493">sparskit.f90:493</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1getdia_html"><div class="ttname"><a href="interfacesparskit_1_1getdia.html">sparskit::getdia</a></div><div class="ttdoc">Extracts the diagonal from a matrix.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00256">sparskit.f90:256</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1getelm_html"><div class="ttname"><a href="interfacesparskit_1_1getelm.html">sparskit::getelm</a></div><div class="ttdoc">Gets element A(i,j) of matrix A for any pair (i,j).</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00236">sparskit.f90:236</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1ilut_html"><div class="ttname"><a href="interfacesparskit_1_1ilut.html">sparskit::ilut</a></div><div class="ttdoc">Computes the incomplete LU factorization of a sparse matrix in CSR format using a dual truncation mec...</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00343">sparskit.f90:343</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1lusol_html"><div class="ttname"><a href="interfacesparskit_1_1lusol.html">sparskit::lusol</a></div><div class="ttdoc">Solves the LU-factored system (LU) x = y.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00559">sparskit.f90:559</a></div></div>
 <div class="ttc" id="ainterfacesparskit_1_1msrcsr_html"><div class="ttname"><a href="interfacesparskit_1_1msrcsr.html">sparskit::msrcsr</a></div><div class="ttdoc">Converts and MSR matrix to a CSR matrix.</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00191">sparskit.f90:191</a></div></div>
-<div class="ttc" id="ainterfacesparskit_1_1pgmres_html"><div class="ttname"><a href="interfacesparskit_1_1pgmres.html">sparskit::pgmres</a></div><div class="ttdoc">An ILUT preconditioned GMRES algorithm. This routine utilizes the L and U matrices generated by the I...</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00474">sparskit.f90:474</a></div></div>
+<div class="ttc" id="ainterfacesparskit_1_1pgmres_html"><div class="ttname"><a href="interfacesparskit_1_1pgmres.html">sparskit::pgmres</a></div><div class="ttdoc">An ILUT preconditioned GMRES algorithm. This routine utilizes the L and U matrices generated by the I...</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00540">sparskit.f90:540</a></div></div>
 <div class="ttc" id="anamespaceblas_html"><div class="ttname"><a href="namespaceblas.html">blas</a></div><div class="ttdoc">A module providing explicit interfaces to BLAS routines.</div><div class="ttdef"><b>Definition</b> <a href="blas_8f90_source.html#l00002">blas.f90:2</a></div></div>
 <div class="ttc" id="anamespacelinalg_html"><div class="ttname"><a href="namespacelinalg.html">linalg</a></div><div class="ttdoc">Provides a set of common linear algebra routines.</div><div class="ttdef"><b>Definition</b> <a href="linalg_8f90_source.html#l00145">linalg.f90:145</a></div></div>
 <div class="ttc" id="anamespacesparskit_html"><div class="ttname"><a href="namespacesparskit.html">sparskit</a></div><div class="ttdoc">An interface to the SPARSKIT library available at https://www-users.cse.umn.edu/~saad/software/SPARSK...</div><div class="ttdef"><b>Definition</b> <a href="sparskit_8f90_source.html#l00003">sparskit.f90:3</a></div></div>

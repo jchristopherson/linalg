@@ -15,13 +15,18 @@ function test_csr_1() result(rst)
     integer(int32), parameter :: n = 6
     integer(int32), parameter :: nnz = 8
     real(real64) :: dense(m, n), v(nnz), check(m, n)
-    integer(int32) :: ja(nnz), ia(m + 1)
+    integer(int32) :: ja(nnz), ia(m + 1), rows(nnz), cols(nnz)
     type(csr_matrix) :: sparse
 
     ! Initialization
     rst = .true.
 
     ! Construct a small sparse matrix, but in dense form
+    !
+    ! | 1   2   0   0   0   0|
+    ! | 0   3   0   4   0   0|
+    ! | 0   0   5   6   7   0|
+    ! | 0   0   0   0   0   8|
     dense = reshape([ &
         1.0d0, 0.0d0, 0.0d0, 0.0d0, &
         2.0d0, 3.0d0, 0.0d0, 0.0d0, &
@@ -63,6 +68,21 @@ function test_csr_1() result(rst)
     if (.not.assert(dense, check)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_1 -6"
+    end if
+
+    ! ----------
+    ! Construct from coordinate format
+    rows = [1, 1, 2, 2, 3, 3, 3, 4]
+    cols = [1, 2, 2, 4, 3, 4, 5, 6]
+    sparse = create_csr_matrix(m, n, rows, cols, v)
+
+    ! Convert back to dense
+    check = sparse
+
+    ! Test
+    if (.not.assert(dense, check)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_1 -7"
     end if
 end function
 

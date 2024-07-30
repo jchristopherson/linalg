@@ -195,6 +195,28 @@ module sparskit
             real(real64), intent(in) :: a(*)
             real(real64), intent(out) :: ao(*), wk(n)
         end subroutine
+
+        !> @brief Converte a matrix stored in coordinate format to CSR format.
+        !!
+        !! @param[in] nrow The number of rows in the matrix.
+        !! @param[in] nnz The number of non-zero elements in the matrix.
+        !! @param[in] a An NNZ-element array containing the non-zero elements
+        !!  of the matrix.
+        !! @param[in,out] ir An NNZ-element array containing the row indices of
+        !!  each non-zero element.
+        !! @param[in] jc An NNZ-element array containing the column indices of
+        !!  each non-zero element.
+        !! @param[out] ao The non-zero elements of matrix A.
+        !! @param[out] jao The column indices of matrix A.
+        !! @param[out] iao The index in A where the requested row starts.
+        subroutine coocsr(nrow, nnz, a, ir, jc, ao, jao, iao)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: nrow, nnz, jc(*)
+            integer(int32), intent(inout) :: ir(*)
+            real(real64), intent(in) :: a(*)
+            integer(int32), intent(out) :: jao(*), iao(*)
+            real(real64) :: ao(*)
+        end subroutine
     end interface
 
     ! UNARY.F
@@ -237,6 +259,50 @@ module sparskit
             integer(int32), intent(out) :: len, idiag(*)
             real(real64), intent(in) :: a(*)
             real(real64), intent(out) :: diag(*)
+        end subroutine
+
+        !> @brief Sorces the elements of a CSR matrix in increasing order of 
+        !! their column indices within each row.
+        !!
+        !! @param[in] n The number of rows in the matrix.
+        !! @param[in,out] a The non-zero values.
+        !! @param[in,out] ja An array of column indices of the elements in A.
+        !! @param[in] ia An array of pointers to the rows.
+        !! @param[in] values Idicates whether A must also be permuted.  If
+        !!  false, A can be a dummy array.
+        subroutine csort(n, a, ja, ia, values)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n
+            real(real64), intent(inout) :: a(*)
+            integer(int32), intent(inout) :: ja(*)
+            integer(int32), intent(in) :: ia(*)
+            logical, intent(in) :: values
+        end subroutine
+
+        !> @breif Cleans up a CSR matrix.
+        !!
+        !! @param[in] job The job to perform.
+        !!  - 0: Nothing is done
+        !!  - 1: Eliminate duplicate entries and zero entries.
+        !!  - 2: Eliminate duplicate entries and perform partial ordering.
+        !!  - 3: Eliminate duplicate entries and sort the entries in increasing
+        !!      order of column indices.
+        !! @param[in] value2 0 if the matrix is pattern only (A is not touched),
+        !!  or 1 if the matrix has values.
+        !! @param[in] nrow The number of rows in the matrix.
+        !! @param[in,out] a The non-zero values.
+        !! @param[in,out] ja An array of column indices of the elements in A.
+        !! @param[in,out] ia An array of pointers to the rows.
+        !! @param[out] indu An NROW array containing pointers to the beginning 
+        !!  of the upper triangular portion if job > 1.
+        !! @param[out] iwk An NROW+1 element workspace array.
+
+        subroutine clncsr(job, value2, nrow, a, ja, ia, indu, iwk)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: job, value2, nrow
+            real(real64), intent(inout) :: a(*)
+            integer(int32), intent(inout) :: ja(*), ia(*)
+            integer(int32), intent(inout) :: indu(*), iwk(*)
         end subroutine
     end interface
 

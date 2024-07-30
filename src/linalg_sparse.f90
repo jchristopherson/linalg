@@ -1138,6 +1138,79 @@ module subroutine msr_assign_to_csr(csr, msr)
     csr = msr_to_csr(msr)
 end subroutine
 
+! ------------------------------------------------------------------------------
+module function create_csr_matrix(m, n, rows, cols, vals, err) result(rst)
+    ! Arguments
+    integer(int32), intent(in) :: m, n
+    integer(int32), intent(in), dimension(:) :: rows, cols
+    real(real64), intent(in), dimension(:) :: vals
+    class(errors), intent(inout), optional, target :: err
+    type(csr_matrix) :: rst
+
+    ! Local Variables
+    integer(int32) :: i, flag, nnz
+    integer(int32), allocatable, dimension(:) :: ir
+    class(errors), pointer :: errmgr
+    type(errors), target :: deferr
+    
+    ! Initialization
+    if (present(err)) then
+        errmgr => err
+    else
+        errmgr => deferr
+    end if
+    nnz = size(rows)
+
+    ! Input Checking
+    if (m < 0) then
+        call errmgr%report_error("create_csr_matrix", &
+            "The number of rows must be a positive value.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+    end if
+    if (n < 0) then
+        call errmgr%report_error("create_csr_matrix", &
+            "The number of columns must be a positive value.", &
+            LA_INVALID_INPUT_ERROR)
+        return
+    end if
+    if (size(cols) /= nnz .or. size(vals) /= nnz) then
+        call errmgr%report_error("create_csr_matrix", &
+            "The size of the input arrays must be the same.", &
+            LA_ARRAY_SIZE_ERROR)
+        return
+    end if
+    do i = 1, nnz
+        if (rows(i) < 1 .or. rows(i) > m) then
+            call errmgr%report_error("create_csr_matrix", &
+                "All row indices must be within the bounds of the matrix.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+        if (cols(i) < 1 .or. cols(i) > n) then
+            call errmgr%report_error("create_csr_matrix", &
+                "All column indices must be within the bounds of the matrix.", &
+                LA_INVALID_INPUT_ERROR)
+            return
+        end if
+    end do
+    allocate(ir(nnz), source = rows, stat = flag)
+    if (flag /= 0) then
+        call errmgr%report_error("create_csr_matrix", &
+            "Memory allocation error.", LA_OUT_OF_MEMORY_ERROR)
+        return
+    end if
+
+    ! Create an empty matrix
+    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
+    if (errmgr%has_error_occurred()) return
+
+    ! Populate the empty matrix
+    call coocsr(m, nnz, vals, ir, cols, rst%values, rst%column_indices, &
+        rst%row_indices)
+    call csort(m, rst%values, rst%column_indices, rst%row_indices, .true.)
+end function
+
 ! ******************************************************************************
 ! LU PRECONDITIONER ROUTINES
 ! ------------------------------------------------------------------------------

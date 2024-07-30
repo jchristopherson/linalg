@@ -204,6 +204,7 @@ module linalg
     public :: msr_to_csr
     public :: dense_to_msr
     public :: msr_to_dense
+    public :: create_csr_matrix
     public :: matmul
     public :: operator(+)
     public :: operator(-)
@@ -5738,6 +5739,15 @@ end interface
             real(real64), intent(in), optional :: tol
             class(errors), intent(inout), optional, target :: err
         end subroutine
+
+        module function create_csr_matrix(m, n, rows, cols, vals, err) &
+            result(rst)
+            integer(int32), intent(in) :: m, n
+            integer(int32), intent(in), dimension(:) :: rows, cols
+            real(real64), intent(in), dimension(:) :: vals
+            class(errors), intent(inout), optional, target :: err
+            type(csr_matrix) :: rst
+        end function
     end interface
 
 ! ------------------------------------------------------------------------------

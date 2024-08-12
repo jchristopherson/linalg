@@ -275,6 +275,73 @@ contains
         ! Formatting
 100     format(A, I0, A, I0, A, I0, A, I0, A)
     end subroutine
+    
+! ------------------------------------------------------------------------------
+    module subroutine sort_int32_array(x, ascend)
+        ! Arguments
+        integer(int32), intent(inout), dimension(:) :: x
+        logical, intent(in), optional :: ascend
+
+        ! Local Variables
+        logical :: dir
+
+        ! Initialization
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true.
+        end if
+
+        ! Process
+        call qsort_int32(dir, x)
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    module subroutine sort_int32_array_ind(x, ind, ascend, err)
+        ! Arguments
+        integer(int32), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        logical, intent(in), optional :: ascend
+        class(errors), intent(inout), optional, target :: err
+
+        ! Local Variables
+        class(errors), pointer :: errmgr
+        type(errors), target :: deferr
+        character(len = :), allocatable :: errmsg
+        integer(int32) :: n
+        logical :: dir
+
+        ! Initialization
+        n = size(x)
+        if (present(err)) then
+            errmgr => err
+        else
+            errmgr => deferr
+        end if
+        if (present(ascend)) then
+            dir = ascend
+        else
+            dir = .true. ! Ascend == true
+        end if
+
+        ! Input Check
+        if (size(ind) /= n) then
+            allocate(character(len = 256) :: errmsg)
+            write(errmsg, 100) &
+                "Expected the tracking array to be of size ", n, &
+                ", but found an array of size ", size(ind), "."
+            call errmgr%report_error("sort_int32_array_ind", trim(errmsg), &
+                LA_ARRAY_SIZE_ERROR)
+            return
+        end if
+        if (n <= 1) return
+
+        ! Process
+        call qsort_int32_ind(dir, x, ind)
+
+        ! Formatting
+100     format(A, I0, A, I0, A)
+    end subroutine
 
 ! ******************************************************************************
 ! PRIVATE HELPER ROUTINES
@@ -633,6 +700,238 @@ contains
                 i = i + 1
                 do
                     if (real(x(i), real64) <= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+
+                    itemp = ind(i)
+                    ind(i) = ind(j)
+                    ind(j) = itemp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A recursive quick sort algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    recursive subroutine qsort_int32(ascend, x)
+        ! Arguments
+        logical, intent(in) :: ascend
+        integer(int32), intent(inout), dimension(:) :: x
+
+        ! Local Variables
+        integer(int32) :: iq
+
+        ! Process
+        if (size(x) > 1) then
+            call int32_partition(ascend, x, iq)
+            call qsort_int32(ascend, x(:iq-1))
+            call qsort_int32(ascend, x(iq:))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A routine to perform the partioning necessary for the quick sort
+    !! algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[out] marker The partioning marker.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95
+    subroutine int32_partition(ascend, x, marker)
+        ! Arguments
+        logical, intent(in) :: ascend
+        integer(int32), intent(inout), dimension(:) :: x
+        integer(int32), intent(out) :: marker
+
+        ! Local Variables
+        integer(int32) :: i, j, temp, pivot
+
+        ! Process
+        pivot = x(1)
+        i = 0
+        j = size(x) + 1
+        if (ascend) then
+            ! Ascending Sort
+            do
+                j = j - 1
+                do
+                    if (x(j) <= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (x(i) >= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        else
+            ! Descending Sort
+            do
+                j = j - 1
+                do
+                    if (x(j) >= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (x(i) <= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A recursive quick sort algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95.
+    recursive subroutine qsort_int32_ind(ascend, x, ind)
+        ! Arguments
+        logical, intent(in) :: ascend
+        integer(int32), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+
+        ! Local Variables
+        integer(int32) :: iq
+
+        ! Process
+        if (size(x) > 1) then
+            call int32_partition_ind(ascend, x, ind, iq)
+            call qsort_int32_ind(ascend, x(:iq-1), ind(:iq-1))
+            call qsort_int32_ind(ascend, x(iq:), ind(iq:))
+        end if
+    end subroutine
+
+! ------------------------------------------------------------------------------
+    !> @brief A routine to perform the partioning necessary for the quick sort
+    !! algorithm.
+    !!
+    !! @param[in] ascend Set to true to sort in ascending order; else, false
+    !!  to sort in descending order.
+    !! @param[in,out] x On input, the array to sort.  On output, the sorted 
+    !!  array.
+    !! @param[in,out] ind On input, a tracking array of the same length as @p x.
+    !!  On output, the same array, but shuffled to match the sorting order of
+    !!  @p x.
+    !! @param[out] marker The partioning marker.
+    !!
+    !! @par Notes
+    !! This implementation is a slight modification of the code presented at
+    !! http://www.fortran.com/qsort_c.f95
+    subroutine int32_partition_ind(ascend, x, ind, marker)
+        ! Arguments
+        logical, intent(in) :: ascend
+        integer(int32), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        integer(int32), intent(out) :: marker
+
+        ! Local Variables
+        integer(int32) :: i, j, itemp, temp, pivot
+
+        ! Process
+        pivot = x(1)
+        i = 0
+        j = size(x) + 1
+        if (ascend) then
+            ! Ascending Sort
+            do
+                j = j - 1
+                do
+                    if (x(j) <= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (x(i) >= pivot) exit
+                    i = i + 1
+                end do
+                if (i < j) then
+                    ! Exchage X(I) and X(J)
+                    temp = x(i)
+                    x(i) = x(j)
+                    x(j) = temp
+
+                    itemp = ind(i)
+                    ind(i) = ind(j)
+                    ind(j) = itemp
+                else if (i == j) then
+                    marker = i + 1
+                    return
+                else
+                    marker = i
+                    return
+                end if
+            end do
+        else
+            ! Descending Sort
+            do
+                j = j - 1
+                do
+                    if (x(j) >= pivot) exit
+                    j = j - 1
+                end do
+                i = i + 1
+                do
+                    if (x(i) <= pivot) exit
                     i = i + 1
                 end do
                 if (i < j) then

@@ -170,4 +170,49 @@ function test_descend_sort_cmplx() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_int32_ascend_sort() result(rst)
+    ! Parameters
+    integer(int32), parameter :: n = 200
+    integer(int32), parameter :: first = -10000
+    integer(int32), parameter :: last = 10000
+
+    ! Local Variables
+    logical :: rst, ascend
+    integer(int32) :: i, ind(n), x1(n), x2(n), ri
+    real(real64) :: rv
+
+    ! Initialization
+    rst = .true.
+    ascend = .true.
+    do i = 1, n
+        call random_number(rv)
+        ri = first + floor((last + 1 - first) * rv)
+        x1(i) = ri + 1
+        x2(i) = x1(i)
+        ind(i) = i
+    end do
+
+    ! Sort into ascending order
+    call sort(x1, ascend)
+
+    ! Ensure it's increasing
+    do i = 2, n
+        if (x1(i) < x1(i-1)) then
+            rst = .false.
+            print "(A)", "Test Failed: Ascending sort of 32-bit integer array."
+            exit
+        end if
+    end do
+
+    ! Sort the other array
+    call sort(x2, ind, ascend)
+
+    ! Compare
+    if (.not.assert(x1, x2)) then
+        rst = .false.
+        print "(A)", "Test Failed: Sorted integer arrays do not match."
+    end if
+end function
+
+! ------------------------------------------------------------------------------
 end module

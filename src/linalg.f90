@@ -3458,6 +3458,8 @@ interface sort
     module procedure :: sort_cmplx_array_ind
     module procedure :: sort_eigen_cmplx
     module procedure :: sort_eigen_dbl
+    module procedure :: sort_int32_array
+    module procedure :: sort_int32_array_ind
 end interface
 
 !> @brief Computes the LQ factorization of an M-by-N matrix.
@@ -5307,6 +5309,17 @@ interface
         class(errors), intent(inout), optional, target :: err
     end subroutine
 
+    module subroutine sort_int32_array(x, ascend)
+        integer(int32), intent(inout), dimension(:) :: x
+        logical, intent(in), optional :: ascend
+    end subroutine
+
+    module subroutine sort_int32_array_ind(x, ind, ascend, err)
+        integer(int32), intent(inout), dimension(:) :: x
+        integer(int32), intent(inout), dimension(:) :: ind
+        logical, intent(in), optional :: ascend
+        class(errors), intent(inout), optional, target :: err
+    end subroutine
 end interface
 
 ! ******************************************************************************

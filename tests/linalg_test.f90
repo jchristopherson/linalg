@@ -354,6 +354,10 @@ program main
     rst = test_pgmres_1()
     if (.not.rst) flag = 106
 
+    ! More Tests
+    rst = test_int32_ascend_sort()
+    if (.not.rst) flag = 107
+
     ! End
     if (flag /= 0) stop flag
 end program

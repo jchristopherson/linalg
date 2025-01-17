@@ -94,8 +94,6 @@ set(SPARSEKIT_SOURCES
 set(LINALG_SOURCES
     ${dir}/linalg.f90
     ${dir}/linalg_eigen.f90
-    ${dir}/linalg_factor.f90
-    ${dir}/linalg_solve.f90
     ${dir}/linalg_sorting.f90
     ${dir}/linalg_basic.f90
     ${dir}/blas.f90
@@ -103,6 +101,16 @@ set(LINALG_SOURCES
     ${dir}/qrupdate.f90
     ${dir}/sparskit.f90
     ${dir}/linalg_sparse.f90
+    ${dir}/linalg_errors.f90
+    ${dir}/linalg_lu.f90
+    ${dir}/linalg_rz.f90
+    ${dir}/linalg_qr.f90
+    ${dir}/linalg_tri.f90
+    ${dir}/linalg_cholesky.f90
+    ${dir}/linalg_lq.f90
+    ${dir}/linalg_svd.f90
+    ${dir}/linalg_inverse.f90
+    ${dir}/linalg_least_squares.f90
 )
 if (${BUILD_C_API})
     set(LINALG_C_SOURCES

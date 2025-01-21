@@ -14,7 +14,7 @@ module linalg_tri
     end interface
 contains
 ! ------------------------------------------------------------------------------
-module subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
+subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
     !! Solves a triangular system of equations of the form 
     !! \(op(A) X = \alpha B\) or \(X op(A) = \alpha B\) where \(A\) is a 
     !! triangular matrix (either upper or lower) for the unknown \(X\).

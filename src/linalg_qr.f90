@@ -692,7 +692,7 @@ subroutine form_qr_pivot(r, tau, pvt, q, p, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p, work, olwork, err)
+subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p, work, olwork, err)
     !! Forms the full M-by-M orthogonal matrix \(Q\) from the elementary
     !! reflectors returned by the base QR factorization algorithm.
     complex(real64), intent(inout), dimension(:,:) :: r
@@ -1271,7 +1271,7 @@ subroutine qr_rank1_update_dbl(q, r, u, v, work, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)
+subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)
     !! Computes the rank-1 update to an M-by-N QR factored matrix \(A\) where
     !! \(M \ge N\), \(A = Q R\), and \(A_1 = A + \vec{u} \vec{v}^H\) such that
     !! \(A_1 = Q_1 R_1\).
@@ -1663,7 +1663,7 @@ subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)
+subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)
     !! Solves a system of M QR-factored equations of N unknowns.  M must be
     !! greater than or equal to N.
     complex(real64), intent(inout), dimension(:,:) :: a
@@ -2080,7 +2080,7 @@ subroutine solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
+subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
     !! Solves a system of M QR-factored equations of N unknowns.
     real(real64), intent(inout), dimension(:,:) :: a
         !! On input, the M-by-N QR factored matrix as returned by qr_factor.  
@@ -2238,7 +2238,7 @@ module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)
+subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)
     !! Solves a system of M QR-factored equations of N unknowns.
     complex(real64), intent(inout), dimension(:,:) :: a
         !! On input, the M-by-N QR factored matrix as returned by qr_factor.  

@@ -362,7 +362,7 @@ subroutine mtx_pinverse_dbl(a, ainv, tol, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine mtx_pinverse_cmplx(a, ainv, tol, work, olwork, rwork, err)
+subroutine mtx_pinverse_cmplx(a, ainv, tol, work, olwork, rwork, err)
     !! Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix using the
     !! singular value decomposition of the matrix.
     complex(real64), intent(inout), dimension(:,:) :: a

@@ -12,7 +12,7 @@ module linalg_svd
     end interface
 contains
 ! ------------------------------------------------------------------------------
-module subroutine svd_dbl(a, s, u, vt, work, olwork, err)
+subroutine svd_dbl(a, s, u, vt, work, olwork, err)
     !! Computes the singular value decomposition of an M-by-N matrix \(A\) such 
     !! that \(A = U S V^T\) where \(U\) is an M-by-M orthogonal matrix, \(S\)
     !! is an M-by-N diagonal matrix containing the singular values, and \(V\)

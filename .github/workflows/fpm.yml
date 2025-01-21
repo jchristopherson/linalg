@@ -85,8 +85,8 @@ jobs:
       fail-fast: false
 
     env:
-      FPM_FC: ifort
-      FC: ifort
+      FPM_FC: ifx
+      FC: ifx
 
     steps:
     - name: Checkout code

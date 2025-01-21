@@ -109,7 +109,7 @@ jobs:
         source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
 
-    - name: Install BLAS & LAPACK
+    - name: Install MKL
       run: |
         sudo apt-get update
         sudo apt-get -y install intel-mkl

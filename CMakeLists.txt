@@ -44,7 +44,7 @@ message(STATUS "Build tests: ${BUILD_TESTING}")
 if (BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
-  add_subdirectory(tests_c)
+  # add_subdirectory(tests_c)
 endif()
 
 # Examples

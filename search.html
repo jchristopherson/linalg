@@ -8,7 +8,8 @@
     <meta name="author" content="Jason Christopherson" >
     <link rel="icon" href="./favicon.png">
 
-    <title> LINALG </title>
+    <title>Search Results &ndash; LINALG
+</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -59,75 +60,29 @@
     </div>
 
     <div class="container">
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
-        <p>LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.</p>
-	<p> Find us on&hellip;</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="https://github.com/jchristopherson/linalg" role="button">GitHub</a>
-        </p>
-      </div>
-
-      <div class="row" id='text'>
-        <div class=col-md-8>
-          <h1>LINALG</h1>
-          
+      <div class="row">
+        <div class="col-lg-12">
+			 <h1>Search Results</h1>
+             <div id="tipue_search_content"><div id="tipue_search_loading"></div></div>
         </div>
-          <div class="col-md-4">
-	        <div class="card card-body bg-light">
-              <h2 class="card-title">Developer Info</h2>
-              <h4 class="card-text">Jason Christopherson</h4>
-              <p class="card-text"></p>
-            </div>
-          </div>
       </div>
-        <div class="row">
-          <hr>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Source Files</h3>
-              <ul><li><a href='sourcefile\linalg.f90.html'>linalg.f90</a></li><li><a href='sourcefile\linalg_basic.f90.html'>linalg_basic.f90</a></li><li><a href='sourcefile\linalg_cholesky.f90.html'>linalg_cholesky.f90</a></li><li><a href='sourcefile\linalg_eigen.f90.html'>linalg_eigen.f90</a></li><li><a href='sourcefile\linalg_errors.f90.html'>linalg_errors.f90</a></li><li><a href='sourcefile\linalg_inverse.f90.html'>linalg_inverse.f90</a></li><li><a href='sourcefile\linalg_least_squares.f90.html'>linalg_least_squares.f90</a></li><li><a href='sourcefile\linalg_lq.f90.html'>linalg_lq.f90</a></li><li><a href='sourcefile\linalg_lu.f90.html'>linalg_lu.f90</a></li><li><a href='sourcefile\linalg_qr.f90.html'>linalg_qr.f90</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Modules</h3>
-              <ul><li><a href='module\linalg.html'>linalg</a></li><li><a href='module\linalg_basic.html'>linalg_basic</a></li><li><a href='module\linalg_cholesky.html'>linalg_cholesky</a></li><li><a href='module\linalg_eigen.html'>linalg_eigen</a></li><li><a href='module\linalg_errors.html'>linalg_errors</a></li><li><a href='module\linalg_inverse.html'>linalg_inverse</a></li><li><a href='module\linalg_least_squares.html'>linalg_least_squares</a></li><li><a href='module\linalg_lq.html'>linalg_lq</a></li><li><a href='module\linalg_lu.html'>linalg_lu</a></li><li><a href='module\linalg_qr.html'>linalg_qr</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Procedures</h3>
-              <ul><li><a href='interface\assignment(=).html'>assignment(=)</a></li><li><a href='interface\band_diag_mtx_mult.html'>band_diag_mtx_mult</a></li><li><a href='interface\band_mtx_mult.html'>band_mtx_mult</a></li><li><a href='interface\band_mtx_to_full_mtx.html'>band_mtx_to_full_mtx</a></li><li><a href='proc\banded_to_csr.html'>banded_to_csr</a></li><li><a href='interface\banded_to_dense.html'>banded_to_dense</a></li><li><a href='interface\cholesky_factor.html'>cholesky_factor</a></li><li><a href='interface\cholesky_rank1_downdate.html'>cholesky_rank1_downdate</a></li><li><a href='interface\cholesky_rank1_update.html'>cholesky_rank1_update</a></li><li><a href='proc\create_csr_matrix.html'>create_csr_matrix</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Derived Types</h3>
-              <ul><li><a href='type\csr_matrix.html'>csr_matrix</a></li><li><a href='type\msr_matrix.html'>msr_matrix</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
+<!--
+    <script>
+      $(document).ready(function() {
+           $('#tipue_search_input').tipuesearch({
+             'mode' : 'static',
+             'show': 10,
+             'newWindow': false,
+             'descriptiveWords': 35,
+         });
+      });
+    </script>
+-->
+<script>
+$(document).ready(function() {
+     $('#tipue_search_input').tipuesearch();
+});
+</script>
       <hr>
     </div> <!-- /container -->
     <footer>

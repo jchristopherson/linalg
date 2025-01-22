@@ -1,0 +1,3228 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.">
+    <meta name="author" content="Jason Christopherson" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>linalg_qr &ndash; LINALG</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">LINALG </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>linalg_qr
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title="15.5% of total for modules and submodules.">1477 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/linalg_qr.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_qr.f90.html'>linalg_qr.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">linalg_qr</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#inters-0"
+         aria-expanded="false" aria-controls="inters-0">
+         <h4 class="card-header bg-primary text-white">Interfaces</h4>
+      </a>
+      <div id="inters-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-form_qr">form_qr</a>
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-mult_qr">mult_qr</a>
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-qr_factor">qr_factor</a>
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-qr_rank1_update">qr_rank1_update</a>
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-solve_qr">solve_qr</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item">qrupdate</li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='linalg_rz.html'>linalg_rz</a></li>
+                  <li class="list-inline-item"><a href='linalg_tri.html'>linalg_tri</a></li>
+                  <li class="list-inline-item">blas</li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item">ferror</li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      
+      <br>
+
+
+
+
+        <section>
+          <h2>Interfaces</h2>
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-form_qr"></span>
+      <h3>public        interface <a href='..\interface\form_qr.html'>form_qr</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  subroutine form_qr_no_pivot(r, tau, q, work, olwork, err)  
+
+    </h3>
+  <p>Forms the full M-by-M orthogonal matrix <script type="math/tex">Q</script> from the elementary
+reflectors returned by the base QR factorization algorithm.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~5"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, an M-by-N matrix where the elements below the diagonal 
+contain the elementary reflectors generated from the QR 
+factorization.  On and above the diagonal, the matrix contains the
+matrix <script type="math/tex">R</script>.  On output, the elements below the diagonal are zeroed 
+such that the remaining matrix is simply the M-by-N matrix <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~23"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of each 
+elementary reflector defined in <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>An M-by-M matrix where the full orthogonal matrix <script type="math/tex">Q</script> will be
+written.  In the event that M &gt; N, <script type="math/tex">Q</script> may be supplied as M-by-N, 
+and therefore only return the useful submatrix <script type="math/tex">Q_1</script>
+<script type="math/tex">Q = [Q_1 Q_2]</script> as the factorization can be written as 
+<script type="math/tex">Q R = [Q_1, Q_2] [R1 0]^T</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~47"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~43"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~114"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine form_qr_no_pivot_cmplx(r, tau, q, work, olwork, err)  
+
+    </h3>
+  <p>Forms the full M-by-M orthogonal matrix <script type="math/tex">Q</script> from the elementary
+reflectors returned by the base QR factorization algorithm.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~6"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, an M-by-N matrix where the elements below the diagonal 
+contain the elementary reflectors generated from the QR 
+factorization.  On and above the diagonal, the matrix contains the
+matrix <script type="math/tex">R</script>.  On output, the elements below the diagonal are zeroed 
+such that the remaining matrix is simply the M-by-N matrix <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~24"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of each 
+elementary reflector defined in <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~4"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>An M-by-M matrix where the full orthogonal matrix <script type="math/tex">Q</script> will be
+written.  In the event that M &gt; N, <script type="math/tex">Q</script> may be supplied as M-by-N, 
+and therefore only return the useful submatrix <script type="math/tex">Q_1</script>
+<script type="math/tex">Q = [Q_1 Q_2]</script> as the factorization can be written as 
+<script type="math/tex">Q R = [Q_1, Q_2] [R1 0]^T</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~48"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~44"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~115"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine form_qr_pivot(r, tau, pvt, q, p, work, olwork, err)  
+
+    </h3>
+  <p>Forms the full M-by-M orthogonal matrix <script type="math/tex">Q</script> from the elementary
+reflectors returned by the base QR factorization algorithm.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~7"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, an M-by-N matrix where the elements below the diagonal 
+contain the elementary reflectors generated from the QR 
+factorization.  On and above the diagonal, the matrix contains the
+matrix <script type="math/tex">R</script>.  On output, the elements below the diagonal are zeroed 
+such that the remaining matrix is simply the M-by-N matrix <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~25"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of each 
+elementary reflector defined in <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pvt"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>pvt</strong></td>
+            <td>
+                <p>An N-element column pivot array as returned by the QR factorization.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~5"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>An M-by-M matrix where the full orthogonal matrix <script type="math/tex">Q</script> will be
+written.  In the event that M &gt; N, <script type="math/tex">Q</script> may be supplied as M-by-N, 
+and therefore only return the useful submatrix <script type="math/tex">Q_1</script>
+<script type="math/tex">Q = [Q_1 Q_2]</script> as the factorization can be written as 
+<script type="math/tex">Q R = [Q_1, Q_2] [R1 0]^T</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+                <p>An N-by-N matrix where the pivot matrix will be written.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~49"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~45"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~116"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private module subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p, work, olwork, err)  
+
+    </h3>
+  <p>Forms the full M-by-M orthogonal matrix <script type="math/tex">Q</script> from the elementary
+reflectors returned by the base QR factorization algorithm.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~8"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, an M-by-N matrix where the elements below the diagonal 
+contain the elementary reflectors generated from the QR 
+factorization.  On and above the diagonal, the matrix contains the
+matrix <script type="math/tex">R</script>.  On output, the elements below the diagonal are zeroed 
+such that the remaining matrix is simply the M-by-N matrix <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~26"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of each 
+elementary reflector defined in <script type="math/tex">R</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pvt~2"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>pvt</strong></td>
+            <td>
+                <p>An N-element column pivot array as returned by the QR factorization.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~6"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>An M-by-M matrix where the full orthogonal matrix <script type="math/tex">Q</script> will be
+written.  In the event that M &gt; N, <script type="math/tex">Q</script> may be supplied as M-by-N, 
+and therefore only return the useful submatrix <script type="math/tex">Q_1</script>
+<script type="math/tex">Q = [Q_1 Q_2]</script> as the factorization can be written as 
+<script type="math/tex">Q R = [Q_1, Q_2] [R1 0]^T</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~4"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+                <p>An N-by-N matrix where the pivot matrix will be written.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~50"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~46"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~117"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-mult_qr"></span>
+      <h3>public        interface <a href='..\interface\mult_qr.html'>mult_qr</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  subroutine mult_qr_mtx(lside, trans, a, tau, c, work, olwork, err)  
+
+    </h3>
+  <p>Multiplies a general matrix by the orthogonal matrix <script type="math/tex">Q</script> from a QR
+factorization such that <script type="math/tex">C = op(Q) C</script> or <script type="math/tex">C = C op(Q)</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lside~16"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lside</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^T</script> from the left; else, set to 
+false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^T</script> from the right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-trans~18"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>trans</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q^T</script>; else, set to false to apply <script type="math/tex">Q</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~89"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, an LDA-by-K matrix containing the elementary reflectors 
+output from the QR factorization.  If lside is set to true, LDA = M, 
+and M &gt;= K &gt;= 0; else, if lside is set to false, LDA = N, and 
+N &gt;= K &gt;= 0.  Notice, the contents of this matrix are
+restored on exit.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~27"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A K-element array containing the scalar factors of each elementary 
+reflector defined in<script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~18"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix <script type="math/tex">C</script>.  On output, the product of the 
+orthogonal matrix <script type="math/tex">Q</script> and the original matrix <script type="math/tex">C</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~51"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~47"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~118"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine mult_qr_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)  
+
+    </h3>
+  <p>Multiplies a general matrix by the orthogonal matrix <script type="math/tex">Q</script> from a QR
+factorization such that <script type="math/tex">C = op(Q) C</script> or <script type="math/tex">C = C op(Q)</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lside~17"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lside</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^H</script> from the left; else, set to 
+false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^H</script> from the right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-trans~19"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>trans</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q^H</script>; else, set to false to apply <script type="math/tex">Q</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~90"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, an LDA-by-K matrix containing the elementary reflectors 
+output from the QR factorization.  If lside is set to true, LDA = M, 
+and M &gt;= K &gt;= 0; else, if lside is set to false, LDA = N, and 
+N &gt;= K &gt;= 0.  Notice, the contents of this matrix are
+restored on exit.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~28"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A K-element array containing the scalar factors of each elementary 
+reflector defined in<script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~19"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix <script type="math/tex">C</script>.  On output, the product of the 
+orthogonal matrix <script type="math/tex">Q</script> and the original matrix <script type="math/tex">C</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~52"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~48"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~119"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine mult_qr_vec(trans, a, tau, c, work, olwork, err)  
+
+    </h3>
+  <p>Multiplies a vector by the orthogonal matrix <script type="math/tex">Q</script> from a QR 
+factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-trans~20"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>trans</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q^T</script>; else, set to false to apply <script type="math/tex">Q</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~91"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, an M-by-K matrix containing the elementary reflectors 
+output from the QR factorization. Notice, the contents of this matrix
+are restored on exit.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~29"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A K-element array containing the scalar factors of each elementary 
+reflector defined in<script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~20"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the
+product of the orthogonal matrix <script type="math/tex">Q</script> and the original vector 
+<script type="math/tex">\vec{c}</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~53"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~49"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~120"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine mult_qr_vec_cmplx(trans, a, tau, c, work, olwork, err)  
+
+    </h3>
+  <p>Multiplies a vector by the orthogonal matrix <script type="math/tex">Q</script> from a QR 
+factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-trans~21"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>trans</strong></td>
+            <td>
+                <p>Set to true to apply <script type="math/tex">Q^H</script>; else, set to false to apply <script type="math/tex">Q</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~92"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, an M-by-K matrix containing the elementary reflectors 
+output from the QR factorization. Notice, the contents of this matrix
+are restored on exit.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~30"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A K-element array containing the scalar factors of each elementary 
+reflector defined in<script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~21"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the
+product of the orthogonal matrix <script type="math/tex">Q</script> and the original vector 
+<script type="math/tex">\vec{c}</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~54"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~50"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~121"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-qr_factor"></span>
+      <h3>public        interface <a href='..\interface\qr_factor.html'>qr_factor</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  subroutine qr_factor_no_pivot(a, tau, work, olwork, err)  
+
+    </h3>
+  <p>Computes the QR factorization of an M-by-N matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~85"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
+and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal 
+matrix R (R is upper triangular if M &gt;= N).  The elements below the 
+diagonal, along with the array tau, represent the orthogonal matrix
+Q as a product of elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~19"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array used to store the scalar factors of the 
+elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~43"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~39"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~110"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine qr_factor_no_pivot_cmplx(a, tau, work, olwork, err)  
+
+    </h3>
+  <p>Computes the QR factorization of an M-by-N matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~86"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
+and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal 
+matrix R (R is upper triangular if M &gt;= N).  The elements below the 
+diagonal, along with the array tau, represent the orthogonal matrix
+Q as a product of elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~20"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array used to store the scalar factors of the 
+elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~44"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~40"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~111"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine qr_factor_pivot(a, tau, jpvt, work, olwork, err)  
+
+    </h3>
+  <p>Computes the QR factorization of an M-by-N matrix using column pivoting
+such that <script type="math/tex">A P = Q R</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~87"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
+and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal 
+matrix R (R is upper triangular if M &gt;= N).  The elements below the 
+diagonal, along with the array tau, represent the orthogonal matrix
+Q as a product of elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~21"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array used to store the scalar factors of the 
+elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>On input, an N-element array that if JPVT(I) .ne. 0, the I-th column 
+of A is permuted to the front of A * P; if JPVT(I) = 0, the I-th 
+column of A is a free column.  On output, if JPVT(I) = K, then the 
+I-th column of A * P was the K-th column of A.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~45"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~41"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~112"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine qr_factor_pivot_cmplx(a, tau, jpvt, work, olwork, rwork, err)  
+
+    </h3>
+  <p>Computes the QR factorization of an M-by-N matrix using column pivoting
+such that <script type="math/tex">A P = Q R</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~88"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
+and above the diagonal contain the MIN(M, N)-by-N upper trapezoidal 
+matrix R (R is upper triangular if M &gt;= N).  The elements below the 
+diagonal, along with the array tau, represent the orthogonal matrix
+Q as a product of elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~22"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array used to store the scalar factors of the 
+elementary reflectors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~2"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>On input, an N-element array that if JPVT(I) .ne. 0, the I-th column 
+of A is permuted to the front of A * P; if JPVT(I) = 0, the I-th 
+column of A is a free column.  On output, if JPVT(I) = K, then the 
+I-th column of A * P was the K-th column of A.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~46"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~42"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rwork~8"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>rwork</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local allocate of 
+real-valued memory.  If not provided, the memory required is 
+allocated within.  If provided, the length of the array must be at
+least 2*N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~113"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-qr_rank1_update"></span>
+      <h3>public        interface <a href='..\interface\qr_rank1_update.html'>qr_rank1_update</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  subroutine qr_rank1_update_dbl(q, r, u, v, work, err)  
+
+    </h3>
+  <p>Computes the rank-1 update to an M-by-N QR factored matrix <script type="math/tex">A</script> where
+<script type="math/tex">M \ge N</script>, <script type="math/tex">A = Q R</script>, and <script type="math/tex">A_1 = A + \vec{u} \vec{v}^T</script> such that
+<script type="math/tex">A_1 = Q_1 R_1</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~7"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>On input, the original M-by-K orthogonal matrix <script type="math/tex">Q</script>.  On output, 
+the updated matrix <script type="math/tex">Q_1</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~9"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix <script type="math/tex">R</script>.  On output, the updated matrix 
+<script type="math/tex">R_1</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~11"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>On input, the M-element <script type="math/tex">\vec{u}</script> update vector.  On output, the 
+original content of the array is overwritten.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+                <p>On input, the N-element <script type="math/tex">\vec{v}</script> update vector.  On output, the 
+original content of the array is overwritten.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~55"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional argument that if supplied prevents local memory 
+allocation.  If provided, the array must have at least K elements.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~122"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private module subroutine qr_rank1_update_cmplx(q, r, u, v, work, rwork, err)  
+
+    </h3>
+  <p>Computes the rank-1 update to an M-by-N QR factored matrix <script type="math/tex">A</script> where
+<script type="math/tex">M \ge N</script>, <script type="math/tex">A = Q R</script>, and <script type="math/tex">A_1 = A + \vec{u} \vec{v}^H</script> such that
+<script type="math/tex">A_1 = Q_1 R_1</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~8"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>On input, the original M-by-K orthogonal matrix <script type="math/tex">Q</script>.  On output, 
+the updated matrix <script type="math/tex">Q_1</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~10"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix <script type="math/tex">R</script>.  On output, the updated matrix 
+<script type="math/tex">R_1</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~12"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>On input, the M-element <script type="math/tex">\vec{u}</script> update vector.  On output, the 
+original content of the array is overwritten.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~2"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+                <p>On input, the N-element <script type="math/tex">\vec{v}</script> update vector.  On output, the 
+original content of the array is overwritten.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~56"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional argument that if supplied prevents local memory 
+allocation.  If provided, the array must have at least K elements.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rwork~9"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>rwork</strong></td>
+            <td>
+                <p>An optional argument that if supplied prevents local memory 
+allocation.  If provided, the array must have at least K elements.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~123"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-solve_qr"></span>
+      <h3>public        interface <a href='..\interface\solve_qr.html'>solve_qr</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.  M must be
+greater than or equal to N.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~93"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.  Notice, M must
+be greater than or equal to N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~31"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~48"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-by-NRHS right-hand-side matrix.  On output, the 
+first N rows are overwritten by the solution matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~57"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~51"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~124"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine solve_qr_no_pivot_mtx_cmplx(a, tau, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.  M must be
+greater than or equal to N.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~94"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.  Notice, M must
+be greater than or equal to N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~32"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~49"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-by-NRHS right-hand-side matrix.  On output, the 
+first N rows are overwritten by the solution matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~58"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~52"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~125"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.  M must be
+greater than or equal to N.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~95"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.  Notice, M must
+be greater than or equal to N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~33"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~50"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-element right-hand-side vector.  On output, the first
+N elements are overwritten with the solution vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~59"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~53"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~126"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private module subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.  M must be
+greater than or equal to N.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~96"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.  Notice, M must
+be greater than or equal to N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~34"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~51"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-element right-hand-side vector.  On output, the first
+N elements are overwritten with the solution vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~60"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~54"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~127"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~97"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~35"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~52"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the MAX(M, N)-by-NRHS right-hand-side matrix.  On output,
+the first N rows are overwritten by the solution matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~61"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~55"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~128"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~98"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~36"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~53"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the MAX(M, N)-by-NRHS right-hand-side matrix.  On output,
+the first N rows are overwritten by the solution matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~62"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~56"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~129"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private module subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~99"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~37"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~5"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~54"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the MAX(M, N)-by-NRHS right-hand-side vector.  On output,
+the first N rows are overwritten by the solution vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~63"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~57"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~130"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private module subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)  
+
+    </h3>
+  <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~100"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
+On output, the contents of this matrix are restored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~38"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~6"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~55"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the MAX(M, N)-by-NRHS right-hand-side vector.  On output,
+the first N rows are overwritten by the solution vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~64"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~58"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~131"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+    </ul>
+  </div>
+
+        </section>
+        <br>
+
+
+
+
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-01-21 09:36              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

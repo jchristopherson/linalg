@@ -28,9 +28,9 @@ if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
       GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
   )
   FetchContent_MakeAvailable(lapack)
+  set(BLAS_LIBRARIES blas)
+  set(LAPACK_LIBRARIES lapack)
 endif()
-
-print_all_variables()
 
 # Source
 add_subdirectory(src)

@@ -20,11 +20,17 @@ find_package(BLAS)
 find_package(LAPACK)
 add_subdirectory(dependencies)
 
+if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
+  message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
+  add_subdirectory(lapack)
+endif()
+
+# Remove later - just a sanity check for now
 if (NOT BLAS_FOUND)
-  message(STATUS "BLAS could not be found.")
+  message(STATUS "Still no BLAS")
 endif()
 if (NOT LAPACK_FOUND)
-  message(STATUS "LAPACK could not be found.")
+  message(STATUS "Still no LAPACK")
 endif()
 
 # Source
@@ -43,8 +49,6 @@ target_link_libraries(
   ${LAPACK_LIBRARIES}
 )
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
-
-print_all_variables()
 
 # Testing
 option(BUILD_TESTING "Build tests")

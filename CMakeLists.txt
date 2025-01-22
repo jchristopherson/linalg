@@ -22,8 +22,15 @@ add_subdirectory(dependencies)
 
 if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
   message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
-  add_subdirectory(lapack)
+  include(FetchContent)
+  FetchContent_Declare(
+      lapack
+      GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
+  )
+  FetchContent_MakeAvailable(lapack)
 endif()
+
+print_all_variables()
 
 # Source
 add_subdirectory(src)

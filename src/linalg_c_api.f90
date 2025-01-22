@@ -6,6 +6,7 @@ module linalg_c_api
     use iso_c_binding
     use linalg
     use ferror
+    use linalg_errors
     implicit none
 
 contains

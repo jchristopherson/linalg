@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        gcc_v: [10] # Version of GFortran we want to use.
+        gcc_v: [12] # Version of GFortran we want to use.
         include:
         - os: ubuntu-latest
           os-arch: linux-x86_64
@@ -29,6 +29,12 @@ jobs:
         --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} \
         --slave /usr/bin/gcov gcov /usr/bin/gcov-${GCC_V}
     
+    - name: Install BLAS & LAPACK
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install libopenblas-dev liblapack-dev
+
     - name: Install fpm
       uses: fortran-lang/setup-fpm@v5
       with:
@@ -79,8 +85,8 @@ jobs:
       fail-fast: false
 
     env:
-      FPM_FC: ifort
-      FC: ifort
+      FPM_FC: ifx
+      FC: ifx
 
     steps:
     - name: Checkout code
@@ -103,6 +109,13 @@ jobs:
         source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
 
+    - name: Install MKL
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install intel-mkl
+        sudo apt update
+        sudo apt -y install intel-mkl
+
     - name: Install fpm
       uses: fortran-lang/setup-fpm@v3
       with:
@@ -110,7 +123,7 @@ jobs:
 
     - name: fpm build
       run: |
-        ifort --version
+        ifx --version
         fpm --version
         fpm build --profile debug --flag "-warn nointerfaces"
 

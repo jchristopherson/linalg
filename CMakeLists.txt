@@ -25,14 +25,6 @@ if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
   add_subdirectory(lapack)
 endif()
 
-# Remove later - just a sanity check for now
-if (NOT BLAS_FOUND)
-  message(STATUS "Still no BLAS")
-endif()
-if (NOT LAPACK_FOUND)
-  message(STATUS "Still no LAPACK")
-endif()
-
 # Source
 add_subdirectory(src)
 add_fortran_library(

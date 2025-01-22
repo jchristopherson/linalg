@@ -20,6 +20,13 @@ find_package(BLAS)
 find_package(LAPACK)
 add_subdirectory(dependencies)
 
+if (NOT BLAS_FOUND)
+  message(STATUS "BLAS could not be found.")
+endif()
+if (NOT LAPACK_FOUND)
+  message(STATUS "LAPACK could not be found.")
+endif()
+
 # Source
 add_subdirectory(src)
 add_fortran_library(
@@ -37,6 +44,8 @@ target_link_libraries(
 )
 link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 
+print_all_variables()
+
 # Testing
 option(BUILD_TESTING "Build tests")
 include(CTest)
@@ -44,7 +53,7 @@ message(STATUS "Build tests: ${BUILD_TESTING}")
 if (BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
-  # add_subdirectory(tests_c)
+  add_subdirectory(tests_c)
 endif()
 
 # Examples

@@ -65,3 +65,12 @@ if (${BUILD_LINALG_C_API})
         COMMAND $<TARGET_FILE:linalg_c_test>
     )
 endif()
+
+if (${BUILD_SHARED_LIBS})
+    add_custom_command(
+        TARGET linalg_test
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:linalg_test> $<TARGET_FILE_DIR:linalg_test>
+        COMMAND_EXPAND_LISTS
+    )
+endif()

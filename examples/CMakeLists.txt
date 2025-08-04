@@ -80,3 +80,13 @@ if (${BUILD_LINALG_C_API})
     add_executable(c_lu_example c_linalg_lu_example.c)
     target_link_libraries(c_lu_example linalg)
 endif()
+
+# ------------------------------------------------------------------------------
+if (${BUILD_SHARED_LIBS})
+    add_custom_command(
+        TARGET lu_example
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:lu_example> $<TARGET_FILE_DIR:lu_example>
+        COMMAND_EXPAND_LISTS
+    )
+endif()

@@ -1,66 +1,40 @@
-# Master CMAKE Build Script
 cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.8.3
+  VERSION 1.8.4
 )
-
-# Get helper macros and functions
-include("${PROJECT_SOURCE_DIR}/cmake/helper.cmake")
+set(CMAKE_Fortran_STANDARD 2018)
+set(CMAKE_Fortran_STANDARD_REQUIRED TRUE)
 
 # Build the C API?
-option(BUILD_C_API "Build C API?" OFF)
+option(BUILD_LINALG_C_API "Build LINALG C API?" OFF)
 
 # Confgiure everything
 add_subdirectory(configure)
 
-# Deal with the dependencies
-find_package(BLAS)
-find_package(LAPACK)
-add_subdirectory(dependencies)
-
-if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
-  message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
-  include(FetchContent)
-  FetchContent_Declare(
-      lapack
-      GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
-  )
-  FetchContent_MakeAvailable(lapack)
-  set(BLAS_LIBRARIES blas)
-  set(LAPACK_LIBRARIES lapack)
-endif()
-
 # Source
 add_subdirectory(src)
-add_fortran_library(
-  ${PROJECT_NAME}
-  ${PROJECT_INCLUDE_DIR}
-  ${CMAKE_INSTALL_INCLUDEDIR}
-  ${PROJECT_VERSION}
-  ${PROJECT_VERSION_MAJOR}
-  ${LINALG_SOURCES}
+
+# Installation Instructions
+install(
+  EXPORT ${PROJECT_NAME}-targets
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
-target_link_libraries(
-  ${PROJECT_NAME} 
-  ${BLAS_LIBRARIES} 
-  ${LAPACK_LIBRARIES}
-)
-link_library(${PROJECT_NAME} ${ferror_LIBRARY} ${ferror_INCLUDE_DIR})
 
 # Testing
 option(BUILD_TESTING "Build tests")
 include(CTest)
 message(STATUS "Build tests: ${BUILD_TESTING}")
 if (BUILD_TESTING)
+  message(STATUS "Building LINALG tests.")
   enable_testing()
   add_subdirectory(tests)
-  add_subdirectory(tests_c)
 endif()
 
 # Examples
-option(BUILD_LINALG_EXAMPLES "Build LINALG examples")
+option(BUILD_LINALG_EXAMPLES "Build LINALG examples.")
 message(STATUS "Build LINALG examples: ${BUILD_LINALG_EXAMPLES}")
 if (BUILD_LINALG_EXAMPLES)
   add_subdirectory(examples)

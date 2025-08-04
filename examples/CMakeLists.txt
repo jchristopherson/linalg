@@ -72,7 +72,7 @@ target_link_libraries(sparse_direct_example linalg)
 
 # --------------------
 # C API Eigenvalue Example
-if (${BUILD_C_API})
+if (${BUILD_LINALG_C_API})
     include_directories(${PROJECT_SOURCE_DIR}/include)
     add_executable(c_eigen_example c_linalg_eigen_example.c)
     target_link_libraries(c_eigen_example linalg)

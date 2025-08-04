@@ -112,7 +112,7 @@ set(LINALG_SOURCES
     ${dir}/linalg_inverse.f90
     ${dir}/linalg_least_squares.f90
 )
-if (${BUILD_C_API})
+if (${BUILD_LINALG_C_API})
     set(LINALG_C_SOURCES
         ${dir}/linalg_c_api.f90
     )
@@ -121,3 +121,83 @@ endif()
 list(APPEND LINALG_SOURCES ${QRUPDATE_SOURCES})
 list(APPEND LINALG_SOURCES ${SPARSEKIT_SOURCES})
 set(LINALG_SOURCES ${LINALG_SOURCES} PARENT_SCOPE)
+
+include(FetchContent)
+
+find_package(BLAS)
+find_package(LAPACK)
+find_package(ferror QUIET)
+
+if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
+  message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
+  FetchContent_Declare(
+      lapack
+      GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
+  )
+  FetchContent_MakeAvailable(lapack)
+  set(BLAS_LIBRARIES blas)
+  set(LAPACK_LIBRARIES lapack)
+endif()
+
+if (NOT ferror_FOUND)
+    message(STATUS "FERROR could not be found.  A reference version will be employed.")
+    FetchContent_Declare(
+        ferror
+        GIT_REPOSITORY "https://github.com/jchristopherson/ferror"
+    )
+    FetchContent_MakeAvailable(ferror)
+    set(FERROR_LIBRARIES ferror)
+else()
+    set(FERROR_LIBRARIES ferror::ferror)
+endif()
+
+add_library(${PROJECT_NAME} ${LINALG_SOURCES})
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC
+    ${BLAS_LIBRARIES}
+    ${LAPACK_LIBRARIES}
+    ${FERROR_LIBRARIES}
+)
+
+set_target_properties(
+    ${PROJECT_NAME}
+    PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+
+set(LINALG_MOD_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod_files/)
+if (NOT EXISTS "${LINALG_MOD_DIR}")
+    file(MAKE_DIRECTORY "${LINALG_MOD_DIR}")
+endif()
+
+
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES
+    Fortran_MODULE_DIRECTORY ${LINALG_MOD_DIR}
+)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${LINALG_MOD_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_MODULEDIR}>
+)
+
+install(
+    FILES "${PROJECT_SOURCE_DIR}/include/ferror.h"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+install(DIRECTORY ${LINALG_MOD_DIR} DESTINATION "${CMAKE_INSTALL_MODULEDIR}")

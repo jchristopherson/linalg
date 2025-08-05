@@ -172,7 +172,6 @@ if (NOT EXISTS "${LINALG_MOD_DIR}")
     file(MAKE_DIRECTORY "${LINALG_MOD_DIR}")
 endif()
 
-
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
     Fortran_MODULE_DIRECTORY ${LINALG_MOD_DIR}
@@ -184,13 +183,8 @@ target_include_directories(
 )
 
 install(
-    FILES "${PROJECT_SOURCE_DIR}/include/ferror.h"
+    FILES ${linalg_SOURCE_DIR}/include/linalg.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 install(

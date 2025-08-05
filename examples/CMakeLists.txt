@@ -82,11 +82,13 @@ if (${BUILD_LINALG_C_API})
 endif()
 
 # ------------------------------------------------------------------------------
-if (${BUILD_SHARED_LIBS})
+if (${BUILD_SHARED_LIBS} AND WIN32)
     add_custom_command(
         TARGET lu_example
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:lu_example> $<TARGET_FILE_DIR:lu_example>
+        COMMAND ${CMAKE_COMMAND} -E copy 
+        $<TARGET_RUNTIME_DLLS:lu_example> 
+        $<TARGET_FILE_DIR:lu_example>
         COMMAND_EXPAND_LISTS
     )
 endif()

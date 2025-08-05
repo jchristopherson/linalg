@@ -182,10 +182,18 @@ target_include_directories(
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_MODULEDIR}>
 )
 
-install(
-    FILES ${linalg_SOURCE_DIR}/include/linalg.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+if (${BUILD_LINALG_C_API})
+    install(
+        FILES ${linalg_SOURCE_DIR}/include/linalg.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+
+    target_include_directories(
+        ${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+endif()
 
 install(
     TARGETS ${PROJECT_NAME}

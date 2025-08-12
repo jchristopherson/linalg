@@ -173,7 +173,7 @@ decomposition of <script type="math/tex">A</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~19"></span>
+              <span class="anchor" id="variable-a~94"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -189,7 +189,7 @@ overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~13"></span>
+              <span class="anchor" id="variable-b~47"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -207,7 +207,7 @@ solution matrix <script type="math/tex">X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s"></span>
+              <span class="anchor" id="variable-s~7"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -239,7 +239,7 @@ number of <script type="math/tex">A</script> can be determined by S(1) / S(MIN(M
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~21"></span>
+              <span class="anchor" id="variable-work~65"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -257,7 +257,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~21"></span>
+              <span class="anchor" id="variable-olwork~59"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -274,7 +274,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~32"></span>
+              <span class="anchor" id="variable-err~120"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -314,7 +314,7 @@ decomposition of <script type="math/tex">A</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~20"></span>
+              <span class="anchor" id="variable-a~95"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -330,7 +330,7 @@ overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~14"></span>
+              <span class="anchor" id="variable-b~48"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -348,7 +348,7 @@ solution matrix <script type="math/tex">X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~2"></span>
+              <span class="anchor" id="variable-s~8"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -380,7 +380,7 @@ number of <script type="math/tex">A</script> can be determined by S(1) / S(MIN(M
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~22"></span>
+              <span class="anchor" id="variable-work~66"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -398,7 +398,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~22"></span>
+              <span class="anchor" id="variable-olwork~60"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -415,7 +415,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rwork~3"></span>
+              <span class="anchor" id="variable-rwork~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -433,7 +433,7 @@ array must be at least 5 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~33"></span>
+              <span class="anchor" id="variable-err~121"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -454,7 +454,7 @@ array must be at least 5 * MIN(M, N).</p>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_least_squares_vec_svd"></span> <h3>private module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_least_squares_vec_svd"></span> <h3>private  subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)  
 </h3></div>
     <div class="card-body">
         <p>Solves the system of equations <script type="math/tex">A \vec{x} = \vec{b}</script> using a singular 
@@ -473,7 +473,7 @@ value decomposition of <script type="math/tex">A</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~21"></span>
+              <span class="anchor" id="variable-a~96"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -489,7 +489,7 @@ overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~15"></span>
+              <span class="anchor" id="variable-b~49"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -507,7 +507,7 @@ contain the solution vector <script type="math/tex">\vec{x}</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~3"></span>
+              <span class="anchor" id="variable-s~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -539,7 +539,7 @@ number of <script type="math/tex">A</script> can be determined by S(1) / S(MIN(M
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~23"></span>
+              <span class="anchor" id="variable-work~67"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -557,7 +557,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~23"></span>
+              <span class="anchor" id="variable-olwork~61"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -574,7 +574,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~34"></span>
+              <span class="anchor" id="variable-err~122"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -595,7 +595,7 @@ without performing any actual calculations.</p>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_least_squares_vec_svd_cmplx"></span> <h3>private module subroutine solve_least_squares_vec_svd_cmplx(a, b, s, arnk, work, olwork, rwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_least_squares_vec_svd_cmplx"></span> <h3>private  subroutine solve_least_squares_vec_svd_cmplx(a, b, s, arnk, work, olwork, rwork, err)  
 </h3></div>
     <div class="card-body">
         <p>Solves the system of equations <script type="math/tex">A \vec{x} = \vec{b}</script> using a singular 
@@ -614,7 +614,7 @@ value decomposition of <script type="math/tex">A</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-a~97"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -630,7 +630,7 @@ overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~16"></span>
+              <span class="anchor" id="variable-b~50"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -648,7 +648,7 @@ contain the solution vector <script type="math/tex">\vec{x}</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~4"></span>
+              <span class="anchor" id="variable-s~10"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -680,7 +680,7 @@ number of <script type="math/tex">A</script> can be determined by S(1) / S(MIN(M
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~24"></span>
+              <span class="anchor" id="variable-work~68"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -698,7 +698,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~24"></span>
+              <span class="anchor" id="variable-olwork~62"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -715,7 +715,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rwork~4"></span>
+              <span class="anchor" id="variable-rwork~10"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -733,7 +733,7 @@ array must be at least 5 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~35"></span>
+              <span class="anchor" id="variable-err~123"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -767,7 +767,7 @@ array must be at least 5 * MIN(M, N).</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-21 09:36              </p>
+ on 2025-08-12 14:19              </p>
           </div>
         </div>
         <br>

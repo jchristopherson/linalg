@@ -1157,7 +1157,7 @@ subroutine solve_least_squares_mtx_svd_cmplx(a, b, s, arnk, work, &
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
+subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
     !! Solves the system of equations \(A \vec{x} = \vec{b}\) using a singular 
     !! value decomposition of \(A\).
     real(real64), intent(inout), dimension(:,:) :: a
@@ -1271,7 +1271,7 @@ module subroutine solve_least_squares_vec_svd(a, b, s, arnk, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_least_squares_vec_svd_cmplx(a, b, s, arnk, work, &
+subroutine solve_least_squares_vec_svd_cmplx(a, b, s, arnk, work, &
     olwork, rwork, err)
     !! Solves the system of equations \(A \vec{x} = \vec{b}\) using a singular 
     !! value decomposition of \(A\).

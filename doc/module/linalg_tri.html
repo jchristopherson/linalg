@@ -176,7 +176,7 @@
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private module subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)  
+    private  subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)  
 
     </h3>
   <p>Solves a triangular system of equations of the form 
@@ -196,7 +196,7 @@ triangular matrix (either upper or lower) for the unknown <script type="math/tex
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~12"></span>
+              <span class="anchor" id="variable-lside~16"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -228,7 +228,7 @@ solve <script type="math/tex">X op(A) = \alpha B</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~10"></span>
+              <span class="anchor" id="variable-trans~18"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -274,7 +274,7 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~73"></span>
+              <span class="anchor" id="variable-a~82"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -290,7 +290,7 @@ N-by-N if lside is false.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~46"></span>
+              <span class="anchor" id="variable-b~37"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -306,7 +306,7 @@ matrix <script type="math/tex">X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~98"></span>
+              <span class="anchor" id="variable-err~108"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -346,7 +346,7 @@ triangular matrix (either upper or lower) for the unknown <script type="math/tex
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~13"></span>
+              <span class="anchor" id="variable-lside~17"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -378,7 +378,7 @@ solve <script type="math/tex">X op(A) = \alpha B</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~11"></span>
+              <span class="anchor" id="variable-trans~19"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -424,7 +424,7 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~74"></span>
+              <span class="anchor" id="variable-a~83"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -440,7 +440,7 @@ N-by-N if lside is false.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~47"></span>
+              <span class="anchor" id="variable-b~38"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -456,7 +456,7 @@ matrix <script type="math/tex">X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~99"></span>
+              <span class="anchor" id="variable-err~109"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -511,7 +511,7 @@ is lower triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~12"></span>
+              <span class="anchor" id="variable-trans~20"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -542,7 +542,7 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~75"></span>
+              <span class="anchor" id="variable-a~84"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -573,7 +573,7 @@ N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~100"></span>
+              <span class="anchor" id="variable-err~110"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -628,7 +628,7 @@ is lower triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~13"></span>
+              <span class="anchor" id="variable-trans~21"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -659,7 +659,7 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~76"></span>
+              <span class="anchor" id="variable-a~85"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -690,7 +690,7 @@ N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~101"></span>
+              <span class="anchor" id="variable-err~111"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -735,7 +735,7 @@ N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-21 09:36              </p>
+ on 2025-08-12 14:19              </p>
           </div>
         </div>
         <br>

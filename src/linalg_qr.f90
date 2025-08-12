@@ -1202,7 +1202,7 @@ subroutine qr_rank1_update_dbl(q, r, u, v, work, err)
         !! original content of the array is overwritten.
     real(real64), intent(out), target, optional, dimension(:) :: work
         !! An optional argument that if supplied prevents local memory 
-        !! allocation.  If provided, the array must have at least K elements.
+        !! allocation.  If provided, the array must have at least 2 K elements.
     class(errors), intent(inout), optional, target :: err
         !! The error object to be updated.
 

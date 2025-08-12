@@ -618,7 +618,7 @@ subroutine solve_cholesky_vec(upper, a, b, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_cholesky_vec_cmplx(upper, a, b, err)
+subroutine solve_cholesky_vec_cmplx(upper, a, b, err)
     !! Solves the system of Cholesky factored equations 
     !! \(A \vec{x} = R^H R \vec{x} = \vec{b}\) or
     !! \(A \vec{x} = L L^H \vec{x} = \vec{b}\).

@@ -152,8 +152,8 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item">blas</li>
                   <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item">blas</li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
@@ -196,7 +196,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~120"></span>
+              <span class="anchor" id="variable-a~78"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -212,7 +212,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iwork~5"></span>
+              <span class="anchor" id="variable-iwork~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -227,7 +227,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~67"></span>
+              <span class="anchor" id="variable-work~53"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -245,7 +245,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~59"></span>
+              <span class="anchor" id="variable-olwork~47"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -262,7 +262,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~146"></span>
+              <span class="anchor" id="variable-err~104"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -300,7 +300,7 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~121"></span>
+              <span class="anchor" id="variable-a~79"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -316,7 +316,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iwork~6"></span>
+              <span class="anchor" id="variable-iwork~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -331,7 +331,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~68"></span>
+              <span class="anchor" id="variable-work~54"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -349,7 +349,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~60"></span>
+              <span class="anchor" id="variable-olwork~48"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -366,7 +366,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~147"></span>
+              <span class="anchor" id="variable-err~105"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -415,7 +415,7 @@ singular value decomposition of the matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~122"></span>
+              <span class="anchor" id="variable-a~80"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -433,6 +433,129 @@ on output.</p>
             <td>
               <span class="anchor" id="variable-ainv"></span>
               real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>ainv</strong></td>
+            <td>
+                <p>The N-by-M matrix where the pseudo-inverse of <script type="math/tex">A</script> will be written.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>An optional input, that if supplied, overrides the default tolerance 
+on singular values such that singular values less than this
+tolerance are forced to have a reciprocal of zero, as opposed to 
+1/S(I).  The default tolerance is: MAX(M, N) * EPS * MAX(S).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~55"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              target, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>An optional input, that if provided, prevents any local memory 
+allocation.  If not provided, the memory required is allocated
+within.  If provided, the length of the array must be at least 
+olwork.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-olwork~49"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>olwork</strong></td>
+            <td>
+                <p>An optional output used to determine workspace size.  If supplied, 
+the routine determines the optimal size for work, and returns 
+without performing any actual calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err~106"></span>
+              class(errors),
+            </td>
+<td>intent(inout),</td>
+              <td>optional,</td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+            <td>
+                <p>The error object to be updated.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine mtx_pinverse_cmplx(a, ainv, tol, work, olwork, rwork, err)  
+
+    </h3>
+  <p>Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix using the
+singular value decomposition of the matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~81"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>On input, the M-by-N matrix to invert.  The matrix is overwritten 
+on output.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ainv~2"></span>
+              complex(kind=real64),
             </td>
 <td>intent(out),</td>
               <td></td>            <td>
@@ -464,130 +587,7 @@ tolerance are forced to have a reciprocal of zero, as opposed to
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~69"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~61"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~148"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private module subroutine mtx_pinverse_cmplx(a, ainv, tol, work, olwork, rwork, err)  
-
-    </h3>
-  <p>Computes the Moore-Penrose pseudo-inverse of a M-by-N matrix using the
-singular value decomposition of the matrix.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~123"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>On input, the M-by-N matrix to invert.  The matrix is overwritten 
-on output.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ainv~2"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>ainv</strong></td>
-            <td>
-                <p>The N-by-M matrix where the pseudo-inverse of <script type="math/tex">A</script> will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tol~5"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>tol</strong></td>
-            <td>
-                <p>An optional input, that if supplied, overrides the default tolerance 
-on singular values such that singular values less than this
-tolerance are forced to have a reciprocal of zero, as opposed to 
-1/S(I).  The default tolerance is: MAX(M, N) * EPS * MAX(S).</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~70"></span>
+              <span class="anchor" id="variable-work~56"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -605,7 +605,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~62"></span>
+              <span class="anchor" id="variable-olwork~50"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -622,7 +622,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rwork~10"></span>
+              <span class="anchor" id="variable-rwork~6"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -640,7 +640,7 @@ array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~149"></span>
+              <span class="anchor" id="variable-err~107"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -685,7 +685,7 @@ array must be at least 6 * MIN(M, N).</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-01-21 09:36              </p>
+ on 2025-08-12 14:19              </p>
           </div>
         </div>
         <br>

@@ -839,7 +839,7 @@ function csr_mtx_divide_scalar_1(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-module function csr_transpose(a) result(rst)
+function csr_transpose(a) result(rst)
     !! Transposes a CSR matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.

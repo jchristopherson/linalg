@@ -878,7 +878,7 @@ subroutine solve_lq_mtx(a, tau, b, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-module subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)
+subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)
     !! Solves a system of LQ factored equations of the form \(A X = L Q X = B\).
     complex(real64), intent(in), dimension(:,:) :: a
         !! On input, the M-by-N LQ factored matrix as returned by lq_factor.  

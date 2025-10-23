@@ -2268,7 +2268,7 @@ end function
 ! ******************************************************************************
 ! ARRAY SWAPPING ROUTINE
 ! ------------------------------------------------------------------------------
-subroutine swap_dbl(x, y, err)
+pure subroutine swap_dbl(x, y)
     !! Swaps the contents of two arrays.
     real(real64), intent(inout), dimension(:) :: x
         !! On input, the first array to swap.  On output, the contents of the 
@@ -2276,28 +2276,16 @@ subroutine swap_dbl(x, y, err)
     real(real64), intent(inout), dimension(:) :: y
         !! On input, the second array to swap.  On output, the contents of the 
         !! second array are copied to the first array.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, n
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
-    if (size(y) /= n) then
-        call report_array_size_error("swap_dbl", errmgr, "y", n, n)
-        return
-    end if
+    if (size(y) /= n) return
 
     ! Process
     do i = 1, n
@@ -2308,7 +2296,7 @@ subroutine swap_dbl(x, y, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine swap_cmplx(x, y, err)
+pure subroutine swap_cmplx(x, y)
     !! Swaps the contents of two arrays.
     complex(real64), intent(inout), dimension(:) :: x
         !! On input, the first array to swap.  On output, the contents of the
@@ -2316,28 +2304,16 @@ subroutine swap_cmplx(x, y, err)
     complex(real64), intent(inout), dimension(:) :: y
         !! On input, the second array to swap.  On output, the contents of the
         !! second array are copied to the first array.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, n
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
-    if (size(y) /= n) then
-        call report_array_size_error("swap_cmplx", errmgr, "y", n, n)
-        return
-    end if
+    if (size(y) /= n) return
 
     ! Process
     do i = 1, n

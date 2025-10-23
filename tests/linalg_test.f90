@@ -358,6 +358,18 @@ program main
     rst = test_int32_ascend_sort()
     if (.not.rst) flag = 107
 
+    rst = test_lu_factor_pure()
+    if (.not.rst) flag = 108
+
+    rst = test_qr_factor_pure()
+    if (.not.rst) flag = 109
+
+    rst = test_cholesky_factor_pure()
+    if (.not.rst) flag = 110
+
+    rst = test_svd_pure()
+    if (.not.rst) flag = 111
+
     ! End
     if (flag /= 0) stop flag
 end program

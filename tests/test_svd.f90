@@ -239,4 +239,31 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_svd_pure() result(rst)
+        use linear_algebra
+
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+
+        ! Local Variables
+        logical :: rst
+        real(real64) :: a(m, n)
+        type(svd_factors) :: x
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+
+        ! Compute the factorization
+        x = svd(a)
+
+        ! Test
+        if (.not.assert(matmul(x%U, matmul(x%S, x%Vt)), a, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_svd_pure -1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

@@ -130,4 +130,29 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_lu_factor_pure() result(rst)
+        use linear_algebra
+
+        ! Parameters
+        integer(int32), parameter :: n = 75
+
+        ! Local Variables
+        real(real64) :: a(n,n)
+        type(lu_factors) :: x
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+
+        ! Compute the factorization
+        x = lu_factor(a)
+
+        ! Tests
+        if (.not.assert(matmul(x%P, a), matmul(x%L, x%U), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_lu_factor_pure"
+        end if
+    end function
 end module

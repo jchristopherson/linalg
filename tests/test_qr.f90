@@ -1471,4 +1471,36 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_qr_factor_pure() result(rst)
+        use linear_algebra
+
+        ! Parameters
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 75
+
+        ! Local Variables
+        logical :: rst
+        real(real64) :: a(m, n)
+        type(qr_factors) :: x, xp
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+
+        ! No-Pivot Test
+        x = qr_factor(a)
+        if (.not.assert(matmul(x%Q, x%R), a, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_qr_factor_pure -1"
+        end if
+
+        ! Pivot Test
+        xp = qr_factor(a, .true.)
+        if (.not.assert(matmul(x%Q, x%R), matmul(a, x%P), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_qr_factor_pure -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

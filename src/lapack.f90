@@ -8,7 +8,7 @@ module lapack
             real(real64) :: x
         end function
 
-        subroutine DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, &
+        pure subroutine DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, &
             work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobu, jobvt
@@ -18,7 +18,7 @@ module lapack
             real(real64), intent(out) :: s(*), u(ldu,*), vt(ldvt,*), work(*)
         end subroutine
 
-        subroutine ZGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, &
+        pure subroutine ZGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, &
             work, lwork, rwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobu, jobvt
@@ -29,21 +29,21 @@ module lapack
             complex(real64), intent(out) :: u(ldu,*), vt(ldvt,*), work(*)
         end subroutine
 
-        subroutine DGETRF(m, n, a, lda, ipiv, info)
+        pure subroutine DGETRF(m, n, a, lda, ipiv, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda
             real(real64), intent(inout) :: a(lda,*)
             integer(int32), intent(out) :: ipiv(*), info
         end subroutine
 
-        subroutine ZGETRF(m, n, a, lda, ipiv, info)
+        pure subroutine ZGETRF(m, n, a, lda, ipiv, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda
             complex(real64), intent(inout) :: a(lda,*)
             integer(int32), intent(out) :: ipiv(*), info
         end subroutine
 
-        subroutine DSYEV(jobz, uplo, n, a, lda, w, work, lwork, info)
+        pure subroutine DSYEV(jobz, uplo, n, a, lda, w, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobz, uplo
             integer(int32), intent(in) :: n, lda, lwork
@@ -52,7 +52,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGEEV(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, &
+        pure subroutine DGEEV(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, &
             work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobvl, jobvr
@@ -63,18 +63,18 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGGEV(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, &
+        pure subroutine DGGEV(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, &
             beta, vl, ldvl, vr, ldvr, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobvl, jobvr
-            integer(int32) :: n, lda, ldb, ldvl, ldvr, lwork
+            integer(int32), intent(in) :: n, lda, ldb, ldvl, ldvr, lwork
             real(real64), intent(inout) :: a(lda,*), b(ldb,*)
             real(real64), intent(out) :: alphar(*), alphai(*), beta(*), &
                 vl(ldvl,*), vr(ldvr,*), work(*)
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGEEV(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, &
+        pure subroutine ZGEEV(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, &
             lwork, rwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: jobvl, jobvr
@@ -86,7 +86,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DLASET(uplo, m, n, alpha, beta, a, lda)
+        pure subroutine DLASET(uplo, m, n, alpha, beta, a, lda)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo
             integer(int32), intent(in) :: m, n, lda
@@ -94,7 +94,7 @@ module lapack
             real(real64), intent(out) :: a(lda,*)
         end subroutine
 
-        subroutine DGEQRF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine DGEQRF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -102,7 +102,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGEQRF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine ZGEQRF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -110,7 +110,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGEQP3(m, n, a, lda, jpvt, tau, work, lwork, info)
+        pure subroutine DGEQP3(m, n, a, lda, jpvt, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -119,7 +119,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGEQP3(m, n, a, lda, jpvt, tau, work, lwork, rwork, info)
+        pure subroutine ZGEQP3(m, n, a, lda, jpvt, tau, work, lwork, rwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -129,7 +129,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DORGQR(m, n, k, a, lda, tau, work, lwork, info)
+        pure subroutine DORGQR(m, n, k, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, k, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -138,7 +138,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZUNGQR(m, n, k, a, lda, tau, work, lwork, info)
+        pure subroutine ZUNGQR(m, n, k, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, k, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -147,7 +147,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
+        pure subroutine DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
@@ -158,7 +158,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZUNMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
+        pure subroutine ZUNMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
@@ -169,7 +169,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DPOTRF(uplo, n, a, lda, info)
+        pure subroutine DPOTRF(uplo, n, a, lda, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo
             integer(int32), intent(in) :: n, lda
@@ -177,7 +177,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZPOTRF(uplo, n, a, lda, info)
+        pure subroutine ZPOTRF(uplo, n, a, lda, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo
             integer(int32), intent(in) :: n, lda
@@ -185,7 +185,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DTZRZF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine DTZRZF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -193,7 +193,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZTZRZF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine ZTZRZF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -201,7 +201,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, &
+        pure subroutine DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
@@ -212,7 +212,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine zunmrz(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, &
+        pure subroutine zunmrz(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
@@ -223,7 +223,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGELQF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine DGELQF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -231,7 +231,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGELQF(m, n, a, lda, tau, work, lwork, info)
+        pure subroutine ZGELQF(m, n, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -239,7 +239,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DORGLQ(m, n, k, a, lda, tau, work, lwork, info)
+        pure subroutine DORGLQ(m, n, k, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, k, lda, lwork
             real(real64), intent(inout) :: a(lda,*)
@@ -248,7 +248,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZUNGLQ(m, n, k, a, lda, tau, work, lwork, info)
+        pure subroutine ZUNGLQ(m, n, k, a, lda, tau, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, k, lda, lwork
             complex(real64), intent(inout) :: a(lda,*)
@@ -257,29 +257,29 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
+        pure subroutine DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
-            integer(int32) :: m, n, k, lda, ldc, lwork
+            integer(int32), intent(in) :: m, n, k, lda, ldc, lwork
             real(real64), intent(in) :: a(lda,*), tau(*)
             real(real64), intent(inout) :: c(ldc,*)
             real(real64), intent(out) :: work(*)
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZUNMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
+        pure subroutine ZUNMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, trans
-            integer(int32) :: m, n, k, lda, ldc, lwork
+            integer(int32), intent(in) :: m, n, k, lda, ldc, lwork
             complex(real64), intent(in) :: a(lda,*), tau(*)
             complex(real64), intent(inout) :: c(ldc,*)
             complex(real64), intent(out) :: work(*)
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)
+        pure subroutine DGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: n, nrhs, lda, ldb
@@ -289,7 +289,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)
+        pure subroutine ZGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: n, nrhs, lda, ldb
@@ -299,14 +299,14 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)
+        pure subroutine DLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: job, j
             real(real64), intent(in) :: x(j), w(j), sest, gamma
             real(real64), intent(out) :: sestpr, s, c
         end subroutine
 
-        subroutine ZLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)
+        pure subroutine ZLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: job, j
             complex(real64), intent(in) :: x(j), w(j), gamma
@@ -315,7 +315,7 @@ module lapack
             complex(real64), intent(out) :: s, c
         end subroutine
 
-        subroutine DPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)
+        pure subroutine DPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo
             integer(int32), intent(in) :: n, nrhs, lda, ldb
@@ -324,7 +324,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)
+        pure subroutine ZPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo
             integer(int32), intent(in) :: n, nrhs, lda, ldb
@@ -333,7 +333,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGETRI(n, a, lda, ipiv, work, lwork, info)
+        pure subroutine DGETRI(n, a, lda, ipiv, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, lda, lwork, ipiv(*)
             real(real64), intent(inout) :: a(lda,*)
@@ -341,7 +341,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGETRI(n, a, lda, ipiv, work, lwork, info)
+        pure subroutine ZGETRI(n, a, lda, ipiv, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, lda, lwork, ipiv(*)
             complex(real64), intent(inout) :: a(lda,*)
@@ -349,7 +349,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)
+        pure subroutine DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -358,7 +358,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine ZGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)
+        pure subroutine ZGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -367,7 +367,7 @@ module lapack
             integer(int32), intent(out) :: info
         end subroutine
 
-        subroutine DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, &
+        pure subroutine DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -378,7 +378,7 @@ module lapack
             real(real64), intent(out) :: work(*)
         end subroutine
 
-        subroutine ZGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, &
+        pure subroutine ZGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, &
             lwork, rwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -390,7 +390,7 @@ module lapack
             real(real64), intent(out) :: rwork(*)
         end subroutine
 
-        subroutine DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, &
+        pure subroutine DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, &
             lwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -401,7 +401,7 @@ module lapack
             real(real64), intent(out) :: work(*)
         end subroutine
 
-        subroutine ZGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, &
+        pure subroutine ZGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, &
             lwork, rwork, info)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: m, n, nrhs, lda, ldb, lwork
@@ -413,12 +413,18 @@ module lapack
             real(real64), intent(out) :: rwork(*)
         end subroutine
 
-        subroutine DLASRT(id, n, d, info)
+        pure subroutine DLASRT(id, n, d, info)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: id
             integer(int32), intent(in) :: n
             real(real64), intent(inout) :: d(*)
             integer(int32), intent(out) :: info
+        end subroutine
+
+        pure subroutine DSWAP(n, dx, incx, dy, incy)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx, incy
+            real(real64), intent(inout) :: dx(*), dy(*)
         end subroutine
     end interface
 end module

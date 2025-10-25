@@ -370,6 +370,9 @@ program main
     rst = test_svd_pure()
     if (.not.rst) flag = 111
 
+    rst = test_tri_mtx_solve_pure()
+    if (.not.rst) flag = 112
+
     ! End
     if (flag /= 0) stop flag
 end program

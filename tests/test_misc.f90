@@ -714,4 +714,49 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_tri_mtx_solve_pure() result(rst)
+        use linear_algebra
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: n = 200
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(n,n), b(n,nrhs), bv(n), x(n,nrhs), xv(n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(b)
+        call create_random_array(bv)
+
+        ! Upper Triangular System
+        call create_random_array(a, mtype = UPPER_TRIANGULAR_MATRIX)
+        x = solve_triangular_system(a, b, upper = .true.)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -1"
+        end if
+
+        xv = solve_triangular_system(a, bv, upper = .true.)
+        if (.not.assert(matmul(a, xv), bv, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -2"
+        end if
+
+        ! Lower Triangular
+        call create_random_array(a, mtype = LOWER_TRIANGULAR_MATRIX)
+        x = solve_triangular_system(a, b, upper = .false.)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -3"
+        end if
+
+        xv = solve_triangular_system(a, bv, upper = .false.)
+        if (.not.assert(matmul(a, xv), bv, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -4"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

@@ -420,11 +420,5 @@ module lapack
             real(real64), intent(inout) :: d(*)
             integer(int32), intent(out) :: info
         end subroutine
-
-        pure subroutine DSWAP(n, dx, incx, dy, incy)
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n, incx, incy
-            real(real64), intent(inout) :: dx(*), dy(*)
-        end subroutine
     end interface
 end module

@@ -2,6 +2,7 @@ module linear_algebra
     !! This module contains pure functions for basic linear algebra operations.
     use iso_fortran_env
     use lapack
+    use blas
     implicit none
     private
     public :: swap_arrays
@@ -13,6 +14,7 @@ module linear_algebra
     public :: qr_factor
     public :: cholesky_factor
     public :: svd
+    public :: solve_triangular_system
 
     type :: lu_factors
         !! A container for the results of a LU factorization.
@@ -47,6 +49,10 @@ module linear_algebra
             !! The transpose of the N-by-N right singular vector matrix \(V\).
     end type
 
+    interface solve_triangular_system
+        module procedure :: solve_triangular_system_mtx
+        module procedure :: solve_triangular_system_vec
+    end interface
 contains
 ! ******************************************************************************
 ! COMMON OPERATIONS
@@ -305,8 +311,84 @@ end function
 ! ******************************************************************************
 ! SOLVERS
 ! ------------------------------------------------------------------------------
+pure function solve_triangular_system_mtx(a, b, upper) result(rst)
+    !! Solves a triangular system of the form \(A X = B\) where \(A\) is a
+    !! triangular matrix, either upper or lower, for equation \(X\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The N-by-N triangular \(A\) matrix.
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The N-by-NRHS \(B\) matrix.
+    logical, intent(in), optional :: upper
+        !! An optional argument specifying if the \(A\) matrix is upper 
+        !! triangular (true), or lower triangular (false).  The default 
+        !! assumption is that \(A\) is an upper triangular matrix.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The N-by-NRHS solution matrix, \(X\).
+
+    ! Local Variables
+    character :: uplo, side, transa, diag
+    integer(int32) :: n, nrhs
+
+    ! Initialization
+    n = size(a, 1)
+    nrhs = size(b, 2)
+    side = 'L'
+    transa = 'N'
+    diag = 'N'
+    uplo = 'U'
+    if (present(upper)) then
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+    end if
+    if (size(a, 2) /= n .or. size(b, 1) /= n) return
+    allocate(rst(n, nrhs), source = b)
+
+    ! Process
+    call DTRSM(side, uplo, transa, diag, n, nrhs, 1.0d0, a, n, rst, n)
+end function
 
 ! ------------------------------------------------------------------------------
+pure function solve_triangular_system_vec(a, b, upper) result(rst)
+    !! Solves a triangular system of the form \(A X = B\) where \(A\) is a
+    !! triangular matrix, either upper or lower, for equation \(X\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The N-by-N triangular \(A\) matrix.
+    real(real64), intent(in), dimension(:) :: b
+        !! The N-element \(B\) array.
+    logical, intent(in), optional :: upper
+        !! An optional argument specifying if the \(A\) matrix is upper 
+        !! triangular (true), or lower triangular (false).  The default 
+        !! assumption is that \(A\) is an upper triangular matrix.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The N-element solution array, \(X\).
+
+    ! Local Variables
+    character :: uplo, side, transa, diag
+    integer(int32) :: n, nrhs
+
+    ! Initialization
+    n = size(a, 1)
+    nrhs = 1
+    side = 'L'
+    transa = 'N'
+    diag = 'N'
+    uplo = 'U'
+    if (present(upper)) then
+        if (upper) then
+            uplo = 'U'
+        else
+            uplo = 'L'
+        end if
+    end if
+    if (size(a, 2) /= n .or. size(b, 1) /= n) return
+    allocate(rst(n), source = b)
+
+    ! Process
+    call DTRSM(side, uplo, transa, diag, n, nrhs, 1.0d0, a, n, rst, n)
+end function
 
 ! ------------------------------------------------------------------------------
 

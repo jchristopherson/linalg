@@ -382,6 +382,12 @@ program main
     rst = test_linear_solve_pure_3()
     if (.not.rst) flag = 115
 
+    rst = test_linear_least_squares_pure_1()
+    if (.not.rst) flag = 116
+
+    rst = test_linear_least_squares_pure_2()
+    if (.not.rst) flag = 117
+
     ! End
     if (flag /= 0) stop flag
 end program

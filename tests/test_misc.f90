@@ -877,4 +877,89 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_linear_least_squares_pure_1() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 70
+        integer(int32), parameter :: nrhs = 20
+        integer(int32) :: lwork, rnk, info, jpvt(n)
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n), &
+            ac(m,n), bc(m,nrhs), bvc(m), temp(1), rcond
+        real(real64), allocatable, dimension(:) :: work
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+
+        ! Matrix Solve
+        x = solve_least_squares(a, b)
+        ac = a
+        bc = b
+        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -1"
+        end if
+
+        ! Vector Solve
+        deallocate(work)
+        ac = a
+        bvc = bv
+        jpvt = 0
+        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        xv = solve_least_squares(a, bv)
+        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_least_squares_pure_2() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 70
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+
+        ! Matrix Solve
+        x = solve_least_squares(a, b)
+        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -1"
+        end if
+
+        ! Vector Solve
+        xv = solve_least_squares(a, bv)
+        if (.not.assert(matmul(a, xv), bv, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

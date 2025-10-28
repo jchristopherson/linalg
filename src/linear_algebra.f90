@@ -16,6 +16,7 @@ module linear_algebra
     public :: svd
     public :: solve_triangular_system
     public :: solve_linear_system
+    public :: solve_least_squares
 
     type :: lu_factors
         !! A container for the results of a LU factorization.
@@ -58,6 +59,11 @@ module linear_algebra
     interface solve_linear_system
         module procedure :: solve_linear_system_mtx
         module procedure :: solve_linear_system_vec
+    end interface
+
+    interface solve_least_squares
+        module procedure :: solve_least_squares_mtx
+        module procedure :: solve_least_squares_vec
     end interface
 contains
 ! ******************************************************************************
@@ -503,8 +509,86 @@ pure function solve_linear_system_vec(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+pure function solve_least_squares_mtx(a, b) result(rst)
+    !! Solves the least squares problem by minimizing \(|| A X - B ||\) using
+    !! a complete orthogonal factorization of \(A\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix \(A\).
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The M-by-NRHS matrix \(B\).
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The resulting N-by-NRHS matrix \(X\).
+
+    ! Local Variables
+    integer(int32) :: m, n, maxmn, nrhs, lwork, info, rnk
+    integer(int32), allocatable, dimension(:) :: jpvt
+    real(real64) :: rcond, temp(1)
+    real(real64), allocatable, dimension(:) :: work
+    real(real64), allocatable, dimension(:,:) :: ac, x
+
+    ! Initialization
+    m = size(a, 1)
+    n = size(a, 2)
+    nrhs = size(b, 2)
+    maxmn = max(m, n)
+    if (size(b, 1) /= m) return
+    allocate(jpvt(n), source = 0)
+    allocate(ac(m, n), source = a)
+    allocate(x(maxmn, nrhs))
+    if (m >= n) then
+        x = b
+    else
+        x(1:m,:) = b
+    end if
+    call DGELSY(m, n, nrhs, ac, m, x, maxmn, jpvt, rcond, rnk, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+
+    ! Process
+    call DGELSY(m, n, nrhs, ac, m, x, maxmn, jpvt, rcond, rnk, work, lwork, info)
+    allocate(rst(n, nrhs), source = x(1:n,:))
+end function
 
 ! ------------------------------------------------------------------------------
+pure function solve_least_squares_vec(a, b) result(rst)
+    !! Solves the least squares problem by minimizing \(|| A X - B ||\) using
+    !! a complete orthogonal factorization of \(A\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix \(A\).
+    real(real64), intent(in), dimension(:) :: b
+        !! The M-element array \(B\).
+    real(real64), allocatable, dimension(:) :: rst
+        !! The resulting N-element array \(X\).
+
+    ! Local Variables
+    integer(int32) :: m, n, maxmn, nrhs, lwork, info, rnk
+    integer(int32), allocatable, dimension(:) :: jpvt
+    real(real64) :: rcond, temp(1)
+    real(real64), allocatable, dimension(:) :: work, x
+    real(real64), allocatable, dimension(:,:) :: ac
+
+    ! Initialization
+    m = size(a, 1)
+    n = size(a, 2)
+    nrhs = 1
+    maxmn = max(m, n)
+    if (size(b) /= m) return
+    allocate(jpvt(n), source = 0)
+    allocate(ac(m, n), source = a)
+    allocate(x(maxmn))
+    if (m >= n) then
+        x = b
+    else
+        x(1:m) = b
+    end if
+    call DGELSY(m, n, nrhs, ac, m, x, maxmn, jpvt, rcond, rnk, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+
+    ! Process
+    call DGELSY(m, n, nrhs, ac, m, x, maxmn, jpvt, rcond, rnk, work, lwork, info)
+    allocate(rst(n), source = x(1:n))
+end function
 
 ! ------------------------------------------------------------------------------
 

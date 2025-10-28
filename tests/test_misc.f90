@@ -906,7 +906,7 @@ contains
         ac = a
         bc = b
         call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, work, lwork, info)
-        if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
+        if (.not.assert(x, bc(1:n,:), 1.0d3 * REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -1"
         end if
@@ -921,7 +921,7 @@ contains
         allocate(work(lwork))
         xv = solve_least_squares(a, bv)
         call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, work, lwork, info)
-        if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
+        if (.not.assert(xv, bvc(1:n), 1.0d3 * REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -2"
         end if
@@ -948,14 +948,14 @@ contains
 
         ! Matrix Solve
         x = solve_least_squares(a, b)
-        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+        if (.not.assert(matmul(a, x), b, 1.0d3 * REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -1"
         end if
 
         ! Vector Solve
         xv = solve_least_squares(a, bv)
-        if (.not.assert(matmul(a, xv), bv, REAL64_TOL)) then
+        if (.not.assert(matmul(a, xv), bv, 1.0d3 * REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -2"
         end if

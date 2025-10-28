@@ -15,6 +15,7 @@ module linear_algebra
     public :: cholesky_factor
     public :: svd
     public :: solve_triangular_system
+    public :: solve_linear_system
 
     type :: lu_factors
         !! A container for the results of a LU factorization.
@@ -52,6 +53,11 @@ module linear_algebra
     interface solve_triangular_system
         module procedure :: solve_triangular_system_mtx
         module procedure :: solve_triangular_system_vec
+    end interface
+
+    interface solve_linear_system
+        module procedure :: solve_linear_system_mtx
+        module procedure :: solve_linear_system_vec
     end interface
 contains
 ! ******************************************************************************
@@ -391,8 +397,110 @@ pure function solve_triangular_system_vec(a, b, upper) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+pure function solve_linear_system_mtx(a, b) result(rst)
+    !! Solves the M-by-N linear system \(A X = B\) for \(X\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix \(A\).
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The M-by-NRHS matrix \(B\).
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The resulting N-by-NRHS matrix \(X\).
+
+    ! Local Variables
+    logical :: usedgels
+    integer(int32) :: m, n, maxmn, nrhs, lwork, info
+    integer(int32), allocatable, dimension(:) :: ipiv
+    real(real64) :: temp(1)
+    real(real64), allocatable, dimension(:) :: work
+    real(real64), allocatable, dimension(:,:) :: ac, xc
+
+    ! Initialization
+    m = size(a, 1)
+    n = size(a, 2)
+    nrhs = size(b, 2)
+    if (size(b, 1) /= m) return
+    usedgels = .false.
+    if (m /= n) usedgels = .true.
+    allocate(ac(m, n), source = a)
+    maxmn = max(m, n)
+
+    ! Process
+    if (usedgels) then
+        allocate(xc(maxmn,nrhs))
+        if (m >= n) then
+            xc = b
+        else
+            xc(1:m,:) = b
+        end if
+        call DGELS('N', m, n, nrhs, ac, m, xc, maxmn, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        call DGELS('N', m, n, nrhs, ac, m, xc, maxmn, work, lwork, info)
+        if (m >= n) then
+            allocate(rst(n, nrhs), source = xc(1:n,:))
+        else
+            allocate(rst(n, nrhs), source = xc)
+        end if
+    else
+        ! Use LU factorization to solve
+        allocate(rst(n, nrhs), source = b)
+        allocate(ipiv(n))
+        call DGESV(n, nrhs, ac, n, ipiv, rst, n, info)
+    end if
+end function
 
 ! ------------------------------------------------------------------------------
+pure function solve_linear_system_vec(a, b) result(rst)
+    !! Solves the M-by-N linear system \(A X = B\) for \(X\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix \(A\).
+    real(real64), intent(in), dimension(:) :: b
+        !! The M-element array \(B\).
+    real(real64), allocatable, dimension(:) :: rst
+        !! The resulting N-element array \(X\).
+
+    ! Local Variables
+    logical :: usedgels
+    integer(int32) :: m, n, maxmn, nrhs, lwork, info
+    integer(int32), allocatable, dimension(:) :: ipiv
+    real(real64) :: temp(1)
+    real(real64), allocatable, dimension(:) :: work, xc
+    real(real64), allocatable, dimension(:,:) :: ac
+
+    ! Initialization
+    m = size(a, 1)
+    n = size(a, 2)
+    nrhs = 1
+    if (size(b) /= m) return
+    usedgels = .false.
+    if (m /= n) usedgels = .true.
+    allocate(ac(m, n), source = a)
+    maxmn = max(m, n)
+
+    ! Process
+    if (usedgels) then
+        allocate(xc(maxmn))
+        if (m >= n) then
+            xc = b
+        else
+            xc(1:m) = b
+        end if
+        call DGELS('N', m, n, nrhs, ac, m, xc, maxmn, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        call DGELS('N', m, n, nrhs, ac, m, xc, maxmn, work, lwork, info)
+        if (m >= n) then
+            allocate(rst(n), source = xc(1:n))
+        else
+            allocate(rst(n), source = xc)
+        end if
+    else
+        ! Use LU factorization to solve
+        allocate(rst(n), source = b)
+        allocate(ipiv(n))
+        call DGESV(n, nrhs, ac, n, ipiv, rst, n, info)
+    end if
+end function
 
 ! ------------------------------------------------------------------------------
 

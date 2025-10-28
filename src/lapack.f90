@@ -420,5 +420,13 @@ module lapack
             real(real64), intent(inout) :: d(*)
             integer(int32), intent(out) :: info
         end subroutine
+
+        pure subroutine DGESV(n, nrhs, a, lda, ipiv, b, ldb, info)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, nrhs, lda, ldb
+            integer(int32), intent(out) :: ipiv(*)
+            real(real64), intent(inout) :: a(lda,*), b(ldb,*)
+            integer(int32), intent(out) :: info
+        end subroutine
     end interface
 end module

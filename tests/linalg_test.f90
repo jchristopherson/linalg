@@ -373,6 +373,15 @@ program main
     rst = test_tri_mtx_solve_pure()
     if (.not.rst) flag = 112
 
+    rst = test_linear_solve_pure_1()
+    if (.not.rst) flag = 113
+
+    rst = test_linear_solve_pure_2()
+    if (.not.rst) flag = 114
+
+    rst = test_linear_solve_pure_3()
+    if (.not.rst) flag = 115
+
     ! End
     if (flag /= 0) stop flag
 end program

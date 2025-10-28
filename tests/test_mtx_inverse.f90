@@ -241,4 +241,87 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_inverse_pure() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(n, n), b(n, nrhs), x(n, nrhs), ainv(n, n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+
+        ! Test
+        ainv = inverse(a)
+        x = matmul(ainv, b)
+        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_inverse_pure"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_pinverse_pure_1() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(n, n), b(n, nrhs), x(n, nrhs), ainv(n, n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+
+        ! Test
+        ainv = pinverse(a)
+        x = matmul(ainv, b)
+        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_pinverse_pure_1"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_pinverse_pure_2() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 70
+        real(real64) :: a(m, n), ainv(n, m), ident(n, n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        ident = identity(n)
+
+        ! Compute the inverse
+        ainv = pinverse(a)
+
+        ! Compute pinv(A) * A, and that should equal I
+        if (.not.assert(matmul(ainv, a), ident, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_pinverse_pure_2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
 end module

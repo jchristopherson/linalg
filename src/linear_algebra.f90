@@ -1,6 +1,7 @@
 module linear_algebra
     !! This module contains pure functions for basic linear algebra operations.
     use iso_fortran_env
+    use ieee_arithmetic
     use lapack
     use blas
     implicit none
@@ -17,6 +18,8 @@ module linear_algebra
     public :: solve_triangular_system
     public :: solve_linear_system
     public :: solve_least_squares
+    public :: inverse
+    public :: pinverse
 
     type :: lu_factors
         !! A container for the results of a LU factorization.
@@ -590,31 +593,85 @@ pure function solve_least_squares_vec(a, b) result(rst)
     allocate(rst(n), source = x(1:n))
 end function
 
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
 ! ******************************************************************************
 ! INVERSE OPERATIONS
 ! ------------------------------------------------------------------------------
+pure function inverse(a) result(rst)
+    !! Computes the inverse of a square matrix.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The N-by-N matrix to invert.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The N-by-N inverted matrix.
+
+    ! Local Variables
+    integer(int32) :: n, lwork, info
+    integer(int32), allocatable, dimension(:) :: ipvt
+    real(real64) :: temp(1), nan
+    real(real64), allocatable, dimension(:) :: work
+
+    ! Process
+    n = size(a, 1)
+    if (size(a, 2) /= n) return
+    allocate(rst(n, n), source = a)
+    allocate(ipvt(n))
+    call DGETRI(n, rst, n, ipvt, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+
+    ! Compute the LU factorization of A
+    call DGETRF(n, n, rst, n, ipvt, info)
+    if (info > 0) then
+        nan = ieee_value(nan, IEEE_QUIET_NAN)
+        rst = nan
+        return
+    end if
+
+    ! Compute the inverse of the LU factored matrix
+    call DGETRI(n, rst, n, ipvt, work, lwork, info)
+end function
 
 ! ------------------------------------------------------------------------------
+pure function pinverse(a) result(rst)
+    !! Computes the Moore-Penrose pseudoinverse of an M-by-N matrix.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix to invert.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The N-by-M inverted matrix.
 
-! ------------------------------------------------------------------------------
+    ! Local Variables
+    integer(int32) :: i, m, n, mn, info, lwork
+    real(real64) :: temp(1), t, ss
+    real(real64), allocatable, dimension(:) :: s, work
+    real(real64), allocatable, dimension(:,:) :: ac, u, vt
 
-! ------------------------------------------------------------------------------
+    ! Initialization
+    m = size(a, 1)
+    n = size(a, 2)
+    mn = min(m, n)
+    allocate(ac(m, n), source = a)
+    allocate(s(mn), u(m,mn), vt(mn,n))
+    call DGESVD('S', 'S', m, n, ac, m, s, u, m, vt, mn, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+    allocate(rst(n, m))
 
-! ------------------------------------------------------------------------------
+    ! Compute the SVD of A
+    call DGESVD('S', 'S', m, n, ac, m, s, u, m, vt, mn, work, lwork, info)
 
-! ------------------------------------------------------------------------------
+    ! Compute u = U * inv(S)
+    t = max(m, n) * epsilon(t) * s(1)
+    do i = 1, mn
+        if (s(i) > t) then
+            ss = 1.0d0 / s(i)
+        else
+            ss = s(i)
+        end if
+        u(:,i) = ss * u(:,i)
+    end do
 
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
+    ! Compute pinv(A) = (V**T)**T * u**T
+    call DGEMM('T', 'T', n, m, mn, 1.0d0, vt, mn, u, m, 0.0d0, rst, n)
+end function
 
 ! ******************************************************************************
 ! EIGEN ANALYSIS

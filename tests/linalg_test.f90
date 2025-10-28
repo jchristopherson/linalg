@@ -388,6 +388,15 @@ program main
     rst = test_linear_least_squares_pure_2()
     if (.not.rst) flag = 117
 
+    rst = test_inverse_pure()
+    if (.not.rst) flag = 118
+
+    rst = test_pinverse_pure_1()
+    if (.not.rst) flag = 119
+
+    rst = test_pinverse_pure_2()
+    if (.not.rst) flag = 120
+
     ! End
     if (flag /= 0) stop flag
 end program

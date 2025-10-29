@@ -428,5 +428,16 @@ module lapack
             real(real64), intent(inout) :: a(lda,*), b(ldb,*)
             integer(int32), intent(out) :: info
         end subroutine
+
+        pure subroutine DGGEV3(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, &
+            beta, vl, ldvl, vr, ldvr, work, lwork, info)
+            use iso_fortran_env, only : int32, real64
+            character, intent(in) :: jobvl, jobvr
+            integer(int32), intent(in) :: n, lda, ldb, ldvl, ldvr, lwork
+            real(real64), intent(inout) :: a(lda,*), b(ldb,*)
+            real(real64), intent(out) :: alphar(*), alphai(*), beta(*), &
+                vl(ldvl,*), vr(ldvr,*), work(*)
+            integer(int32), intent(out) :: info
+        end subroutine
     end interface
 end module

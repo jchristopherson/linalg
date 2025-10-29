@@ -81,6 +81,7 @@ module linear_algebra
 
     interface eigen
         module procedure :: eigen_1
+        module procedure :: eigen_2
     end interface
 contains
 ! ******************************************************************************
@@ -693,8 +694,8 @@ end function
 pure function eigen_1(a, right) result(rst)
     !! Solves the eigenvalue problem \(A \vec{v} = \lambda \vec{v}\) where 
     !! matrix is \(A\) is square, but not necessarily symmetric.  Optionally,
-    !! the left eigenvalue problem can be solved such that \(\vec{v}^{H} A = 
-    !! \lambda \vec{v}^{H}\).
+    !! the left eigenvalue problem can be solved such that \(\vec{u}^{H} A = 
+    !! \lambda \vec{u}^{H}\).
     real(real64), intent(in), dimension(:,:) :: a
         !! The matrix \(A\).
     logical, intent(in), optional :: right
@@ -766,16 +767,85 @@ pure function eigen_1(a, right) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+pure function eigen_2(a, b, right) result(rst)
+    !! Solves the eigenvalue problem \(A \vec{v} = \lambda B \vec{v}\) where
+    !! \(A\) and \(B\) are both N-by-N matrices.  Optionally, the left
+    !! eigenvalue problem can be solved such that \(\vec{u}^{H} A =
+    !! \lambda \vec{u}^{H} B\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix \(A\).
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The matrix \(B\).
+    logical, intent(in), optional :: right
+        !! An optional parameter specifying if the right eigenvalue solution
+        !! should be computed (true), or the left eigenvalue solution should be
+        !! computed (false).  The default is true such that the right eigenvalue
+        !! problem is solved.
+    type(eigen_solution) :: rst
+        !! The solution.
 
-! ------------------------------------------------------------------------------
+    ! Local Variables
+    logical :: solveright
+    character :: jobvl, jobvr
+    integer(int32) :: i, j, jp1, n, lwork, info
+    real(real64) :: temp(1), eps
+    real(real64), allocatable, dimension(:) :: work, alphar, alphai, beta
+    real(real64), allocatable, dimension(:,:) :: ac, bc, vecs
 
-! ------------------------------------------------------------------------------
+    ! Initialization
+    n = size(a, 1)
+    if (size(a, 2) /= n .or. size(b, 1) /= n .or. size(b, 2) /= n) return
+    eps = 2.0d0 * epsilon(eps)
+    solveright = .true.
+    if (present(right)) solveright = right
+    if (solveright) then
+        jobvl = 'N'
+        jobvr = 'V'
+    else
+        jobvl = 'V'
+        jobvr = 'N'
+    end if
+    allocate(ac(n, n), source = a)
+    allocate(bc(n, n), source = b)
+    allocate(alphar(n), alphai(n), beta(n), vecs(n, n))
+    call DGGEV3(jobvl, jobvr, n, ac, n, bc, n, alphar, alphai, beta, vecs, n, &
+        vecs, n, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+    allocate(rst%values(n), rst%vectors(n, n))
 
-! ------------------------------------------------------------------------------
+    ! Solve the problem
+    call DGGEV3(jobvl, jobvr, n, ac, n, bc, n, alphar, alphai, beta, vecs, n, &
+        vecs, n, work, lwork, info)
 
-! ------------------------------------------------------------------------------
+    ! Store the solution
+    j = 1
+    do while (j <= n)
+        if (abs(alphai(j)) < eps) then
+            ! Real-Valued
+            rst%values(j) = cmplx(alphar(j), 0.0d0, real64) / beta(j)
+            do i = 1, n
+                rst%vectors(i,j) = cmplx(vecs(i,j), 0.0d0, real64)
+            end do
+        else
+            ! Complex-Valued
+            jp1 = j + 1
+            rst%values(j) = cmplx(alphar(j), alphai(j), real64) / beta(j)
+            rst%values(jp1) = cmplx(alphar(jp1), alphai(jp1), real64) / beta(jp1)
+            do i = 1, n
+                rst%vectors(i,j) = cmplx(vecs(i,j), vecs(i,jp1), real64)
+                rst%vectors(i,jp1) = conjg(rst%vectors(i,j))
+            end do
 
-! ------------------------------------------------------------------------------
+            ! Increment j and continue
+            j = j + 2
+            cycle
+        end if
+
+        ! Increment j
+        j = j + 1
+    end do
+end function
 
 ! ------------------------------------------------------------------------------
 end module

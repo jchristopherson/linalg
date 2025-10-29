@@ -397,6 +397,12 @@ program main
     rst = test_pinverse_pure_2()
     if (.not.rst) flag = 120
 
+    rst = test_eigen_pure_1()
+    if (.not.rst) flag = 121
+
+    rst = test_eigen_gen_pure_1()
+    if (.not.rst) flag = 122
+
     ! End
     if (flag /= 0) stop flag
 end program

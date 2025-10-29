@@ -734,7 +734,7 @@ pure function eigen_1(a, right) result(rst)
     allocate(work(lwork))
 
     ! Solve the problem
-    call DGEEV(jobvl, jobvl, n, ac, n, wr, wi, vecs, n, vecs, n, work, lwork, info)
+    call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vecs, n, vecs, n, work, lwork, info)
 
     ! Store the solution
     allocate(rst%values(n), rst%vectors(n, n))

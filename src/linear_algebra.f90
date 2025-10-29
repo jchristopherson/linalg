@@ -11,6 +11,7 @@ module linear_algebra
     public :: lu_factors
     public :: qr_factors
     public :: svd_factors
+    public :: eigen_solution
     public :: lu_factor
     public :: qr_factor
     public :: cholesky_factor
@@ -20,6 +21,7 @@ module linear_algebra
     public :: solve_least_squares
     public :: inverse
     public :: pinverse
+    public :: eigen
 
     type :: lu_factors
         !! A container for the results of a LU factorization.
@@ -54,6 +56,14 @@ module linear_algebra
             !! The transpose of the N-by-N right singular vector matrix \(V\).
     end type
 
+    type :: eigen_solution
+        !! A container for both eigenvectors and eigenvalues.
+        complex(real64), allocatable, dimension(:) :: values
+            !! An array of eigenvalues.
+        complex(real64), allocatable, dimension(:,:) :: vectors
+            !! A collection of eigenvectors, stored columnwise.
+    end type
+
     interface solve_triangular_system
         module procedure :: solve_triangular_system_mtx
         module procedure :: solve_triangular_system_vec
@@ -67,6 +77,10 @@ module linear_algebra
     interface solve_least_squares
         module procedure :: solve_least_squares_mtx
         module procedure :: solve_least_squares_vec
+    end interface
+
+    interface eigen
+        module procedure :: eigen_1
     end interface
 contains
 ! ******************************************************************************
@@ -676,6 +690,80 @@ end function
 ! ******************************************************************************
 ! EIGEN ANALYSIS
 ! ------------------------------------------------------------------------------
+pure function eigen_1(a, right) result(rst)
+    !! Solves the eigenvalue problem \(A \vec{v} = \lambda \vec{v}\) where 
+    !! matrix is \(A\) is square, but not necessarily symmetric.  Optionally,
+    !! the left eigenvalue problem can be solved such that \(\vec{v}^{H} A = 
+    !! \lambda \vec{v}^{H}\).
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix \(A\).
+    logical, intent(in), optional :: right
+        !! An optional parameter specifying if the right eigenvalue solution
+        !! should be computed (true), or the left eigenvalue solution should be
+        !! computed (false).  The default is true such that the right eigenvalue
+        !! problem is solved.
+    type(eigen_solution) :: rst
+        !! The solution.
+
+    ! Local Variables
+    logical :: solveright
+    character :: jobvl, jobvr
+    integer(int32) :: i, j, jp1, n, lwork, info
+    real(real64) :: temp(1), eps
+    real(real64), allocatable, dimension(:) :: work, wr, wi
+    real(real64), allocatable, dimension(:,:) :: ac, vecs
+
+    ! Initialization
+    n = size(a, 1)
+    if (size(a, 2) /= n) return
+    eps = 2.0d0 * epsilon(eps)
+    solveright = .true.
+    if (present(right)) solveright = right
+    if (solveright) then
+        jobvl = 'N'
+        jobvr = 'V'
+    else
+        jobvl = 'V'
+        jobvr = 'N'
+    end if
+    allocate(ac(n, n), source = a)
+    allocate(wr(n), wi(n), vecs(n, n))
+    call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vecs, n, vecs, n, temp, -1, info)
+    lwork = int(temp(1), int32)
+    allocate(work(lwork))
+
+    ! Solve the problem
+    call DGEEV(jobvl, jobvl, n, ac, n, wr, wi, vecs, n, vecs, n, work, lwork, info)
+
+    ! Store the solution
+    allocate(rst%values(n), rst%vectors(n, n))
+    j = 1
+    do while (j <= n)
+        if (abs(wi(j)) < eps) then
+            ! We've got a real-valued eigenvalue
+            rst%values(j) = cmplx(wr(j), 0.0d0, real64)
+            do i = 1, n
+                rst%vectors(i,j) = cmplx(vecs(i,j), 0.0d0, real64)
+            end do
+        else
+            ! We've got a complex conjugate pair of eigenvalues
+            jp1 = j + 1
+            rst%values(j) = cmplx(wr(j), wi(j), real64)
+            rst%values(jp1) = conjg(rst%values(j))
+            do i = 1, n
+                rst%vectors(i,j) = cmplx(vecs(i,j), vecs(i,jp1), real64)
+                rst%vectors(i,jp1) = conjg(rst%vectors(i,j))
+            end do
+
+            ! Increment j and continue
+            j = j + 2
+            cycle
+        end if
+
+        ! Increment j
+        j = j + 1
+    end do
+end function
 
 ! ------------------------------------------------------------------------------
 

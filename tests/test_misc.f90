@@ -949,7 +949,7 @@ contains
         call create_random_array(a)
         call create_random_array(b)
         call create_random_array(bv)
-        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, temp, -1, info)
+        call dgelsy(m, n, nrhs, ac, m, bc, n, jpvt, rcond, rnk, temp, -1, info)
         lwork = int(temp(1), int32)
         allocate(work(lwork))
 
@@ -958,7 +958,7 @@ contains
         ac = a
         bc(1:m,:) = b
         jpvt = 0
-        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, work, lwork, info)
+        call dgelsy(m, n, nrhs, ac, m, bc, n, jpvt, rcond, rnk, work, lwork, info)
         if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -1"
@@ -969,11 +969,11 @@ contains
         ac = a
         bvc(1:m) = bv
         jpvt = 0
-        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, temp, -1, info)
+        call dgelsy(m, n, 1, ac, m, bvc, n, jpvt, rcond, rnk, temp, -1, info)
         lwork = int(temp(1), int32)
         allocate(work(lwork))
         xv = solve_least_squares(a, bv)
-        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, work, lwork, info)
+        call dgelsy(m, n, 1, ac, m, bvc, n, jpvt, rcond, rnk, work, lwork, info)
         if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
             rst = .false.
             print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -2"

@@ -45,7 +45,7 @@ jobs:
 
       - name: Test with CMake
         working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}}
+        run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
 
       - name: Configure CMake - Shared Library
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_Fortran_COMPILER=${{ env.FC }} -DBUILD_TESTING=TRUE -DBUILD_LINALG_C_API=TRUE -DBUILD_SHARED_LIBS=TRUE
@@ -55,4 +55,4 @@ jobs:
 
       - name: Test with CMake - Shared Library
         working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}}
+        run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

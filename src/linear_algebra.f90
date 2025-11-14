@@ -544,12 +544,8 @@ pure function solve_least_squares_mtx(a, b) result(rst)
     if (size(b, 1) /= m) return
     allocate(jpvt(n), source = 0)
     allocate(ac(m, n), source = a)
-    allocate(x(maxmn, nrhs))
-    if (m >= n) then
-        x = b
-    else
-        x(1:m,:) = b
-    end if
+    allocate(x(maxmn, nrhs), source = 0.0d0)
+    x(1:m,:) = b(1:m,:)
     call DGELSY(m, n, nrhs, ac, m, x, maxmn, jpvt, rcond, rnk, temp, -1, info)
     lwork = int(temp(1), int32)
     allocate(work(lwork))

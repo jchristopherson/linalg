@@ -714,4 +714,271 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_tri_mtx_solve_pure() result(rst)
+        use linear_algebra
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: n = 200
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(n,n), b(n,nrhs), bv(n), x(n,nrhs), xv(n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(b)
+        call create_random_array(bv)
+
+        ! Upper Triangular System
+        call create_random_array(a, mtype = UPPER_TRIANGULAR_MATRIX)
+        x = solve_triangular_system(a, b, upper = .true.)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -1"
+        end if
+
+        xv = solve_triangular_system(a, bv, upper = .true.)
+        if (.not.assert(matmul(a, xv), bv, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -2"
+        end if
+
+        ! Lower Triangular
+        call create_random_array(a, mtype = LOWER_TRIANGULAR_MATRIX)
+        x = solve_triangular_system(a, b, upper = .false.)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -3"
+        end if
+
+        xv = solve_triangular_system(a, bv, upper = .false.)
+        if (.not.assert(matmul(a, xv), bv, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_tri_mtx_solve_pure -4"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_solve_pure_1() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+
+        ! Matrix Solve
+        x = solve_linear_system(a, b)
+        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_1 -1"
+        end if
+
+        ! Vector Solve
+        xv = solve_linear_system(a, bv)
+        if (.not.assert(matmul(a, xv), bv, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_1 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_solve_pure_2() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 70
+        integer(int32), parameter :: nrhs = 20
+        integer(int32) :: lwork, info
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n), temp(1), &
+            ac(m,n), bc(m,nrhs), bvc(m)
+        real(real64), allocatable, dimension(:) :: work
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+        ac = a
+        bc = b 
+        bvc = bv
+        call dgels('N', m, n, nrhs, ac, m, bc, m, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+
+        ! Matrix Solve
+        x = solve_linear_system(a, b)
+        call dgels('N', m, n, nrhs, ac, m, bc, m, work, lwork, info)
+        if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_2 -1"
+        end if
+
+        ! Vector Solve
+        deallocate(work)
+        ac = a
+        call dgels('N', m, n, 1, ac, m, bvc, m, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        xv = solve_linear_system(a, bv)
+        call dgels('N', m, n, 1, ac, m, bvc, m, work, lwork, info)
+        if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_2 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_solve_pure_3() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 70
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+
+        ! Matrix Solve
+        x = solve_linear_system(a, b)
+        if (.not.assert(matmul(a, x), b, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_3 -1"
+        end if
+
+        ! Vector Solve
+        xv = solve_linear_system(a, bv)
+        if (.not.assert(matmul(a, xv), bv, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_solve_pure_3 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_least_squares_pure_1() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 100
+        integer(int32), parameter :: n = 70
+        integer(int32), parameter :: nrhs = 20
+        integer(int32) :: lwork, rnk, info, jpvt(n)
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n), &
+            ac(m,n), bc(m,nrhs), bvc(m), temp(1), rcond
+        real(real64), allocatable, dimension(:) :: work
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+
+        ! Matrix Solve
+        x = solve_least_squares(a, b)
+        ac = a
+        bc = b
+        jpvt = 0
+        call dgelsy(m, n, nrhs, ac, m, bc, m, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -1"
+        end if
+
+        ! Vector Solve
+        deallocate(work)
+        ac = a
+        bvc = bv
+        jpvt = 0
+        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        xv = solve_least_squares(a, bv)
+        call dgelsy(m, n, 1, ac, m, bvc, m, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_1 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_linear_least_squares_pure_2() result(rst)
+        use linear_algebra
+
+        ! Arguments
+        logical :: rst
+
+        ! Parameters & Variables
+        integer(int32), parameter :: m = 70
+        integer(int32), parameter :: n = 100
+        integer(int32), parameter :: nrhs = 20
+        integer(int32) :: lwork, rnk, info, jpvt(n)
+        real(real64) :: a(m,n), b(m,nrhs), x(n,nrhs), bv(m), xv(n), &
+            ac(m,n), bc(n,nrhs), bvc(n), temp(1), rcond
+        real(real64), allocatable, dimension(:) :: work
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        call create_random_array(bv)
+        call dgelsy(m, n, nrhs, ac, m, bc, n, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+
+        ! Matrix Solve
+        x = solve_least_squares(a, b)
+        ac = a
+        bc(1:m,:) = b
+        jpvt = 0
+        call dgelsy(m, n, nrhs, ac, m, bc, n, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(x, bc(1:n,:), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -1"
+        end if
+
+        ! Vector Solve
+        deallocate(work)
+        ac = a
+        bvc(1:m) = bv
+        jpvt = 0
+        call dgelsy(m, n, 1, ac, m, bvc, n, jpvt, rcond, rnk, temp, -1, info)
+        lwork = int(temp(1), int32)
+        allocate(work(lwork))
+        xv = solve_least_squares(a, bv)
+        call dgelsy(m, n, 1, ac, m, bvc, n, jpvt, rcond, rnk, work, lwork, info)
+        if (.not.assert(xv, bvc(1:n), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_linear_least_squares_pure_2 -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

@@ -3,7 +3,7 @@ module blas
     implicit none
 
     interface
-        subroutine DGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, &
+        pure subroutine DGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, &
             c, ldc)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: transa, transb
@@ -12,7 +12,7 @@ module blas
             real(real64), intent(inout) :: c(ldc,*)
         end subroutine
 
-        subroutine DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+        pure subroutine DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: m, n, lda, incx, incy
@@ -20,7 +20,7 @@ module blas
             real(real64), intent(inout) :: y(*)
         end subroutine
 
-        subroutine ZGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, &
+        pure subroutine ZGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, &
             c, ldc)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: transa, transb
@@ -29,7 +29,7 @@ module blas
             complex(real64), intent(inout) :: c(ldc,*)
         end subroutine
 
-        subroutine ZGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+        pure subroutine ZGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
             integer(int32), intent(in) :: m, n, lda, incx, incy
@@ -37,7 +37,7 @@ module blas
             complex(real64), intent(inout) :: y(*)
         end subroutine
 
-        subroutine DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
+        pure subroutine DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, uplo, transa, diag
             integer(int32), intent(in) :: m, n, lda, ldb
@@ -45,7 +45,7 @@ module blas
             real(real64), intent(inout) :: b(ldb,*)
         end subroutine
 
-        subroutine ZTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
+        pure subroutine ZTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: side, uplo, transa, diag
             integer(int32), intent(in) :: m, n, lda, ldb
@@ -53,7 +53,7 @@ module blas
             complex(real64), intent(inout) :: b(ldb,*)
         end subroutine
 
-        subroutine DTRSV(uplo, trans, diag, n, a, lda, x, incx)
+        pure subroutine DTRSV(uplo, trans, diag, n, a, lda, x, incx)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo, trans, diag
             integer(int32), intent(in) :: n, lda, incx
@@ -61,7 +61,7 @@ module blas
             real(real64), intent(inout) :: x(*)
         end subroutine
 
-        subroutine ZTRSV(uplo, trans, diag, n, a, lda, x, incx)
+        pure subroutine ZTRSV(uplo, trans, diag, n, a, lda, x, incx)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: uplo, trans, diag
             integer(int32), intent(in) :: n, lda, incx
@@ -69,28 +69,28 @@ module blas
             complex(real64), intent(inout) :: x(*)
         end subroutine
 
-        subroutine DSCAL(n, da, dx, incx)
+        pure subroutine DSCAL(n, da, dx, incx)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, incx
             real(real64), intent(in) :: da
             real(real64), intent(inout) :: dx(*)
         end subroutine
 
-        subroutine ZSCAL(n, za, zx, incx)
+        pure subroutine ZSCAL(n, za, zx, incx)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, incx
             complex(real64), intent(in) :: za
             complex(real64), intent(inout) :: zx(*)
         end subroutine
 
-        subroutine ZDSCAL(n, da, zx, incx)
+        pure subroutine ZDSCAL(n, da, zx, incx)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, incx
             real(real64), intent(in) :: da
             complex(real64), intent(inout) :: zx(*)
         end subroutine
 
-        subroutine DGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
+        pure subroutine DGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
             incy)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
@@ -99,7 +99,7 @@ module blas
             real(real64), intent(inout) :: y(*)
         end subroutine
 
-        subroutine ZGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
+        pure subroutine ZGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, &
             incy)
             use iso_fortran_env, only : int32, real64
             character, intent(in) :: trans
@@ -108,11 +108,17 @@ module blas
             complex(real64), intent(inout) :: y(*)
         end subroutine
 
-        function DDOT(n, dx, incx, dy, incy) result(rst)
+        pure function DDOT(n, dx, incx, dy, incy) result(rst)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, incx, incy
             real(real64), intent(in) :: dx(*), dy(*)
             real(real64) :: rst
         end function
+
+        pure subroutine DSWAP(n, dx, incx, dy, incy)
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n, incx, incy
+            real(real64), intent(inout) :: dx(*), dy(*)
+        end subroutine
     end interface
 end module

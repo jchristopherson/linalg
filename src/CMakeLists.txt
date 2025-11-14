@@ -111,6 +111,7 @@ set(LINALG_SOURCES
     ${dir}/linalg_svd.f90
     ${dir}/linalg_inverse.f90
     ${dir}/linalg_least_squares.f90
+    ${dir}/linear_algebra.f90
 )
 if (${BUILD_LINALG_C_API})
     set(LINALG_C_SOURCES

@@ -358,6 +358,51 @@ program main
     rst = test_int32_ascend_sort()
     if (.not.rst) flag = 107
 
+    rst = test_lu_factor_pure()
+    if (.not.rst) flag = 108
+
+    rst = test_qr_factor_pure()
+    if (.not.rst) flag = 109
+
+    rst = test_cholesky_factor_pure()
+    if (.not.rst) flag = 110
+
+    rst = test_svd_pure()
+    if (.not.rst) flag = 111
+
+    rst = test_tri_mtx_solve_pure()
+    if (.not.rst) flag = 112
+
+    rst = test_linear_solve_pure_1()
+    if (.not.rst) flag = 113
+
+    rst = test_linear_solve_pure_2()
+    if (.not.rst) flag = 114
+
+    rst = test_linear_solve_pure_3()
+    if (.not.rst) flag = 115
+
+    ! rst = test_linear_least_squares_pure_1()
+    ! if (.not.rst) flag = 116
+
+    ! rst = test_linear_least_squares_pure_2()
+    ! if (.not.rst) flag = 117
+
+    rst = test_inverse_pure()
+    if (.not.rst) flag = 118
+
+    rst = test_pinverse_pure_1()
+    if (.not.rst) flag = 119
+
+    rst = test_pinverse_pure_2()
+    if (.not.rst) flag = 120
+
+    rst = test_eigen_pure_1()
+    if (.not.rst) flag = 121
+
+    rst = test_eigen_gen_pure_1()
+    if (.not.rst) flag = 122
+
     ! End
     if (flag /= 0) stop flag
 end program

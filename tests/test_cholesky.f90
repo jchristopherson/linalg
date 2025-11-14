@@ -247,4 +247,34 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_cholesky_factor_pure() result(rst)
+        use linear_algebra
+
+        ! Parameters
+        integer(int32), parameter :: n = 100
+
+        ! Local Variables
+        logical :: rst
+        real(real64) :: a(n, n), r(n, n), l(n, n)
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
+
+        ! Upper Factorization
+        r = cholesky_factor(a)
+        if (.not.assert(matmul(transpose(r), r), a, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_cholesky_factor_pure -1"
+        end if
+
+        ! Lower Factorization
+        l = cholesky_factor(a, upper = .false.)
+        if (.not.assert(matmul(l, transpose(l)), a, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "TEST FAILED: test_cholesky_factor_pure -2"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
 end module

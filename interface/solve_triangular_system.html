@@ -74,20 +74,20 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="<p> 0.9% of total for procedures.</p>Including implementation: 186 statements, 27.4% of total for procedures.">6 statements</a>
+                 title="<p> 0.4% of total for procedures.</p>Including implementation: 52 statements,  5.8% of total for procedures.">4 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/linalg_tri.f90"> Source File</a>
+              <a href="../src/linear_algebra.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_tri.f90.html'>linalg_tri.f90</a></li>
-                <li class="breadcrumb-item"><a href='..\module\linalg_tri.html'>linalg_tri</a></li>
+                <li class="breadcrumb-item"><a href='..\sourcefile\linear_algebra.f90.html'>linear_algebra.f90</a></li>
+                <li class="breadcrumb-item"><a href='..\module\linear_algebra.html'>linear_algebra</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_triangular_system</li>
           </ol>
         </nav>
@@ -131,10 +131,8 @@
       </a>
       <div id="modprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_tri_mtx">solve_tri_mtx</a>
-            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_tri_mtx_cmplx">solve_tri_mtx_cmplx</a>
-            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_tri_vec">solve_tri_vec</a>
-            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_tri_vec_cmplx">solve_tri_vec_cmplx</a>
+            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_triangular_system_mtx">solve_triangular_system_mtx</a>
+            <a class="list-group-item" href="../interface/solve_triangular_system.html#moduleprocedure-solve_triangular_system_vec">solve_triangular_system_vec</a>
         </div>
       </div>
     </div>
@@ -154,12 +152,11 @@
 
         <h2>Module Procedures</h2>
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_tri_mtx"></span> <h3>private  subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_triangular_system_mtx"></span> <h3>private pure function solve_triangular_system_mtx(a, b, upper) result(rst)  
 </h3></div>
     <div class="card-body">
-        <p>Solves a triangular system of equations of the form 
-<script type="math/tex">op(A) X = \alpha B</script> or <script type="math/tex">X op(A) = \alpha B</script> where <script type="math/tex">A</script> is a 
-triangular matrix (either upper or lower) for the unknown <script type="math/tex">X</script>.</p>
+        <p>Solves a triangular system of the form <script type="math/tex">A X = B</script> where <script type="math/tex">A</script> is a
+triangular matrix, either upper or lower, for equation <script type="math/tex">X</script>.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -174,85 +171,7 @@ triangular matrix (either upper or lower) for the unknown <script type="math/tex
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~16"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lside</strong></td>
-            <td>
-                <p>Set to true to solve <script type="math/tex">op(A) X = \alpha B</script>; else, set to false to
-solve <script type="math/tex">X op(A) = \alpha B</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-upper~9"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>upper</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is upper triangular; else, set to false if
-<script type="math/tex">A</script> is lower triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-trans~18"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>trans</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">op(A) = A^T</script>; else, set to false if <script type="math/tex">op(A) = A</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nounit"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nounit</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is unit-triangular (ones on the diagonal); else,
-false if <script type="math/tex">A</script> is not unit-triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alpha~23"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alpha</strong></td>
-            <td>
-                <p>The scalar multiplier <script type="math/tex">\alpha</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~82"></span>
+              <span class="anchor" id="variable-a~67"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -262,205 +181,59 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>If lside is true, the M-by-M triangular matrix <script type="math/tex">A</script>; else, <script type="math/tex">A</script> is
-N-by-N if lside is false.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~37"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, the M-by-N matrix <script type="math/tex">B</script>.  On output, the M-by-N solution 
-matrix <script type="math/tex">X</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~108"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_tri_mtx_cmplx"></span> <h3>private  subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves a triangular system of equations of the form 
-<script type="math/tex">op(A) X = \alpha B</script> or <script type="math/tex">X op(A) = \alpha B</script> where <script type="math/tex">A</script> is a 
-triangular matrix (either upper or lower) for the unknown <script type="math/tex">X</script>.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lside~17"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lside</strong></td>
-            <td>
-                <p>Set to true to solve <script type="math/tex">op(A) X = \alpha B</script>; else, set to false to
-solve <script type="math/tex">X op(A) = \alpha B</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-upper~10"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>upper</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is upper triangular; else, set to false if
-<script type="math/tex">A</script> is lower triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-trans~19"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>trans</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">op(A) = A^H</script>; else, set to false if <script type="math/tex">op(A) = A</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nounit~2"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nounit</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is unit-triangular (ones on the diagonal); else,
-false if <script type="math/tex">A</script> is not unit-triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alpha~24"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alpha</strong></td>
-            <td>
-                <p>The scalar multiplier <script type="math/tex">\alpha</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~83"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>If lside is true, the M-by-M triangular matrix <script type="math/tex">A</script>; else, <script type="math/tex">A</script> is
-N-by-N if lside is false.</p>
+                <p>The N-by-N triangular <script type="math/tex">A</script> matrix.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-b~38"></span>
-              complex(kind=real64),
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the M-by-N matrix <script type="math/tex">B</script>.  On output, the M-by-N solution 
-matrix <script type="math/tex">X</script>.</p>
+                <p>The N-by-NRHS <script type="math/tex">B</script> matrix.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~109"></span>
-              class(errors),
+              <span class="anchor" id="variable-upper~4"></span>
+              logical,
             </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>upper</strong></td>
             <td>
-                <p>The error object to be updated.</p>
+                <p>An optional argument specifying if the <script type="math/tex">A</script> matrix is upper 
+triangular (true), or lower triangular (false).  The default 
+assumption is that <script type="math/tex">A</script> is an upper triangular matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix, <script type="math/tex">X</script>.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_tri_vec"></span> <h3>private  subroutine solve_tri_vec(upper, trans, nounit, a, x, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_triangular_system_vec"></span> <h3>private pure function solve_triangular_system_vec(a, b, upper) result(rst)  
 </h3></div>
     <div class="card-body">
-        <p>Solves the triangular system <script type="math/tex">op(A) \vec{x} = \vec{b}</script> where <script type="math/tex">A</script>
-is a triangular matrix.</p>
+        <p>Solves a triangular system of the form <script type="math/tex">A X = B</script> where <script type="math/tex">A</script> is a
+triangular matrix, either upper or lower, for equation <script type="math/tex">X</script>.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -475,54 +248,7 @@ is a triangular matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~11"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>upper</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is upper triangular; else, set to false if <script type="math/tex">A</script>
-is lower triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-trans~20"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>trans</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">op(A) = A^T</script>; else, set to false if <script type="math/tex">op(A) = A</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nounit~3"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nounit</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is unit-triangular (ones on the diagonal); else,
-false if <script type="math/tex">A</script> is not unit-triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~84"></span>
+              <span class="anchor" id="variable-a~68"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -532,161 +258,49 @@ false if <script type="math/tex">A</script> is not unit-triangular.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The N-by-N triangular matrix <script type="math/tex">A</script>.</p>
+                <p>The N-by-N triangular <script type="math/tex">A</script> matrix.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~35"></span>
+              <span class="anchor" id="variable-b~39"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
-            <td><strong>x</strong></td>
+            <td><strong>b</strong></td>
             <td>
-                <p>On input, the N-element vector <script type="math/tex">\vec{b}</script>.  On output, the 
-N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
+                <p>The N-element <script type="math/tex">B</script> array.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~110"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_tri_vec_cmplx"></span> <h3>private  subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves the triangular system <script type="math/tex">op(A) \vec{x} = \vec{b}</script> where <script type="math/tex">A</script>
-is a triangular matrix.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-upper~12"></span>
+              <span class="anchor" id="variable-upper~5"></span>
               logical,
             </td>
-<td>intent(in)</td>
-              <td></td>            <td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
               
             </td>
             <td>::</td>
             <td><strong>upper</strong></td>
             <td>
-                <p>Set to true if <script type="math/tex">A</script> is upper triangular; else, set to false if <script type="math/tex">A</script>
-is lower triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-trans~21"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>trans</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">op(A) = A^T</script>; else, set to false if <script type="math/tex">op(A) = A</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nounit~4"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nounit</strong></td>
-            <td>
-                <p>Set to true if <script type="math/tex">A</script> is unit-triangular (ones on the diagonal); else,
-false if <script type="math/tex">A</script> is not unit-triangular.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~85"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>The N-by-N triangular matrix <script type="math/tex">A</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~36"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>On input, the N-element vector <script type="math/tex">\vec{b}</script>.  On output, the 
-N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~111"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>An optional argument specifying if the <script type="math/tex">A</script> matrix is upper 
+triangular (true), or lower triangular (false).  The default 
+assumption is that <script type="math/tex">A</script> is an upper triangular matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution array, <script type="math/tex">X</script>.</p>
 
     </div>
   </div>
@@ -705,7 +319,7 @@ N-element solution vector <script type="math/tex">\vec{x}</script>.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-12 14:19              </p>
+ on 2025-11-14 13:18              </p>
           </div>
         </div>
         <br>

@@ -105,6 +105,12 @@
                  <td><p>An interface to the banded to dense matrix conversion routines.</p></td>
                </tr>
 			   <tr>
+                 <td><a href='..\proc\cholesky_factor.html'>cholesky_factor</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the Cholesky factorization of a positive-definite matrix.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\cholesky_factor.html'>cholesky_factor</a></td>
                  <td><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></td>
                  <td>Interface</td>
@@ -195,6 +201,12 @@
                  <td><p>An interface to the eigenvalue and eigenvector routines.</p></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\eigen~2.html'>eigen</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\extract_diagonal.html'>extract_diagonal</a></td>
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
@@ -219,6 +231,18 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\proc\identity.html'>identity</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Constructs an N-by-N identity matrix.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\inverse.html'>inverse</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the inverse of a square matrix.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\lq_factor.html'>lq_factor</a></td>
                  <td><a href='..\module\linalg_lq.html'>linalg_lq</a></td>
                  <td>Interface</td>
@@ -229,6 +253,13 @@
                  <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
                  <td>Interface</td>
                  <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\lu_factor.html'>lu_factor</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the LU factorization of a square matrix such that
+<script type="math/tex"> P A = L U </script>.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\matmul.html'>matmul</a></td>
@@ -327,6 +358,19 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\proc\pinverse.html'>pinverse</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the Moore-Penrose pseudoinverse of an M-by-N matrix.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\qr_factor.html'>qr_factor</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the QR factorization of an M-by-N matrix such that either
+<script type="math/tex">A = Q R </script> (no pivoting), or <script type="math/tex">A P = Q R</script> (with pivoting).</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\qr_factor.html'>qr_factor</a></td>
                  <td><a href='..\module\linalg_qr.html'>linalg_qr</a></td>
                  <td>Interface</td>
@@ -412,6 +456,12 @@ matrix was provided.</p></td>
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\solve_least_squares~2.html'>solve_least_squares</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\solve_least_squares_full.html'>solve_least_squares_full</a></td>
                  <td><a href='..\module\linalg_least_squares.html'>linalg_least_squares</a></td>
                  <td>Interface</td>
@@ -420,6 +470,12 @@ matrix was provided.</p></td>
 			   <tr>
                  <td><a href='..\interface\solve_least_squares_svd.html'>solve_least_squares_svd</a></td>
                  <td><a href='..\module\linalg_least_squares.html'>linalg_least_squares</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\solve_linear_system.html'>solve_linear_system</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
                  <td>Interface</td>
                  <td></td>
                </tr>
@@ -443,6 +499,12 @@ matrix was provided.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\solve_triangular_system.html'>solve_triangular_system</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\solve_triangular_system~2.html'>solve_triangular_system</a></td>
                  <td><a href='..\module\linalg_tri.html'>linalg_tri</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -460,6 +522,13 @@ matrix was provided.</p></td>
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\proc\svd.html'>svd</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Function</td>
+                 <td><p>Computes the singular value decomposition of an M-by-N matrix such that
+<script type="math/tex"> A = U S V^{T} </script>.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\svd.html'>svd</a></td>
                  <td><a href='..\module\linalg_svd.html'>linalg_svd</a></td>
                  <td>Interface</td>
@@ -470,6 +539,12 @@ matrix was provided.</p></td>
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
                  <td><p>An interface to the swap routines.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\swap_arrays.html'>swap_arrays</a></td>
+                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Swaps the contents of two arrays.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\trace.html'>trace</a></td>
@@ -505,7 +580,7 @@ matrix was provided.</p></td>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-12 14:19              </p>
+ on 2025-11-14 13:18              </p>
           </div>
         </div>
         <br>

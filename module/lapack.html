@@ -88,7 +88,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title=" 3.1% of total for modules and submodules.">361 statements</a>
+               title=" 3.0% of total for modules and submodules.">376 statements</a>
           </li>
 
             <li id="source-file">
@@ -138,11 +138,13 @@
             <a class="list-group-item" href="../module/lapack.html#interface-dgelsy">DGELSY</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgeqp3">DGEQP3</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgeqrf">DGEQRF</a>
+            <a class="list-group-item" href="../module/lapack.html#interface-dgesv">DGESV</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgesvd">DGESVD</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetrf">DGETRF</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetri">DGETRI</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetrs">DGETRS</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dggev">DGGEV</a>
+            <a class="list-group-item" href="../module/lapack.html#interface-dggev3">DGGEV3</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlaic1">DLAIC1</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlamch">DLAMCH</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlaset">DLASET</a>
@@ -227,11 +229,13 @@
             <a class="list-group-item" href="../module/lapack.html#interface-dgelsy">DGELSY</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgeqp3">DGEQP3</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgeqrf">DGEQRF</a>
+            <a class="list-group-item" href="../module/lapack.html#interface-dgesv">DGESV</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgesvd">DGESVD</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetrf">DGETRF</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetri">DGETRI</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dgetrs">DGETRS</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dggev">DGGEV</a>
+            <a class="list-group-item" href="../module/lapack.html#interface-dggev3">DGGEV3</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlaic1">DLAIC1</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlamch">DLAMCH</a>
             <a class="list-group-item" href="../module/lapack.html#interface-dlaset">DLASET</a>
@@ -298,7 +302,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGEEV(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)  
+    public pure subroutine DGEEV(jobvl, jobvr, n, a, lda, wr, wi, vl, ldvl, vr, ldvr, work, lwork, info)  
 
     </h3>
   
@@ -541,7 +545,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGELQF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine DGELQF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -694,7 +698,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)  
+    public pure subroutine DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)  
 
     </h3>
   
@@ -892,7 +896,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, lwork, info)  
+    public pure subroutine DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, lwork, info)  
 
     </h3>
   
@@ -1120,7 +1124,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, lwork, info)  
+    public pure subroutine DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, lwork, info)  
 
     </h3>
   
@@ -1348,7 +1352,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGEQP3(m, n, a, lda, jpvt, tau, work, lwork, info)  
+    public pure subroutine DGEQP3(m, n, a, lda, jpvt, tau, work, lwork, info)  
 
     </h3>
   
@@ -1516,7 +1520,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGEQRF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine DGEQRF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -1662,6 +1666,159 @@
 
        <div class="panel panel-default">
     <div class="panel-heading codesum">
+      <span class="anchor" id="interface-dgesv"></span>
+      <h3>        interface
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+              <h3>
+    public pure subroutine DGESV(n, nrhs, a, lda, ipiv, b, ldb, info)  
+
+    </h3>
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nrhs</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(lda,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lda</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ipiv</strong>(*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(ldb,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ldb</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>info</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+       <div class="panel panel-default">
+    <div class="panel-heading codesum">
       <span class="anchor" id="interface-dgesvd"></span>
       <h3>        interface
       </h3>
@@ -1669,7 +1826,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, info)  
+    public pure subroutine DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, info)  
 
     </h3>
   
@@ -1912,7 +2069,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGETRF(m, n, a, lda, ipiv, info)  
+    public pure subroutine DGETRF(m, n, a, lda, ipiv, info)  
 
     </h3>
   
@@ -2035,7 +2192,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGETRI(n, a, lda, ipiv, work, lwork, info)  
+    public pure subroutine DGETRI(n, a, lda, ipiv, work, lwork, info)  
 
     </h3>
   
@@ -2173,7 +2330,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)  
+    public pure subroutine DGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)  
 
     </h3>
   
@@ -2341,7 +2498,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DGGEV(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, lwork, info)  
+    public pure subroutine DGGEV(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, lwork, info)  
 
     </h3>
   
@@ -2390,9 +2547,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2420,9 +2577,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2450,9 +2607,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2525,9 +2682,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2555,9 +2712,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2585,9 +2742,297 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lwork</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>info</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+       <div class="panel panel-default">
+    <div class="panel-heading codesum">
+      <span class="anchor" id="interface-dggev3"></span>
+      <h3>        interface
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+              <h3>
+    public pure subroutine DGGEV3(jobvl, jobvr, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, lwork, info)  
+
+    </h3>
+  
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th>Type</th>
+<th>Intent</th><th>Optional</th>        <th>Attributes</th>
+        <th></th>
+        <th>Name</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>jobvl</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              character,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>jobvr</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(lda,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lda</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(ldb,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ldb</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphar</strong>(*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alphai</strong>(*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong>(*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>vl</strong>(ldvl,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ldvl</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>vr</strong>(ldvr,*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ldvr</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong>(*)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -2629,7 +3074,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)  
+    public pure subroutine DLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)  
 
     </h3>
   
@@ -2850,7 +3295,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DLASET(uplo, m, n, alpha, beta, a, lda)  
+    public pure subroutine DLASET(uplo, m, n, alpha, beta, a, lda)  
 
     </h3>
   
@@ -2988,7 +3433,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DLASRT(id, n, d, info)  
+    public pure subroutine DLASRT(id, n, d, info)  
 
     </h3>
   
@@ -3081,7 +3526,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DORGLQ(m, n, k, a, lda, tau, work, lwork, info)  
+    public pure subroutine DORGLQ(m, n, k, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -3249,7 +3694,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DORGQR(m, n, k, a, lda, tau, work, lwork, info)  
+    public pure subroutine DORGQR(m, n, k, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -3417,7 +3862,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -3466,9 +3911,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3481,9 +3926,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3496,9 +3941,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3526,9 +3971,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3571,9 +4016,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3601,9 +4046,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -3645,7 +4090,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -3873,7 +4318,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -4116,7 +4561,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DPOTRF(uplo, n, a, lda, info)  
+    public pure subroutine DPOTRF(uplo, n, a, lda, info)  
 
     </h3>
   
@@ -4224,7 +4669,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)  
+    public pure subroutine DPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)  
 
     </h3>
   
@@ -4377,7 +4822,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DSYEV(jobz, uplo, n, a, lda, w, work, lwork, info)  
+    public pure subroutine DSYEV(jobz, uplo, n, a, lda, w, work, lwork, info)  
 
     </h3>
   
@@ -4545,7 +4990,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine DTZRZF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine DTZRZF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -4698,7 +5143,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGEEV(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, lwork, rwork, info)  
+    public pure subroutine ZGEEV(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr, work, lwork, rwork, info)  
 
     </h3>
   
@@ -4941,7 +5386,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGELQF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine ZGELQF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -5094,7 +5539,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)  
+    public pure subroutine ZGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info)  
 
     </h3>
   
@@ -5292,7 +5737,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, lwork, rwork, info)  
+    public pure subroutine ZGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, lwork, rwork, info)  
 
     </h3>
   
@@ -5535,7 +5980,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, lwork, rwork, info)  
+    public pure subroutine ZGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank, work, lwork, rwork, info)  
 
     </h3>
   
@@ -5778,7 +6223,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGEQP3(m, n, a, lda, jpvt, tau, work, lwork, rwork, info)  
+    public pure subroutine ZGEQP3(m, n, a, lda, jpvt, tau, work, lwork, rwork, info)  
 
     </h3>
   
@@ -5961,7 +6406,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGEQRF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine ZGEQRF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -6114,7 +6559,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, rwork, info)  
+    public pure subroutine ZGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, rwork, info)  
 
     </h3>
   
@@ -6372,7 +6817,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGETRF(m, n, a, lda, ipiv, info)  
+    public pure subroutine ZGETRF(m, n, a, lda, ipiv, info)  
 
     </h3>
   
@@ -6495,7 +6940,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGETRI(n, a, lda, ipiv, work, lwork, info)  
+    public pure subroutine ZGETRI(n, a, lda, ipiv, work, lwork, info)  
 
     </h3>
   
@@ -6633,7 +7078,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)  
+    public pure subroutine ZGETRS(trans, n, nrhs, a, lda, ipiv, b, ldb, info)  
 
     </h3>
   
@@ -6801,7 +7246,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)  
+    public pure subroutine ZLAIC1(job, j, x, sest, w, gamma, sestpr, s, c)  
 
     </h3>
   
@@ -6969,7 +7414,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZPOTRF(uplo, n, a, lda, info)  
+    public pure subroutine ZPOTRF(uplo, n, a, lda, info)  
 
     </h3>
   
@@ -7077,7 +7522,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)  
+    public pure subroutine ZPOTRS(uplo, n, nrhs, a, lda, b, ldb, info)  
 
     </h3>
   
@@ -7230,7 +7675,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZTZRZF(m, n, a, lda, tau, work, lwork, info)  
+    public pure subroutine ZTZRZF(m, n, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -7383,7 +7828,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZUNGLQ(m, n, k, a, lda, tau, work, lwork, info)  
+    public pure subroutine ZUNGLQ(m, n, k, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -7551,7 +7996,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZUNGQR(m, n, k, a, lda, tau, work, lwork, info)  
+    public pure subroutine ZUNGQR(m, n, k, a, lda, tau, work, lwork, info)  
 
     </h3>
   
@@ -7719,7 +8164,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZUNMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine ZUNMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -7768,9 +8213,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7783,9 +8228,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7798,9 +8243,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7828,9 +8273,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7873,9 +8318,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7903,9 +8348,9 @@
         <tr>
             <td>
               <span class="anchor" ></span>
-              integer(kind=int32)
+              integer(kind=int32),
             </td>
-<td></td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
@@ -7947,7 +8392,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ZUNMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine ZUNMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -8175,7 +8620,7 @@
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine zunmrz(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, lwork, info)  
+    public pure subroutine zunmrz(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, lwork, info)  
 
     </h3>
   
@@ -8433,7 +8878,7 @@
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-12 19:40            </p>
+ on 2025-11-14 19:44            </p>
         </div>
       </div>
       <br>

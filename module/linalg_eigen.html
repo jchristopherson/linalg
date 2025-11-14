@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 4.4% of total for modules and submodules.">419 statements</a>
+                 title=" 4.2% of total for modules and submodules.">419 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -151,8 +151,8 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item">ferror</li>
                   <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item">ferror</li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
@@ -200,7 +200,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~3"></span>
+              <span class="anchor" id="variable-vecs"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -216,7 +216,7 @@ else, set to false to just compute the eigenvalues.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~11"></span>
+              <span class="anchor" id="variable-a"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -235,7 +235,7 @@ matrix is overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~3"></span>
+              <span class="anchor" id="variable-vals"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -251,7 +251,7 @@ ascending order.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~13"></span>
+              <span class="anchor" id="variable-work"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -269,7 +269,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~13"></span>
+              <span class="anchor" id="variable-olwork"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -286,7 +286,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~24"></span>
+              <span class="anchor" id="variable-err"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -326,7 +326,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~12"></span>
+              <span class="anchor" id="variable-a~2"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -342,7 +342,7 @@ contents of this matrix are overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~4"></span>
+              <span class="anchor" id="variable-vals~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -358,7 +358,7 @@ eigenvalues are not sorted.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~4"></span>
+              <span class="anchor" id="variable-vecs~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -375,7 +375,7 @@ eigenvalues will be computed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~14"></span>
+              <span class="anchor" id="variable-work~2"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -393,7 +393,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~14"></span>
+              <span class="anchor" id="variable-olwork~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -410,7 +410,7 @@ performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~25"></span>
+              <span class="anchor" id="variable-err~2"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -449,7 +449,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~13"></span>
+              <span class="anchor" id="variable-a~3"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -465,7 +465,7 @@ matrix are overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~5"></span>
+              <span class="anchor" id="variable-b"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -521,7 +521,7 @@ comparable with the NORM(<script type="math/tex">B</script>).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~5"></span>
+              <span class="anchor" id="variable-vecs~3"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -538,7 +538,7 @@ eigenvalues will be computed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~15"></span>
+              <span class="anchor" id="variable-work~3"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -556,7 +556,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~15"></span>
+              <span class="anchor" id="variable-olwork~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -573,7 +573,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~26"></span>
+              <span class="anchor" id="variable-err~3"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -613,7 +613,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~14"></span>
+              <span class="anchor" id="variable-a~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -629,7 +629,7 @@ contents of this matrix are overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~5"></span>
+              <span class="anchor" id="variable-vals~3"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -645,7 +645,7 @@ eigenvalues are not sorted.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~6"></span>
+              <span class="anchor" id="variable-vecs~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -662,7 +662,7 @@ eigenvalues will be computed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~16"></span>
+              <span class="anchor" id="variable-work~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -680,7 +680,7 @@ olwork.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~16"></span>
+              <span class="anchor" id="variable-olwork~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -715,7 +715,7 @@ array must be at least 2 * N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~27"></span>
+              <span class="anchor" id="variable-err~4"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -760,7 +760,7 @@ array must be at least 2 * N.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-12 14:19              </p>
+ on 2025-11-14 13:18              </p>
           </div>
         </div>
         <br>

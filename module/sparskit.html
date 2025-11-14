@@ -88,7 +88,7 @@
           <li id="statements"><i class="fa fa-list-ol"></i>
             <a data-toggle="tooltip"
                data-placement="bottom" data-html="true"
-               title=" 1.3% of total for modules and submodules.">150 statements</a>
+               title=" 1.2% of total for modules and submodules.">150 statements</a>
           </li>
 
             <li id="source-file">
@@ -245,7 +245,7 @@ https://www-users.cse.umn.edu/~saad/software/SPARSKIT/.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine amub(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
+    public pure subroutine amub(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
 
     </h3>
   <p>@brief Computes the matrix product: C = A * B.</p>
@@ -524,7 +524,7 @@ https://www-users.cse.umn.edu/~saad/software/SPARSKIT/.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine aplb(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
+    public pure subroutine aplb(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
 
     </h3>
   <p>@brief Computes the matrix sum: C = A + B, where the matrices are
@@ -802,7 +802,7 @@ given in CSR format.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine aplsb(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
+    public pure subroutine aplsb(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic, nzmax, iw, ierr)  
 
     </h3>
   <p>@brief Computes the matrix sum: C = A + s * B, where the matrices
@@ -1081,7 +1081,7 @@ are given in CSR format.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)  
+    public pure subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)  
 
     </h3>
   <p>@brief Converts the LINPACK, BLAS, LAPACK banded matrix format into
@@ -1295,7 +1295,7 @@ a CSR format.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine clncsr(job, value2, nrow, a, ja, ia, indu, iwk)  
+    public pure subroutine clncsr(job, value2, nrow, a, ja, ia, indu, iwk)  
 
     </h3>
   <p>@breif Cleans up a CSR matrix.</p>
@@ -1463,7 +1463,7 @@ a CSR format.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine coocsr(nrow, nnz, a, ir, jc, ao, jao, iao)  
+    public pure subroutine coocsr(nrow, nnz, a, ir, jc, ao, jao, iao)  
 
     </h3>
   <p>@brief Converte a matrix stored in coordinate format to CSR format.</p>
@@ -1568,9 +1568,9 @@ a CSR format.</p>
         <tr>
             <td>
               <span class="anchor" ></span>
-              real(kind=real64)
+              real(kind=real64),
             </td>
-<td></td>
+<td>intent(out)</td>
               <td></td>            <td>
               
             </td>
@@ -1627,7 +1627,7 @@ a CSR format.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine csort(n, a, ja, ia, values)  
+    public pure subroutine csort(n, a, ja, ia, values)  
 
     </h3>
   <p>@brief Sorces the elements of a CSR matrix in increasing order of 
@@ -1742,7 +1742,7 @@ their column indices within each row.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine csrcsc2(n, n2, job, ipos, a, ja, ia, a0, ja0, ia0)  
+    public pure subroutine csrcsc2(n, n2, job, ipos, a, ja, ia, a0, ja0, ia0)  
 
     </h3>
   <p>@brief Converts a CSR matrix into a CSC matrix (transposition).</p>
@@ -1936,7 +1936,7 @@ their column indices within each row.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)  
+    public pure subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)  
 
     </h3>
   <p>@brief Converts a CSR matrix to an MSR matrix.</p>
@@ -2099,7 +2099,7 @@ their column indices within each row.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine getdia(nrow, ncol, job, a, ja, ia, len, diag, idiag, ioff)  
+    public pure subroutine getdia(nrow, ncol, job, a, ja, ia, len, diag, idiag, ioff)  
 
     </h3>
   <p>@brief Extracts the diagonal from a matrix.</p>
@@ -2443,7 +2443,7 @@ set to a non-zero value to perform this as an in-place operation.
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ilud(n, a, ja, ia, alph, tol, alu, jlu, ju, iwk, w, jw, ierr)  
+    public pure subroutine ilud(n, a, ja, ia, alph, tol, alu, jlu, ju, iwk, w, jw, ierr)  
 
     </h3>
   <p>@brief Computes the incomplete LU factorization of a sparse matrix
@@ -2700,7 +2700,7 @@ in CSR format with standard dropping strategy.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine iludp(n, a, ja, ia, alph, droptol, permtol, mbloc, alu, jlu, ju, iwk, w, jw, iperm, ierr)  
+    public pure subroutine iludp(n, a, ja, ia, alph, droptol, permtol, mbloc, alu, jlu, ju, iwk, w, jw, iperm, ierr)  
 
     </h3>
   <p>@brief Computes the incomplete LU factorization of a sparse matrix
@@ -3010,7 +3010,7 @@ in CSR format with standard dropping strategy.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ilut(n, a, ja, ia, lfil, droptol, alu, jlu, ju, iwk, w, jw, ierr)  
+    public pure subroutine ilut(n, a, ja, ia, lfil, droptol, alu, jlu, ju, iwk, w, jw, ierr)  
 
     </h3>
   <p>@brief Computes the incomplete LU factorization of a sparse matrix
@@ -3268,7 +3268,7 @@ in CSR format using a dual truncation mechanism.</p>
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine ilutp(n, a, ja, ia, lfil, droptol, permtol, mbloc, alu, jlu, ju, iwk, w, jw, iperm, ierr)  
+    public pure subroutine ilutp(n, a, ja, ia, lfil, droptol, permtol, mbloc, alu, jlu, ju, iwk, w, jw, iperm, ierr)  
 
     </h3>
   <p>@brief Computes the incomplete LU factorization of a sparse matrix
@@ -3595,7 +3595,7 @@ end do
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine lusol(n, y, x, alu, jlu, ju)  
+    public pure subroutine lusol(n, y, x, alu, jlu, ju)  
 
     </h3>
   <p>@brief Solves the LU-factored system (LU) x = y.</p>
@@ -3724,7 +3724,7 @@ end do
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)  
+    public pure subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)  
 
     </h3>
   <p>@brief Converts and MSR matrix to a CSR matrix.</p>
@@ -3887,7 +3887,7 @@ end do
     <ul class="list-group">
         <li class="list-group-item">
               <h3>
-    public  subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout, aa, ja, ia, alu, jlu, ju, ierr)  
+    public pure subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout, aa, ja, ia, alu, jlu, ju, ierr)  
 
     </h3>
   <p>@brief An ILUT preconditioned GMRES algorithm.  This routine utilizes
@@ -4187,7 +4187,7 @@ on reducing the residual norm to the requested tolerance.</p>
           <p class="text-right">
             Documentation generated by 
             <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-08-12 19:40            </p>
+ on 2025-11-14 19:44            </p>
         </div>
       </div>
       <br>

@@ -28,7 +28,7 @@ module sparskit
         !!  * 0: Normal return
         !!  * .gt. 0: Routine failed in row I with IERR = I because the number
         !!     of elements in C exceeds NZMAX.
-        subroutine amub(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, &
+        pure subroutine amub(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, &
             nzmax, iw, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: nrow, ncol, job, nzmax
@@ -60,7 +60,7 @@ module sparskit
         !!  * 0: Normal return
         !!  * .gt. 0: Routine failed in row I with IERR = I because the number
         !!     of elements in C exceeds NZMAX.
-        subroutine aplb(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, &
+        pure subroutine aplb(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, &
             nzmax, iw, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: nrow, ncol, job, nzmax
@@ -93,7 +93,7 @@ module sparskit
         !!  * 0: Normal return
         !!  * .gt. 0: Routine failed in row I with IERR = I because the number
         !!     of elements in C exceeds NZMAX.
-        subroutine aplsb(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic, &
+        pure subroutine aplsb(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic, &
             nzmax, iw, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: nrow, ncol, nzmax
@@ -121,7 +121,7 @@ module sparskit
         !! @param[out] a0 The non-zero elements of the transposed array.
         !! @param[out] ja0 The size NNZ array containing the column indices.
         !! @param[out] ia0 The N+1 size array containing the column starts.
-        subroutine csrcsc2(n, n2, job, ipos, a, ja, ia, a0, ja0, ia0)
+        pure subroutine csrcsc2(n, n2, job, ipos, a, ja, ia, a0, ja0, ia0)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, n2, job, ipos, ja(*), ia(n+1)
             integer(int32), intent(out) :: ja0(*), ia0(n2+1)
@@ -147,7 +147,7 @@ module sparskit
         !!  * 0: Normal return.
         !!  * -1: Invalid @p lowd value.
         !!  * Positive Valued: Not enough storage in @p a and @p ja.
-        subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)
+        pure subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, nabd, lowd, ml, mu, len
             real(real64), intent(in) :: abd(nabd,*)
@@ -167,7 +167,7 @@ module sparskit
         !!  matrix.
         !! @param[out] wk An N-element workspace array.
         !! @param[out] iwk An N+1 element workspace array.
-        subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)
+        pure subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n
             integer(int32), intent(inout) :: ja(*), ia(n+1)
@@ -188,7 +188,7 @@ module sparskit
         !! @param[out] iao The index in A where the requested row starts.
         !! @param[out] wk An N-element workspace array.
         !! @param[out] iwk An N+1 element workspace array.
-        subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)
+        pure subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, ja(*)
             integer(int32), intent(out) :: jao(*), iao(n+1), iwk(n+1)
@@ -209,13 +209,13 @@ module sparskit
         !! @param[out] ao The non-zero elements of matrix A.
         !! @param[out] jao The column indices of matrix A.
         !! @param[out] iao The index in A where the requested row starts.
-        subroutine coocsr(nrow, nnz, a, ir, jc, ao, jao, iao)
+        pure subroutine coocsr(nrow, nnz, a, ir, jc, ao, jao, iao)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: nrow, nnz, jc(*)
             integer(int32), intent(inout) :: ir(*)
             real(real64), intent(in) :: a(*)
             integer(int32), intent(out) :: jao(*), iao(*)
-            real(real64) :: ao(*)
+            real(real64), intent(out) :: ao(*)
         end subroutine
     end interface
 
@@ -253,7 +253,7 @@ module sparskit
         !!  positions in the original arrays @p a and @p ja of the diagonal
         !!  elements collected in diagl.
         !! @param[in] ioff The offset of the wanted diagonal.
-        subroutine getdia(nrow, ncol, job, a, ja, ia, len, diag, idiag, ioff)
+        pure subroutine getdia(nrow, ncol, job, a, ja, ia, len, diag, idiag, ioff)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: nrow, ncol, job, ja(*), ia(*), ioff
             integer(int32), intent(out) :: len, idiag(*)
@@ -270,7 +270,7 @@ module sparskit
         !! @param[in] ia An array of pointers to the rows.
         !! @param[in] values Idicates whether A must also be permuted.  If
         !!  false, A can be a dummy array.
-        subroutine csort(n, a, ja, ia, values)
+        pure subroutine csort(n, a, ja, ia, values)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n
             real(real64), intent(inout) :: a(*)
@@ -297,7 +297,7 @@ module sparskit
         !!  of the upper triangular portion if job > 1.
         !! @param[out] iwk An NROW+1 element workspace array.
 
-        subroutine clncsr(job, value2, nrow, a, ja, ia, indu, iwk)
+        pure subroutine clncsr(job, value2, nrow, a, ja, ia, indu, iwk)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: job, value2, nrow
             real(real64), intent(inout) :: a(*)
@@ -340,7 +340,7 @@ module sparskit
         !!  * -3: The matrix U overflows the output array.
         !!  * -4: Illegal value for @P lfil.
         !!  * -5: Zero-valued row encountered.
-        subroutine ilut(n, a, ja, ia, lfil, droptol, alu, jlu, ju, iwk, w, &
+        pure subroutine ilut(n, a, ja, ia, lfil, droptol, alu, jlu, ju, iwk, w, &
             jw, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, ja(*), ia(n+1), lfil, iwk
@@ -406,7 +406,7 @@ module sparskit
         !!  ja(k) = iperm(ja(k))
         !! end do
         !! @endcode
-        subroutine ilutp(n, a, ja, ia, lfil, droptol, permtol, mbloc, alu, &
+        pure subroutine ilutp(n, a, ja, ia, lfil, droptol, permtol, mbloc, alu, &
             jlu, ju, iwk, w, jw, iperm, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, lfil, iwk, mbloc
@@ -449,7 +449,7 @@ module sparskit
         !!      a row in L or U whose length is greater than N.
         !!  * -2: Insufficient storage for the LU factors.
         !!  * -3: Zero-valued row encountered.
-        subroutine ilud(n, a, ja, ia, alph, tol, alu, jlu, ju, iwk, w, jw, ierr)
+        pure subroutine ilud(n, a, ja, ia, alph, tol, alu, jlu, ju, iwk, w, jw, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, iwk, ja(*), ia(n+1)
             integer(int32), intent(out) :: jlu(*), ju(n), jw(2*n), ierr
@@ -496,7 +496,7 @@ module sparskit
         !!      a row in L or U whose length is greater than N.
         !!  * -2: Insufficient storage for the LU factors.
         !!  * -3: Zero-valued row encountered.
-        subroutine iludp(n, a, ja, ia, alph, droptol, permtol, mbloc, alu, &
+        pure subroutine iludp(n, a, ja, ia, alph, droptol, permtol, mbloc, alu, &
             jlu, ju, iwk, w, jw, iperm, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, iwk, mbloc
@@ -537,7 +537,7 @@ module sparskit
         !!  * 0: Successful return
         !!  * 1: Convergence not achieved.
         !!  * -1: The initial guess seems to be the exact solution.
-        subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout, aa, ja, ia, &
+        pure subroutine pgmres(n, im, rhs, sol, vv, eps, maxits, iout, aa, ja, ia, &
             alu, jlu, ju, ierr)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, im, maxits, iout, ja(*), ia(n+1), &
@@ -556,7 +556,7 @@ module sparskit
         !! @param[in] alu The LU-factored matrix.
         !! @param[in] jlu The LU-factored matrix.
         !! @param[in] ju The LU-factored matrix.
-        subroutine lusol(n, y, x, alu, jlu, ju)
+        pure subroutine lusol(n, y, x, alu, jlu, ju)
             use iso_fortran_env, only : int32, real64
             integer(int32), intent(in) :: n, jlu(*), ju(*)
             real(real64), intent(in) :: y(n), alu(*)

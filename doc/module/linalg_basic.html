@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,77 +12,53 @@
 
     <title>linalg_basic &ndash; LINALG</title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-
-         <script src="../js/jquery-2.1.3.min.js"></script>
-         <script src="../js/svg-pan-zoom.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">LINALG </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true"
-                 aria-expanded="false">
-                 Contents <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                    <li><a href="../lists/files.html">Source Files</a></li>
-                  <li><a href="../lists/modules.html">Modules</a></li>
-                  <li><a href="../lists/procedures.html">Procedures</a></li>
-                  <li><a href="../lists/types.html">Derived Types</a></li>
-              </ul>
-            </li>
-                <li class="visible-xs hidden-sm visible-lg">
-                  <a href="../lists/files.html">Source Files</a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
                 </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/modules.html">Modules</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/procedures.html">Procedures</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/types.html">Derived Types</a>
-              </li>
-          </ul>
-            <form action="../search.html" class="navbar-form navbar-right" role="search">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
               </div>
-              <!--
-                  <button type="submit" class="btn btn-default">Submit</button>
-                  -->
-            </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
 
     <div class="container">
   <div class="row">
@@ -88,50 +66,53 @@
       <small>Module</small>
       
     </h1>
-      <div class="row" id="info-bar">
-    <div class="col-lg-12">
-      <div class="well well-sm">
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
-          <li id="statements"><i class="fa fa-list-ol"></i>
-            <a data-toggle="tooltip"
-               data-placement="bottom" data-html="true"
-               title="18.9% of total for modules and submodules.">2339 statements</a>
-          </li>
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title="23.3% of total for modules and submodules.">2339 statements</a>
+            </li>
 
-            <li id="source-file">
+            <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
               <a href="../src/linalg_basic.f90"> Source File</a>
             </li>
         </ul>
-        <ol class="breadcrumb in-well text-right">
-              <li><a href='../sourcefile/linalg_basic.f90.html'>linalg_basic.f90</a></li>
-          <li class="active">linalg_basic</li>
-        </ol>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_basic.f90.html'>linalg_basic.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">linalg_basic</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </div>
   <script>
     $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
     })
   </script>
 
   </div>
 
   <div class="row">
-    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+    <div class="col-md-3">
         <div id="sidebar">
       <h3>Contents</h3>
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#vars-0">Variables</a>
-        </h3>
-      </div>
-      <div id="vars-0" class="panel-collapse collapse">
-        <div class="list-group">
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/linalg_basic.html#variable-la_hermitian_transpose">LA_HERMITIAN_TRANSPOSE</a>
             <a class="list-group-item" href="../module/linalg_basic.html#variable-la_no_operation">LA_NO_OPERATION</a>
             <a class="list-group-item" href="../module/linalg_basic.html#variable-la_transpose">LA_TRANSPOSE</a>
@@ -145,14 +126,13 @@
   
   
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#inters-0">Interfaces</a>
-        </h3>
-      </div>
-      <div id="inters-0" class="panel-collapse collapse">
-        <div class="list-group">
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#inters-0"
+         aria-expanded="false" aria-controls="inters-0">
+         <h4 class="card-header bg-primary text-white">Interfaces</h4>
+      </a>
+      <div id="inters-0" class="collapse">
+        <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/linalg_basic.html#interface-band_diag_mtx_mult">band_diag_mtx_mult</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-band_mtx_mult">band_mtx_mult</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-band_mtx_to_full_mtx">band_mtx_to_full_mtx</a>
@@ -172,6 +152,7 @@
       </div>
     </div>
 
+  
   
   
   
@@ -190,92 +171,26 @@
 
     <div class="col-md-9" id='text'>
       
-<br>          <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Uses</h3>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item">ferror</li>
+                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
+                  <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item">blas</li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+              </ul>
+            </li>
+        </ul>
       </div>
-      <ul class="list-group">
-          <li class="list-group-item">
-            <ul class="list-inline">
-                <li><a href='../module/linalg_errors.html'>linalg_errors</a></li>
-                <li>ferror</li>
-                <li><a href='../module/lapack.html'>lapack</a></li>
-                <li><a href='<a href="http://fortranwiki.org/fortran/show/iso_fortran_env">iso_fortran_env</a>'>iso_fortran_env</a></li>
-                <li><a href='../module/linalg_sparse.html'>linalg_sparse</a></li>
-                <li><a href='../module/blas.html'>blas</a></li>
-            </ul>
-          </li>
-      </ul>
     </div>
 
       
       <br>
-
-      <section class="visible-xs visible-sm hidden-md">
-          <h3>Contents</h3>
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#vars-1">Variables</a>
-        </h3>
-      </div>
-      <div id="vars-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../module/linalg_basic.html#variable-la_hermitian_transpose">LA_HERMITIAN_TRANSPOSE</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#variable-la_no_operation">LA_NO_OPERATION</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#variable-la_transpose">LA_TRANSPOSE</a>
-        </div>
-      </div>
-    </div>
-
-  
-  
-  
-  
-  
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#inters-1">Interfaces</a>
-        </h3>
-      </div>
-      <div id="inters-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-band_diag_mtx_mult">band_diag_mtx_mult</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-band_mtx_mult">band_mtx_mult</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-band_mtx_to_full_mtx">band_mtx_to_full_mtx</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-banded_to_dense">banded_to_dense</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-dense_to_banded">dense_to_banded</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-det">det</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-diag_mtx_mult">diag_mtx_mult</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-extract_diagonal">extract_diagonal</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-mtx_mult">mtx_mult</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-mtx_rank">mtx_rank</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-rank1_update">rank1_update</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-recip_mult_array">recip_mult_array</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-swap">swap</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-trace">trace</a>
-            <a class="list-group-item" href="../module/linalg_basic.html#interface-tri_mtx_mult">tri_mtx_mult</a>
-        </div>
-      </div>
-    </div>
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-
-      </section>
-      <br class="visible-xs visible-sm hidden-md">
 
 
         <section>
@@ -283,11 +198,11 @@
             <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Visibility</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-<th></th><th>Initial</th>        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
@@ -350,13 +265,13 @@ parameter
 
         <section>
           <h2>Interfaces</h2>
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-band_diag_mtx_mult"></span>
-      <h3>public        interface <a href='../interface/band_diag_mtx_mult.html'>band_diag_mtx_mult</a> 
+      <h3>public        interface <a href='..\interface\band_diag_mtx_mult.html'>band_diag_mtx_mult</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the banded diagonal matrix multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -383,16 +298,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-left"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -408,7 +323,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-m~45"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -423,7 +338,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~5"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -438,7 +353,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~5"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -453,7 +368,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~21"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -468,7 +383,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~54"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -483,7 +398,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~36"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -498,7 +413,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~62"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -539,16 +454,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-left~2"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -564,7 +479,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-m~46"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -579,7 +494,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~6"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -594,7 +509,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~6"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -609,7 +524,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~22"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -624,7 +539,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~55"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -639,7 +554,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~37"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -654,7 +569,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~63"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -675,13 +590,13 @@ end do
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-band_mtx_mult"></span>
-      <h3>public        interface <a href='../interface/band_mtx_mult.html'>band_mtx_mult</a> 
+      <h3>public        interface <a href='..\interface\band_mtx_mult.html'>band_mtx_mult</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the banded matrix multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -708,16 +623,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-trans~8"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -734,7 +649,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -749,7 +664,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -764,7 +679,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~19"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -779,7 +694,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~52"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -794,7 +709,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~13"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -809,7 +724,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~13"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -824,7 +739,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y~7"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -840,7 +755,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~58"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -881,16 +796,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-trans~9"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -917,7 +832,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -932,7 +847,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -947,7 +862,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~20"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -962,7 +877,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~53"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -977,7 +892,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -992,7 +907,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -1007,7 +922,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y~8"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1023,7 +938,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~59"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1044,13 +959,13 @@ operation.</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-band_mtx_to_full_mtx"></span>
-      <h3>public        interface <a href='../interface/band_mtx_to_full_mtx.html'>band_mtx_to_full_mtx</a> 
+      <h3>public        interface <a href='..\interface\band_mtx_to_full_mtx.html'>band_mtx_to_full_mtx</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the banded matrix to full matrix conversion routines.</p>
       </div>
     <ul class="list-group">
@@ -1076,16 +991,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1100,7 +1015,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1115,7 +1030,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~34"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1130,7 +1045,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-f"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1145,7 +1060,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~60"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1185,16 +1100,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1209,7 +1124,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1224,7 +1139,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~35"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1239,7 +1154,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-f~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1254,7 +1169,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~61"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1275,13 +1190,13 @@ end do
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-banded_to_dense"></span>
-      <h3>public        interface <a href='../interface/banded_to_dense.html'>banded_to_dense</a> 
+      <h3>public        interface <a href='..\interface\banded_to_dense.html'>banded_to_dense</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the banded to dense matrix conversion routines.</p>
       </div>
     <ul class="list-group">
@@ -1307,16 +1222,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-m~47"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1331,7 +1246,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~7"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1346,7 +1261,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~7"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1361,7 +1276,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~56"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1376,7 +1291,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~15"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1391,7 +1306,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~64"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1431,16 +1346,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-m~48"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1455,7 +1370,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~8"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1470,7 +1385,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~8"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1485,7 +1400,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~57"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1500,7 +1415,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~16"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1515,7 +1430,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~65"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1536,13 +1451,13 @@ end do
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-dense_to_banded"></span>
-      <h3>public        interface <a href='../interface/dense_to_banded.html'>dense_to_banded</a> 
+      <h3>public        interface <a href='..\interface\dense_to_banded.html'>dense_to_banded</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the dense to banded matrix conversion routines.</p>
       </div>
     <ul class="list-group">
@@ -1568,16 +1483,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~58"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1592,7 +1507,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~9"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1607,7 +1522,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~9"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1622,7 +1537,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~17"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1637,7 +1552,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~66"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1677,16 +1592,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~59"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1701,7 +1616,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-kl~10"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1716,7 +1631,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-ku~10"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1731,7 +1646,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~18"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1746,7 +1661,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~67"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1767,13 +1682,13 @@ end do
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-det"></span>
-      <h3>public        interface <a href='../interface/det.html'>det</a> 
+      <h3>public        interface <a href='..\interface\det.html'>det</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the determinant routines.</p>
       </div>
     <ul class="list-group">
@@ -1788,16 +1703,16 @@ end do
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~47"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1814,7 +1729,7 @@ upper triangular.  The unit diagonal elements of L are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-iwork"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -1831,7 +1746,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~52"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1865,16 +1780,16 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~48"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1891,7 +1806,7 @@ upper triangular.  The unit diagonal elements of L are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-iwork~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -1908,7 +1823,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~53"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -1934,13 +1849,13 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-diag_mtx_mult"></span>
-      <h3>public        interface <a href='../interface/diag_mtx_mult.html'>diag_mtx_mult</a> 
+      <h3>public        interface <a href='..\interface\diag_mtx_mult.html'>diag_mtx_mult</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the diagonal matrix multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -1956,16 +1871,16 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~3"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1980,7 +1895,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-trans~6"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1995,7 +1910,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~8"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2010,7 +1925,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~36"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2025,7 +1940,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~23"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2040,7 +1955,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~6"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2055,7 +1970,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~9"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2070,7 +1985,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~41"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2100,16 +2015,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~4"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2124,7 +2039,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~9"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2139,7 +2054,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~37"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2154,7 +2069,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~24"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2169,7 +2084,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~42"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2199,16 +2114,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~5"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2223,7 +2138,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-trans~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2238,7 +2153,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~10"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2253,7 +2168,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~38"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2268,7 +2183,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~25"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2283,7 +2198,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~7"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2298,7 +2213,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2313,7 +2228,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~43"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2343,16 +2258,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~6"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2367,7 +2282,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opb~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -2394,7 +2309,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~11"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2409,7 +2324,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~39"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2424,7 +2339,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~26"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2439,7 +2354,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~8"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2454,7 +2369,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~11"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2469,7 +2384,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~44"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2499,16 +2414,16 @@ Possible options are:</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2523,7 +2438,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opb~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -2550,7 +2465,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2565,7 +2480,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~40"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2580,7 +2495,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~27"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2595,7 +2510,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2610,7 +2525,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2625,7 +2540,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~45"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2655,16 +2570,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~8"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2679,7 +2594,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~13"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2694,7 +2609,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~41"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2709,7 +2624,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~28"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2724,7 +2639,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~46"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2754,16 +2669,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~9"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2778,7 +2693,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opb~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -2805,7 +2720,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2820,7 +2735,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~42"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2835,7 +2750,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~29"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2850,7 +2765,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2865,7 +2780,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~13"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2880,7 +2795,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~47"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -2910,16 +2825,16 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~10"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2934,7 +2849,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2949,7 +2864,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~43"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2964,7 +2879,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~30"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2979,7 +2894,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~48"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3009,16 +2924,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-lside~11"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3033,7 +2948,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~16"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3048,7 +2963,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~44"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3063,8 +2978,8 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
-              class(<a href='../type/csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-b~31"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -3078,7 +2993,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~49"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3099,13 +3014,13 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-extract_diagonal"></span>
-      <h3>public        interface <a href='../interface/extract_diagonal.html'>extract_diagonal</a> 
+      <h3>public        interface <a href='..\interface\extract_diagonal.html'>extract_diagonal</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the diagonal extraction routines.</p>
       </div>
     <ul class="list-group">
@@ -3120,16 +3035,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~60"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3144,7 +3059,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-diag"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -3159,7 +3074,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~68"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3188,16 +3103,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~61"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3212,7 +3127,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-diag~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -3227,7 +3142,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~69"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3256,17 +3171,17 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
-              class(<a href='../type/csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-a~62"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -3280,7 +3195,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-diag~3"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -3295,7 +3210,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~70"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3316,13 +3231,13 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-mtx_mult"></span>
-      <h3>public        interface <a href='../interface/mtx_mult.html'>mtx_mult</a> 
+      <h3>public        interface <a href='..\interface\mtx_mult.html'>mtx_mult</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the matrix multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -3337,16 +3252,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-transa"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3361,7 +3276,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-transb"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3376,7 +3291,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3391,7 +3306,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~30"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3406,7 +3321,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~19"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3421,7 +3336,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3436,7 +3351,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~5"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -3451,7 +3366,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~35"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3480,16 +3395,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-trans~5"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3504,7 +3419,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~3"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3519,7 +3434,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3534,7 +3449,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~20"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3549,7 +3464,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~3"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3564,7 +3479,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~6"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -3579,7 +3494,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~36"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3608,16 +3523,16 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opa"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -3644,7 +3559,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opb"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -3671,7 +3586,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3686,7 +3601,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~32"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3701,7 +3616,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~21"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3716,7 +3631,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3731,7 +3646,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -3746,7 +3661,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~37"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3775,16 +3690,16 @@ Possible options are:</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-opa~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -3811,7 +3726,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3826,7 +3741,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~33"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3841,7 +3756,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~22"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3856,7 +3771,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3871,7 +3786,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-c~8"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -3886,7 +3801,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~38"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -3907,13 +3822,13 @@ Possible options are:</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-mtx_rank"></span>
-      <h3>public        interface <a href='../interface/mtx_rank.html'>mtx_rank</a> 
+      <h3>public        interface <a href='..\interface\mtx_rank.html'>mtx_rank</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the matrix rank routines.</p>
       </div>
     <ul class="list-group">
@@ -3928,16 +3843,16 @@ Possible options are:</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~45"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -3952,7 +3867,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-tol"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3973,7 +3888,7 @@ however, a warning message is issued.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-work~23"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -3991,7 +3906,7 @@ olwork.  If not provided, the memory required is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-olwork~23"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -4008,7 +3923,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~50"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4042,16 +3957,16 @@ without performing any actual calculations.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~46"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4066,7 +3981,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-tol~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4087,7 +4002,7 @@ however, a warning message is issued.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-work~24"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -4105,7 +4020,7 @@ olwork.  If not provided, the memory required is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-olwork~24"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -4122,7 +4037,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-rwork~6"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -4140,7 +4055,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~51"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4166,13 +4081,13 @@ length of the array must be at least 6 * MIN(M, N).</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-rank1_update"></span>
-      <h3>public        interface <a href='../interface/rank1_update.html'>rank1_update</a> 
+      <h3>public        interface <a href='..\interface\rank1_update.html'>rank1_update</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the rank-1 update routines.</p>
       </div>
     <ul class="list-group">
@@ -4187,16 +4102,16 @@ length of the array must be at least 6 * MIN(M, N).</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~6"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4211,7 +4126,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4226,7 +4141,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4241,7 +4156,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~34"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4256,7 +4171,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~39"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4285,16 +4200,16 @@ length of the array must be at least 6 * MIN(M, N).</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4309,7 +4224,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~3"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4324,7 +4239,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4339,7 +4254,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~35"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4354,7 +4269,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~40"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4375,13 +4290,13 @@ length of the array must be at least 6 * MIN(M, N).</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-recip_mult_array"></span>
-      <h3>public        interface <a href='../interface/recip_mult_array.html'>recip_mult_array</a> 
+      <h3>public        interface <a href='..\interface\recip_mult_array.html'>recip_mult_array</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the reciprocal multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -4397,16 +4312,16 @@ the reciprocal of the scalar A.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~49"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4421,7 +4336,7 @@ the reciprocal of the scalar A.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~11"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4443,13 +4358,13 @@ vector and the scalar reciprocal.</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-swap"></span>
-      <h3>public        interface <a href='../interface/swap.html'>swap</a> 
+      <h3>public        interface <a href='..\interface\swap.html'>swap</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the swap routines.</p>
       </div>
     <ul class="list-group">
@@ -4464,16 +4379,16 @@ vector and the scalar reciprocal.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~9"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4489,7 +4404,7 @@ first array are copied to the second array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y~5"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4505,7 +4420,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~54"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4534,16 +4449,16 @@ second array are copied to the first array.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4559,7 +4474,7 @@ first array are copied to the second array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-y~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4575,7 +4490,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~55"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4596,13 +4511,13 @@ second array are copied to the first array.</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-trace"></span>
-      <h3>public        interface <a href='../interface/trace.html'>trace</a> 
+      <h3>public        interface <a href='..\interface\trace.html'>trace</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the trace routines.</p>
       </div>
     <ul class="list-group">
@@ -4617,16 +4532,16 @@ second array are copied to the first array.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4660,16 +4575,16 @@ second array are copied to the first array.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-x~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4695,13 +4610,13 @@ second array are copied to the first array.</p>
     </ul>
   </div>
 
-              <div class="panel panel-default">
-    <div class="panel-heading codesum">
+              <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-tri_mtx_mult"></span>
-      <h3>public        interface <a href='../interface/tri_mtx_mult.html'>tri_mtx_mult</a> 
+      <h3>public        interface <a href='..\interface\tri_mtx_mult.html'>tri_mtx_mult</a> 
       </h3>
     </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>An interface to the triangular matrix multiplication routines.</p>
       </div>
     <ul class="list-group">
@@ -4717,16 +4632,16 @@ second array are copied to the first array.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-upper"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -4742,7 +4657,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~17"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4757,7 +4672,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~50"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4772,7 +4687,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~11"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4787,7 +4702,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~32"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4803,7 +4718,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~56"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4833,16 +4748,16 @@ operation.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-upper~2"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -4858,7 +4773,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-alpha~18"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4873,7 +4788,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~51"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4888,7 +4803,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-beta~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4903,7 +4818,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-b~33"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4919,7 +4834,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-err~57"></span>
               class(errors),
             </td>
 <td>intent(inout),</td>
@@ -4956,32 +4871,27 @@ operation.</p>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-        <div class="row">
-          <div class="col-xs-6 col-md-6"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+        <div class="row justify-content-between">
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
 </p>
           </div>
-          <div class="col-xs-6 col-md-6">
-            <p class="text-right">
+          <div class="col">
+            <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-10-30 10:27              </p>
+ on 2025-11-14 13:18              </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-         ================================================== -->
-         <!-- Placed at the end of the document so the pages load faster -->
-    <!--
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        -->
-        <script src="../js/bootstrap.min.js"></script>
-        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
-        <!-- MathJax JavaScript
+    <!-- MathJax JavaScript
              ================================================== -->
              <!-- Placed at the end of the document so the pages load faster -->
         <script type="text/x-mathjax-config">

@@ -1,3 +1,5 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,77 +13,53 @@
     <title>All Files &ndash; LINALG
 </title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
       <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-
-         <script src="../js/jquery-2.1.3.min.js"></script>
-         <script src="../js/svg-pan-zoom.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">LINALG </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true"
-                 aria-expanded="false">
-                 Contents <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                    <li><a href="../lists/files.html">Source Files</a></li>
-                  <li><a href="../lists/modules.html">Modules</a></li>
-                  <li><a href="../lists/procedures.html">Procedures</a></li>
-                  <li><a href="../lists/types.html">Derived Types</a></li>
-              </ul>
-            </li>
-                <li class="visible-xs hidden-sm visible-lg">
-                  <a href="../lists/files.html">Source Files</a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
                 </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/modules.html">Modules</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/procedures.html">Procedures</a>
-              </li>
-              <li class="visible-xs hidden-sm visible-lg">
-                <a href="../lists/types.html">Derived Types</a>
-              </li>
-          </ul>
-            <form action="../search.html" class="navbar-form navbar-right" role="search">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
               </div>
-              <!--
-                  <button type="submit" class="btn btn-default">Submit</button>
-                  -->
-            </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
 
     <div class="container">
       <div class="row" id='text'>
@@ -90,108 +68,70 @@
 			 <table class="table table-striped">
 			 <thead><tr><th>File</th><th>Description</th></tr></thead>
 			 <tbody>
-			   <tr><td><a href='../sourcefile/blas.f90.html'>blas.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/blassm.f.html'>blassm.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/caxcpy.f.html'>caxcpy.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cch1dn.f.html'>cch1dn.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cch1up.f.html'>cch1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cchdex.f.html'>cchdex.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cchinx.f.html'>cchinx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cchshx.f.html'>cchshx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cgqvec.f.html'>cgqvec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/clu1up.f.html'>clu1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/clup1up.f.html'>clup1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqhqr.f.html'>cqhqr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqr1up.f.html'>cqr1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrdec.f.html'>cqrdec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrder.f.html'>cqrder.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrinc.f.html'>cqrinc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrinr.f.html'>cqrinr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrot.f.html'>cqrot.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrqh.f.html'>cqrqh.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrshc.f.html'>cqrshc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/cqrtv1.f.html'>cqrtv1.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dch1dn.f.html'>dch1dn.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dch1up.f.html'>dch1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dchdex.f.html'>dchdex.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dchinx.f.html'>dchinx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dchshx.f.html'>dchshx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dgqvec.f.html'>dgqvec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/distdot.f.html'>distdot.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dlu1up.f.html'>dlu1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dlup1up.f.html'>dlup1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqhqr.f.html'>dqhqr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqr1up.f.html'>dqr1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrdec.f.html'>dqrdec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrder.f.html'>dqrder.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrinc.f.html'>dqrinc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrinr.f.html'>dqrinr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrot.f.html'>dqrot.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrqh.f.html'>dqrqh.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrshc.f.html'>dqrshc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/dqrtv1.f.html'>dqrtv1.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/formats.f.html'>formats.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/ilut.f.html'>ilut.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/iters.f.html'>iters.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/lapack.f90.html'>lapack.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg.f90.html'>linalg.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_basic.f90.html'>linalg_basic.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_c_api.f90.html'>linalg_c_api.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_cholesky.f90.html'>linalg_cholesky.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_eigen.f90.html'>linalg_eigen.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_errors.f90.html'>linalg_errors.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_inverse.f90.html'>linalg_inverse.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_least_squares.f90.html'>linalg_least_squares.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_lq.f90.html'>linalg_lq.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_lu.f90.html'>linalg_lu.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_qr.f90.html'>linalg_qr.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_rz.f90.html'>linalg_rz.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_sorting.f90.html'>linalg_sorting.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_sparse.f90.html'>linalg_sparse.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_svd.f90.html'>linalg_svd.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linalg_tri.f90.html'>linalg_tri.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/linear_algebra.f90.html'>linear_algebra.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/matvec.f.html'>matvec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/qrupdate.f90.html'>qrupdate.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sch1dn.f.html'>sch1dn.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sch1up.f.html'>sch1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/schdex.f.html'>schdex.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/schinx.f.html'>schinx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/schshx.f.html'>schshx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sgqvec.f.html'>sgqvec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/slu1up.f.html'>slu1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/slup1up.f.html'>slup1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sparskit.f90.html'>sparskit.f90</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqhqr.f.html'>sqhqr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqr1up.f.html'>sqr1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrdec.f.html'>sqrdec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrder.f.html'>sqrder.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrinc.f.html'>sqrinc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrinr.f.html'>sqrinr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrot.f.html'>sqrot.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrqh.f.html'>sqrqh.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrshc.f.html'>sqrshc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/sqrtv1.f.html'>sqrtv1.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/unary.f.html'>unary.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zaxcpy.f.html'>zaxcpy.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zch1dn.f.html'>zch1dn.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zch1up.f.html'>zch1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zchdex.f.html'>zchdex.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zchinx.f.html'>zchinx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zchshx.f.html'>zchshx.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zgqvec.f.html'>zgqvec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zlu1up.f.html'>zlu1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zlup1up.f.html'>zlup1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqhqr.f.html'>zqhqr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqr1up.f.html'>zqr1up.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrdec.f.html'>zqrdec.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrder.f.html'>zqrder.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrinc.f.html'>zqrinc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrinr.f.html'>zqrinr.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrot.f.html'>zqrot.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrqh.f.html'>zqrqh.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrshc.f.html'>zqrshc.f</a></td><td></td></tr>
-			   <tr><td><a href='../sourcefile/zqrtv1.f.html'>zqrtv1.f</a></td><td></td></tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg.f90.html'>linalg.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_basic.f90.html'>linalg_basic.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_cholesky.f90.html'>linalg_cholesky.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_eigen.f90.html'>linalg_eigen.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_errors.f90.html'>linalg_errors.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_inverse.f90.html'>linalg_inverse.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_least_squares.f90.html'>linalg_least_squares.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_lq.f90.html'>linalg_lq.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_lu.f90.html'>linalg_lu.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_qr.f90.html'>linalg_qr.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_rz.f90.html'>linalg_rz.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_sorting.f90.html'>linalg_sorting.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_sparse.f90.html'>linalg_sparse.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_svd.f90.html'>linalg_svd.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linalg_tri.f90.html'>linalg_tri.f90</a></td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\sourcefile\linear_algebra.f90.html'>linear_algebra.f90</a></td>
+                 <td></td>
+               </tr>
 			 </tbody></table>
 			 
         </div>
@@ -200,32 +140,27 @@
     </div> <!-- /container -->
     <footer>
       <div class="container">
-        <div class="row">
-          <div class="col-xs-6 col-md-6"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+        <div class="row justify-content-between">
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
 </p>
           </div>
-          <div class="col-xs-6 col-md-6">
-            <p class="text-right">
+          <div class="col">
+            <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-10-30 10:27              </p>
+ on 2025-11-14 13:18              </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-         ================================================== -->
-         <!-- Placed at the end of the document so the pages load faster -->
-    <!--
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        -->
-        <script src="../js/bootstrap.min.js"></script>
-        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
-        <!-- MathJax JavaScript
+    <!-- MathJax JavaScript
              ================================================== -->
              <!-- Placed at the end of the document so the pages load faster -->
         <script type="text/x-mathjax-config">

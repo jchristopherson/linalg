@@ -1659,7 +1659,7 @@ subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)
     call mult_qr(.true., a, tau, b, work = wptr)
 
     ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
-    call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
+    call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b(1:n))
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1749,7 +1749,7 @@ subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)
     call mult_qr(.true., a, tau, b, work = wptr)
 
     ! Solve the triangular system: A(1:N,1:N)*X = B(1:N)
-    call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b)
+    call solve_triangular_system(.true., .false., .true., a(1:n,1:n), b(1:n))
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2234,7 +2234,7 @@ subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)
     do i = 1, n
         wptr(jpvt(i)) = b(i)
     end do
-    b = wptr(1:n)
+    b(1:n) = wptr(1:n)
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -2393,7 +2393,7 @@ subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)
     do i = 1, n
         wptr(jpvt(i)) = b(i)
     end do
-    b = wptr(1:n)
+    b(1:n) = wptr(1:n)
 end subroutine
 
 ! ------------------------------------------------------------------------------

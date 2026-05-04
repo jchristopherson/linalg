@@ -403,6 +403,43 @@ program main
     rst = test_eigen_gen_pure_1()
     if (.not.rst) flag = 122
 
+    ! V1.8.8 Additions
+    rst = test_qr_solve_no_pivot_vec()
+    if (.not.rst) flag = 123
+
+    rst = test_qr_solve_no_pivot_cmplx_vec()
+    if (.not.rst) flag = 124
+
+    rst = test_qr_solve_pivot_vec()
+    if (.not.rst) flag = 125
+
+    rst = test_qr_solve_pivot_cmplx_vec()
+    if (.not.rst) flag = 126
+
+    rst = test_qr_solve_pivot_od_vec()
+    if (.not.rst) flag = 127
+
+    rst = test_qr_solve_pivot_od_cmplx_vec()
+    if (.not.rst) flag = 128
+
+    rst = test_qr_solve_pivot_ud_vec()
+    if (.not.rst) flag = 129
+
+    rst = test_qr_solve_pivot_ud_cmplx_vec()
+    if (.not.rst) flag = 130
+
+    rst = test_qr_solve_no_pivot_od()
+    if (.not.rst) flag = 131
+
+    rst = test_qr_solve_no_pivot_od_vec()
+    if (.not.rst) flag = 132
+
+    rst = test_qr_solve_no_pivot_od_cmplx()
+    if (.not.rst) flag = 133
+
+    rst = test_qr_solve_no_pivot_od_cmplx_vec()
+    if (.not.rst) flag = 134
+
     ! End
     if (flag /= 0) stop flag
 end program

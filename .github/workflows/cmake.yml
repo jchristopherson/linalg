@@ -87,3 +87,26 @@ jobs:
 
       - name: Install with CMake
         run: cmake --install build --prefix ${{ github.workspace }}/install --config ${{ env.BUILD_TYPE }}
+
+      - name: Verify install with CMake consumer
+        run: |
+          mkdir -p consumer
+          cat > consumer/CMakeLists.txt <<'EOF'
+          cmake_minimum_required(VERSION 3.24)
+          project(linalg_consumer LANGUAGES Fortran)
+
+          find_package(linalg CONFIG REQUIRED)
+
+          add_executable(linalg_consumer main.f90)
+          target_link_libraries(linalg_consumer PRIVATE linalg::linalg)
+          EOF
+
+          cat > consumer/main.f90 <<'EOF'
+          program main
+            use linalg
+            print *, "linalg package found"
+          end program main
+          EOF
+
+          cmake -S consumer -B consumer/build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install
+          cmake --build consumer/build

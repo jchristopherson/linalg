@@ -51,16 +51,6 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
       
-      - name: Verify Fortran compiler
-        run: |
-          echo "FC=${{ steps.setup-fortran.outputs.fc }}"
-          echo "CC=${{ steps.setup-fortran.outputs.cc }}"
-          if exist "${{ steps.setup-fortran.outputs.fc }}" (
-            ${{ steps.setup-fortran.outputs.fc }} --version
-          ) else (
-            echo "ERROR: Fortran compiler not found at ${{ steps.setup-fortran.outputs.fc }}"
-            exit 1
-          )
       - name: Show Fortran compiler version
         run: ${{ env.FC }} --version
         env:

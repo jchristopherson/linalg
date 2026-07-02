@@ -10,11 +10,11 @@ set(CMAKE_Fortran_STANDARD_REQUIRED TRUE)
 # Build the C API?
 option(BUILD_LINALG_C_API "Build LINALG C API?" OFF)
 
-# Confgiure everything
-add_subdirectory(configure)
-
 # Source
 add_subdirectory(src)
+
+# Confgiure everything
+add_subdirectory(configure)
 
 # Installation Instructions
 install(

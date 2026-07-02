@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 project(
   linalg
   LANGUAGES Fortran C
-  VERSION 1.8.8
+  VERSION 1.8.9
 )
 set(CMAKE_Fortran_STANDARD 2018)
 set(CMAKE_Fortran_STANDARD_REQUIRED TRUE)
@@ -10,11 +10,11 @@ set(CMAKE_Fortran_STANDARD_REQUIRED TRUE)
 # Build the C API?
 option(BUILD_LINALG_C_API "Build LINALG C API?" OFF)
 
-# Confgiure everything
-add_subdirectory(configure)
-
 # Source
 add_subdirectory(src)
+
+# Confgiure everything
+add_subdirectory(configure)
 
 # Installation Instructions
 install(

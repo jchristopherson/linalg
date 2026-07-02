@@ -19,6 +19,18 @@ jobs:
             version: '14'
             shared: false
           - os: ubuntu-latest
+            compiler: gcc
+            version: '14'
+            shared: true
+          - os: ubuntu-latest
+            compiler: gcc
+            version: '15'
+            shared: false
+          - os: ubuntu-latest
+            compiler: gcc
+            version: '15'
+            shared: true
+          - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
             shared: true
@@ -34,10 +46,6 @@ jobs:
             compiler: gcc
             version: '14'
             shared: false
-          - os: windows-latest
-            compiler: intel
-            version: '2023.2'
-            shared: true
 
     steps:
       - name: Checkout code
@@ -49,12 +57,6 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
-
-      - name: Fix GCC on macOS
-        if: runner.os == 'macOS' && matrix.compiler == 'gcc'
-        run: |
-          brew reinstall gcc@14
-          ln -sf /usr/local/opt/gcc/lib/gcc/14/libgfortran.5.dylib /usr/local/lib/
           
       - name: Show compiler version
         shell: bash
@@ -79,9 +81,9 @@ jobs:
 
       - name: Install BLAS/LAPACK (Windows)
         if: runner.os == 'Windows'
-        shell: bash
+        shell: pwsh
         run: |
-          pacman -S --noconfirm mingw-w64-x86_64-openblas mingw-w64-x86_64-lapack
+          choco install openblas lapack -y
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5

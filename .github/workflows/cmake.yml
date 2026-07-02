@@ -65,6 +65,16 @@ jobs:
           FC: ${{ steps.setup-fortran.outputs.fc }}
           CC: ${{ steps.setup-fortran.outputs.cc }}
 
+      - name: Install BLAS/LAPACK dependencies
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libblas-dev liblapack-dev
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            brew update
+            brew install openblas
+          fi
+
       - name: Configure CMake
         run: >-
           cmake -S . -B build

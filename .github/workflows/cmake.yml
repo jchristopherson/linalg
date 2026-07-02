@@ -2,57 +2,80 @@ name: CMake
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   BUILD_TYPE: Release
 
 jobs:
   test:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} / shared=${{ matrix.shared }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        toolchain:
-          - {compiler: gcc, version: '14'}
-          # - {compiler: intel-classic, version: '2021.9'}
         include:
           - os: ubuntu-latest
-            toolchain: {compiler: intel, version: '2023.2'}
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: ubuntu-latest
+            compiler: intel
+            version: '2023.2'
+            shared: true
+          - os: macos-latest
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: macos-latest
+            compiler: gcc
+            version: '14'
+            shared: true
+          - os: windows-latest
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: windows-latest
+            compiler: intel
+            version: '2023.2'
+            shared: true
 
     steps:
+      - uses: actions/checkout@v4
+
       - uses: awvwgk/setup-fortran@v1
         id: setup-fortran
         with:
-          compiler: ${{ matrix.toolchain.compiler }}
-          version: ${{ matrix.toolchain.version }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
 
-      - run: ${{ env.FC }} --version
+      - name: Show Fortran compiler version
+        run: ${{ env.FC }} --version
         env:
           FC: ${{ steps.setup-fortran.outputs.fc }}
           CC: ${{ steps.setup-fortran.outputs.cc }}
 
-      - uses: actions/checkout@v3
-      
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_Fortran_COMPILER=${{ env.FC }} -DBUILD_TESTING=TRUE -DBUILD_LINALG_C_API=TRUE
-        
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_Fortran_COMPILER=${{ env.FC }}
+          -DCMAKE_C_COMPILER=${{ env.CC }}
+          -DBUILD_TESTING=TRUE
+          -DBUILD_LINALG_C_API=TRUE
+          -DBUILD_SHARED_LIBS=${{ matrix.shared && 'TRUE' || 'FALSE' }}
+        env:
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+
       - name: Build with CMake
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
       - name: Test with CMake
-        working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+        working-directory: build
+        run: ctest --output-on-failure -C ${{ env.BUILD_TYPE }}
 
-      - name: Configure CMake - Shared Library
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_Fortran_COMPILER=${{ env.FC }} -DBUILD_TESTING=TRUE -DBUILD_LINALG_C_API=TRUE -DBUILD_SHARED_LIBS=TRUE
-        
-      - name: Build with CMake - Shared Library
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-      - name: Test with CMake - Shared Library
-        working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+      - name: Install with CMake
+        run: cmake --install build --prefix ${{ github.workspace }}/install --config ${{ env.BUILD_TYPE }}

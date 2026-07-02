@@ -50,6 +50,12 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
 
+      - name: Fix GCC on macOS
+        if: runner.os == 'macOS' && matrix.compiler == 'gcc'
+        run: |
+          brew reinstall gcc@14
+          ln -sf /usr/local/opt/gcc/lib/gcc/14/libgfortran.5.dylib /usr/local/lib/
+          
       - name: Show compiler version
         shell: bash
         env:
@@ -70,6 +76,12 @@ jobs:
         shell: bash
         run: |
           brew install openblas lapack
+
+      - name: Install BLAS/LAPACK (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          pacman -S --noconfirm mingw-w64-x86_64-openblas mingw-w64-x86_64-lapack
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5

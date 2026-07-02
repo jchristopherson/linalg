@@ -1,51 +1,107 @@
 name: fpm
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
 
 jobs:
-  gcc-build:
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} / shared=${{ matrix.shared }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        gcc_v: [14] # Version of GFortran we want to use.
         include:
-        - os: ubuntu-latest
-          os-arch: linux-x86_64
-
-    env:
-      FC: gfortran
-      GCC_V: ${{ matrix.gcc_v }}
+          - os: ubuntu-latest
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: ubuntu-latest
+            compiler: intel
+            version: '2023.2'
+            shared: true
+          - os: macos-latest
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: macos-latest
+            compiler: gcc
+            version: '14'
+            shared: true
+          - os: windows-latest
+            compiler: gcc
+            version: '14'
+            shared: false
+          - os: windows-latest
+            compiler: intel
+            version: '2023.2'
+            shared: true
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install GFortran Linux
-      if: contains(matrix.os, 'ubuntu')
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
-        --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} \
-        --slave /usr/bin/gcov gcov /usr/bin/gcov-${GCC_V}
+      - name: Set up Fortran toolchain
+        uses: awvwgk/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
 
-    - name: Install BLAS & LAPACK
-      if: contains(matrix.os, 'ubuntu')
-      run: |
-        sudo apt-get update
-        sudo apt-get install libopenblas-dev liblapack-dev
-        
-    - name: Install fpm
-      uses: fortran-lang/setup-fpm@v5
-      with:
-        fpm-version: 'v0.10.1'
+      - name: Show compiler version
+        shell: bash
+        env:
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+        run: |
+          "$FC" --version
 
-    - name: Build LINALG
-      run: |
-        gfortran --version
-        fpm build
+      - name: Install BLAS/LAPACK (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopenblas-dev liblapack-dev
 
-    - name: Run tests
-      run: |
-        gfortran --version
-        fpm test
+      - name: Install BLAS/LAPACK (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew install openblas lapack
+
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v5
+        with:
+          fpm-version: 'v0.10.1'
+
+      - name: Build LINALG
+        shell: bash
+        env:
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FC: ${{ steps.setup-fortran.outputs.fc }}
+          FPM_CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FLAGS: ${{ matrix.shared && '--flag=-fPIC' || '' }}
+        run: |
+          if [[ -n "$FPM_FLAGS" ]]; then
+            fpm build $FPM_FLAGS
+          else
+            fpm build
+          fi
+
+      - name: Run tests
+        shell: bash
+        env:
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FC: ${{ steps.setup-fortran.outputs.fc }}
+          FPM_CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FLAGS: ${{ matrix.shared && '--flag=-fPIC' || '' }}
+        run: |
+          if [[ -n "$FPM_FLAGS" ]]; then
+            fpm test $FPM_FLAGS
+          else
+            fpm test
+          fi

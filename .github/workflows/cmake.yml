@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: awvwgk/setup-fortran@v1
+      - uses: fortran-lang/setup-fortran@v1.13
         id: setup-fortran
         with:
           compiler: ${{ matrix.compiler }}

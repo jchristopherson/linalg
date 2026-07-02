@@ -83,7 +83,12 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          choco install openblas lapack -y
+          # Using vcpkg (recommended)
+          vcpkg install openblas:x64-windows lapack:x64-windows
+          
+          # Set environment variables for fpm to find the libraries
+          $env:LDFLAGS = "-LC:\vcpkg\installed\x64-windows\lib"
+          $env:CPPFLAGS = "-IC:\vcpkg\installed\x64-windows\include"
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5

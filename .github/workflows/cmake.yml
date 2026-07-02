@@ -22,6 +22,22 @@ jobs:
             version: '14'
             shared: false
           - os: ubuntu-latest
+            compiler: gcc
+            version: '14'
+            shared: true
+          - os: ubuntu-latest
+            compiler: gcc
+            version: '15'
+            shared: false
+          - os: ubuntu-latest
+            compiler: gcc
+            version: '15'
+            shared: true
+          - os: ubuntu-latest
+            compiler: intel
+            version: '2023.2'
+            shared: false
+          - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
             shared: true
@@ -32,14 +48,6 @@ jobs:
           - os: macos-latest
             compiler: gcc
             version: '14'
-            shared: true
-          - os: windows-latest
-            compiler: gcc
-            version: '14'
-            shared: false
-          - os: windows-latest
-            compiler: intel
-            version: '2023.2'
             shared: true
 
     steps:

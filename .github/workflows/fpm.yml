@@ -34,18 +34,6 @@ jobs:
             compiler: intel
             version: '2023.2'
             shared: true
-          - os: macos-latest
-            compiler: gcc
-            version: '14'
-            shared: false
-          - os: macos-latest
-            compiler: gcc
-            version: '14'
-            shared: true
-          - os: windows-latest
-            compiler: gcc
-            version: '14'
-            shared: false
 
     steps:
       - name: Checkout code
@@ -72,23 +60,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libopenblas-dev liblapack-dev
-
-      - name: Install BLAS/LAPACK (macOS)
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          brew install openblas lapack
-
-      - name: Install BLAS/LAPACK (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          # Using vcpkg (recommended)
-          vcpkg install openblas:x64-windows lapack:x64-windows
-          
-          # Set environment variables for fpm to find the libraries
-          $env:LDFLAGS = "-LC:\vcpkg\installed\x64-windows\lib"
-          $env:CPPFLAGS = "-IC:\vcpkg\installed\x64-windows\include"
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5

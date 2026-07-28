@@ -389,8 +389,7 @@ contains
 
         ! Process
         call diag_mtx_mult(ls, tb, alpha, a(1:p), b(1:nrows,1:ncols), &
-            beta, c(1:m,1:n), err)
-        if (err%has_error_occurred()) flag = err%get_error_flag()
+            beta, c(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -605,8 +604,7 @@ contains
         end if
 
         ! Process
-        rnk = mtx_rank(a(1:m,1:n), err =err)
-        if (err%has_error_occurred()) flag = err%get_error_flag()
+        rnk = mtx_rank(a(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -646,8 +644,7 @@ contains
         end if
 
         ! Process
-        rnk = mtx_rank(a(1:m,1:n), err = err)
-        if (err%has_error_occurred()) flag = err%get_error_flag()
+        rnk = mtx_rank(a(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -683,8 +680,7 @@ contains
         end if
 
         ! Process
-        d = det(a(1:n,1:n), err = err)
-        if (err%has_error_occurred()) flag = err%get_error_flag()
+        d = det(a(1:n,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -720,8 +716,7 @@ contains
         end if
 
         ! Process
-        d = det(a(1:n,1:n), err = err)
-        if (err%has_error_occurred()) flag = err%get_error_flag()
+        d = det(a(1:n,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -3442,11 +3437,7 @@ function la_band_mtx_vec_mult(trans, m, n, kl, ku, alpha, a, lda, x, beta, y) &
 
     ! Process
     call band_mtx_mult(logical(trans), kl, ku, alpha, a(1:ma,1:n), x(1:nx), &
-        beta, y(1:ny), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+        beta, y(1:ny))
 end function
 
 ! ------------------------------------------------------------------------------
@@ -3480,11 +3471,7 @@ function la_band_mtx_vec_mult_cmplx(trans, m, n, kl, ku, alpha, a, lda, x, &
     end if
 
     ! Process
-    call band_mtx_mult(trans, kl, ku, alpha, a(1:ma,1:n), x(1:nx), beta, y(1:ny), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+    call band_mtx_mult(trans, kl, ku, alpha, a(1:ma,1:n), x(1:nx), beta, y(1:ny))
 end function
 
 ! ------------------------------------------------------------------------------
@@ -3514,11 +3501,7 @@ function la_band_to_full_mtx(m, n, kl, ku, b, ldb, f, ldf) &
     end if
 
     ! Process
-    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n))
 end function
 
 ! ------------------------------------------------------------------------------
@@ -3548,11 +3531,7 @@ function la_band_to_full_mtx_cmplx(m, n, kl, ku, b, ldb, f, ldf) &
     end if
 
     ! Process
-    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+    call band_mtx_to_full_mtx(kl, ku, b(1:ma,1:n), f(1:m,1:n))
 end function
 
 ! ------------------------------------------------------------------------------
@@ -3586,11 +3565,7 @@ function la_band_diag_mtx_mult(left, m, n, kl, ku, alpha, a, lda, b) &
 
     ! Process
     call band_diag_mtx_mult(logical(left), m, kl, ku, alpha, a(1:ma,1:n), &
-        b(1:nb), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+        b(1:nb))
 end function
 
 ! ------------------------------------------------------------------------------
@@ -3624,11 +3599,7 @@ function la_band_diag_mtx_mult_cmplx(left, m, n, kl, ku, alpha, a, lda, b) &
 
     ! Process
     call band_diag_mtx_mult(logical(left), m, kl, ku, alpha, a(1:ma,1:n), &
-        b(1:nb), err)
-    if (err%has_error_occurred()) then
-        flag = err%get_error_flag()
-        return
-    end if
+        b(1:nb))
 end function
 
 ! ------------------------------------------------------------------------------

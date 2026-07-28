@@ -6,7 +6,6 @@ module linalg_basic
     use lapack
     use linalg_sparse
     use linalg_errors
-    use ferror
     implicit none
     private
     public :: LA_NO_OPERATION
@@ -137,7 +136,7 @@ contains
 ! ******************************************************************************
 ! MATRIX MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
+pure subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A B + \beta C \).
     logical, intent(in) :: transa
         !! A logical flag indicating if the matrix \(A\) should be transposed.
@@ -153,8 +152,6 @@ subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     real(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -163,9 +160,6 @@ subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
     ! Local Variables
     character :: ta, tb
     integer(int32) :: m, n, k, lda, ldb, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -186,11 +180,6 @@ subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
         tb = 'N'
         ldb = k
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -205,26 +194,15 @@ subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)
         if (size(b, 1) /= k .or. size(b, 2) /= n) flag = 5
     end if
     if (flag /= 0) then
-        ! ERROR: Matrix dimensions mismatch
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) &
-            "Matrix dimension mismatch.  Input number ", flag, &
-            " was not sized correctly."
-        call errmgr%report_error("mtx_mult_mtx", errmsg, &
-            LA_ARRAY_SIZE_ERROR)
-        return
-
+        error stop flag
     end if
 
     ! Call DGEMM
     call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)
+pure subroutine mtx_mult_vec(trans, alpha, a, b, beta, c)
     !! Performs the matrix-vector operation \(C = \alpha A B + \beta C \).
     logical, intent(in) :: trans
         !! A logical flag indicating if the matrix \(A\) should be transposed.
@@ -238,26 +216,16 @@ subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)
         !! The vector \(B\) in the operation.
     real(real64), intent(inout), dimension(:) :: c
         !! The vector \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     character :: t
     integer(int32) :: m, n, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     t = 'N'
     if (trans) t = 'T'
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -276,26 +244,17 @@ subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: Matrix dimensions mismatch
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) &
-            "Matrix dimension mismatch.  Input number ", flag, &
-            " was not sized correctly."
-        call errmgr%report_error("mtx_mult_vec", errmsg, &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Call DGEMV
     call DGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
 !                           COMPLEX VALUED VERSIONS                            !
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
-subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
+pure subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A B + \beta C \).
     integer(int32), intent(in) :: opa
         !! An integer flag indicating the operation to perform on matrix \(A\).
@@ -325,8 +284,6 @@ subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -335,9 +292,6 @@ subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
     ! Local Variables
     character :: ta, tb
     integer(int32) :: m, n, k, lda, ldb, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -365,11 +319,6 @@ subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
         tb = 'N'
         ldb = k
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -385,24 +334,15 @@ subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: Matrix dimensions mismatch
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) &
-            "Matrix dimension mismatch.  Input number ", flag, &
-            " was not sized correctly."
-        call errmgr%report_error("cmtx_mult_mtx", errmsg, &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Call ZGEMM
     call ZGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, m)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
+pure subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c)
     !! Performs the matrix-vector operation \(C = \alpha A B + \beta C \).
     integer(int32), intent(in) :: opa
         !! An integer flag indicating the operation to perform on matrix \(A\).
@@ -423,15 +363,10 @@ subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
         !! The vector \(B\) in the operation.
     complex(real64), intent(inout), dimension(:) :: c
         !! The vector \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     character :: t
     integer(int32) :: m, n, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(a, 1)
@@ -442,11 +377,6 @@ subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
         t = 'C'
     else
         t = 'N'
-    end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
     end if
 
     ! Input Check
@@ -466,26 +396,17 @@ subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: Matrix dimensions mismatch
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) &
-            "Matrix dimension mismatch.  Input number ", flag, &
-            " was not sized correctly."
-        call errmgr%report_error("cmtx_mult_vec", errmsg, &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Call ZGEMV
     call ZGEMV(t, m, n, alpha, a, m, b, 1, beta, c, 1)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ******************************************************************************
 ! RANK 1 UPDATE
 ! ------------------------------------------------------------------------------
-subroutine rank1_update_dbl(alpha, x, y, a, err)
+pure subroutine rank1_update_dbl(alpha, x, y, a)
     !! Performs a rank-1 update of a matrix of the form \(A = \alpha x y^T + A\).
     real(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply the outer product of \(x\) and \(y\).
@@ -495,8 +416,6 @@ subroutine rank1_update_dbl(alpha, x, y, a, err)
         !! The vector \(y\) in the outer product.
     real(real64), intent(inout), dimension(:,:) :: a
         !! The matrix \(A\) to update.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -504,24 +423,15 @@ subroutine rank1_update_dbl(alpha, x, y, a, err)
     ! Local Variables
     integer(int32) :: j, m, n
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(x)
     n = size(y)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= m .or. size(a, 2) /= n) then
         ! ERROR: Matrix dimension array
-        call report_matrix_size_error("rank1_update_dbl", errmgr, "A", m, n, &
-            size(a, 1), size(a, 2))
-        return
+        error stop 4
     end if
 
     ! Process
@@ -536,7 +446,7 @@ end subroutine
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
 !                           COMPLEX VALUED VERSIONS                            !
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
-subroutine rank1_update_cmplx(alpha, x, y, a, err)
+pure subroutine rank1_update_cmplx(alpha, x, y, a)
     !! Performs a rank-1 update of a matrix of the form \(A = \alpha x y^H + A\).
     complex(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply the outer product of \(x\) and \(y\).
@@ -546,8 +456,6 @@ subroutine rank1_update_cmplx(alpha, x, y, a, err)
         !! The vector \(y\) in the outer product.
     complex(real64), intent(inout), dimension(:,:) :: a
         !! The matrix \(A\) to update.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -555,24 +463,15 @@ subroutine rank1_update_cmplx(alpha, x, y, a, err)
     ! Local Variables
     integer(int32) :: j, m, n
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(x)
     n = size(y)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= m .or. size(a, 2) /= n) then
         ! ERROR: Matrix dimension array
-        call report_matrix_size_error("rank1_update_cmplx", errmgr, "A", m, n, &
-            size(a, 1), size(a, 2))
-        return
+        error stop 4
     end if
 
     ! Process
@@ -587,7 +486,7 @@ end subroutine
 ! ******************************************************************************
 ! DIAGONAL MATRIX MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
+pure subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A op(B) + \beta C \) or
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -604,8 +503,6 @@ subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     real(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -614,9 +511,6 @@ subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
     ! Local Variables
     integer(int32) :: i, m, n, k, nrowb, ncolb, flag
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -624,11 +518,6 @@ subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
     k = size(a)
     nrowb = size(b, 1)
     ncolb = size(b, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -659,12 +548,7 @@ subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("diag_mtx_mult_mtx", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Deal with ALPHA == 0
@@ -745,13 +629,10 @@ subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)
             end if
         end if
     end if
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
+pure subroutine diag_mtx_mult_mtx2(lside, alpha, a, b)
     !! Performs the matrix operation \(B = \alpha A B \) or \(B = \alpha B A \)
     !! where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -762,8 +643,6 @@ subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
         !! The diagonal matrix \(A\) in the operation.
     real(real64), intent(inout), dimension(:,:) :: b
         !! The matrix \(B\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -772,26 +651,16 @@ subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
     ! Local Variables
     integer(int32) :: i, m, n, k
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(b, 1)
     n = size(b, 2)
     k = size(a)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
         ! ERROR: One of the input arrays is not sized correctly
-        call errmgr%report_error("diag_mtx_mult_mtx2", &
-            "Input number 3 is not sized correctly.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 3
     end if
 
     ! Process
@@ -813,7 +682,7 @@ subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
+pure subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A op(B) + \beta C \) or
     !! \(C = \alpha B A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -830,8 +699,6 @@ subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -840,9 +707,6 @@ subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
     ! Local Variables
     integer(int32) :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -850,11 +714,6 @@ subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
     k = size(a)
     nrowb = size(b, 1)
     ncolb = size(b, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -885,12 +744,7 @@ subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("diag_mtx_mult_mtx3", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Deal with ALPHA == 0
@@ -971,13 +825,10 @@ subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)
             end if
         end if
     end if
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
+pure subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A op(B) + \beta C \) or
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -1001,8 +852,6 @@ subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1011,9 +860,6 @@ subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
     ! Local Variables
     integer(int32) :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -1021,11 +867,6 @@ subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
     k = size(a)
     nrowb = size(b, 1)
     ncolb = size(b, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -1056,12 +897,7 @@ subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("diag_mtx_mult_mtx4", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Deal with ALPHA == 0
@@ -1164,13 +1000,10 @@ subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)
             end if
         end if
     end if
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
+pure subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A op(B) + \beta C \) or
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -1194,8 +1027,6 @@ subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1204,9 +1035,6 @@ subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
     ! Local Variables
     integer(int32) :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -1214,11 +1042,6 @@ subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
     k = size(a)
     nrowb = size(b, 1)
     ncolb = size(b, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -1249,12 +1072,7 @@ subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("diag_mtx_mult_mtx_cmplx", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Deal with ALPHA == 0
@@ -1357,13 +1175,10 @@ subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)
             end if
         end if
     end if
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
+pure subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b)
     !! Performs the matrix operation \(B = \alpha A B \) or \(B = \alpha B A \)
     !! where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -1374,8 +1189,6 @@ subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
         !! The diagonal matrix \(A\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: b
         !! The matrix \(B\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1384,26 +1197,16 @@ subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
     ! Local Variables
     integer(int32) :: i, m, n, k
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(b, 1)
     n = size(b, 2)
     k = size(a)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
         ! ERROR: One of the input arrays is not sized correctly
-        call errmgr%report_error("diag_mtx_mult_mtx2_cmplx", &
-            "Input number 3 is not sized correctly.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 3
     end if
 
     ! Process
@@ -1425,7 +1228,7 @@ subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
+pure subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A op(B) + \beta C \) or
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -1449,8 +1252,6 @@ subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
         !! The matrix \(B\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: c
         !! The matrix \(C\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1459,9 +1260,6 @@ subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
     ! Local Variables
     integer(int32) :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -1469,11 +1267,6 @@ subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
     k = size(a)
     nrowb = size(b, 1)
     ncolb = size(b, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
@@ -1504,12 +1297,7 @@ subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("diag_mtx_mult_mtx_mix", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Deal with ALPHA == 0
@@ -1612,13 +1400,10 @@ subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)
             end if
         end if
     end if
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
+pure subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b)
     !! Performs the matrix operation \(B = \alpha A B \) or \(B = \alpha B A \)
     !! where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
@@ -1629,8 +1414,6 @@ subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
         !! The diagonal matrix \(A\) in the operation.
     complex(real64), intent(inout), dimension(:,:) :: b
         !! The matrix \(B\) in the operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1639,26 +1422,16 @@ subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
     ! Local Variables
     integer(int32) :: i, m, n, k
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(b, 1)
     n = size(b, 2)
     k = size(a)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if ((lside .and. k > m) .or. (.not.lside .and. k > n)) then
         ! ERROR: One of the input arrays is not sized correctly
-        call errmgr%report_error("diag_mtx_mult_mtx2_cmplx", &
-            "Input number 3 is not sized correctly.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 3
     end if
 
     ! Process
@@ -1680,41 +1453,29 @@ subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine diag_mtx_sparse_mult(lside, alpha, a, b, err)
+pure subroutine diag_mtx_sparse_mult(lside, alpha, a, b)
     !! Performs the matrix operation \(B = \alpha A B \) or \(B = \alpha B A \)
     !! where \(A\) is a diagonal matrix and \(B\) is a sparse matrix.
     logical, intent(in) :: lside
     real(real64), intent(in) :: alpha
     real(real64), intent(in), dimension(:) :: a
     class(csr_matrix), intent(inout) :: b
-    class(errors), intent(inout), optional, target :: err
 
     ! Local Variables
     integer(int32) :: ii, k, k1, k2, nrow
     real(real64) :: scal
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
     nrow = size(b, 1)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (lside) then
         if (size(a) /= nrow) then
-            call report_inner_matrix_dimension_error("diag_mtx_sparse_mult", &
-                errmgr, "a", "b", nrow, size(a))
-            return
+            error stop 3
         end if
     else
         if (size(a) /= size(b, 2)) then
-            call report_inner_matrix_dimension_error("diag_mtx_sparse_mult", &
-                errmgr, "a", "b", size(b, 2), size(a))
-            return
+            error stop 4
         end if
     end if
 
@@ -1806,9 +1567,9 @@ pure function trace_cmplx(x) result(y)
 end function
 
 ! ------------------------------------------------------------------------------
-function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
+pure function mtx_rank_dbl(a, tol) result(rnk)
     !! Computes the rank of a matrix.
-    real(real64), intent(inout), dimension(:,:) :: a
+    real(real64), intent(in), dimension(:,:) :: a
         !! The matrix.
     real(real64), intent(in), optional :: tol
         !! An optional input, that if supplied, overrides the default
@@ -1818,81 +1579,37 @@ function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
         !! smallest value that causes an overflow if inverted, the tolerance
         !! reverts back to its default value, and the operation continues; 
         !! however, a warning message is issued.
-    real(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local
-        !! memory allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least
-        !! olwork.  If not provided, the memory required is allocated within.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size. If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
     integer(int32) :: rnk
         !! The rank of the matrix.
 
     ! Local Variables
     integer(int32) :: i, m, n, mn, istat, lwork, flag
-    real(real64), pointer, dimension(:) :: wptr, s, w
-    real(real64), allocatable, target, dimension(:) :: wrk
+    real(real64), allocatable, dimension(:) :: s, w
+    real(real64), allocatable, dimension(:,:) :: ac
     real(real64) :: t, tref, smlnum
     real(real64), dimension(1) :: dummy, temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
     smlnum = DLAMCH('s')
+    allocate(ac(m, n), source = a)
     rnk = 0
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Workspace Query
-    !call svd(a, a(1:mn,1), olwork = lwork)
-    call DGESVD('N', 'N', m, n, a, m, dummy, dummy, m, dummy, n, temp, &
+    call DGESVD('N', 'N', m, n, ac, m, dummy, dummy, m, dummy, n, temp, &
         -1, flag)
-    lwork = int(temp(1), int32) + mn
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
+    lwork = int(temp(1), int32)
 
     ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            ! ERROR: WORK not sized correctly
-            call errmgr%report_error("mtx_rank", &
-                "Incorrectly sized input array WORK, argument 5.", &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mtx_rank", errmgr, flag)
-            return
-        end if
-        wptr => wrk
-    end if
-    s => wptr(1:mn)
-    w => wptr(mn+1:lwork)
+    allocate(s(mn), w(lwork))
 
     ! Compute the singular values of A
-    call DGESVD('N', 'N', m, n, a, m, s, dummy, m, dummy, n, w, &
+    call DGESVD('N', 'N', m, n, ac, m, s, dummy, m, dummy, n, w, &
         lwork - mn, flag)
     if (flag > 0) then
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) flag, " superdiagonals could not " // &
-            "converge to zero as part of the QR iteration process."
-        call errmgr%report_warning("mtx_rank", errmsg, LA_CONVERGENCE_ERROR)
+        error stop LA_CONVERGENCE_ERROR
     end if
 
     ! Determine the threshold tolerance for the singular values such that
@@ -1918,15 +1635,12 @@ function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)
         if (s(i) < t) exit
         rnk = rnk + 1
     end do
-
-    ! Formatting
-100 format(I0, A)
 end function
 
 ! ------------------------------------------------------------------------------
-function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
+pure function mtx_rank_cmplx(a, tol) result(rnk)
     !! Computes the rank of a matrix.
-    complex(real64), intent(inout), dimension(:,:) :: a
+    complex(real64), intent(in), dimension(:,:) :: a
         !! The matrix.
     real(real64), intent(in), optional :: tol
         !! An optional input, that if supplied, overrides the default
@@ -1936,28 +1650,12 @@ function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
         !! smallest value that causes an overflow if inverted, the tolerance
         !! reverts back to its default value, and the operation continues; 
         !! however, a warning message is issued.
-    complex(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local
-        !! memory allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least
-        !! olwork.  If not provided, the memory required is allocated within.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size. If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    real(real64), intent(out), target, optional, dimension(:) :: rwork
-        !! An optional input, that if provided, prevents any
-        !! local memory allocation for real-valued workspace arrays.  If not 
-        !! provided, the memory required is allocated within.  If provided, the
-        !! length of the array must be at least 6 * MIN(M, N).
-    class(errors), intent(inout), optional, target :: err
-        !! The rank of the matrix.
     integer(int32) :: rnk
         !! The rank of the matrix.
 
     ! External Function Interfaces
     interface
-        function DLAMCH(cmach) result(x)
+        pure function DLAMCH(cmach) result(x)
             use, intrinsic :: iso_fortran_env, only : real64
             character, intent(in) :: cmach
             real(real64) :: x
@@ -1966,16 +1664,12 @@ function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
 
     ! Local Variables
     integer(int32) :: i, m, n, mn, istat, lwork, flag, lrwork
-    real(real64), pointer, dimension(:) :: s, rwptr, rw
-    real(real64), allocatable, target, dimension(:) :: rwrk
-    complex(real64), allocatable, target, dimension(:) :: wrk
-    complex(real64), pointer, dimension(:) :: wptr
+    real(real64), allocatable, dimension(:) :: s, rw
+    complex(real64), allocatable, dimension(:) :: w
+    complex(real64), allocatable, dimension(:,:) :: ac
     real(real64) :: t, tref, smlnum
     real(real64), dimension(1) :: dummy
     complex(real64), dimension(1) :: cdummy, temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(a, 1)
@@ -1983,67 +1677,22 @@ function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
     mn = min(m, n)
     lrwork = 6 * mn
     smlnum = DLAMCH('s')
+    allocate(ac(m, n), source = a)
     rnk = 0
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Workspace Query
-    call ZGESVD('N', 'N', m, n, a, m, dummy, cdummy, m, cdummy, n, temp, &
+    call ZGESVD('N', 'N', m, n, ac, m, dummy, cdummy, m, cdummy, n, temp, &
         -1, dummy, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
 
     ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            ! ERROR: WORK not sized correctly
-            call errmgr%report_error("mtx_rank_cmplx", &
-                "Incorrectly sized input array WORK, argument 5.", &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mtx_rank_cmplx", errmgr, flag)
-            return
-        end if
-        wptr => wrk
-    end if
-
-    if (present(rwork)) then
-        if (size(rwork) < lrwork) then
-            ! ERROR: RWORK not sized correctly
-            call errmgr%report_error("mtx_rank_cmplx", &
-                "Incorrectly sized input array RWORK.", &
-                LA_ARRAY_SIZE_ERROR)
-            return
-        end if
-        rwptr => rwork(1:lrwork)
-    else
-        allocate(rwrk(lrwork), stat = istat)
-        if (istat /= 0) then
-        end if
-        rwptr => rwrk
-    end if
-    s => rwptr(1:mn)
-    rw => rwptr(mn+1:lrwork)
+    allocate(s(mn), rw(lrwork), w(lwork))
 
     ! Compute the singular values of A
-    call ZGESVD('N', 'N', m, n, a, m, s, cdummy, m, cdummy, n, wptr, &
+    call ZGESVD('N', 'N', m, n, ac, m, s, cdummy, m, cdummy, n, w, &
         lwork - mn, rw, flag)
     if (flag > 0) then
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) flag, " superdiagonals could not " // &
-            "converge to zero as part of the QR iteration process."
-        call errmgr%report_warning("mtx_rank_cmplx", errmsg, LA_CONVERGENCE_ERROR)
+        error stop LA_CONVERGENCE_ERROR
     end if
 
     ! Determine the threshold tolerance for the singular values such that
@@ -2069,24 +1718,13 @@ function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)
         if (s(i) < t) exit
         rnk = rnk + 1
     end do
-
-    ! Formatting
-100     format(I0, A)
 end function
 
 ! ------------------------------------------------------------------------------
-function det_dbl(a, iwork, err) result(x)
+pure function det_dbl(a) result(x)
     !! Computes the determinant of a matrix.
-    real(real64), intent(inout), dimension(:,:) :: a
-        !! On input, the matrix on which to operate.  On output, the LU factored
-        !! matrix in the form [L\\U] where L is unit lower triangular and U is
-        !! upper triangular.  The unit diagonal elements of L are not stored.
-    integer(int32), intent(out), target, optional, dimension(:) :: iwork
-        !! An MIN(M, N)-element array used to track row-pivot operations.  The
-        !! array stored pivot information such that row I is interchanged with 
-        !! row IPVT(I).  If not supplied, this array is allocated within.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The N-by-N matrix on which to operate.
     real(real64) :: x
         !! The determinant of the matrix.
 
@@ -2097,48 +1735,24 @@ function det_dbl(a, iwork, err) result(x)
     real(real64), parameter :: p1 = 1.0d-1
 
     ! Local Variables
-    integer(int32) :: i, ep, n, istat, flag
-    integer(int32), pointer, dimension(:) :: ipvt
-    integer(int32), allocatable, target, dimension(:) :: iwrk
+    integer(int32) :: i, ep, n, flag
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    real(real64), allocatable, dimension(:,:) :: ac
+    integer(int32), allocatable, dimension(:) :: ipvt
+
+    ! Input Check
+    if (size(a, 1) /= size(a, 2)) then
+        error stop 1
+    end if
 
     ! Initialization
     n = size(a, 1)
+    allocate(ac(n, n), source = a)
+    allocate(ipvt(n))
     x = zero
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
-
-    ! Input Check
-    if (size(a, 2) /= n) then
-        call report_square_matrix_error("det", errmgr, "a", n, size(a, 1), &
-            size(a, 2))
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(iwork)) then
-        if (size(iwork) < n) then
-            call report_array_size_error("det", errmgr, "iwork", n, n)
-            return
-        end if
-        ipvt => iwork(1:n)
-    else
-        allocate(iwrk(n), stat = istat)
-        if (istat /= 0) then
-            ! ERROR: Out of memory
-            call report_memory_error("det", errmgr, flag)
-            return
-        end if
-        ipvt => iwrk
-    end if
 
     ! Compute the LU factorization of A
-    call DGETRF(n, n, a, n, ipvt, flag)
+    call DGETRF(n, n, ac, n, ipvt, flag)
     if (flag > 0) then
         ! A singular matrix has a determinant of zero
         x = zero
@@ -2151,7 +1765,7 @@ function det_dbl(a, iwork, err) result(x)
     do i = 1, n
         if (ipvt(i) /= i) temp = -temp
 
-        temp = a(i,i) * temp
+        temp = ac(i,i) * temp
         if (temp == zero) then
             x = zero
             exit
@@ -2171,18 +1785,10 @@ function det_dbl(a, iwork, err) result(x)
 end function
 
 ! ------------------------------------------------------------------------------
-function det_cmplx(a, iwork, err) result(x)
+pure function det_cmplx(a) result(x)
     !! Computes the determinant of a matrix.
-    complex(real64), intent(inout), dimension(:,:) :: a
-        !! On input, the matrix on which to operate.  On output, the LU factored
-        !! matrix in the form [L\\U] where L is unit lower triangular and U is
-        !! upper triangular.  The unit diagonal elements of L are not stored.
-    integer(int32), intent(out), target, optional, dimension(:) :: iwork
-        !! An MIN(M, N)-element array used to track row-pivot operations.  The
-        !! array stored pivot information such that row I is interchanged with 
-        !! row IPVT(I).  If not supplied, this array is allocated within.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
+    complex(real64), intent(in), dimension(:,:) :: a
+        !! The matrix on which to operate.
     complex(real64) :: x
         !! The determinant of the matrix.
 
@@ -2195,45 +1801,24 @@ function det_cmplx(a, iwork, err) result(x)
     real(real64), parameter :: real_ten = 1.0d1
 
     ! Local Variables
-    integer(int32) :: i, ep, n, istat, flag
-    integer(int32), pointer, dimension(:) :: ipvt
-    integer(int32), allocatable, target, dimension(:) :: iwrk
+    integer(int32) :: i, ep, n, flag
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    complex(real64), allocatable, dimension(:,:) :: ac
+    integer(int32), allocatable, dimension(:) :: ipvt
+
+    ! Input Check
+    if (size(a, 1) /= size(a, 2)) then
+        error stop 1
+    end if
 
     ! Initialization
     n = size(a, 1)
+    allocate(ac(n, n), source = a)
+    allocate(ipvt(n))
     x = zero
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
-
-    ! Input Check
-    if (size(a, 2) /= n) then
-        call report_square_matrix_error("det_cmplx", errmgr, "a", n, &
-            size(a, 1), size(a, 2))
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(iwork)) then
-        if (size(iwork) < n) then
-            call report_array_size_error("det_cmplx", errmgr, "iwork", n, n)
-        end if
-        ipvt => iwork(1:n)
-    else
-        allocate(iwrk(n), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("det_cmplx", errmgr, flag)
-        end if
-        ipvt => iwrk
-    end if
 
     ! Compute the LU factorization of A
-    call ZGETRF(n, n, a, n, ipvt, flag)
+    call ZGETRF(n, n, ac, n, ipvt, flag)
     if (flag > 0) then
         ! A singular matrix has a determinant of zero
         x = zero
@@ -2246,7 +1831,7 @@ function det_cmplx(a, iwork, err) result(x)
     do i = 1, n
         if (ipvt(i) /= i) temp = -temp
 
-        temp = a(i,i) * temp
+        temp = ac(i,i) * temp
         if (temp == zero) then
             x = zero
             exit
@@ -2268,7 +1853,7 @@ end function
 ! ******************************************************************************
 ! ARRAY SWAPPING ROUTINE
 ! ------------------------------------------------------------------------------
-subroutine swap_dbl(x, y, err)
+pure subroutine swap_dbl(x, y)
     !! Swaps the contents of two arrays.
     real(real64), intent(inout), dimension(:) :: x
         !! On input, the first array to swap.  On output, the contents of the 
@@ -2276,27 +1861,17 @@ subroutine swap_dbl(x, y, err)
     real(real64), intent(inout), dimension(:) :: y
         !! On input, the second array to swap.  On output, the contents of the 
         !! second array are copied to the first array.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, n
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(y) /= n) then
-        call report_array_size_error("swap_dbl", errmgr, "y", n, n)
-        return
+        error stop 2
     end if
 
     ! Process
@@ -2308,7 +1883,7 @@ subroutine swap_dbl(x, y, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine swap_cmplx(x, y, err)
+pure subroutine swap_cmplx(x, y)
     !! Swaps the contents of two arrays.
     complex(real64), intent(inout), dimension(:) :: x
         !! On input, the first array to swap.  On output, the contents of the
@@ -2316,27 +1891,17 @@ subroutine swap_cmplx(x, y, err)
     complex(real64), intent(inout), dimension(:) :: y
         !! On input, the second array to swap.  On output, the contents of the
         !! second array are copied to the first array.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, n
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(y) /= n) then
-        call report_array_size_error("swap_cmplx", errmgr, "y", n, n)
-        return
+        error stop 2
     end if
 
     ! Process
@@ -2350,7 +1915,7 @@ end subroutine
 ! ******************************************************************************
 ! ARRAY MULTIPLICIATION ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine recip_mult_array_dbl(a, x)
+pure subroutine recip_mult_array_dbl(a, x)
     !! Computes the product of a scalar and a vector, where the scalar is 
     !! the reciprocal of the scalar A.
     real(real64), intent(in) :: a
@@ -2361,7 +1926,7 @@ subroutine recip_mult_array_dbl(a, x)
 
     ! External Function Interfaces
     interface
-        function DLAMCH(cmach) result(x)
+        pure function DLAMCH(cmach) result(x)
             use, intrinsic :: iso_fortran_env, only : real64
             character, intent(in) :: cmach
             real(real64) :: x
@@ -2417,7 +1982,7 @@ end subroutine
 ! ******************************************************************************
 ! TRIANGULAR MATRIX MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b, err)
+pure subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b)
     !! Performs the matrix operation \(B = \alpha A^T A + \beta B\) or 
     !! \(B = \alpha A A^T + \beta B\) where \(A\) is a triangular matrix.
     logical, intent(in) :: upper
@@ -2432,40 +1997,22 @@ subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b, err)
     real(real64), intent(inout), dimension(:,:) :: b
         !! On input, the matrix \(B\) to multiply.  On output, the result of the
         !! operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, k, n, d1, d2
+    integer(int32) :: i, j, k, n
     real(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(a, 1)
-    d1 = n
-    d2 = n
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 2) /= n) then
-        d2 = size(a, 2)
-        call report_square_matrix_error("tri_mtx_mult_dbl", errmgr, "a", n, &
-            n, size(a, 2))
-        return
+        error stop 2
     else if (size(b, 1) /= n .or. size(b, 2) /= n) then
-        d1 = size(b, 1)
-        d2 = size(b, 2)
-        call report_matrix_size_error("tri_mtx_mult_dbl", errmgr, "b", n, n, &
-            size(b, 1), size(b, 2))
-        return
+        error stop 4
     end if
 
     ! Process
@@ -2527,7 +2074,7 @@ subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
+pure subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b)
     !! Performs the matrix operation \(B = \alpha A^T A + \beta B\) or
     !! \(B = \alpha A A^T + \beta B\) where \(A\) is a triangular matrix.
     logical, intent(in) :: upper
@@ -2542,40 +2089,22 @@ subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)
     complex(real64), intent(inout), dimension(:,:) :: b
         !! On input, the matrix \(B\) to multiply.  On output, the result of the
         !! operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, k, n, d1, d2
+    integer(int32) :: i, j, k, n
     complex(real64) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(a, 1)
-    d1 = n
-    d2 = n
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 2) /= n) then
-        d2 = size(a, 2)
-        call report_square_matrix_error("tri_mtx_mult_cmplx", errmgr, "a", n, &
-            n, size(a, 2))
-        return
+        error stop 2
     else if (size(b, 1) /= n .or. size(b, 2) /= n) then
-        d1 = size(b, 1)
-        d2 = size(b, 2)
-        call report_matrix_size_error("tri_mtx_mult_cmplx", errmgr, "b", n, n, &
-            size(b, 1), size(b, 2))
-        return
+        error stop 4
     end if
 
     ! Process
@@ -2639,8 +2168,8 @@ end subroutine
 ! ******************************************************************************
 ! BANDED MATRIX MULTIPLICATION ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
-    y, err)
+pure subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
+    y)
     !! Performs the matrix operation \(y = \alpha A x + \beta y\) or
     !! \(y = \alpha A^T A + \beta y\) where \(A\) is a banded matrix.
     !!
@@ -2674,20 +2203,11 @@ subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
     real(real64), intent(inout), dimension(:) :: y
         !! On input, the vector \(y\) to multiply.  On output, the result of the
         !! operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: m, n
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (trans) then
         m = size(x)
         n = size(y)
@@ -2697,10 +2217,10 @@ subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
     end if
 
     ! Input Checking
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
-    if (size(a, 1) /= kl + ku + 1) go to 30
-    if (size(a, 2) /= n) go to 30
+    if (kl < 0) error stop 2
+    if (ku < 0) error stop 3
+    if (size(a, 1) /= kl + ku + 1) error stop 5
+    if (size(a, 2) /= n) error stop 5
 
     ! Process
     if (trans) then
@@ -2708,35 +2228,11 @@ subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
     else
         call DGBMV("N", m, n, kl, ku, alpha, a, size(a, 1), x, 1, beta, y, 1)
     end if
-
-    ! End
-    return
-
-    ! KL < 0
-10      continue
-    call errmgr%report_error("band_mtx_vec_mult_dbl", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20      continue
-    call errmgr%report_error("band_mtx_vec_mult_dbl", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! A is incorrectly sized
-30      continue
-    call errmgr%report_error("band_mtx_vec_mult_dbl", &
-        "The size of matrix A is not compatible with the other vectors.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
-    beta, y, err)
+pure subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
+    beta, y)
     !! Performs the matrix operation \(y = \alpha op(A) x + \beta y\)  where 
     !! \(A\) is a banded matrix.
     !!
@@ -2775,22 +2271,13 @@ subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
     complex(real64), intent(inout), dimension(:) :: y
         !! On input, the vector \(y\) to multiply.  On output, the result of the
         !! operation.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     character :: op
     logical :: trns
     integer(int32) :: m, n
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (trans == LA_TRANSPOSE) then
         op = "T"
         trns = .true.
@@ -2810,41 +2297,17 @@ subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
     end if
 
     ! Input Checking
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
-    if (size(a, 1) /= kl + ku + 1) go to 30
-    if (size(a, 2) /= n) go to 30
+    if (kl < 0) error stop 2
+    if (ku < 0) error stop 3
+    if (size(a, 1) /= kl + ku + 1) error stop 5
+    if (size(a, 2) /= n) error stop 5
 
     ! Process
     call ZGBMV(op, m, n, kl, ku, alpha, a, size(a, 1), x, 1, beta, y, 1)
-
-    ! End
-    return
-
-    ! KL < 0
-10  continue
-    call errmgr%report_error("band_mtx_vec_mult_cmplx", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20  continue
-    call errmgr%report_error("band_mtx_vec_mult_cmplx", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! A is incorrectly sized
-30  continue
-    call errmgr%report_error("band_mtx_vec_mult_cmplx", &
-        "The size of matrix A is not compatible with the other vectors.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)
+pure subroutine band_to_full_mtx_dbl(kl, ku, b, f)
     !! Converts a banded matrix to a full matrix.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -2866,31 +2329,22 @@ subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)
         !! The banded matrix to convert.
     real(real64), intent(out), dimension(:,:) :: f
         !! The full matrix to store the result in.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: i, j, k, m, n, i1, i2
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(f, 1)
     n = size(f, 2)
 
     ! Input Check
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
-    if (size(b, 2) /= n) go to 30
-    if (size(b, 1) /= kl + ku + 1) go to 40
+    if (kl < 0) error stop 1
+    if (ku < 0) error stop 2
+    if (size(b, 2) /= n) error stop 4
+    if (size(b, 1) /= kl + ku + 1) error stop 4
 
     ! Process
     do j = 1, n
@@ -2907,42 +2361,10 @@ subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)
             f(i,j) = zero
         end do
     end do
-
-    ! End
-    return
-
-    ! KL < 0
-10      continue
-    call errmgr%report_error("band_to_full_mtx_dbl", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20      continue
-    call errmgr%report_error("band_to_full_mtx_dbl", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! A is incorrectly sized
-30      continue
-    call errmgr%report_error("band_to_full_mtx_dbl", &
-        "The number of columns in the banded matrix does not match " // &
-        "the number of columns in the full matrix.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
-
-40      continue
-    call errmgr%report_error("band_to_full_mtx_dbl", &
-        "The number of rows in the banded matrix does not align with " // &
-        "the number of sub and super-diagonals specified.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)
+pure subroutine band_to_full_mtx_cmplx(kl, ku, b, f)
     !! Converts a banded matrix to a full matrix.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -2964,31 +2386,22 @@ subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)
         !! The banded matrix to convert.
     complex(real64), intent(out), dimension(:,:) :: f
         !! The full matrix to store the result in.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: i, j, k, m, n, i1, i2
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(f, 1)
     n = size(f, 2)
 
     ! Input Check
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
-    if (size(b, 2) /= n) go to 30
-    if (size(b, 1) /= kl + ku + 1) go to 40
+    if (kl < 0) error stop 1
+    if (ku < 0) error stop 2
+    if (size(b, 2) /= n) error stop 4
+    if (size(b, 1) /= kl + ku + 1) error stop 4
 
     ! Process
     do j = 1, n
@@ -3005,42 +2418,10 @@ subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)
             f(i,j) = zero
         end do
     end do
-
-    ! End
-    return
-
-    ! KL < 0
-10      continue
-    call errmgr%report_error("band_to_full_mtx_cmplx", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20      continue
-    call errmgr%report_error("band_to_full_mtx_cmplx", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! A is incorrectly sized
-30      continue
-    call errmgr%report_error("band_to_full_mtx_cmplx", &
-        "The number of columns in the banded matrix does not match " // &
-        "the number of columns in the full matrix.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
-
-40      continue
-    call errmgr%report_error("band_to_full_mtx_cmplx", &
-        "The number of rows in the banded matrix does not align with " // &
-        "the number of sub and super-diagonals specified.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)
+pure subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b)
     !! Performs the matrix operation \(A = \alpha A B\) or \(A = \alpha B A\) 
     !! where \(A\) is a banded matrix and \(B\) is a diagonal matrix.
     !!
@@ -3070,33 +2451,24 @@ subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)
         !! The banded matrix to multiply.
     real(real64), intent(in), dimension(:) :: b
         !! The diagonal matrix to multiply by.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: i, i1, i2, j, k, n
     real(real64) :: temp
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     n = size(a, 2)
 
     ! Input Checking
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
+    if (kl < 0) error stop 3
+    if (ku < 0) error stop 4
     if (left) then
-        if (size(b) /= n) go to 30
+        if (size(b) /= n) error stop 7
     else
-        if (size(b) < m) go to 30
+        if (size(b) < m) error stop 7
     end if
 
     ! Process
@@ -3132,35 +2504,10 @@ subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)
             end if
         end do
     end if
-
-
-    ! End
-    return
-
-    ! KL < 0
-10      continue
-    call errmgr%report_error("band_diag_mtx_mult_dbl", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20      continue
-    call errmgr%report_error("band_diag_mtx_mult_dbl", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! B is not sized correctly
-30      continue
-    call errmgr%report_error("band_diag_mtx_mult_dbl", &
-        "Inner matrix dimensions do not agree.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)
+pure subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b)
     !! Performs the matrix operation \(A = \alpha A B\) or \(A = \alpha B A\) 
     !! where \(A\) is a banded matrix and \(B\) is a diagonal matrix.
     !!
@@ -3190,33 +2537,24 @@ subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)
         !! The banded matrix to multiply.
     complex(real64), intent(in), dimension(:) :: b
         !! The diagonal matrix to multiply by.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: i, i1, i2, j, k, n
     complex(real64) :: temp
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     n = size(a, 2)
 
     ! Input Checking
-    if (kl < 0) go to 10
-    if (ku < 0) go to 20
+    if (kl < 0) error stop 3
+    if (ku < 0) error stop 4
     if (left) then
-        if (size(b) /= n) go to 30
+        if (size(b) /= n) error stop 7
     else
-        if (size(b) < m) go to 30
+        if (size(b) < m) error stop 7
     end if
 
     ! Process
@@ -3252,35 +2590,10 @@ subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)
             end if
         end do
     end if
-
-
-    ! End
-    return
-
-    ! KL < 0
-10      continue
-    call errmgr%report_error("band_diag_mtx_mult_cmplx", &
-        "The number of subdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! KU < 0
-20      continue
-    call errmgr%report_error("band_diag_mtx_mult_cmplx", &
-        "The number of superdiagonals must be at least 0.", &
-        LA_INVALID_INPUT_ERROR)
-    return
-
-    ! B is not sized correctly
-30      continue
-    call errmgr%report_error("band_diag_mtx_mult_cmplx", &
-        "Inner matrix dimensions do not agree.", &
-        LA_ARRAY_SIZE_ERROR)
-    return
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)
+pure function banded_to_dense_dbl(m, kl, ku, a) result(x)
     !! Converts a banded matrix to a dense matrix.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -3295,69 +2608,50 @@ subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)
     !! end do
     !! \endcode
     integer(int32), intent(in) :: m
-        !! The M-by-N dense matrix.
+        !! The number of rows in the M-by-N dense matrix.
     integer(int32), intent(in) :: kl
         !! The number of subdiagonals.  Must be at least 0.
     integer(int32), intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
     real(real64), intent(in), dimension(:,:) :: a
         !! The (KL+KU+1)-by-N banded matrix.
-    real(real64), intent(out), dimension(:,:) :: x
+    real(real64), allocatable, dimension(:,:) :: x
         !! The M-by-N dense matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
     integer(int32) :: i, j, k, n, i1, i2
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     n = size(a, 2)
 
     ! Input Checking
-    if (kl < 0 .or. ku < 0) then
-        call errmgr%report_error("banded_to_dense_dbl", &
-            "The bandwidth dimensions must not be negative-valued.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+    if (kl < 0) then
+        error stop 2
+    end if
+    if (ku < 0) then
+        error stop 3
     end if
     if (size(a, 1) /= kl + ku + 1) then
-        call errmgr%report_error("banded_to_dense_dbl", "The size of " // &
-            "the input matrix does not match the specified bandwidth.", &
-            LA_MATRIX_FORMAT_ERROR)
-        return
-    end if
-    if (size(x, 1) /= m .or. size(x, 2) /= n) then
-        call errmgr%report_error("banded_to_dense_dbl", &
-            "The output matrix dimensions are not correct.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 4
     end if
 
     ! Process
+    allocate(x(m, n), source = zero)
     do j = 1, n
         k = ku + 1 - j
         i1 = max(1, j - ku)
         i2 = min(m, j + kl)
-        x(:i1-1,j) = zero
         do i = i1, i2
             x(i, j) = a(k + i, j)
         end do
-        x(i2+1:,j) = zero
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)
+pure function banded_to_dense_cmplx(m, kl, ku, a) result(x)
     !! Converts a banded matrix to a dense matrix.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -3379,62 +2673,43 @@ subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)
         !! The number of superdiagonals.  Must be at least 0.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The (KL+KU+1)-by-N banded matrix.
-    complex(real64), intent(out), dimension(:,:) :: x
+    complex(real64), allocatable, dimension(:,:) :: x
         !! The M-by-N dense matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
     integer(int32) :: i, j, k, n, i1, i2
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     n = size(a, 2)
 
     ! Input Checking
-    if (kl < 0 .or. ku < 0) then
-        call errmgr%report_error("banded_to_dense_cmplx", &
-            "The bandwidth dimensions must not be negative-valued.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+    if (kl < 0) then
+        error stop 2
+    end if
+    if (ku < 0) then
+        error stop 3
     end if
     if (size(a, 1) /= kl + ku + 1) then
-        call errmgr%report_error("banded_to_dense_cmplx", "The size of " // &
-            "the input matrix does not match the specified bandwidth.", &
-            LA_MATRIX_FORMAT_ERROR)
-        return
-    end if
-    if (size(x, 1) /= m .or. size(x, 2) /= n) then
-        call errmgr%report_error("banded_to_dense_cmplx", &
-            "The output matrix dimensions are not correct.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 4
     end if
 
     ! Process
+    allocate(x(m, n), source = zero)
     do j = 1, n
         k = ku + 1 - j
         i1 = max(1, j - ku)
         i2 = min(m, j + kl)
-        x(:i1-1,j) = zero
         do i = i1, i2
             x(i, j) = a(k + i, j)
         end do
-        x(i2+1:,j) = zero
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine dense_to_banded_dbl(a, kl, ku, x, err)
+pure function dense_to_banded_dbl(a, kl, ku) result(x)
     !! Converts a banded matrix stored in dense format to a compressed form.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -3454,51 +2729,37 @@ subroutine dense_to_banded_dbl(a, kl, ku, x, err)
         !! The number of subdiagonals.  Must be at least 0.
     integer(int32), intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
-    real(real64), intent(out), dimension(:,:) :: x
+    real(real64), allocatable, dimension(:,:) :: x
         !! The (KL+KU+1)-by-N banded matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, j, k, m, n, mm, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mm = kl + ku + 1
 
     ! Input Check
-    if (kl < 0 .or. ku < 0) then
-        call errmgr%report_error("dense_to_banded_dbl", &
-            "The bandwidth dimensions must not be negative-valued.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+    if (kl < 0) then
+        error stop 2
     end if
-    if (size(x, 1) /= mm .or. size(x, 2) /= n) then
-        call errmgr%report_error("dense_to_banded_dbl", &
-            "The output matrix dimensions are not correct.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+    if (ku < 0) then
+        error stop 3
     end if
 
     ! Process
+    allocate(x(mm, n), source = 0.0d0)
     do j = 1, n
         k = ku + 1 - j
         do i = max(1, j - ku), min(m, j + kl)
             x(k + i, j) = a(i,j)
         end do
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine dense_to_banded_cmplx(a, kl, ku, x, err)
+pure function dense_to_banded_cmplx(a, kl, ku) result(x)
     !! Converts a banded matrix stored in dense format to a compressed form.
     !!
     !! The banded matrix is stored in a compressed form supplied column by 
@@ -3518,160 +2779,101 @@ subroutine dense_to_banded_cmplx(a, kl, ku, x, err)
         !! The number of subdiagonals.  Must be at least 0.
     integer(int32), intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
-    complex(real64), intent(out), dimension(:,:) :: x
+    complex(real64), allocatable, dimension(:,:) :: x
         !! The (KL+KU+1)-by-N banded matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, j, k, m, n, mm, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mm = kl + ku + 1
 
     ! Input Check
-    if (kl < 0 .or. ku < 0) then
-        call errmgr%report_error("dense_to_banded_cmplx", &
-            "The bandwidth dimensions must not be negative-valued.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+    if (kl < 0) then
+        error stop 2
     end if
-    if (size(x, 1) /= mm .or. size(x, 2) /= n) then
-        call errmgr%report_error("dense_to_banded_cmplx", &
-            "The output matrix dimensions are not correct.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+    if (ku < 0) then
+        error stop 3
     end if
 
     ! Process
+    allocate(x(mm, n), source = (0.0d0, 0.0d0))
     do j = 1, n
         k = ku + 1 - j
         do i = max(1, j - ku), min(m, j + kl)
             x(k + i, j) = a(i,j)
         end do
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine extract_diagonal_dbl(a, diag, err)
+pure function extract_diagonal_dbl(a) result(diag)
     !! Extracts the diagonal of a matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The M-by-N matrix.
-    real(real64), intent(out), dimension(:) :: diag
+    real(real64), allocatable, dimension(:) :: diag
         !! The MIN(M, N) element array for the diagonal elements.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, m, n, mn
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-
-    ! Input Checking
-    if (size(diag) /= mn) then
-        call report_array_size_error("extract_diagonal_dbl", errmgr, "diag", &
-            mn, size(diag))
-        return
-    end if
+    allocate(diag(mn))
 
     ! Process
     do i = 1, mn
         diag(i) = a(i,i)
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine extract_diagonal_cmplx(a, diag, err)
+pure function extract_diagonal_cmplx(a) result(diag)
     !! Extracts the diagonal of a matrix.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The M-by-N matrix.
-    complex(real64), intent(out), dimension(:) :: diag
+    complex(real64), allocatable, dimension(:) :: diag
         !! The MIN(M, N) element array for the diagonal elements.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, m, n, mn
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-
-    ! Input Checking
-    if (size(diag) /= mn) then
-        call report_array_size_error("extract_diagonal_cmplx", errmgr, &
-            "diag", mn, size(diag))
-        return
-    end if
+    allocate(diag(mn))
 
     ! Process
     do i = 1, mn
         diag(i) = a(i,i)
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine extract_diagonal_csr(a, diag, err)
+pure function extract_diagonal_csr(a) result(diag)
     !! Extracts the diagonal of a matrix.
     class(csr_matrix), intent(in) :: a
         !! The M-by-N matrix.
-    real(real64), intent(out), dimension(:) :: diag
+    real(real64), allocatable, dimension(:) :: diag
         !! The MIN(M, N) element array for the diagonal elements.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
     integer(int32) :: i, m, n, mn
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-
-    ! Input Checking
-    if (size(diag) /= mn) then
-        call report_array_size_error("extract_diagonal_cmplx", errmgr, &
-            "diag", mn, size(diag))
-        return
-    end if
+    allocate(diag(mn))
 
     ! Process
-    call a%extract_diagonal(diag, errmgr)
-end subroutine
+    call a%extract_diagonal(diag)
+end function
 
 ! ------------------------------------------------------------------------------
 end module

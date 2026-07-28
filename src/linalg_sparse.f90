@@ -863,44 +863,29 @@ function csr_transpose(a) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-subroutine csr_extract_diagonal(a, diag, err)
+pure subroutine csr_extract_diagonal(a, diag)
     !! Extracts the diagonal from a CSR matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
     real(real64), intent(out), dimension(:) :: diag
         !! The diagonal values.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
-    integer(int32) :: m, n, mn, len, flag
+    integer(int32) :: m, n, mn, len
     integer(int32), allocatable, dimension(:) :: idiag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
 
     ! Input Check
     if (size(diag) /= mn) then
-        call report_array_size_error("csr_extract_diagonal", errmgr, "diag", &
-            mn, size(diag))
-        return
+        error stop 2
     end if
 
     ! Memory Allocation
-    allocate(idiag(mn), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("csr_extract_diagonal", errmgr, flag)
-        return
-    end if
+    allocate(idiag(mn))
 
     ! Process
     call getdia(m, n, 0, a%values, a%column_indices, a%row_indices, len, &

@@ -519,7 +519,7 @@ function test_banded_to_csr_1() result(rst)
     call random_number(banded)
 
     ! Construct the dense matrix directly from the banded matrix
-    call banded_to_dense(m, kl, ku, banded, dense)
+    dense = banded_to_dense(m, kl, ku, banded)
 
     ! Construct the sparse matrix directly from the banded matrix
     sparse = banded_to_csr(m, kl, ku, banded)
@@ -553,7 +553,7 @@ function test_extract_diagonal_csr_1() result(rst)
     sparse = dense_to_csr(dense)
 
     ! Extract the diagonal from the sparse matrix
-    call extract_diagonal(sparse, diag)
+    diag = extract_diagonal(sparse)
 
     ! Test 1
     if (.not.assert(diag, ans)) then
@@ -562,7 +562,7 @@ function test_extract_diagonal_csr_1() result(rst)
     end if
 
     ! Ensure the dense extract routine works as well
-    call extract_diagonal(dense, densediag)
+    densediag = extract_diagonal(dense)
 
     ! Test 2
     if (.not.assert(densediag, ans)) then

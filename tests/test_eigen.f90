@@ -56,7 +56,7 @@ contains
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
-        ! call eigen(a1, vals, vecs)
+        call eigen(a1, vals, vecs)
 
         ! ! Compute vecs * vals, where vals is a diagonal matrix
         ! do i = 1, n

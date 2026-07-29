@@ -43,7 +43,7 @@ program example
         [3, 3])
     
     ! Compute the eigenvalues and eigenvectors.
-    call eigen(k, m, vals, vecs = modeShapes)
+    call eigen(k, m, vals, rvecs = modeShapes)
 
     ! Sort the eigenvalues and eigenvectors
     call sort(vals, modeShapes)

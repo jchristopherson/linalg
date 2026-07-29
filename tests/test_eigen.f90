@@ -25,8 +25,7 @@ contains
         call create_random_array(a, mtype = SYMMETRIC_MATRIX)
 
         ! Compute the eigenvalues and eigenvectors of A
-        vecs = a
-        call eigen(.true., vecs, vals)
+        call eigen(a, vals, vecs)
 
         ! Compute vecs * vals, where vals is a diagonal matrix
         call diag_mtx_mult(.false., .false., 1.0d0, vals, vecs, 0.0d0, x)
@@ -121,7 +120,7 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1, b, b1
+        real(real64), dimension(n, n) :: a, b
         complex(real64), dimension(n) :: vals, vals2
         complex(real64), dimension(n, n) :: vecs, x, y
         logical :: rst
@@ -130,11 +129,9 @@ contains
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
-        b1 = b
 
         ! Test 1
-        call eigen(a1, b1, vals, vecs = vecs)
+        call eigen(a, b, vals, rvecs = vecs)
 
         ! Compute X = A * VECS
         x = matmul(a, vecs)

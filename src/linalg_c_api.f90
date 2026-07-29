@@ -2832,10 +2832,10 @@ contains
         end if
 
         ! Process
-        call eigen(logical(vecs), a(1:n,1:n), vals(1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
+        if (vecs) then
+            call eigen(a(1:n,1:n), vals(1:n), vecs = a(1:n,1:n))
+        else
+            call eigen(a(1:n,1:n), vals(1:n))
         end if
     end function
 
@@ -2889,13 +2889,9 @@ contains
 
         ! Process
         if (vecs) then
-            call eigen(a(1:n,1:n), vals(1:n), v(1:n,1:n), err = err)
+            call eigen(a(1:n,1:n), vals(1:n), rvecs = v(1:n,1:n))
         else
             call eigen(a(1:n,1:n), vals(1:n))
-        end if
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
         end if
     end function
 
@@ -2964,13 +2960,9 @@ contains
         ! Process
         if (vecs) then
             call eigen(a(1:n,1:n), b(1:n,1:n), alpha(1:n), beta(1:n), &
-                v(1:n,1:n), err = err)
+                rvecs = v(1:n,1:n))
         else
-            call eigen(a(1:n,1:n), b(1:n,1:n), alpha(1:n), beta(1:n), err = err)
-        end if
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
+            call eigen(a(1:n,1:n), b(1:n,1:n), alpha(1:n), beta(1:n))
         end if
     end function
     
@@ -3024,7 +3016,7 @@ contains
 
         ! Process
         if (vecs) then
-            call eigen(a(1:n,1:n), vals(1:n), v(1:n,1:n), err = err)
+            call eigen(a(1:n,1:n), vals(1:n), rvecs = v(1:n,1:n))
         else
             call eigen(a(1:n,1:n), vals(1:n))
         end if

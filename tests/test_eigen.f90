@@ -56,7 +56,7 @@ contains
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
-        call eigen(a1, vals, vecs)
+        call eigen(a, vals, vecs)
 
         ! ! Compute vecs * vals, where vals is a diagonal matrix
         ! do i = 1, n
@@ -85,7 +85,7 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, a1, vecs, vmtx, x, y
+        complex(real64), dimension(n, n) :: a, vecs, vmtx, x, y
         complex(real64), dimension(n) :: vals, vals1
         integer(int32) :: i
         logical :: rst
@@ -93,11 +93,10 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a, mtype = SYMMETRIC_MATRIX)
-        a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
-        call eigen(a1, vals, vecs)
+        call eigen(a, vals, vecs)
 
         ! Compute vecs * vals, where vals is a diagonal matrix
         do i = 1, n

@@ -233,8 +233,8 @@ program main
     rst = test_eigen_asymm()
     if (.not.rst) flag = 67
 
-    ! rst = test_eigen_asymm_cmplx()
-    ! if (.not.rst) flag = 68
+    rst = test_eigen_asymm_cmplx()
+    if (.not.rst) flag = 68
     
     ! rst = test_eigen_gen()
     ! if (.not.rst) flag = 69

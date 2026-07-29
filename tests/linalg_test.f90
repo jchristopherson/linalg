@@ -227,8 +227,8 @@ program main
     if (.not.rst) flag = 65
     
     ! Eigenvalue/Eigenvector Tests
-    ! rst = test_eigen_symm()
-    ! if (.not.rst) flag = 66
+    rst = test_eigen_symm()
+    if (.not.rst) flag = 66
     
     ! rst = test_eigen_asymm()
     ! if (.not.rst) flag = 67

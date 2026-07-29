@@ -68,16 +68,16 @@ int main()
     check = test_cmplx_inverse();
     if (!check) flag = -12;
 
-    // check = test_eigen_symm();
-    // if (!check) flag = 13;
+    check = test_eigen_symm();
+    if (!check) flag = 13;
 
-    // check = test_eigen_asymm();
-    // if (!check) flag = 14;
-    // check = test_cmplx_eigen_asymm();
-    // if (!check) flag = -14;
+    check = test_eigen_asymm();
+    if (!check) flag = 14;
+    check = test_cmplx_eigen_asymm();
+    if (!check) flag = -14;
 
-    // check = test_eigen_gen();
-    // if (!check) flag = 15;
+    check = test_eigen_gen();
+    if (!check) flag = 15;
 
     check = test_lq();
     if (!check) flag = 16;

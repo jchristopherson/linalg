@@ -44,7 +44,7 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1
+        real(real64), dimension(n, n) :: a
         complex(real64), dimension(n, n) :: vecs, vmtx, x, y
         complex(real64), dimension(n) :: vals, vals1
         integer(int32) :: i
@@ -53,7 +53,6 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A

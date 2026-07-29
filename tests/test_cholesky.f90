@@ -18,42 +18,38 @@ contains
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, u, l
-        real(real64), dimension(n, nrhs) :: b, b1, b2
+        real(real64), dimension(n, nrhs) :: b, x
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(b)
-        u = a
-        l = a
-        b1 = b
-        b2 = b
 
         ! Test 1: A = L * L**T
-        call cholesky_factor(l, .false.)
+        l = cholesky_factor(a, .false.)
         if (.not.assert(a, matmul(l, transpose(l)), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 1"
         end if
 
         ! Test 2: A = U**T * U
-        call cholesky_factor(u, .true.)
+        u = cholesky_factor(a, .true.)
         if (.not.assert(a, matmul(transpose(u), u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 2"
         end if
 
         ! Test 3: Solve L*L**T * X = B
-        call solve_cholesky(.false., l, b1)
-        if (.not.assert(matmul(a, b1), b, tol = REAL64_TOL)) then
+        x = solve_cholesky(.false., l, b)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 3"
         end if
 
         ! Test 4: Solve U**T * U * X = B
-        call solve_cholesky(.true., u, b2)
-        if (.not.assert(matmul(a, b2), b, tol = REAL64_TOL)) then
+        x = solve_cholesky(.true., u, b)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Cholesky Factorization Test 4"
         end if
@@ -73,10 +69,9 @@ contains
         rst = .true.
         call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(u)
-        r = a
 
         ! Compute the Cholesky factorization of the original matrix
-        call cholesky_factor(r)
+        r = cholesky_factor(a)
 
         ! Update the original matrix
         call rank1_update(1.0d0, u, u, a)
@@ -108,10 +103,9 @@ contains
 
         ! Start with a positive definite matrix, and then update it
         call rank1_update(1.0d0, u, u, a)
-        r = a
 
         ! Compute the Cholesky factorization of the original matrix
-        call cholesky_factor(r)
+        r = cholesky_factor(a)
 
         ! Update the original matrix: A = A - u * u**T
         call rank1_update(-1.0d0, u, u, a)
@@ -136,42 +130,38 @@ contains
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a, u, l
-        complex(real64), dimension(n, nrhs) :: b, b1, b2
+        complex(real64), dimension(n, nrhs) :: b, x
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(b)
-        u = a
-        l = a
-        b1 = b
-        b2 = b
 
         ! Test 1: A = L * L**T
-        call cholesky_factor(l, .false.)
+        l = cholesky_factor(a, .false.)
         if (.not.assert(a, matmul(l, conjg(transpose(l))), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 1"
         end if
 
         ! Test 2: A = U**T * U
-        call cholesky_factor(u, .true.)
+        u = cholesky_factor(a, .true.)
         if (.not.assert(a, matmul(conjg(transpose(u)), u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 2"
         end if
 
         ! Test 3: Solve L*L**T * X = B
-        call solve_cholesky(.false., l, b1)
-        if (.not.assert(matmul(a, b1), b, tol = REAL64_TOL)) then
+        x = solve_cholesky(.false., l, b)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 3"
         end if
 
         ! Test 4: Solve U**T * U * X = B
-        call solve_cholesky(.true., u, b2)
-        if (.not.assert(matmul(a, b2), b, tol = REAL64_TOL)) then
+        x = solve_cholesky(.true., u, b)
+        if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Cholesky Factorization Test 4"
         end if
@@ -192,10 +182,9 @@ contains
         rst = .true.
         call create_random_array(a, mtype = POSITIVE_DEFINITE_MATRIX)
         call create_random_array(u)
-        r = a
 
         ! Compute the Cholesky factorization of the original matrix
-        call cholesky_factor(r)
+        r = cholesky_factor(a)
 
         ! Update the original matrix
         call rank1_update(one, u, u, a)
@@ -228,10 +217,9 @@ contains
 
         ! Start with a positive definite matrix, and then update it
         call rank1_update(one, u, u, a)
-        r = a
 
         ! Compute the Cholesky factorization of the original matrix
-        call cholesky_factor(r)
+        r = cholesky_factor(a)
 
         ! Update the original matrix: A = A - u * u**T
         call rank1_update(-one, u, u, a)

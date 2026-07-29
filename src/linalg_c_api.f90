@@ -1717,11 +1717,7 @@ contains
         end if
 
         ! Process
-        call cholesky_factor(a(1:n,1:n), logical(upper), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        a(1:n,1:n) = cholesky_factor(a(1:n,1:n), logical(upper))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1761,11 +1757,7 @@ contains
         end if
 
         ! Process
-        call cholesky_factor(a(1:n,1:n), logical(upper), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        a(1:n,1:n) = cholesky_factor(a(1:n,1:n), logical(upper))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1803,11 +1795,7 @@ contains
         end if
 
         ! Process
-        call cholesky_rank1_update(r(1:n,1:n), u(1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        call cholesky_rank1_update(r(1:n,1:n), u(1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1845,11 +1833,7 @@ contains
         end if
 
         ! Process
-        call cholesky_rank1_update(r(1:n,1:n), u(1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        call cholesky_rank1_update(r(1:n,1:n), u(1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1889,11 +1873,7 @@ contains
         end if
 
         ! Process
-        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -1933,11 +1913,7 @@ contains
         end if
 
         ! Process
-        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        call cholesky_rank1_downdate(r(1:n,1:n), u(1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2504,7 +2480,7 @@ contains
         end if
 
         ! Process
-        call solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
+        b(1:m,1:n) = solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2545,7 +2521,7 @@ contains
         end if
 
         ! Process
-        call solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
+        b(1:m,1:n) = solve_cholesky(logical(upper), a(1:m,1:m), b(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------

@@ -236,8 +236,8 @@ program main
     rst = test_eigen_asymm_cmplx()
     if (.not.rst) flag = 68
     
-    ! rst = test_eigen_gen()
-    ! if (.not.rst) flag = 69
+    rst = test_eigen_gen()
+    if (.not.rst) flag = 69
 
     ! Sorting Tests
     rst = test_dbl_ascend_sort()

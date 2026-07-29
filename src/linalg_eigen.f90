@@ -225,8 +225,8 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
     if (size(alpha) /= n) then
         error stop 3
     end if
-    if (present(beta) .and. size(beta) /= n) then
-        error stop 4
+    if (present(beta)) then
+        if (size(beta) /= n) error stop 4
     end if
     if (present(rvecs)) then
         if (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n) error stop 5

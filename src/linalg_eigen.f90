@@ -145,7 +145,7 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     else if (present(rvecs) .and. .not.present(lvecs)) then
         ! Compute the right eigenvectors
         allocate(vr(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, vr, n, w, lwork, flag)
+        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vr, n, vr, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vr, rvecs, vals)
     else if (.not.present(rvecs) .and. present(lvecs)) then

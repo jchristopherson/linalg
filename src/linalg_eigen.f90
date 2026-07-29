@@ -120,11 +120,11 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     if (size(vals) /= n) then
         error stop 2
     end if
-    if (present(rvecs) .and. (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n)) then
-        error stop 3
+    if (present(rvecs)) then
+        if (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n) error stop 3
     end if
-    if (present(lvecs) .and. (size(lvecs, 1) /= n .or. size(lvecs, 2) /= n)) then
-        error stop 4
+    if (present(lvecs)) then
+        if (size(lvecs, 1) /= n .or. size(lvecs, 2) /= n) error stop 4
     end if
 
     ! Workspace Query

@@ -97,7 +97,6 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     character :: jobvl, jobvr
     integer(int32) :: n, flag, lwork
     real(real64), dimension(1) :: dummy, temp
-    real(real64), dimension(1,1) :: dummy_mtx
     real(real64), allocatable, dimension(:) :: w, wr, wi
     real(real64), allocatable, dimension(:,:) :: ac, vr, vl
 
@@ -129,8 +128,8 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     end if
 
     ! Workspace Query
-    call DGEEV(jobvl, jobvr, n, temp, n, dummy, dummy, dummy_mtx, n, &
-        dummy_mtx, n, temp, -1, flag)
+    call DGEEV(jobvl, jobvr, n, temp, n, dummy, dummy, dummy, n, &
+        dummy, n, temp, -1, flag)
     lwork = int(temp(1), int32)
     allocate(w(lwork), wr(n), wi(n))
 
@@ -146,18 +145,18 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     else if (present(rvecs) .and. .not.present(lvecs)) then
         ! Compute the right eigenvectors
         allocate(vr(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy_mtx, n, vr, n, w, lwork, flag)
+        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, vr, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vr, rvecs, vals)
     else if (.not.present(rvecs) .and. present(lvecs)) then
         ! Compute the left eigenvectors
         allocate(vl(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, dummy_mtx, n, w, lwork, flag)
+        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, dummy, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vl, lvecs, vals)
     else
         ! Only compute the eigenvalues
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy_mtx, n, dummy_mtx, n, &
+        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, dummy, n, &
             w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         vals = cmplx(wr, wi, real64)

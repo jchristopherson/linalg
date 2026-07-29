@@ -128,39 +128,39 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     end if
 
     ! Workspace Query
-    call DGEEV(jobvl, jobvr, n, dummy, n, dummy, dummy, dummy, n, &
-        dummy, n, temp, -1, flag)
-    lwork = int(temp(1), int32)
-    allocate(w(lwork), wr(n), wi(n))
+    ! call DGEEV(jobvl, jobvr, n, dummy, n, dummy, dummy, dummy, n, &
+    !     dummy, n, temp, -1, flag)
+    ! lwork = int(temp(1), int32)
+    ! allocate(w(lwork), wr(n), wi(n))
 
     ! Process
     allocate(ac(n, n), source = a)
-    if (present(rvecs) .and. present(lvecs)) then
-        ! Compute both the right and left eigenvectors
-        allocate(vr(n, n), vl(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, vr, n, w, lwork, flag)
-        if (flag > 0) error stop LA_CONVERGENCE_ERROR
-        call extract_eigenvectors(wr, wi, vr, rvecs, vals)
-        call extract_eigenvectors(wr, wi, vl, lvecs)
-    else if (present(rvecs) .and. .not.present(lvecs)) then
-        ! Compute the right eigenvectors
-        allocate(vr(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, vr, n, w, lwork, flag)
-        if (flag > 0) error stop LA_CONVERGENCE_ERROR
-        call extract_eigenvectors(wr, wi, vr, rvecs, vals)
-    else if (.not.present(rvecs) .and. present(lvecs)) then
-        ! Compute the left eigenvectors
-        allocate(vl(n, n))
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, dummy, n, w, lwork, flag)
-        if (flag > 0) error stop LA_CONVERGENCE_ERROR
-        call extract_eigenvectors(wr, wi, vl, lvecs, vals)
-    else
-        ! Only compute the eigenvalues
-        call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, dummy, n, &
-            w, lwork, flag)
-        if (flag > 0) error stop LA_CONVERGENCE_ERROR
-        vals = cmplx(wr, wi, real64)
-    end if
+    ! if (present(rvecs) .and. present(lvecs)) then
+    !     ! Compute both the right and left eigenvectors
+    !     allocate(vr(n, n), vl(n, n))
+    !     call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, vr, n, w, lwork, flag)
+    !     if (flag > 0) error stop LA_CONVERGENCE_ERROR
+    !     call extract_eigenvectors(wr, wi, vr, rvecs, vals)
+    !     call extract_eigenvectors(wr, wi, vl, lvecs)
+    ! else if (present(rvecs) .and. .not.present(lvecs)) then
+    !     ! Compute the right eigenvectors
+    !     allocate(vr(n, n))
+    !     call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, vr, n, w, lwork, flag)
+    !     if (flag > 0) error stop LA_CONVERGENCE_ERROR
+    !     call extract_eigenvectors(wr, wi, vr, rvecs, vals)
+    ! else if (.not.present(rvecs) .and. present(lvecs)) then
+    !     ! Compute the left eigenvectors
+    !     allocate(vl(n, n))
+    !     call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, dummy, n, w, lwork, flag)
+    !     if (flag > 0) error stop LA_CONVERGENCE_ERROR
+    !     call extract_eigenvectors(wr, wi, vl, lvecs, vals)
+    ! else
+    !     ! Only compute the eigenvalues
+    !     call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, dummy, n, &
+    !         w, lwork, flag)
+    !     if (flag > 0) error stop LA_CONVERGENCE_ERROR
+    !     vals = cmplx(wr, wi, real64)
+    ! end if
 end subroutine
 
 ! ------------------------------------------------------------------------------

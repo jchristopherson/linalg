@@ -2569,11 +2569,7 @@ contains
         end if
 
         ! Process
-        call solve_least_squares(a(1:m,1:n), b(1:maxmn,1:k), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        b(1:n,1:k) = solve_least_squares(a(1:m,1:n), b(1:m,1:k))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2621,11 +2617,7 @@ contains
         end if
 
         ! Process
-        call solve_least_squares(a(1:m,1:n), b(1:maxmn,1:k), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        b(1:n,1:k) = solve_least_squares(a(1:m,1:n), b(1:m,1:k))
     end function
 
 ! ------------------------------------------------------------------------------

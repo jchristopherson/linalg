@@ -17,7 +17,7 @@ program example
         0.0d0], [3, 3])
     
     ! Compute the inverse of A
-    ai = mtx_inverse(ai)
+    ai = mtx_inverse(a)
 
     ! Show that A * inv(A) = I
     c = matmul(a, ai)

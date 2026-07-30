@@ -18,7 +18,7 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: ainv
         real(real64), dimension(m, nrhs) :: b
         real(real64), dimension(n, nrhs) :: x
@@ -28,10 +28,9 @@ contains
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
 
         ! Compute the inverse
-        call mtx_pinverse(a1, ainv)
+        ainv = mtx_pinverse(a)
 
         ! Compute X = inv(A) * B
         x = matmul(ainv, b)
@@ -50,7 +49,7 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: ainv
         real(real64), dimension(n, n) :: identity, check
         logical :: rst
@@ -59,7 +58,6 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         identity = 0.0d0
         do i = 1, size(identity, 1)
@@ -67,7 +65,7 @@ contains
         end do
 
         ! Compute the inverse
-        call mtx_pinverse(a1, ainv)
+        ainv = mtx_pinverse(a)
 
         ! Compute A+ * A - should = I
         check = matmul(ainv, a)
@@ -89,13 +87,12 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the inverse of A
-        call mtx_inverse(a1)
+        ainv = mtx_inverse(a)
 
         ! Compute the inverse using the already tested pseudo-inverse
-        call mtx_pinverse(a, ainv)
+        a1 = mtx_pinverse(a)
 
         ! Test
         if (.not.assert(ainv, a1, tol = REAL64_TOL)) then
@@ -112,7 +109,7 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, nrhs) :: b
         complex(real64), dimension(n, nrhs) :: x
@@ -122,10 +119,9 @@ contains
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
 
         ! Compute the inverse
-        call mtx_pinverse(a1, ainv)
+        ainv = mtx_pinverse(a)
 
         ! Compute X = inv(A) * B
         x = matmul(ainv, b)
@@ -148,7 +144,7 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(n, n) :: identity, check
         logical :: rst
@@ -157,7 +153,6 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         identity = zero
         do i = 1, size(identity, 1)
@@ -165,7 +160,7 @@ contains
         end do
         
         ! Compute the inverse
-        call mtx_pinverse(a1, ainv)
+        ainv = mtx_pinverse(a)
 
         ! Compute A+ * A - should = I
         check = matmul(ainv, a)
@@ -186,7 +181,7 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, m) :: identity, check
         logical :: rst
@@ -195,7 +190,6 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         identity = zero
         do i = 1, size(identity, 1)
@@ -203,7 +197,7 @@ contains
         end do
         
         ! Compute the inverse
-        call mtx_pinverse(a1, ainv)
+        ainv = mtx_pinverse(a)
 
         ! Compute A * A+ - should = I
         check = matmul(a, ainv)
@@ -219,19 +213,18 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, a1, ainv
+        complex(real64), dimension(n, n) :: a, ainv, a1
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(a)
-        a1 = a
+        call create_random_array(a, mtype = SYMMETRIC_MATRIX)
 
         ! Compute the inverse of A
-        call mtx_inverse(a1)
+        ainv = mtx_inverse(a)
 
         ! Compute the inverse using the already tested pseudo-inverse
-        call mtx_pinverse(a, ainv)
+        a1 = mtx_pinverse(a)
 
         ! Test
         if (.not.assert(ainv, a1, tol = REAL64_TOL)) then

@@ -16,10 +16,8 @@ program example
     a = reshape([1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, &
         0.0d0], [3, 3])
     
-    ! Compute the inverse of A.  Notice, the original matrix is overwritten
-    ! with it's inverse.
-    ai = a
-    call mtx_inverse(ai)
+    ! Compute the inverse of A
+    ai = mtx_inverse(ai)
 
     ! Show that A * inv(A) = I
     c = matmul(a, ai)

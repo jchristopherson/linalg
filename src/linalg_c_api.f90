@@ -2658,11 +2658,7 @@ contains
         end if
 
         ! Process
-        call mtx_inverse(a(1:n,1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        a(1:n,1:n) = mtx_inverse(a(1:n,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2696,11 +2692,7 @@ contains
         end if
 
         ! Process
-        call mtx_inverse(a(1:n,1:n), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        a(1:n,1:n) = mtx_inverse(a(1:n,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2739,11 +2731,7 @@ contains
         end if
 
         ! Process
-        call mtx_pinverse(a(1:m,1:n), ainv(1:n,1:m), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        ainv(1:n,1:m) = mtx_pinverse(a(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------
@@ -2782,11 +2770,7 @@ contains
         end if
 
         ! Process
-        call mtx_pinverse(a(1:m,1:n), ainv(1:n,1:m), err = err)
-        if (err%has_error_occurred()) then
-            flag = err%get_error_flag()
-            return
-        end if
+        ainv(1:n,1:m) = mtx_pinverse(a(1:m,1:n))
     end function
 
 ! ------------------------------------------------------------------------------

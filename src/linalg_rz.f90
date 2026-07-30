@@ -2,7 +2,6 @@ module linalg_rz
     use iso_fortran_env, only : int32, real64
     use linalg_errors
     use lapack
-    use ferror
     implicit none
     private
     public :: rz_factor
@@ -22,7 +21,7 @@ module linalg_rz
 
 contains
 ! ------------------------------------------------------------------------------
-subroutine rz_factor_dbl(a, tau, work, olwork, err)
+pure subroutine rz_factor_dbl(a, tau, work, olwork)
     !! Factors an upper trapezoidal matrix by means of orthogonal 
     !! transformations such that \(A = R Z = (R 0) Z \). \(Z\) is an orthogonal
     !! matrix of dimension N-by-N, and \(R\) is an M-by-M upper triangular
@@ -45,31 +44,20 @@ subroutine rz_factor_dbl(a, tau, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
-    integer(int32) :: m, n, lwork, flag, istat
+    integer(int32) :: m, n, lwork, flag
     real(real64), pointer, dimension(:) :: wptr
     real(real64), allocatable, target, dimension(:) :: wrk
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(tau) /= m) then
-        call report_array_size_error("rz_factor_dbl", errmgr, "tau", m, &
-            size(tau))
-        return
+        error stop 2
     end if
 
     ! Workspace Query
@@ -83,17 +71,11 @@ subroutine rz_factor_dbl(a, tau, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("rz_factor_dbl", errmgr, "lwork", &
-                lwork, size(work))
-            return
+            error stop 3
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("rz_factor_dbl", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
@@ -103,7 +85,7 @@ end subroutine
 
 
 ! ------------------------------------------------------------------------------
-subroutine rz_factor_cmplx(a, tau, work, olwork, err)
+pure subroutine rz_factor_cmplx(a, tau, work, olwork)
     !! Factors an upper trapezoidal matrix by means of orthogonal 
     !! transformations such that \(A = R Z = (R 0) Z \). \(Z\) is an orthogonal
     !! matrix of dimension N-by-N, and \(R\) is an M-by-M upper triangular
@@ -126,33 +108,21 @@ subroutine rz_factor_cmplx(a, tau, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
     integer(int32) :: m, n, lwork, flag, istat
     complex(real64), pointer, dimension(:) :: wptr
     complex(real64), allocatable, target, dimension(:) :: wrk
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     flag = 0
     if (size(tau) /= m) then
-        call report_array_size_error("rz_factor_cmplx", errmgr, "tau", m, &
-            size(tau))
-        return
+        error stop 2
     end if
 
     ! Workspace Query
@@ -166,17 +136,11 @@ subroutine rz_factor_cmplx(a, tau, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("rz_factor_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
+            error stop 3
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("rz_factor_cmplx", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
@@ -185,7 +149,7 @@ subroutine rz_factor_cmplx(a, tau, work, olwork, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
+pure subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork)
     !! Multiplies a general matrix by the orthogonal matrix Z from an 
     !! RZ factorization such that \(C = op(Z) C\) or \(C = C op(Z)\)
     logical, intent(in) :: lside
@@ -219,18 +183,13 @@ subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, lwork, flag, istat, lda
+    integer(int32) :: m, n, k, lwork, flag, lda
     real(real64), pointer, dimension(:) :: wptr
     real(real64), allocatable, target, dimension(:) :: wrk
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -246,11 +205,6 @@ subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
         t = 'T'
     else
         t = 'N'
-    end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
     end if
 
     ! Input Check
@@ -274,12 +228,7 @@ subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("mult_rz_mtx", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Workspace Query
@@ -293,29 +242,20 @@ subroutine mult_rz_mtx(lside, trans, l, a, tau, c, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("mult_rz_mtx", errmgr, "work", lwork, &
-                size(work))
-            return
+            error stop 7
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_rz_mtx", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
     ! Call DORMRZ
     call DORMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
+pure subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork)
     !! Multiplies a general matrix by the orthogonal matrix Z from an 
     !! RZ factorization such that \(C = op(Z) C\) or \(C = C op(Z)\).
     logical, intent(in) :: lside
@@ -349,8 +289,6 @@ subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
     character :: side, t
@@ -358,9 +296,6 @@ subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
     complex(real64), pointer, dimension(:) :: wptr
     complex(real64), allocatable, target, dimension(:) :: wrk
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c, 1)
@@ -376,11 +311,6 @@ subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
         t = 'C'
     else
         t = 'N'
-    end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
     end if
 
     ! Input Check
@@ -404,12 +334,7 @@ subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("mult_rz_mtx_cmplx", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Workspace Query
@@ -423,29 +348,20 @@ subroutine mult_rz_mtx_cmplx(lside, trans, l, a, tau, c, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("mult_rz_mtx_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
+            error stop 7
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_rz_mtx_cmplx", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
     ! Call ZUNMRZ
     call ZUNMRZ(side, t, m, n, k, l, a, lda, tau, c, m, wptr, lwork, flag)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
+pure subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork)
     !! Multiplies a general matrix by the orthogonal matrix Z from an 
     !! RZ factorization such that \(C = op(Z) C\).
     logical, intent(in) :: trans
@@ -473,18 +389,13 @@ subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, lwork, flag, istat, lda
+    integer(int32) :: m, k, lwork, flag, lda
     real(real64), pointer, dimension(:) :: wptr
     real(real64), allocatable, target, dimension(:) :: wrk
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c)
@@ -495,11 +406,6 @@ subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
         t = 'T'
     else
         t = 'N'
-    end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
     end if
 
     ! Input Check
@@ -513,12 +419,7 @@ subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("mult_rz_vec", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Workspace Query
@@ -532,29 +433,20 @@ subroutine mult_rz_vec(trans, l, a, tau, c, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("mult_rz_vec", errmgr, "work", &
-                lwork, size(work))
-            return
+            error stop 6
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_rz_vec", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
     ! Call DORMRZ
     call DORMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
-
-    ! Formatting
-100 format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
+pure subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork)
     !! Multiplies a general matrix by the orthogonal matrix Z from an 
     !! RZ factorization such that \(C = op(Z) C\).
     logical, intent(in) :: trans
@@ -582,18 +474,13 @@ subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
         !! An optional output used to determine workspace size.  If supplied, 
         !! the routine determines the optimal size for @p work, and returns 
         !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, lwork, flag, istat, lda
+    integer(int32) :: m, k, lwork, flag, lda
     complex(real64), pointer, dimension(:) :: wptr
     complex(real64), allocatable, target, dimension(:) :: wrk
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    character(len = :), allocatable :: errmsg
 
     ! Initialization
     m = size(c)
@@ -604,11 +491,6 @@ subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
         t = 'C'
     else
         t = 'N'
-    end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
     end if
 
     ! Input Check
@@ -622,12 +504,7 @@ subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
     end if
     if (flag /= 0) then
         ! ERROR: One of the input arrays is not sized correctly
-        allocate(character(len = 256) :: errmsg)
-        write(errmsg, 100) "Input number ", flag, &
-            " is not sized correctly."
-        call errmgr%report_error("mult_rz_vec_cmplx", trim(errmsg), &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop flag
     end if
 
     ! Workspace Query
@@ -641,25 +518,16 @@ subroutine mult_rz_vec_cmplx(trans, l, a, tau, c, work, olwork, err)
     ! Local Memory Allocation
     if (present(work)) then
         if (size(work) < lwork) then
-            call report_array_size_error("mult_rz_vec_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
+            error stop 6
         end if
         wptr => work(1:lwork)
     else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_rz_vec_cmplx", errmgr, istat)
-            return
-        end if
+        allocate(wrk(lwork))
         wptr => wrk
     end if
 
     ! Call ZUNMRZ
     call ZUNMRZ(side, t, m, 1, k, l, a, lda, tau, c, m, wptr, lwork, flag)
-
-    ! Formatting
-100     format(A, I0, A)
 end subroutine
 
 ! ------------------------------------------------------------------------------

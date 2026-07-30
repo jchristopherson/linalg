@@ -6,7 +6,6 @@ module linalg
     use linalg_sorting
     use linalg_eigen
     use linalg_lu
-    use linalg_rz
     use linalg_qr
     use linalg_tri
     use linalg_cholesky
@@ -73,10 +72,6 @@ module linalg
     public :: lu_factor
     public :: form_lu
     public :: solve_lu
-
-    ! LINALG_RZ.F90
-    public :: rz_factor
-    public :: mult_rz
 
     ! LINALG_QR.F90
     public :: qr_factor

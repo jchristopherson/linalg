@@ -13,6 +13,7 @@ module linalg
     use linalg_svd
     use linalg_inverse
     use linalg_least_squares
+    use linalg_rz
     implicit none
     private
 
@@ -35,6 +36,8 @@ module linalg
     public :: banded_to_dense
     public :: dense_to_banded
     public :: extract_diagonal
+    public :: extract_upper_triangular
+    public :: extract_lower_triangular
 
     ! LINALG_SPARSE.F90
     public :: csr_matrix
@@ -107,4 +110,7 @@ module linalg
     public :: solve_least_squares_full
     public :: solve_least_squares_svd
 
+    ! LINALG_RZ.F90
+    public :: rz_factor
+    public :: mult_rz
 end module

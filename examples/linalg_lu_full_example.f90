@@ -6,7 +6,7 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), b(3), u(3,3), p(3,3)
+    real(real64) :: a(3,3), b(3), u(3,3), p(3,3), y(3), x(3)
     integer(int32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
@@ -40,12 +40,12 @@ program example
 
     ! Now, compute the solution to the lower triangular system.  Store the
     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
-    call solve_triangular_system(.false., .false., .false., a, b)
+    y = solve_triangular_system(.false., .false., .false., a, b)
     
     ! Solve the upper triangular system U * X = Y for X.
-    call solve_triangular_system(.true., .false., .true., u, b)
+    x = solve_triangular_system(.true., .false., .true., u, y)
 
     ! Display the results.
     print '(A)', "LU Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 end program

@@ -466,11 +466,10 @@ contains
             a(j,j) = 2.0d0  ! Make sure we don't have too small of diagonal
         end do
         call create_random_array(b1)
-        x1 = b1
 
         ! Compute the solution to A * X1 = B1
-        call solve_triangular_system(.true., .true., .false., .true., &
-            alpha, a, x1)
+        x1 = solve_triangular_system(.true., .true., .false., .true., &
+            alpha, a, b1)
 
         ! Verify that A * X1 = B1
         check1 = matmul(a, x1)
@@ -498,11 +497,10 @@ contains
         call create_random_array(ai, mtype = UPPER_TRIANGULAR_MATRIX)
         a = cmplx(ar, ai, real64)
         call create_random_array(b1)
-        x1 = b1
 
         ! Compute the solution to A * X1 = B1
-        call solve_triangular_system(.true., .true., .false., .true., &
-            alpha, a, x1)
+        x1 = solve_triangular_system(.true., .true., .false., .true., &
+            alpha, a, b1)
 
         ! Verify that A * X1 = B1
         check1 = matmul(a, x1)

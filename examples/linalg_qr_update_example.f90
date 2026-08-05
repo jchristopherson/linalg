@@ -6,7 +6,8 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), u(3), v(3), r(3,3), tau(3), q(3,3), qu(3,3)
+    real(real64) :: a(3,3), u(3), v(3), q(3,3), qu(3,3)
+    real(real64), allocatable :: tau(:), r(:,:), ru(:,:)
     integer(int32) :: i
 
     ! Build the 3-by-3 matrix A.
@@ -25,8 +26,7 @@ program example
     v = [1.0d0, 5.0d0, 2.0d0]
 
     ! Compute the QR factorization of the original matrix
-    r = a   ! Making a copy as the matrix will be overwritten by qr_factor
-    call qr_factor(r, tau)
+    call qr_factor(a, tau = tau, qr = r)
 
     ! Form Q & R
     call form_qr(r, tau, q)
@@ -35,13 +35,12 @@ program example
     ! A = A + u * v**T
     call rank1_update(1.0d0, u, v, a)
 
-    ! Compute the rank 1 update to the factorization.  Notice, the contents 
-    ! of U & V are destroyed as part of this process.
+    ! Compute the rank 1 update to the factorization.
     call qr_rank1_update(q, r, u, v)
 
     ! As comparison, compute the QR factorization of the rank 1 updated matrix
-    call qr_factor(a, tau)
-    call form_qr(a, tau, qu)
+    call qr_factor(a, tau = tau, qr = ru)
+    call form_qr(ru, tau, qu)
 
     ! Display the matrices
     print '(A)', "Updating the Factored Form:"
@@ -60,7 +59,7 @@ program example
         print *, qu(i,:)
     end do
     print '(A)', "R = "
-    do i = 1, size(a, 1)
-        print *, a(i,:)
+    do i = 1, size(ru, 1)
+        print *, ru(i,:)
     end do
 end program 

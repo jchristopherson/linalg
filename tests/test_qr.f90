@@ -17,24 +17,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r1, r2
-        real(real64), dimension(m, m) :: q1, q2
-        real(real64), dimension(n, n) :: p2
-        real(real64), dimension(n) :: tau1, tau2
+        real(real64), dimension(m, n) :: a
+        real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
-        call create_random_array(a)
-        r1 = a
-        r2 = a
+        call random_number(a)
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 1, Part C"
@@ -42,10 +37,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Factorization Test 2, Part C"
@@ -59,24 +53,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r1, r2
-        complex(real64), dimension(m, m) :: q1, q2
-        complex(real64), dimension(n, n) :: p2
-        complex(real64), dimension(n) :: tau1, tau2
+        complex(real64), dimension(m, n) :: a
+        complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        r1 = a
-        r2 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Factorization Test 1, Part C"
@@ -84,10 +73,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Factorization Test 2, Part C"
@@ -101,24 +89,19 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r1, r2
-        real(real64), dimension(m, m) :: q1, q2
-        real(real64), dimension(n, n) :: p2
-        real(real64), dimension(n) :: tau1, tau2
+        real(real64), dimension(m, n) :: a
+        real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        r1 = a
-        r2 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 1, Part C"
@@ -126,10 +109,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Test 2, Part C"
@@ -144,24 +126,19 @@ contains
 
         ! Local Variables
         integer(int32) :: i, j
-        complex(real64), dimension(m, n) :: a, r1, r2
-        complex(real64), dimension(m, m) :: q1, q2
-        complex(real64), dimension(n, n) :: p2
-        complex(real64), dimension(n) :: tau1, tau2
+        complex(real64), dimension(m, n) :: a
+        complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        r1 = a
-        r2 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 1, Part C"
@@ -169,10 +146,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex Overdetermined QR Test 2, Part C"
@@ -186,24 +162,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r1, r2
-        real(real64), dimension(m, m) :: q1, q2
-        real(real64), dimension(n, n) :: p2
-        real(real64), dimension(m) :: tau1, tau2
+        real(real64), dimension(m, n) :: a
+        real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        r1 = a
-        r2 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 1, Part C"
@@ -211,10 +182,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined QR Test 2, Part C"
@@ -228,24 +198,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r1, r2
-        complex(real64), dimension(m, m) :: q1, q2
-        complex(real64), dimension(n, n) :: p2
-        complex(real64), dimension(m) :: tau1, tau2
+        complex(real64), dimension(m, n) :: a
+        complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
         integer(int32), dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        r1 = a
-        r2 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(r1, tau1)
+        call qr_factor(a, q = q1, r = r1)
 
-        ! Extract Q and R, and then check that Q * R = A
-        call form_qr(r1, tau1, q1)
+        ! Check that Q * R = A
         if (.not.assert(a, matmul(q1, r1), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Underdetermined QR Test 1, Part C"
@@ -253,10 +218,9 @@ contains
 
         ! Compute the QR factorization of A with pivoting
         pvt2 = 0
-        call qr_factor(r2, tau2, pvt2)
+        call qr_factor(a, pvt2, q = q2, r = r2, p = p2)
 
-        ! Extract Q, R, and P, and then check that Q * R = A * P
-        call form_qr(r2, tau2, pvt2, q2, p2)
+        ! Check that Q * R = A * P
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Underdetermined QR Test 2, Part C"
@@ -273,9 +237,8 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r, c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, c1, c2, ans
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -285,12 +248,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -303,7 +264,7 @@ contains
 
         ! Compute C = Q**T * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**T * C
         ans = matmul(transpose(q), c2)
@@ -322,9 +283,8 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(n) :: tau
+        complex(real64), dimension(m, n) :: a, c1, c2, ans
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -334,12 +294,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -352,7 +310,7 @@ contains
 
         ! Compute C = Q**H * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**H * C
         ans = matmul(conjg(transpose(q)), c2)
@@ -372,9 +330,8 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r, c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(n) :: tau
+        real(real64), dimension(m, n) :: a, c1, c2, ans
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -384,12 +341,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -402,7 +357,7 @@ contains
 
         ! Compute C = Q**T * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**T * C
         ans = matmul(transpose(q), c2)
@@ -421,9 +376,8 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(n) :: tau
+        complex(real64), dimension(m, n) :: a, c1, c2, ans
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -433,12 +387,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -451,7 +403,7 @@ contains
 
         ! Compute C = Q**H * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**H * C
         ans = matmul(conjg(transpose(q)), c2)
@@ -471,9 +423,8 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r, c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(m) :: tau
+        real(real64), dimension(m, n) :: a, c1, c2, ans
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -483,12 +434,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -501,7 +450,7 @@ contains
 
         ! Compute C = Q**T * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**T * C
         ans = matmul(transpose(q), c2)
@@ -520,9 +469,8 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r, c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(m) :: tau
+        complex(real64), dimension(m, n) :: a, c1, c2, ans
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -532,12 +480,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = Q * C
-        call mult_qr(.true., .false., r, tau, c1)
+        c1 = mult_qr(.true., .false., qr, tau, c1)
 
         ! Compute ANS = Q * C
         ans = matmul(q, c2)
@@ -550,7 +496,7 @@ contains
 
         ! Compute C = Q**H * C
         c1 = c2
-        call mult_qr(.true., .true., r, tau, c1)
+        c1 = mult_qr(.true., .true., qr, tau, c1)
 
         ! Compute ANS = Q**H * C
         ans = matmul(conjg(transpose(q)), c2)
@@ -570,10 +516,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(n) :: tau
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -583,12 +528,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -601,7 +544,7 @@ contains
 
         ! Compute C = C * Q**T
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**T
         ans = matmul(c2, transpose(q))
@@ -620,10 +563,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(n) :: tau
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -633,12 +575,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -651,7 +591,7 @@ contains
 
         ! Compute C = C * Q**H
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**H
         ans = matmul(c2, conjg(transpose(q)))
@@ -671,10 +611,9 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(n) :: tau
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -684,12 +623,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -702,7 +639,7 @@ contains
 
         ! Compute C = C * Q**T
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**T
         ans = matmul(c2, transpose(q))
@@ -721,10 +658,9 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(n) :: tau
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -734,12 +670,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -752,7 +686,7 @@ contains
 
         ! Compute C = C * Q**H
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**H
         ans = matmul(c2, conjg(transpose(q)))
@@ -772,10 +706,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: c1, c2, ans
-        real(real64), dimension(m, m) :: q
-        real(real64), dimension(m) :: tau
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -785,12 +718,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -803,7 +734,7 @@ contains
 
         ! Compute C = C * Q**T
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**T
         ans = matmul(c2, transpose(q))
@@ -822,10 +753,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(n, m) :: c1, c2, ans
-        complex(real64), dimension(m, m) :: q
-        complex(real64), dimension(m) :: tau
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -835,12 +765,10 @@ contains
         c2 = c1
 
         ! Generate the QR factorization of A
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(a, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C = C * Q
-        call mult_qr(.false., .false., r, tau, c1)
+        c1 = mult_qr(.false., .false., qr, tau, c1)
 
         ! Compute ANS = C * Q
         ans = matmul(c2, q)
@@ -853,7 +781,7 @@ contains
 
         ! Compute C = C * Q**H
         c1 = c2
-        call mult_qr(.false., .true., r, tau, c1)
+        c1 = mult_qr(.false., .true., qr, tau, c1)
 
         ! Compute ANS = C * Q**H
         ans = matmul(c2, conjg(transpose(q)))
@@ -873,10 +801,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, r
-        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(m) :: c1, c2, ans
-        real(real64), dimension(n) :: tau
+        real(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -886,12 +813,10 @@ contains
         c2 = c1
 
         ! Compute the QR factorization
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(r, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C1 = Q * C1
-        call mult_qr(.false., a, tau, c1)
+        c1 = mult_qr(.false., qr, tau, c1)
 
         ! Compute ANS = Q * C2
         ans = matmul(q, c2)
@@ -904,7 +829,7 @@ contains
 
         ! Compute C1 = Q**T * C1
         c1 = c2
-        call mult_qr(.true., a, tau, c1)
+        c1 = mult_qr(.true., qr, tau, c1)
 
         ! Compute ANS = Q * C2
         ans = matmul(transpose(q), c2)
@@ -923,10 +848,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, r
-        complex(real64), dimension(m, m) :: q
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(m) :: c1, c2, ans
-        complex(real64), dimension(n) :: tau
+        complex(real64), allocatable :: tau(:), qr(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -936,12 +860,10 @@ contains
         c2 = c1
 
         ! Compute the QR factorization
-        call qr_factor(a, tau)
-        r = a
-        call form_qr(r, tau, q)
+        call qr_factor(a, tau = tau, qr = qr, q = q)
 
         ! Compute C1 = Q * C1
-        call mult_qr(.false., a, tau, c1)
+        c1 = mult_qr(.false., qr, tau, c1)
 
         ! Compute ANS = Q * C2
         ans = matmul(q, c2)
@@ -954,7 +876,7 @@ contains
 
         ! Compute C1 = Q**H * C1
         c1 = c2
-        call mult_qr(.true., a, tau, c1)
+        c1 = mult_qr(.true., qr, tau, c1)
 
         ! Compute ANS = Q * C2
         ans = matmul(conjg(transpose(q)), c2)
@@ -976,31 +898,25 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
-        real(real64), dimension(m, nrhs) :: b, b1, ans1
+        real(real64), dimension(m, n) :: a
+        real(real64), dimension(m, nrhs) :: b, ans1
         real(real64), dimension(n, nrhs) :: x1
-        real(real64), dimension(n) :: tau
-        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau)
+        call qr_factor(a, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n,:)
+        x1 = solve_qr(qr, tau, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1010,14 +926,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, No Pivoting"
         end if
@@ -1030,31 +943,25 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
-        real(real64), dimension(m) :: b, b1, ans1
+        real(real64), dimension(m, n) :: a
+        real(real64), dimension(m) :: b, ans1
         real(real64), dimension(n) :: x1
-        real(real64), dimension(n) :: tau
-        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau)
+        call qr_factor(a, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n)
+        x1 = solve_qr(qr, tau, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1064,14 +971,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Vector Solution Test 2, No Pivoting"
         end if
@@ -1085,31 +989,25 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
-        complex(real64), dimension(m, nrhs) :: b, b1, ans1
+        complex(real64), dimension(m, n) :: a
+        complex(real64), dimension(m, nrhs) :: b, ans1
         complex(real64), dimension(n, nrhs) :: x1
-        complex(real64), dimension(n) :: tau
-        complex(real64), dimension(m) :: b2a, b2, ans2
+        complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
+        complex(real64), allocatable :: tau(:), qr(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau)
+        call qr_factor(a, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n,:)
+        x1 = solve_qr(qr, tau, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1119,14 +1017,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Solution Test 2, No Pivoting"
         end if
@@ -1139,31 +1034,25 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
-        complex(real64), dimension(m) :: b, b1, ans1
+        complex(real64), dimension(m, n) :: a
+        complex(real64), dimension(m) :: b, ans1
         complex(real64), dimension(n) :: x1
-        complex(real64), dimension(n) :: tau
-        complex(real64), dimension(m) :: b2a, b2, ans2
+        complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
+        complex(real64), allocatable :: tau(:), qr(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau)
+        call qr_factor(a, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n)
+        x1 = solve_qr(qr, tau, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1173,14 +1062,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Vector Solution Test 2, No Pivoting"
         end if
@@ -1194,12 +1080,12 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
-        real(real64), dimension(m, nrhs) :: b, b1, ans1
+        real(real64), dimension(m, n) :: a
+        real(real64), dimension(m, nrhs) :: b, ans1
         real(real64), dimension(n, nrhs) :: x1
-        real(real64), dimension(n) :: tau
-        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1208,19 +1094,13 @@ contains
         pvt = 0
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, pvt, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n,:)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1230,14 +1110,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, pvt, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Solution Test 2, With Pivoting"
         end if
@@ -1250,12 +1127,12 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1
-        real(real64), dimension(m) :: b, b1, ans1
+        real(real64), dimension(m, n) :: a
+        real(real64), dimension(m) :: b, ans1
         real(real64), dimension(n) :: x1
-        real(real64), dimension(n) :: tau
-        real(real64), dimension(m) :: b2a, b2, ans2
+        real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1264,19 +1141,13 @@ contains
         pvt = 0
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, pvt, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1286,14 +1157,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, pvt, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: QR Vector Solution Test 2, With Pivoting"
         end if
@@ -1307,12 +1175,12 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
-        complex(real64), dimension(m, nrhs) :: b, b1, ans1
+        complex(real64), dimension(m, n) :: a
+        complex(real64), dimension(m, nrhs) :: b, ans1
         complex(real64), dimension(n, nrhs) :: x1
-        complex(real64), dimension(n) :: tau
-        complex(real64), dimension(m) :: b2a, b2, ans2
+        complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
+        complex(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1321,19 +1189,13 @@ contains
         pvt = 0
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, pvt, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n,:)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1343,14 +1205,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, pvt, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Solution Test 2, With Pivoting"
         end if
@@ -1363,12 +1222,12 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1
-        complex(real64), dimension(m) :: b, b1, ans1
+        complex(real64), dimension(m, n) :: a
+        complex(real64), dimension(m) :: b, ans1
         complex(real64), dimension(n) :: x1
-        complex(real64), dimension(n) :: tau
-        complex(real64), dimension(m) :: b2a, b2, ans2
+        complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
+        complex(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1377,19 +1236,13 @@ contains
         pvt = 0
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2a)
-        a1 = a
-        b1 = b
-        b2 = b2a
+        call create_random_array(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        call solve_qr(a1, tau, pvt, b1)
-
-        ! Get X1 from B1
-        x1 = b1(1:n)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1399,14 +1252,11 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        call solve_qr(a1, tau, pvt, b2)
-
-        ! Get X2 from B2
-        x2 = b2(1:n)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2a, tol = REAL64_TOL)) then
+        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued QR Vector Solution Test 2, With Pivoting"
         end if
@@ -1422,10 +1272,10 @@ contains
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m, nrhs) :: b1, b2
-        real(real64), dimension(n) :: tau
         real(real64), allocatable, dimension(:) :: work
         real(real64) :: temp(1), rcond
         integer(int32), dimension(n) :: pvt
+        real(real64), allocatable :: tau(:), qr(:,:), x2(:,:)
         integer(int32) :: lwork, info, rnk
         logical :: rst
 
@@ -1446,11 +1296,11 @@ contains
             info)
         
          ! Compute the solution via QR factorization
-         call qr_factor(a2, tau, pvt)
-         call solve_qr(a2, tau, pvt, b2)
+         call qr_factor(a2, pvt, tau = tau, qr = qr)
+         x2 =  solve_qr(qr, tau, pvt, b2)
 
          ! Test
-         if (.not.assert(b1(1:n,:), b2(1:n,:), tol = REAL64_TOL)) then
+         if (.not.assert(b1(1:n,:), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Solution Test, With Pivoting"
          end if
@@ -1466,8 +1316,8 @@ contains
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m) :: b1, b2
-        real(real64), dimension(n) :: tau
-        real(real64), allocatable, dimension(:) :: work
+        real(real64), allocatable, dimension(:) :: work, tau, x2
+        real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1), rcond
         integer(int32), dimension(n) :: pvt
         integer(int32) :: lwork, info, rnk
@@ -1490,11 +1340,11 @@ contains
             info)
         
          ! Compute the solution via QR factorization
-         call qr_factor(a2, tau, pvt)
-         call solve_qr(a2, tau, pvt, b2)
+         call qr_factor(a2, pvt, tau = tau, qr = qr)
+         x2 = solve_qr(qr, tau, pvt, b2)
 
          ! Test
-         if (.not.assert(b1(1:n), b2(1:n), tol = REAL64_TOL)) then
+         if (.not.assert(b1(1:n), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Vector Solution Test, With Pivoting"
          end if
@@ -1510,8 +1360,8 @@ contains
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
         complex(real64), dimension(m, nrhs) :: b1, b2
-        complex(real64), dimension(n) :: tau
-        complex(real64), allocatable, dimension(:) :: work
+        complex(real64), allocatable, dimension(:) :: work, tau
+        complex(real64), allocatable, dimension(:,:) :: qr, x2
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
@@ -1537,11 +1387,11 @@ contains
             rwork, info)
         
          ! Compute the solution via QR factorization
-         call qr_factor(a2, tau, pvt)
-         call solve_qr(a2, tau, pvt, b2)
+         call qr_factor(a2, pvt, tau = tau, qr = qr)
+         x2 = solve_qr(qr, tau, pvt, b2)
 
          ! Test
-         if (.not.assert(b1(1:n,:), b2(1:n,:), tol = REAL64_TOL)) then
+         if (.not.assert(b1(1:n,:), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Overdetermined QR Solution Test, With Pivoting"
          end if
@@ -1557,8 +1407,8 @@ contains
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
         complex(real64), dimension(m) :: b1, b2
-        complex(real64), dimension(n) :: tau
-        complex(real64), allocatable, dimension(:) :: work
+        complex(real64), allocatable, dimension(:) :: work, tau, x2
+        complex(real64), allocatable, dimension(:,:) :: qr
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
@@ -1584,11 +1434,11 @@ contains
             rwork, info)
         
          ! Compute the solution via QR factorization
-         call qr_factor(a2, tau, pvt)
-         call solve_qr(a2, tau, pvt, b2)
+         call qr_factor(a2, pvt, tau = tau, qr = qr)
+         x2 = solve_qr(qr, tau, pvt, b2)
 
          ! Test
-         if (.not.assert(b1(1:n), b2(1:n), tol = REAL64_TOL)) then
+         if (.not.assert(b1(1:n), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Overdetermined QR Vector Solution Test, With Pivoting"
          end if
@@ -1602,30 +1452,27 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1, a2
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(m, nrhs) :: b, ans1
         real(real64), dimension(n, nrhs) :: x1
-        real(real64), dimension(m) :: tau
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
         rst = .true.
         pvt = 0
-        call create_random_array(a)
-        call create_random_array(b)
-        call create_random_array(b2)
-        a1 = a
+        call random_number(a)
+        call random_number(b)
+        call random_number(b2)
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
-        a2 = a1
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        x1(1:m,:) = b
-        call solve_qr(a1, tau, pvt, x1)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1635,8 +1482,7 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        x2(1:m) = b2
-        call solve_qr(a2, tau, pvt, x2)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
@@ -1653,12 +1499,12 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1, a2
+        real(real64), dimension(m, n) :: a
         real(real64), dimension(m) :: b, ans1
         real(real64), dimension(n) :: x1
-        real(real64), dimension(m) :: tau
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
+        real(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1668,15 +1514,12 @@ contains
         call create_random_array(a)
         call create_random_array(b)
         call create_random_array(b2)
-        a1 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
-        a2 = a1
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        x1(1:m) = b
-        call solve_qr(a1, tau, pvt, x1)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1686,8 +1529,7 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        x2(1:m) = b2
-        call solve_qr(a2, tau, pvt, x2)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
@@ -1705,12 +1547,12 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1, a2
+        complex(real64), dimension(m, n) :: a
         complex(real64), dimension(m, nrhs) :: b, ans1
         complex(real64), dimension(n, nrhs) :: x1
-        complex(real64), dimension(m) :: tau
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
+        complex(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1720,15 +1562,12 @@ contains
         call create_random_array(a)
         call create_random_array(b)
         call create_random_array(b2)
-        a1 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
-        a2 = a1
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        x1(1:m,:) = b
-        call solve_qr(a1, tau, pvt, x1)
+        x1 = solve_qr(qr, tau, pvt, b)
 
         ! Test
         ans1 = matmul(a, x1)
@@ -1738,8 +1577,7 @@ contains
         end if
 
         ! Solve the system of equations - vector
-        x2(1:m) = b2
-        call solve_qr(a2, tau, pvt, x2)
+        x2 = solve_qr(qr, tau, pvt, b2)
 
         ! Test
         ans2 = matmul(a, x2)
@@ -1756,12 +1594,10 @@ contains
         integer(int32), parameter :: n = 6
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1, a2
-        complex(real64), dimension(m) :: b, ans1
-        complex(real64), dimension(n) :: x1
-        complex(real64), dimension(m) :: tau
-        complex(real64), dimension(m) :: b2, ans2
-        complex(real64), dimension(n) :: x2
+        complex(real64), dimension(m, n) :: a
+        complex(real64), dimension(m) :: b, ans
+        complex(real64), dimension(n) :: x
+        complex(real64), allocatable :: tau(:), qr(:,:)
         integer(int32), dimension(n) :: pvt
         logical :: rst
 
@@ -1770,33 +1606,18 @@ contains
         pvt = 0
         call create_random_array(a)
         call create_random_array(b)
-        call create_random_array(b2)
-        a1 = a
 
         ! Compute the QR factorization of A
-        call qr_factor(a1, tau, pvt)
-        a2 = a1
+        call qr_factor(a, pvt, tau = tau, qr = qr)
 
         ! Solve the system of equations
-        x1(1:m) = b
-        call solve_qr(a1, tau, pvt, x1)
+        x = solve_qr(qr, tau, pvt, b)
 
         ! Test
-        ans1 = matmul(a, x1)
-        if (.not.assert(ans1, b, tol = REAL64_TOL)) then
+        ans = matmul(a, x)
+        if (.not.assert(ans, b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Underdetermined QR Vector Solution Test 1, With Pivoting"
-        end if
-
-        ! Solve the system of equations - vector
-        x2(1:m) = b2
-        call solve_qr(a2, tau, pvt, x2)
-
-        ! Test
-        ans2 = matmul(a, x2)
-        if (.not.assert(ans2, b2, tol = REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "Test Failed: Complex-Valued Underdetermined QR Vector Solution Test 2, With Pivoting"
         end if
     end function
 
@@ -1810,8 +1631,8 @@ contains
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m, nrhs) :: b1, b2
-        real(real64), dimension(n) :: tau
-        real(real64), allocatable, dimension(:) :: work
+        real(real64), allocatable, dimension(:) :: work, tau
+        real(real64), allocatable, dimension(:,:) :: qr, x2
         real(real64) :: temp(1)
         integer(int32) :: lwork, info
         logical :: rst
@@ -1830,11 +1651,11 @@ contains
         call dgels('N', m, n, nrhs, a1, m, b1, m, work, lwork, info)
 
         ! Compute the solution via QR factorization
-        call qr_factor(a2, tau)
-        call solve_qr(a2, tau, b2)
+        call qr_factor(a2, tau = tau, qr = qr)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
-        if (.not.assert(b1(1:n,:), b2(1:n,:), tol = REAL64_TOL)) then
+        if (.not.assert(b1(1:n,:), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Solution Test"
         end if
@@ -1850,8 +1671,8 @@ contains
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m) :: b1, b2
-        real(real64), dimension(n) :: tau
-        real(real64), allocatable, dimension(:) :: work
+        real(real64), allocatable, dimension(:) :: work, tau, x2
+        real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1)
         integer(int32) :: lwork, info
         logical :: rst
@@ -1870,11 +1691,11 @@ contains
         call dgels('N', m, n, nrhs, a1, m, b1, m, work, lwork, info)
 
         ! Compute the solution via QR factorization
-        call qr_factor(a2, tau)
-        call solve_qr(a2, tau, b2)
+        call qr_factor(a2, tau = tau, qr = qr)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
-        if (.not.assert(b1(1:n), b2(1:n), tol = REAL64_TOL)) then
+        if (.not.assert(b1(1:n), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Overdetermined QR Vector Solution Test"
         end if
@@ -1890,8 +1711,8 @@ contains
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
         complex(real64), dimension(m, nrhs) :: b1, b2
-        complex(real64), dimension(n) :: tau
-        complex(real64), allocatable, dimension(:) :: work
+        complex(real64), allocatable, dimension(:) :: work, tau
+        complex(real64), allocatable, dimension(:,:) :: qr, x2
         complex(real64) :: temp(1)
         integer(int32) :: lwork, info
         logical :: rst
@@ -1910,11 +1731,11 @@ contains
         call zgels('N', m, n, nrhs, a1, m, b1, m, work, lwork, info)
 
         ! Compute the solution via QR factorization
-        call qr_factor(a2, tau)
-        call solve_qr(a2, tau, b2)
+        call qr_factor(a2, tau = tau, qr = qr)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
-        if (.not.assert(b1(1:n,:), b2(1:n,:), tol = REAL64_TOL)) then
+        if (.not.assert(b1(1:n,:), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Overdetermined QR Solution Test"
         end if
@@ -1930,8 +1751,8 @@ contains
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
         complex(real64), dimension(m) :: b1, b2
-        complex(real64), dimension(n) :: tau
-        complex(real64), allocatable, dimension(:) :: work
+        complex(real64), allocatable, dimension(:) :: work, tau, x2
+        complex(real64), allocatable, dimension(:,:) :: qr
         complex(real64) :: temp(1)
         integer(int32) :: lwork, info
         logical :: rst
@@ -1950,11 +1771,11 @@ contains
         call zgels('N', m, n, nrhs, a1, m, b1, m, work, lwork, info)
 
         ! Compute the solution via QR factorization
-        call qr_factor(a2, tau)
-        call solve_qr(a2, tau, b2)
+        call qr_factor(a2, tau = tau, qr = qr)
+        x2 = solve_qr(qr, tau, b2)
 
         ! Test
-        if (.not.assert(b1(1:n), b2(1:n), tol = REAL64_TOL)) then
+        if (.not.assert(b1(1:n), x2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Overdetermined QR Vector Solution Test"
         end if
@@ -1969,10 +1790,10 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1, r
-        real(real64), dimension(m, m) :: q
+        real(real64), dimension(m, n) :: a, a1
+        real(real64), allocatable, dimension(:,:) :: q, r
         real(real64), dimension(m) :: u
-        real(real64), dimension(n) :: v, tau
+        real(real64), dimension(n) :: v
         logical :: rst
 
         ! Initialization
@@ -1982,11 +1803,7 @@ contains
         call create_random_array(v)
 
         ! Compute the QR factorization of A
-        r = a
-        call qr_factor(r, tau)
-
-        ! Form Q and R
-        call form_qr(r, tau, q)
+        call qr_factor(a, q = q, r = r)
 
         ! Compute A1 = A + u * v**T
         a1 = a
@@ -2010,10 +1827,10 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1, r
-        complex(real64), dimension(m, m) :: q
+        complex(real64), dimension(m, n) :: a, a1
+        complex(real64), allocatable, dimension(:,:) :: q, r
         complex(real64), dimension(m) :: u
-        complex(real64), dimension(n) :: v, tau
+        complex(real64), dimension(n) :: v
         logical :: rst
 
         ! Initialization
@@ -2023,11 +1840,7 @@ contains
         call create_random_array(v)
 
         ! Compute the QR factorization of A
-        r = a
-        call qr_factor(r, tau)
-
-        ! Form Q and R
-        call form_qr(r, tau, q)
+        call qr_factor(a, q = q, r = r)
 
         ! Compute A1 = A + u * v**H
         a1 = a

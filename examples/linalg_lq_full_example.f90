@@ -6,7 +6,8 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), b(3), q(3,3), tau(3), x(3)
+    real(real64) :: a(3,3), b(3), x(3), y(3)
+    real(real64), allocatable, dimension(:,:) :: l, q
     integer(int32) :: i
 
     ! Build the 3-by-3 matrix A.
@@ -29,10 +30,7 @@ program example
     !     |   0  |
 
     ! Compute the LQ factorization
-    call lq_factor(a, tau)
-
-    ! Build L and Q.  A is overwritten with L
-    call form_lq(a, tau, q)
+    call lq_factor(a, l = l, q = q)
 
     ! Solve the lower triangular problem and store the solution in B.
     !
@@ -40,7 +38,7 @@ program example
     !
     ! We then have to solve: L * Q * X = B for X.  If we let Y = Q * X, then
     ! we solve the lower triangular system L * Y = B for Y.
-    call solve_triangular_system(.false., .false., .true., a, b)
+    y = solve_triangular_system(.false., .false., .true., l, b)
 
     ! Now we've solved the lower triangular system L * Y = B for Y.  At
     ! this point we solve the problem: Q * X = Y.  Q is an orthogonal matrix;
@@ -48,7 +46,7 @@ program example
     ! sides by Q**T:
     !
     ! Compute Q**T * B = X
-    call mtx_mult(.true., 1.0d0, q, b, 0.0d0, x)
+    x = matmul(transpose(q), y)
 
     ! Display the results
     print '(A)', "LQ Solution: X = "

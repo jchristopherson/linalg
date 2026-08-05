@@ -13,6 +13,7 @@ program main
     use test_sort
     use test_lq
     use test_sparse
+    use test_rz
 
     ! Local Variables
     logical :: rst
@@ -439,6 +440,13 @@ program main
 
     rst = test_qr_solve_no_pivot_od_cmplx_vec()
     if (.not.rst) flag = 134
+
+    ! Version 2.0.0 Additions
+    rst = test_rz_factor()
+    if (.not.rst) flag = 135
+
+    rst = test_rz_factor_cmplx()
+    if (.not.rst) flag = 136
 
     ! End
     if (flag /= 0) stop flag

@@ -17,22 +17,19 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
+        real(real64) :: a(m, n)
+        real(real64), allocatable :: q(:,:), l(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        aref = a
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
+        call lq_factor(a, l = l, q = q)
 
-        ! Extract L and Q and check that L * Q = A
-        call form_lq(a, tau, q)
-
-        ! Perform the check
-        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
+        ! Perform the check L*Q = A
+        if (.not.assert(matmul(l, q), a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LQ Factorization Test 1"
         end if
@@ -45,22 +42,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64) :: a(m, n), aref(m, n), tau(m), q(n, n), temp(m, n)
+        real(real64) :: a(m, n)
+        real(real64), allocatable :: q(:,:), l(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        aref = a
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-
-        ! Extract L and Q and check that L * Q = A
-        call form_lq(a, tau, q)
+        call lq_factor(a, l = l, q = q)
 
         ! Perform the check
-        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
+        if (.not.assert(matmul(l, q), a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined LQ Factorization Test 1"
         end if
@@ -73,22 +67,19 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
+        complex(real64) :: a(m, n)
+        complex(real64), allocatable :: l(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        aref = a
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-
-        ! Extract L and Q and check that L * Q = A
-        call form_lq(a, tau, q)
+        call lq_factor(a, l = l, q = q)
 
         ! Perform the check
-        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
+        if (.not.assert(matmul(l, q), a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Factorization Test 1"
         end if
@@ -101,22 +92,19 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        complex(real64) :: a(m, n), aref(m, n), tau(m), q(n, n)
+        complex(real64) :: a(m, n)
+        complex(real64), allocatable :: l(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        aref = a
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-
-        ! Extract L and Q and check that L * Q = A
-        call form_lq(a, tau, q)
+        call lq_factor(a, l = l, q = q)
 
         ! Perform the check
-        if (.not.assert(matmul(a, q), aref, tol = REAL64_TOL)) then
+        if (.not.assert(matmul(l, q), a, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Factorization Test 1"
         end if
@@ -131,8 +119,9 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
-            ans(n, n), c3(n), c4(n), ans2(n)
+        real(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
+            c4(n), ans2(n)
+        real(real64), allocatable :: tau(:), lq(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -144,14 +133,10 @@ contains
         c4 = c3
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L and Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = Q * C
-        call mult_lq(.true., .false., a, tau, c1)
+        c1 = mult_lq(.true., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(q, c2)
@@ -163,7 +148,7 @@ contains
         end if
 
         ! Vector RHS
-        call mult_lq(.false., a, tau, c3)
+        c3 = mult_lq(.false., lq, tau, c3)
 
         ! Compute the answer
         ans2 = matmul(q, c4)
@@ -179,7 +164,7 @@ contains
 
         ! Compute C = Q**T * C
         c1 = c2
-        call mult_lq(.true., .true., a, tau, c1)
+        c1 = mult_lq(.true., .true., lq, tau, c1)
 
         ! Compute the answer
         call mtx_mult(.true., .false., 1.0d0, q, c2, 0.0d0, ans)
@@ -192,7 +177,7 @@ contains
 
         ! Vector RHS
         c3 = c4
-        call mult_lq(.true., a, tau, c3)
+        c3 = mult_lq(.true., lq, tau, c3)
 
         ! Compute the answer
         call mtx_mult(.true., 1.0d0, q, c4, 0.0d0, ans2)
@@ -211,8 +196,9 @@ contains
         integer(int32), parameter :: n = 60
 
         ! Local Variables
-        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), c2(n, n), &
-            ans(n, n), c3(n), c4(n), ans2(n)
+        real(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
+            c4(n), ans2(n)
+        real(real64), allocatable :: tau(:), lq(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -224,14 +210,10 @@ contains
         c4 = c3
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L and Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = Q * C
-        call mult_lq(.true., .false., a, tau, c1)
+        c1 = mult_lq(.true., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(q, c2)
@@ -243,7 +225,7 @@ contains
         end if
 
         ! Vector RHS
-        call mult_lq(.false., a, tau, c3)
+        c3 = mult_lq(.false., lq, tau, c3)
 
         ! Compute the answer
         ans2 = matmul(q, c4)
@@ -259,7 +241,7 @@ contains
 
         ! Compute C = Q**T * C
         c1 = c2
-        call mult_lq(.true., .true., a, tau, c1)
+        c1 = mult_lq(.true., .true., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(transpose(q), c2)
@@ -272,7 +254,7 @@ contains
 
         ! Vector RHS
         c3 = c4
-        call mult_lq(.true., a, tau, c3)
+        c3 = mult_lq(.true., lq, tau, c3)
 
         ! Compute the answer
         ans2 = matmul(transpose(q), c4)
@@ -293,8 +275,9 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), &
-            c2(n, n), ans(n, n), c3(n), c4(n), ans2(n)
+        complex(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
+            c4(n), ans2(n)
+        complex(real64), allocatable :: tau(:), lq(:,:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -306,14 +289,10 @@ contains
         c4 = c3
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L and Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = Q * C
-        call mult_lq(.true., .false., a, tau, c1)
+        c1 = mult_lq(.true., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(q, c2)
@@ -325,7 +304,7 @@ contains
         end if
 
         ! Vector RHS
-        call mult_lq(.false., a, tau, c3)
+        c3 = mult_lq(.false., lq, tau, c3)
 
         ! Compute the answer
         ans2 = matmul(q, c4)
@@ -335,35 +314,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Multiplication Test 2"
         end if
-
-        ! ----------
-        ! Q**H
-
-        ! Compute C = Q**H * C
-        ! c1 = c2
-        ! call mult_lq(.true., .true., a, tau, c1)
-
-        ! ! Compute the answer
-        ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
-
-        ! ! Test
-        ! if (.not.assert(c1, ans, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Complex LQ Multiplication Test 3"
-        ! end if
-
-        ! ! Vector RHS
-        ! c3 = c4
-        ! call mult_lq(.true., a, tau, c3)
-
-        ! ! Compute the answer
-        ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
-
-        ! ! Test
-        ! if (.not.assert(c3, ans2, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Complex LQ Multiplication Test 4"
-        ! end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -375,8 +325,9 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(n, n), &
-            c2(n, n), ans(n, n), c3(n), c4(n), ans2(n)
+        complex(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
+            c4(n), ans2(n)
+        complex(real64), allocatable :: lq(:,:), tau(:), q(:,:)
         logical :: rst
 
         ! Initialization
@@ -388,14 +339,10 @@ contains
         c4 = c3
 
         ! Compute the LQ factorization of A
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L and Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = Q * C
-        call mult_lq(.true., .false., a, tau, c1)
+        c1 = mult_lq(.true., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(q, c2)
@@ -407,7 +354,7 @@ contains
         end if
 
         ! Vector RHS
-        call mult_lq(.false., a, tau, c3)
+        c3 = mult_lq(.false., lq, tau, c3)
 
         ! Compute the answer
         ans2 = matmul(q, c4)
@@ -417,35 +364,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 2"
         end if
-
-        ! ----------
-        ! Q**H
-
-        ! Compute C = Q**H * C
-        ! c1 = c2
-        ! call mult_lq(.true., .true., a, tau, c1)
-
-        ! ! Compute the answer
-        ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, LA_NO_OPERATION, one, q, c2, zero, ans)
-
-        ! ! Test
-        ! if (.not.assert(c1, ans, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 3"
-        ! end if
-
-        ! ! Vector RHS
-        ! c3 = c4
-        ! call mult_lq(.true., a, tau, c3)
-
-        ! ! Compute the answer
-        ! call mtx_mult(LA_HERMITIAN_TRANSPOSE, one, q, c4, zero, ans2)
-
-        ! ! Test
-        ! if (.not.assert(c3, ans2, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Underdetermined Complex LQ Multiplication Test 4"
-        ! end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -456,8 +374,8 @@ contains
 
         ! Local Variables
         logical :: rst
-        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), c2(m, n), &
-            ans(m, n)
+        real(real64) :: a(m, n), c1(m, n), c2(m, n), ans(m, n)
+        real(real64), allocatable :: tau(:), lq(:,:), q(:,:)
 
         ! Initialization
         rst = .true.
@@ -466,14 +384,10 @@ contains
         c2 = c1
 
         ! Compute the LQ factorization
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L & Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = C * Q
-        call mult_lq(.false., .false., a, tau, c1)
+        c1 = mult_lq(.false., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(c2, q)
@@ -486,7 +400,7 @@ contains
 
         ! Transpose
         c1 = c2
-        call mult_lq(.false., .true., a, tau, c1)
+        c1 = mult_lq(.false., .true., lq, tau, c1)
 
         ! Compute the answer: C = C * Q**T
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
@@ -508,8 +422,8 @@ contains
 
         ! Local Variables
         logical :: rst
-        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
-            c2(m, n), ans(m, n)
+        complex(real64) :: a(m, n), c1(m, n), c2(m, n), ans(m, n)
+        complex(real64), allocatable :: tau(:), lq(:,:), q(:,:)
 
         ! Initialization
         rst = .true.
@@ -518,14 +432,10 @@ contains
         c2 = c1
 
         ! Compute the LQ factorization
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L & Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = C * Q
-        call mult_lq(.false., .false., a, tau, c1)
+        c1 = mult_lq(.false., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(c2, q)
@@ -535,20 +445,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Complex LQ Right Multiplication Test 1"
         end if
-
-        ! Transpose
-        ! c1 = c2
-        ! call mult_lq(.false., .true., a, tau, c1)
-
-        ! ! Compute the answer: C = C * Q**H
-        ! call mtx_mult(LA_NO_OPERATION, LA_HERMITIAN_TRANSPOSE, one, c2, q, &
-        !     zero, ans)
-
-        ! ! Test
-        ! if (.not.assert(c1, ans, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Complex LQ Right Multiplication Test 2"
-        ! end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -559,8 +455,8 @@ contains
 
         ! Local Variables
         logical :: rst
-        real(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), c2(m, n), &
-            ans(m, n)
+        real(real64) :: a(m, n), c1(m, n), c2(m, n), ans(m, n)
+        real(real64), allocatable :: tau(:), lq(:,:), q(:,:)
 
         ! Initialization
         rst = .true.
@@ -569,14 +465,10 @@ contains
         c2 = c1
 
         ! Compute the LQ factorization
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L & Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = C * Q
-        call mult_lq(.false., .false., a, tau, c1)
+        c1 = mult_lq(.false., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(c2, q)
@@ -589,7 +481,7 @@ contains
 
         ! Transpose
         c1 = c2
-        call mult_lq(.false., .true., a, tau, c1)
+        c1 = mult_lq(.false., .true., lq, tau, c1)
 
         ! Compute the answer: C = C * Q**T
         call mtx_mult(.false., .true., 1.0d0, c2, q, 0.0d0, ans)
@@ -611,8 +503,8 @@ contains
 
         ! Local Variables
         logical :: rst
-        complex(real64) :: a(m, n), l(m, n), tau(m), q(n, n), c1(m, n), &
-            c2(m, n), ans(m, n)
+        complex(real64) :: a(m, n), c1(m, n), c2(m, n), ans(m, n)
+        complex(real64), allocatable :: tau(:), lq(:,:), q(:,:)
 
         ! Initialization
         rst = .true.
@@ -621,14 +513,10 @@ contains
         c2 = c1
 
         ! Compute the LQ factorization
-        call lq_factor(a, tau)
-        l = a
-
-        ! Extract L & Q
-        call form_lq(l, tau, q)
+        call lq_factor(a, tau = tau, lq = lq, q = q)
 
         ! Compute C = C * Q
-        call mult_lq(.false., .false., a, tau, c1)
+        c1 = mult_lq(.false., .false., lq, tau, c1)
 
         ! Compute the answer
         ans = matmul(c2, q)
@@ -638,20 +526,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 1"
         end if
-
-        ! Transpose
-        ! c1 = c2
-        ! call mult_lq(.false., .true., a, tau, c1)
-
-        ! ! Compute the answer: C = C * Q**H
-        ! call mtx_mult(LA_NO_OPERATION, LA_HERMITIAN_TRANSPOSE, one, c2, q, &
-        !     zero, ans)
-
-        ! ! Test
-        ! if (.not.assert(c1, ans, REAL64_TOL)) then
-        !     rst = .false.
-        !     print '(A)', "Test Failed: Underdetermined Complex LQ Right Multiplication Test 2"
-        ! end if
     end function
 
 ! ------------------------------------------------------------------------------

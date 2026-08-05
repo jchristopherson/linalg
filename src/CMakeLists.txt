@@ -113,12 +113,6 @@ set(LINALG_SOURCES
     ${dir}/linalg_least_squares.f90
     ${dir}/linear_algebra.f90
 )
-if (${BUILD_LINALG_C_API})
-    set(LINALG_C_SOURCES
-        ${dir}/linalg_c_api.f90
-    )
-    list(APPEND LINALG_SOURCES ${LINALG_C_SOURCES})
-endif()
 list(APPEND LINALG_SOURCES ${QRUPDATE_SOURCES})
 list(APPEND LINALG_SOURCES ${SPARSEKIT_SOURCES})
 set(LINALG_SOURCES ${LINALG_SOURCES} PARENT_SCOPE)
@@ -187,19 +181,6 @@ target_include_directories(
     $<BUILD_INTERFACE:${LINALG_MOD_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_MODULEDIR}>
 )
-
-if (${BUILD_LINALG_C_API})
-    install(
-        FILES ${linalg_SOURCE_DIR}/include/linalg.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
-
-    target_include_directories(
-        ${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-endif()
 
 install(
     TARGETS ${PROJECT_NAME}

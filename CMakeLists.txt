@@ -7,9 +7,6 @@ project(
 set(CMAKE_Fortran_STANDARD 2018)
 set(CMAKE_Fortran_STANDARD_REQUIRED TRUE)
 
-# Build the C API?
-option(BUILD_LINALG_C_API "Build LINALG C API?" OFF)
-
 # Confgiure everything
 add_subdirectory(configure)
 

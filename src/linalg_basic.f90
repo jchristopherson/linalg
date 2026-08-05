@@ -26,6 +26,8 @@ module linalg_basic
     public :: banded_to_dense
     public :: dense_to_banded
     public :: extract_diagonal
+    public :: extract_upper_triangular
+    public :: extract_lower_triangular
 
     integer(int32), parameter :: LA_NO_OPERATION = 0
         !! Defines no operation should be performed on the matrix.
@@ -131,6 +133,18 @@ module linalg_basic
         module procedure :: extract_diagonal_dbl
         module procedure :: extract_diagonal_cmplx
         module procedure :: extract_diagonal_csr
+    end interface
+
+    interface extract_upper_triangular
+        !! An interface to the upper triangular matrix extraction routines.
+        module procedure :: extract_upper_triangular_dbl
+        module procedure :: extract_upper_triangular_cmplx
+    end interface
+
+    interface extract_lower_triangular
+        !! An interface to the lower triangular matrix extraction routines.
+        module procedure :: extract_lower_triangular_dbl
+        module procedure :: extract_lower_triangular_cmplx
     end interface
 contains
 ! ******************************************************************************
@@ -2873,6 +2887,96 @@ pure function extract_diagonal_csr(a) result(diag)
 
     ! Process
     call a%extract_diagonal(diag)
+end function
+
+! ------------------------------------------------------------------------------
+pure function extract_upper_triangular_dbl(x) result(rst)
+    !! Extracts the upper triangular portion of a matrix.
+    real(real64), intent(in), dimension(:,:) :: x
+        !! The M-by-N matrix.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The K-by-N upper triangular matrix where K = MIN(M, N).
+
+    ! Local Variables
+    integer(int32) :: j, m, n, k, kj
+
+    ! Process
+    m = size(x, 1)
+    n = size(x, 2)
+    k = min(m, n)
+    allocate(rst(k, n))
+    do j = 1, n
+        kj = min(k, j)
+        rst(1:kj,j) = x(1:kj,j)
+        if (j < k) rst(j+1:k,j) = 0.0d0
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+pure function extract_upper_triangular_cmplx(x) result(rst)
+    !! Extracts the upper triangular portion of a matrix.
+    complex(real64), intent(in), dimension(:,:) :: x
+        !! The M-by-N matrix.
+    complex(real64), allocatable, dimension(:,:) :: rst
+        !! The K-by-N upper triangular matrix where K = MIN(M, N).
+
+    ! Local Variables
+    integer(int32) :: j, m, n, k, kj
+
+    ! Process
+    m = size(x, 1)
+    n = size(x, 2)
+    k = min(m, n)
+    allocate(rst(k, n))
+    do j = 1, n
+        kj = min(k, j)
+        rst(1:kj,j) = x(1:kj,j)
+        if (j < k) rst(j+1:,j) = (0.0d0, 0.0d0)
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+pure function extract_lower_triangular_dbl(x) result(rst)
+    !! Extracts the lower triangular portion of a matrix.
+    real(real64), intent(in), dimension(:,:) :: x
+        !! The M-by-N matrix.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The M-by-K lower triangular matrix where K = MIN(M, N).
+
+    ! Local Variables
+    integer(int32) :: j, m, n, k
+
+    ! Process
+    m = size(x, 1)
+    n = size(x, 2)
+    k = min(m, n)
+    allocate(rst(m, k))
+    do j = 1, k
+        if (j > 1) rst(1:j-1,j) = 0.0d0
+        rst(j:,j) = x(j:,j)
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+pure function extract_lower_triangular_cmplx(x) result(rst)
+    !! Extracts the lower triangular portion of a matrix.
+    complex(real64), intent(in), dimension(:,:) :: x
+        !! The M-by-N matrix.
+    complex(real64), allocatable, dimension(:,:) :: rst
+        !! The M-by-K lower triangular matrix where K = MIN(M, N).
+
+    ! Local Variables
+    integer(int32) :: j, m, n, k
+
+    ! Process
+    m = size(x, 1)
+    n = size(x, 2)
+    k = min(m, n)
+    allocate(rst(m, k))
+    do j = 1, k
+        if (j > 1) rst(1:j-1,j) = (0.0d0, 0.0d0)
+        rst(j:,j) = x(j:,j)
+    end do
 end function
 
 ! ------------------------------------------------------------------------------

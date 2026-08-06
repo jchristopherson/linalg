@@ -12,14 +12,29 @@
 
     <title>solve_qr &ndash; LINALG</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -72,9 +87,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title="<p> 1.1% of total for procedures.</p>Including implementation: 656 statements, 73.3% of total for procedures.">10 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="<p> 2.1% of total for procedures.</p>Including implementation: 422 statements, 86.8% of total for procedures.">10 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -95,9 +109,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -158,7 +174,7 @@
 
         <h2>Module Procedures</h2>
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_mtx"></span> <h3>private  subroutine solve_qr_no_pivot_mtx(a, tau, b, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_mtx"></span> <h3>private pure function solve_qr_no_pivot_mtx(a, tau, b) result(x)  
 </h3></div>
     <div class="card-body">
         <p>Solves a system of M QR-factored equations of N unknowns.  M must be
@@ -177,25 +193,99 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~85"></span>
+              <span class="anchor" id="variable-a~106"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.  Notice, M must
-be greater than or equal to N.</p>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~19"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~55"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The M-by-NRHS right-hand-side matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix.</p>
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_mtx_cmplx"></span> <h3>private pure function solve_qr_no_pivot_mtx_cmplx(a, tau, b) result(x)  
+</h3></div>
+    <div class="card-body">
+        <p>Solves a system of M QR-factored equations of N unknowns.  M must be
+greater than or equal to N.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~107"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~20"></span>
-              real(kind=real64),
+              complex(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -210,79 +300,33 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~45"></span>
-              real(kind=real64),
+              <span class="anchor" id="variable-b~56"></span>
+              complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the M-by-NRHS right-hand-side matrix.  On output, the 
-first N rows are overwritten by the solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~49"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~37"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~85"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-NRHS right-hand-side matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS right-hand-side matrix.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_mtx_cmplx"></span> <h3>private  subroutine solve_qr_no_pivot_mtx_cmplx(a, tau, b, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_vec"></span> <h3>private pure function solve_qr_no_pivot_vec(a, tau, b) result(x)  
 </h3></div>
     <div class="card-body">
         <p>Solves a system of M QR-factored equations of N unknowns.  M must be
@@ -301,25 +345,23 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~86"></span>
-              complex(kind=real64),
+              <span class="anchor" id="variable-a~108"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.  Notice, M must
-be greater than or equal to N.</p>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~21"></span>
-              complex(kind=real64),
+              real(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -334,79 +376,33 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~46"></span>
-              complex(kind=real64),
+              <span class="anchor" id="variable-b~57"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
-              dimension(:,:)
+              dimension(:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the M-by-NRHS right-hand-side matrix.  On output, the 
-first N rows are overwritten by the solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~50"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~38"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~86"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element right-hand-side vector.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution vector.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_vec"></span> <h3>private  subroutine solve_qr_no_pivot_vec(a, tau, b, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_vec_cmplx"></span> <h3>private pure function solve_qr_no_pivot_vec_cmplx(a, tau, b) result(x)  
 </h3></div>
     <div class="card-body">
         <p>Solves a system of M QR-factored equations of N unknowns.  M must be
@@ -425,148 +421,22 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~87"></span>
-              real(kind=real64),
+              <span class="anchor" id="variable-a~109"></span>
+              complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.  Notice, M must
-be greater than or equal to N.</p>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~22"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of the 
-elementary reflectors as returned by qr_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~47"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, the M-element right-hand-side vector.  On output, the first
-N elements are overwritten with the solution vector.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~51"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~39"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~87"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_no_pivot_vec_cmplx"></span> <h3>private  subroutine solve_qr_no_pivot_vec_cmplx(a, tau, b, work, olwork, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves a system of M QR-factored equations of N unknowns.  M must be
-greater than or equal to N.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~88"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.  Notice, M must
-be greater than or equal to N.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~23"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -582,79 +452,33 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~48"></span>
+              <span class="anchor" id="variable-b~58"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the M-element right-hand-side vector.  On output, the first
-N elements are overwritten with the solution vector.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~52"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~40"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~88"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element right-hand-side vector.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution vector.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_mtx"></span> <h3>private  subroutine solve_qr_pivot_mtx(a, tau, jpvt, b, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_mtx"></span> <h3>private pure function solve_qr_pivot_mtx(a, tau, jpvt, b) result(x)  
 </h3></div>
     <div class="card-body">
         <p>Solves a system of M QR-factored equations of N unknowns.</p>
@@ -672,24 +496,296 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~89"></span>
+              <span class="anchor" id="variable-a~110"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.</p>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~23"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~59"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The MAX(M, N)-by-NRHS right-hand-side matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix.</p>
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_mtx_cmplx"></span> <h3>private pure function solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b) result(x)  
+</h3></div>
+    <div class="card-body">
+        <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~111"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~24"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~60"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The M-by-NRHS right-hand-side matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix.</p>
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_vec"></span> <h3>private pure function solve_qr_pivot_vec(a, tau, jpvt, b) result(x)  
+</h3></div>
+    <div class="card-body">
+        <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~112"></span>
               real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~25"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-jpvt~5"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>jpvt</strong></td>
+            <td>
+                <p>An N-element array, as output by qr_factor, used to track the 
+column pivots.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~61"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The M-element right-hand-side vector.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution vector.</p>
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_vec_cmplx"></span> <h3>private pure function solve_qr_pivot_vec_cmplx(a, tau, jpvt, b) result(x)  
+</h3></div>
+    <div class="card-body">
+        <p>Solves a system of M QR-factored equations of N unknowns.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~113"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N QR factored matrix as returned by qr_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~26"></span>
+              complex(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -720,487 +816,27 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~49"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, the MAX(M, N)-by-NRHS right-hand-side matrix.  On output,
-the first N rows are overwritten by the solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~53"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~41"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~89"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_mtx_cmplx"></span> <h3>private  subroutine solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b, work, olwork, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves a system of M QR-factored equations of N unknowns.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~90"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~25"></span>
+              <span class="anchor" id="variable-b~62"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of the 
-elementary reflectors as returned by qr_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-jpvt~7"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>jpvt</strong></td>
-            <td>
-                <p>An N-element array, as output by qr_factor, used to track the 
-column pivots.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~50"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, the MAX(M, N)-by-NRHS right-hand-side matrix.  On output,
-the first N rows are overwritten by the solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~54"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~42"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~90"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_vec"></span> <h3>private  subroutine solve_qr_pivot_vec(a, tau, jpvt, b, work, olwork, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves a system of M QR-factored equations of N unknowns.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~91"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~26"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of the 
-elementary reflectors as returned by qr_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-jpvt~8"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>jpvt</strong></td>
-            <td>
-                <p>An N-element array, as output by qr_factor, used to track the 
-column pivots.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~51"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the MAX(M, N)-by-NRHS right-hand-side vector.  On output,
-the first N rows are overwritten by the solution vector.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~55"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~43"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~91"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element right-hand-side vector.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_qr_pivot_vec_cmplx"></span> <h3>private  subroutine solve_qr_pivot_vec_cmplx(a, tau, jpvt, b, work, olwork, err)  
-</h3></div>
-    <div class="card-body">
-        <p>Solves a system of M QR-factored equations of N unknowns.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~92"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>On input, the M-by-N QR factored matrix as returned by qr_factor.<br>
-On output, the contents of this matrix are restored.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~27"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of the 
-elementary reflectors as returned by qr_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-jpvt~9"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>jpvt</strong></td>
-            <td>
-                <p>An N-element array, as output by qr_factor, used to track the 
-column pivots.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~52"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, the MAX(M, N)-by-NRHS right-hand-side vector.  On output,
-the first N rows are overwritten by the solution vector.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~56"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~44"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~92"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution vector.</p>
 
     </div>
   </div>
@@ -1212,40 +848,21 @@ without performing any actual calculations.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

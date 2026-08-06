@@ -14,7 +14,7 @@ module linalg_tri
     end interface
 contains
 ! ------------------------------------------------------------------------------
-subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
+pure function solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b) result(x)
     !! Solves a triangular system of equations of the form 
     !! \(op(A) X = \alpha B\) or \(X op(A) = \alpha B\) where \(A\) is a 
     !! triangular matrix (either upper or lower) for the unknown \(X\).
@@ -34,19 +34,14 @@ subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
     real(real64), intent(in), dimension(:,:) :: a
         !! If lside is true, the M-by-M triangular matrix \(A\); else, \(A\) is
         !! N-by-N if lside is false.
-    real(real64), intent(inout), dimension(:,:) :: b
-        !! On input, the M-by-N matrix \(B\).  On output, the M-by-N solution 
-        !! matrix \(X\).
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
-
-    ! Parameters
-    character :: side, uplo, transa, diag
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The M-by-N matrix \(B\).
+    real(real64), allocatable, dimension(:,:) :: x
+        !! The M-by-N matrix \(X\).
 
     ! Local Variables
+    character :: side, uplo, transa, diag
     integer(int32) :: m, n, nrowa
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(b, 1)
@@ -73,25 +68,19 @@ subroutine solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b, err)
     else
         diag = 'U'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check - matrix A must be square
     if (size(a, 1) /= nrowa .or. size(a, 2) /= nrowa) then
-        call report_matrix_size_error("solve_tri_mtx", errmgr, "a", &
-            nrowa, nrowa, size(a, 1), size(a, 2))
-        return
+        error stop 6
     end if
 
     ! Call DTRSM
-    call DTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, b, m)
-end subroutine
+    allocate(x(m, n), source = b)
+    call DTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, x, m)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)
+pure function solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b) result(x)
     !! Solves a triangular system of equations of the form 
     !! \(op(A) X = \alpha B\) or \(X op(A) = \alpha B\) where \(A\) is a 
     !! triangular matrix (either upper or lower) for the unknown \(X\).
@@ -111,19 +100,14 @@ subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)
     complex(real64), intent(in), dimension(:,:) :: a
         !! If lside is true, the M-by-M triangular matrix \(A\); else, \(A\) is
         !! N-by-N if lside is false.
-    complex(real64), intent(inout), dimension(:,:) :: b
-        !! On input, the M-by-N matrix \(B\).  On output, the M-by-N solution 
-        !! matrix \(X\).
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
-
-    ! Parameters
-    character :: side, uplo, transa, diag
+    complex(real64), intent(in), dimension(:,:) :: b
+        !! On input, The M-by-N matrix \(B\).
+    complex(real64), allocatable, dimension(:,:) :: x
+        !! The M-by-N matrix \(X\).
 
     ! Local Variables
+    character :: side, uplo, transa, diag
     integer(int32) :: m, n, nrowa
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(b, 1)
@@ -150,25 +134,19 @@ subroutine solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b, err)
     else
         diag = 'U'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check - matrix A must be square
     if (size(a, 1) /= nrowa .or. size(a, 2) /= nrowa) then
-        call report_matrix_size_error("solve_tri_mtx_cmplx", errmgr, "a", &
-            nrowa, nrowa, size(a, 1), size(a, 2))
-        return
+        error stop 6
     end if
 
     ! Call ZTRSM
-    call ZTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, b, m)
-end subroutine
+    allocate(x(m, n), source = b)
+    call ZTRSM(side, uplo, transa, diag, m, n, alpha, a, nrowa, x, m)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
+pure function solve_tri_vec(upper, trans, nounit, a, b) result(x)
     !! Solves the triangular system \(op(A) \vec{x} = \vec{b}\) where \(A\)
     !! is a triangular matrix.
     logical, intent(in) :: upper
@@ -181,11 +159,10 @@ subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
         !! false if \(A\) is not unit-triangular.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N triangular matrix \(A\).
-    real(real64), intent(inout), dimension(:) :: x
-        !! On input, the N-element vector \(\vec{b}\).  On output, the 
-        !! N-element solution vector \(\vec{x}\).
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(in), dimension(:) :: b
+        !! The N-element vector \(\vec{b}\).
+    real(real64), allocatable, dimension(:) :: x  
+        !! The N-element vector \(\vec{x}\).
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -193,8 +170,6 @@ subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
     ! Local Variables
     character :: uplo, t, diag
     integer(int32) :: n
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(a, 1)
@@ -213,29 +188,22 @@ subroutine solve_tri_vec(upper, trans, nounit, a, x, err)
     else
         diag = 'U'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 2) /= n) then
-        call report_square_matrix_error("solve_tri_vec", errmgr, "a", &
-            n, size(a, 1), size(a, 2))
-        return
-    else if (size(x) /= n) then
-        call report_inner_matrix_dimension_error("solve_tri_vec", errmgr, &
-            "a", "x", n, size(x))
-        return
+        error stop 4
+    end if
+    if (size(b) /= n) then
+        error stop 5
     end if
 
     ! Call DTRSV
+    allocate(x(n), source = b)
     call DTRSV(uplo, t, diag, n, a, n, x, 1)
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
+pure function solve_tri_vec_cmplx(upper, trans, nounit, a, b) result(x)
     !! Solves the triangular system \(op(A) \vec{x} = \vec{b}\) where \(A\)
     !! is a triangular matrix.
     logical, intent(in) :: upper
@@ -248,11 +216,10 @@ subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
         !! false if \(A\) is not unit-triangular.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N triangular matrix \(A\).
-    complex(real64), intent(inout), dimension(:) :: x
-        !! On input, the N-element vector \(\vec{b}\).  On output, the 
-        !! N-element solution vector \(\vec{x}\).
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(in), dimension(:) :: b
+        !! The N-element vector \(\vec{b}\).
+    complex(real64), allocatable, dimension(:) :: x  
+        !! The N-element vector \(\vec{x}\).
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -260,8 +227,6 @@ subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
     ! Local Variables
     character :: uplo, t, diag
     integer(int32) :: n
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     n = size(a, 1)
@@ -280,26 +245,18 @@ subroutine solve_tri_vec_cmplx(upper, trans, nounit, a, x, err)
     else
         diag = 'U'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 2) /= n) then
-        call report_square_matrix_error("solve_tri_vec_cmplx", errmgr, "a", &
-            n, size(a, 1), size(a, 2))
-        return
-    else if (size(x) /= n) then
-        call report_inner_matrix_dimension_error("solve_tri_vec_cmplx", &
-            errmgr, "a", "x", n, size(x))
-        return
+        error stop 4
+    else if (size(b) /= n) then
+        error stop 5
     end if
 
     ! Call ZTRSV
+    allocate(x(n), source = b)
     call ZTRSV(uplo, t, diag, n, a, n, x, 1)
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
 end module

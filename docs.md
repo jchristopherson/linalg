@@ -4,12 +4,13 @@ summary: LINALG is a linear algebra library that provides a user-friendly interf
 project_github: https://github.com/jchristopherson/linalg
 author: Jason Christopherson
 src_dir: ./src
-exclude_dir: **/qrupdate
-exclude_dir: **/sparskit2
+exclude_dir: /qrupdate
+exclude_dir: /sparskit2
 exclude: **/blas.f90
 exclude:  **/lapack.f90
 exclude:  **/qrupdate.f90
 exclude:  **/sparskit.f90
+exclude: **/*.f
 output_dir: ./doc
 display: public
 source: true

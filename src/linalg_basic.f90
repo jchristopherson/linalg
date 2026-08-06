@@ -28,6 +28,7 @@ module linalg_basic
     public :: extract_diagonal
     public :: extract_upper_triangular
     public :: extract_lower_triangular
+    public :: identity
 
     integer(int32), parameter :: LA_NO_OPERATION = 0
         !! Defines no operation should be performed on the matrix.
@@ -146,6 +147,7 @@ module linalg_basic
         module procedure :: extract_lower_triangular_dbl
         module procedure :: extract_lower_triangular_cmplx
     end interface
+
 contains
 ! ******************************************************************************
 ! MATRIX MULTIPLICATION ROUTINES
@@ -2606,6 +2608,8 @@ pure subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b)
     end if
 end subroutine
 
+! ******************************************************************************
+! MATRIX CONVERSION ROUTINES
 ! ------------------------------------------------------------------------------
 pure function banded_to_dense_dbl(m, kl, ku, a) result(x)
     !! Converts a banded matrix to a dense matrix.
@@ -2976,6 +2980,27 @@ pure function extract_lower_triangular_cmplx(x) result(rst)
     do j = 1, k
         if (j > 1) rst(1:j-1,j) = (0.0d0, 0.0d0)
         rst(j:,j) = x(j:,j)
+    end do
+end function
+
+! ******************************************************************************
+! MISC. OPERATIONS
+! ------------------------------------------------------------------------------
+pure function identity(n) result(rst)
+    !! Constructs an N-by-N identity matrix.
+    integer(int32), intent(in) :: n
+        !! The size of the matrix.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The resulting matrix.
+
+    ! Local Variables
+    integer(int32) :: i
+
+    ! Process
+    if (n < 1) return
+    allocate(rst(n, n), source = 0.0d0)
+    do i = 1, n
+        rst(i,i) = 1.0d0
     end do
 end function
 

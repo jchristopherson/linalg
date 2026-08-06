@@ -4,7 +4,6 @@ module linalg_sorting
     use iso_fortran_env, only : int32, real64
     use lapack
     use linalg_errors
-    use ferror
     implicit none
     private
     public :: sort
@@ -25,7 +24,7 @@ contains
 ! ******************************************************************************
 ! SORTING ROUTINES
 ! ------------------------------------------------------------------------------
-subroutine sort_dbl_array(x, ascend)
+pure subroutine sort_dbl_array(x, ascend)
     !! Sorts an array.
     real(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -54,7 +53,7 @@ subroutine sort_dbl_array(x, ascend)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_dbl_array_ind(x, ind, ascend, err)
+pure subroutine sort_dbl_array_ind(x, ind, ascend)
     !! Sorts an array.
     real(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -64,22 +63,13 @@ subroutine sort_dbl_array_ind(x, ind, ascend, err)
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
         !! sorted in an ascending order (default), or a descending order.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: n
     logical :: dir
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(ascend)) then
         dir = ascend
     else
@@ -88,9 +78,7 @@ subroutine sort_dbl_array_ind(x, ind, ascend, err)
 
     ! Input Check
     if (size(ind) /= n) then
-        call report_array_size_error("sort_dbl_array_ind", errmgr, "ind", &
-            n, size(ind))
-        return
+        error stop 2
     end if
     if (n <= 1) return
 
@@ -99,7 +87,7 @@ subroutine sort_dbl_array_ind(x, ind, ascend, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_cmplx_array(x, ascend)
+pure subroutine sort_cmplx_array(x, ascend)
     !! Sorts an array.
     complex(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -122,7 +110,7 @@ subroutine sort_cmplx_array(x, ascend)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_cmplx_array_ind(x, ind, ascend, err)
+pure subroutine sort_cmplx_array_ind(x, ind, ascend)
     !! Sorts an array.
     complex(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -132,22 +120,13 @@ subroutine sort_cmplx_array_ind(x, ind, ascend, err)
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
         !! sorted in an ascending order (default), or a descending order.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: n
     logical :: dir
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(ascend)) then
         dir = ascend
     else
@@ -156,9 +135,7 @@ subroutine sort_cmplx_array_ind(x, ind, ascend, err)
 
     ! Input Check
     if (size(ind) /= n) then
-        call report_array_size_error("sort_cmplx_array_ind", errmgr, "ind", &
-            n, size(ind))
-        return
+        error stop 2
     end if
     if (n <= 1) return
 
@@ -167,7 +144,7 @@ subroutine sort_cmplx_array_ind(x, ind, ascend, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
+pure subroutine sort_eigen_cmplx(vals, vecs, ascend)
     !! Sorts eigenvalues and their associated eigenvectors.
     complex(real64), intent(inout), dimension(:) :: vals
         !! On input, an N-element array containing the eigenvalues.  On output,
@@ -179,22 +156,13 @@ subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
         !! sorted in an ascending order (default), or a descending order.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    integer(int32) :: i, n, flag
+    integer(int32) :: i, n
     logical :: dir
     integer(int32), allocatable, dimension(:) :: ind
 
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(ascend)) then
         dir = ascend
     else
@@ -204,16 +172,11 @@ subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
     ! Ensure the eigenvector matrix is sized appropriately
     n = size(vals)
     if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
-        call report_matrix_size_error("sort_eigen_cmplx", errmgr, "vecs", &
-            n, n, size(vecs, 1), size(vecs, 2))
+        error stop 2
     end if
 
     ! Allocate memory for the tracking array
-    allocate(ind(n), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("sort_eigen_cmplx", errmgr, flag)
-        return
-    end if
+    allocate(ind(n))
     do i = 1, n
         ind(i) = i
     end do
@@ -227,7 +190,7 @@ subroutine sort_eigen_cmplx(vals, vecs, ascend, err)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_eigen_dbl(vals, vecs, ascend, err)
+pure subroutine sort_eigen_dbl(vals, vecs, ascend)
     !! Sorts eigenvalues and their associated eigenvectors.
     real(real64), intent(inout), dimension(:) :: vals
         !! On input, an N-element array containing the eigenvalues.  On output,
@@ -239,22 +202,13 @@ subroutine sort_eigen_dbl(vals, vecs, ascend, err)
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
         !! sorted in an ascending order (default), or a descending order.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    integer(int32) :: i, n, flag
+    integer(int32) :: i, n
     logical :: dir
     integer(int32), allocatable, dimension(:) :: ind
 
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(ascend)) then
         dir = ascend
     else
@@ -264,17 +218,11 @@ subroutine sort_eigen_dbl(vals, vecs, ascend, err)
     ! Ensure the eigenvector matrix is sized appropriately
     n = size(vals)
     if (size(vecs, 1) /= n .or. size(vecs, 2) /= n) then
-        call report_matrix_size_error("sort_eigen_dbl", errmgr, "vecs", &
-            n, n, size(vecs, 1), size(vecs, 2))
-        return
+        error stop 2
     end if
 
     ! Allocate memory for the tracking array
-    allocate(ind(n), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("sort_eigen_dbl", errmgr, flag)
-        return
-    end if
+    allocate(ind(n))
     do i = 1, n
         ind(i) = i
     end do
@@ -288,7 +236,7 @@ subroutine sort_eigen_dbl(vals, vecs, ascend, err)
 end subroutine
     
 ! ------------------------------------------------------------------------------
-subroutine sort_int32_array(x, ascend)
+pure subroutine sort_int32_array(x, ascend)
     !! Sorts an array.
     integer(int32), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -311,7 +259,7 @@ subroutine sort_int32_array(x, ascend)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine sort_int32_array_ind(x, ind, ascend, err)
+pure subroutine sort_int32_array_ind(x, ind, ascend)
     !! Sorts an array.
     integer(int32), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
@@ -321,22 +269,13 @@ subroutine sort_int32_array_ind(x, ind, ascend, err)
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
         !! sorted in an ascending order (default), or a descending order.
-    class(errors), intent(inout), optional, target :: err
-        !! An error object to report any errors that occur.
 
     ! Local Variables
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     integer(int32) :: n
     logical :: dir
 
     ! Initialization
     n = size(x)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(ascend)) then
         dir = ascend
     else
@@ -345,9 +284,7 @@ subroutine sort_int32_array_ind(x, ind, ascend, err)
 
     ! Input Check
     if (size(ind) /= n) then
-        call report_array_size_error("sort_int32_array_ind", errmgr, "ind", &
-            n, size(ind))
-        return
+        error stop 2
     end if
     if (n <= 1) return
 
@@ -371,7 +308,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95.
-recursive subroutine qsort_dbl_ind(ascend, x, ind)
+pure recursive subroutine qsort_dbl_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
     real(real64), intent(inout), dimension(:) :: x
@@ -404,7 +341,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95
-subroutine dbl_partition_ind(ascend, x, ind, marker)
+pure subroutine dbl_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
     real(real64), intent(inout), dimension(:) :: x
@@ -497,7 +434,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95
-recursive subroutine qsort_cmplx(ascend, x)
+pure recursive subroutine qsort_cmplx(ascend, x)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
@@ -530,7 +467,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95.
-subroutine cmplx_partition(ascend, x, marker)
+pure subroutine cmplx_partition(ascend, x, marker)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
@@ -618,7 +555,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95
-recursive subroutine qsort_cmplx_ind(ascend, x, ind)
+pure recursive subroutine qsort_cmplx_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
@@ -655,7 +592,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95.
-subroutine cmplx_partition_ind(ascend, x, ind, marker)
+pure subroutine cmplx_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
@@ -745,7 +682,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95.
-recursive subroutine qsort_int32(ascend, x)
+pure recursive subroutine qsort_int32(ascend, x)
     ! Arguments
     logical, intent(in) :: ascend
     integer(int32), intent(inout), dimension(:) :: x
@@ -774,7 +711,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95
-subroutine int32_partition(ascend, x, marker)
+pure subroutine int32_partition(ascend, x, marker)
     ! Arguments
     logical, intent(in) :: ascend
     integer(int32), intent(inout), dimension(:) :: x
@@ -856,7 +793,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95.
-recursive subroutine qsort_int32_ind(ascend, x, ind)
+pure recursive subroutine qsort_int32_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
     integer(int32), intent(inout), dimension(:) :: x
@@ -889,7 +826,7 @@ end subroutine
 !! @par Notes
 !! This implementation is a slight modification of the code presented at
 !! http://www.fortran.com/qsort_c.f95
-subroutine int32_partition_ind(ascend, x, ind, marker)
+pure subroutine int32_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
     integer(int32), intent(inout), dimension(:) :: x

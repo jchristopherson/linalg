@@ -38,6 +38,7 @@ module linalg
     public :: extract_diagonal
     public :: extract_upper_triangular
     public :: extract_lower_triangular
+    public :: identity
 
     ! LINALG_SPARSE.F90
     public :: csr_matrix

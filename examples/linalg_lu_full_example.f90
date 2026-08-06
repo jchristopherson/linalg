@@ -37,7 +37,7 @@ program example
 
     ! Now, compute the solution to the lower triangular system.  Store the
     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
-    y = solve_triangular_system(.false., .false., .false., a, pb)
+    y = solve_triangular_system(.false., .false., .false., l, pb)
     
     ! Solve the upper triangular system U * X = Y for X.
     x = solve_triangular_system(.true., .false., .true., u, y)

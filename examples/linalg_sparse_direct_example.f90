@@ -38,7 +38,7 @@ program example
 
     ! For comparison, solve the dense system via LU decomposition
     call lu_factor(dense, ipvt = ipiv, lu = lu)
-    x = solve_lu(dense, ipiv, b)
+    x = solve_lu(lu, ipiv, b)
     print "(A)", "Dense Solution:"
     print *, x
 end program

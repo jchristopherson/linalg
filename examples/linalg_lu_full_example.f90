@@ -6,7 +6,8 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), b(3), u(3,3), p(3,3), y(3), x(3)
+    real(real64) :: a(3,3), b(3), y(3), x(3), pb(3)
+    real(real64), allocatable :: l(:,:), u(:,:), p(:,:)
     integer(int32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
@@ -29,18 +30,14 @@ program example
     !     |   0  |
 
     ! Compute the LU factorization
-    call lu_factor(a, pvt)
+    call lu_factor(a, l = l, u = u, p = p)
 
-    ! Extract the L and U matrices. A is overwritten with L.
-    call form_lu(a, pvt, u, p)
-
-    ! Solve the lower triangular system L * Y = P * B for Y, but first compute
-    ! P * B, and store the results in B
-    b = matmul(p, b)
+    ! Solve the lower triangular system L * Y = P * B for Y
+    pb = matmul(p, b)
 
     ! Now, compute the solution to the lower triangular system.  Store the
     ! result in B.  Remember, L is unit diagonal (ones on its diagonal)
-    y = solve_triangular_system(.false., .false., .false., a, b)
+    y = solve_triangular_system(.false., .false., .false., a, pb)
     
     ! Solve the upper triangular system U * X = Y for X.
     x = solve_triangular_system(.true., .false., .true., u, y)

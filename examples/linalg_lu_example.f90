@@ -8,8 +8,10 @@ program example
     implicit none
 
     ! Local Variables
-    real(real64) :: a(3,3), b(3)
-    integer(int32) :: i, pvt(3)
+    real(real64) :: a(3,3), b(3), x(3)
+    real(real64), allocatable :: lu(:,:)
+    integer(int32) :: i
+    integer(int32), allocatable :: pvt(:)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -31,12 +33,12 @@ program example
     !     |   0  |
 
     ! Compute the LU factorization
-    call lu_factor(a, pvt)
+    call lu_factor(a, ipvt = pvt, lu = lu)
 
     ! Compute the solution.  The results overwrite b.
-    call solve_lu(a, pvt, b)
+    x = solve_lu(lu, pvt, b)
 
     ! Display the results.
     print '(A)', "LU Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 end program

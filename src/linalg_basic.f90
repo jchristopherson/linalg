@@ -2886,7 +2886,7 @@ pure function extract_diagonal_csr(a) result(diag)
     allocate(diag(mn))
 
     ! Process
-    call a%extract_diagonal(diag)
+    diag = a%extract_diagonal()
 end function
 
 ! ------------------------------------------------------------------------------

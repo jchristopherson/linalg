@@ -446,8 +446,9 @@ function test_csr_sparse_direct_solve_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32) :: ipiv(4)
+    integer(int32), allocatable :: ipiv(:)
     real(real64) :: a(4, 4), b(4), x(4), ans(4)
+    real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: sa
 
     ! Initialization
@@ -461,12 +462,11 @@ function test_csr_sparse_direct_solve_1() result(rst)
     sa = dense_to_csr(a)
 
     ! Compute the solution
-    ans = b
-    call lu_factor(a, ipiv)
-    call solve_lu(a, ipiv, ans)
+    call lu_factor(a, ipvt = ipiv, lu = dlu)
+    ans = solve_lu(dlu, ipiv, b)
 
     ! Test
-    call sparse_direct_solve(sa, b, x)
+    x = sparse_direct_solve(sa, b)
     if (.not.assert(x, ans, tol = 1.0d-6)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_sparse_direct_solve_1 -1"
@@ -607,8 +607,10 @@ function test_csr_lu_factor_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32) :: i, ipiv(4), ju(4)
-    real(real64) :: dense(4, 4), check(4, 4), x(4), b(4)
+    integer(int32) :: i, ju(4)
+    integer(int32), allocatable :: ipiv(:)
+    real(real64) :: dense(4, 4), check(4, 4), x(4), b(4), xd(4)
+    real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: sparse
     type(msr_matrix) :: slu
 
@@ -626,26 +628,26 @@ function test_csr_lu_factor_1() result(rst)
     call lu_factor(sparse, slu, ju)
 
     ! Compute the factorization of the dense matrix
-    call lu_factor(dense, ipiv)
+    call lu_factor(dense, ipvt = ipiv, lu = dlu)
 
     ! Test - the diagonal must be inverted
     check = slu
     do i = 1, size(check, 1)
         check(i,i) = 1.0d0 / check(i,i)
     end do
-    if (.not.assert(check, dense)) then
+    if (.not.assert(check, dlu)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_lu_factor_1 -1"
     end if
 
     ! Solve the sparse system
-    call solve_lu(slu, ju, b, x)
+    x = solve_lu(slu, ju, b)
 
     ! Now solve the dense system for comparison
-    call solve_lu(dense, ipiv, b)
+    xd = solve_lu(dlu, ipiv, b)
 
     ! Test
-    if (.not.assert(x, b)) then
+    if (.not.assert(x, xd)) then
         rst = .false.
         print "(A)", "Test Failed: test_csr_lu_factor_1 -2"
     end if
@@ -657,8 +659,10 @@ function test_pgmres_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32) :: ju(4), ipiv(4)
-    real(real64) :: dense(4, 4), m(4, 4), b(4), bc(4), x(4)
+    integer(int32) :: ju(4)
+    integer(int32), allocatable :: ipiv(:)
+    real(real64) :: dense(4, 4), m(4, 4), b(4), bc(4), x(4), xd(4)
+    real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: a, am
     type(msr_matrix) :: lu
 
@@ -683,14 +687,14 @@ function test_pgmres_1() result(rst)
     call lu_factor(am, lu, ju)
 
     ! Solve the sparse system
-    call pgmres_solver(a, lu, ju, b, x)
+    x = pgmres_solver(a, lu, ju, b)
 
     ! Solve the dense system directly
-    call lu_factor(dense, ipiv)
-    call solve_lu(dense, ipiv, bc)
+    call lu_factor(dense, ipvt = ipiv, lu = dlu)
+    xd = solve_lu(dlu, ipiv, bc)
 
     ! Test
-    if (.not.assert(x, bc)) then
+    if (.not.assert(x, xd)) then
         rst = .false.
         print "(A)", "Test Failed: test_pgmres_1 -1"
     end if

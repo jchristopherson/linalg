@@ -2,7 +2,6 @@ module linalg_sparse
     use iso_fortran_env, only : int32, real64
     use sparskit
     use blas
-    use ferror
     use linalg_errors
     implicit none
     private
@@ -141,6 +140,10 @@ function csr_get_element(this, i, j) result(rst)
     ! Initialization
     sorted = .false.
 
+    ! Input Checking
+    if (i < 1 .or. i > size(this, 1)) error stop 2
+    if (j < 1 .or. j > size(this, 2)) error stop 3
+
     ! Process
     if (.not.allocated(this%row_indices) .or. &
         .not.allocated(this%column_indices) .or. &
@@ -195,7 +198,7 @@ pure function nonzero_count_csr(x) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function create_empty_csr_matrix(m, n, nnz, err) result(rst)
+pure function create_empty_csr_matrix(m, n, nnz) result(rst)
     !! Creates an empty CSR matrix.
     integer(int32), intent(in) :: m
         !! The number of rows in the matrix.
@@ -203,77 +206,45 @@ function create_empty_csr_matrix(m, n, nnz, err) result(rst)
         !! The number of columns in the matrix.
     integer(int32), intent(in) :: nnz
         !! The number of non-zero values in the matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The empty CSR matrix.
 
     ! Local Variables
-    integer(int32) :: flag, m1
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: m1
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m1 = m + 1
 
     ! Input Checking
     if (m < 0) then
-        call errmgr%report_error("create_empty_csr_matrix", &
-            "The number of rows must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 1
     end if
     if (n < 0) then
-        call errmgr%report_error("create_empty_csr_matrix", &
-            "The number of columns must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 2
     end if
     if (nnz < 0) then
-        call errmgr%report_error("create_empty_csr_matrix", &
-            "The number of non-zero values must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 3
     end if
 
     ! Allocation
     rst%n = n
-    allocate(rst%row_indices(m1), rst%column_indices(nnz), source = 0, &
-        stat = flag)
-    if (flag == 0) allocate(rst%values(nnz), source = 0.0d0, stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("create_empty_csr_matrix", errmgr, flag)
-        return
-    end if
+    allocate(rst%row_indices(m1), rst%column_indices(nnz), source = 0)
+    allocate(rst%values(nnz), source = 0.0d0)
 end function
 
 ! ------------------------------------------------------------------------------
-function dense_to_csr(a, err) result(rst)
+pure function dense_to_csr(a) result(rst)
     !! Converts a dense matrix to a CSR matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The dense matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The CSR matrix.
 
     ! Local Variables
     integer(int32) :: i, j, k, m, n, nnz
     real(real64) :: t
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     t = 2.0d0 * epsilon(t)
     m = size(a, 1)
     n = size(a, 2)
@@ -289,8 +260,7 @@ function dense_to_csr(a, err) result(rst)
     end do
 
     ! Memory Allocation
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnz)
 
     ! Store the non-zero values
     k = 1
@@ -307,7 +277,7 @@ function dense_to_csr(a, err) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function banded_to_csr(m, ml, mu, a, err) result(rst)
+pure function banded_to_csr(m, ml, mu, a) result(rst)
     !! Converts a banded matrix to a CSR matrix.
     integer(int32), intent(in) :: m
         !! The number of rows in the banded matrix.
@@ -317,24 +287,15 @@ function banded_to_csr(m, ml, mu, a, err) result(rst)
         !! The number of upper diagonals in the banded matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The banded matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: n, nnz, flag, lowd, lda
+    integer(int32) :: n, nnz, lowd, lda, flag
     integer(int32), allocatable, dimension(:) :: ia, ja
     real(real64), allocatable, dimension(:) :: v
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     lda = size(a, 1)
     n = size(a, 2)
     nnz = lda * n
@@ -342,115 +303,70 @@ function banded_to_csr(m, ml, mu, a, err) result(rst)
 
     ! Input Checking
     if (ml < 0 .or. mu < 0) then
-        call errmgr%report_error("banded_to_csr", "The bandwidth " // &
-            "dimensions cannot be negative.", LA_INVALID_INPUT_ERROR)
-        return
+        error stop 2
     end if
     if (lda /= ml + mu + 1) then
-        call errmgr%report_error("banded_to_csr", "The number of rows in " // &
-            "the banded matrix does not match the supplied bandwidth " // &
-            "dimensions.", LA_MATRIX_FORMAT_ERROR)
-        return
+        error stop 3
     end if
 
     ! Allocation
-    allocate(ia(m + 1), ja(nnz), v(nnz), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(ia(m + 1), ja(nnz), v(nnz))
 
     ! Process
     call bndcsr(m, a, lda, lowd, ml, mu, v, ja, ia, nnz, flag)
     nnz = ia(m + 1) - 1
 
     ! Put into the sparse matrix structure
-    allocate(rst%row_indices(m + 1), source = ia, stat = flag)
-    if (flag == 0) allocate(rst%column_indices(nnz), source = ja(:nnz), &
-        stat = flag)
-    if (flag == 0) allocate(rst%values(nnz), source = v(:nnz), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(rst%row_indices(m + 1), source = ia)
+    allocate(rst%column_indices(nnz), source = ja(:nnz))
+    allocate(rst%values(nnz), source = v(:nnz))
     rst%n = n
-
-    ! End
-    return
-
-    ! Memory Error
-10  continue
-    call report_memory_error("banded_to_csr", errmgr, flag)
-    return
 end function
 
 ! ------------------------------------------------------------------------------
-subroutine csr_to_dense(a, x, err)
+pure function csr_to_dense(a) result(x)
     !! Converts a CSR matrix to a dense matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix to convert.
-    real(real64), intent(out), dimension(:,:) :: x
+    real(real64), allocatable, dimension(:,:) :: x
         !! The dense matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, nnz, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: i, j, k, m, n, nnz
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
+    allocate(x(m, n), source = 0.0d0)
     
-    ! Input Check
-    if (size(x, 1) /= m .or. size(x, 2) /= n) then
-        call report_matrix_size_error("csr_to_dense", errmgr, "x", m, n, &
-            size(x, 1), size(x, 2))
-        return
-    end if
-
     ! Process
     do i = 1, m
-        x(i,:) = 0.0d0
         do k = a%row_indices(i), a%row_indices(i+1) - 1
             j = a%column_indices(k)
             x(i,j) = a%values(k)
         end do
     end do
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-function diag_to_csr(a, err) result(rst)
+pure function diag_to_csr(a) result(rst)
     !! Converts a diagonal matrix to a CSR matrix.
     real(real64), intent(in), dimension(:) :: a
         !! The diagonal matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: i, n, n1, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: i, n, n1
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     n = size(a)
     n1 = n + 1
 
     ! Allocation
-    allocate(rst%row_indices(n1), rst%column_indices(n), stat = flag)
-    if (flag == 0) allocate(rst%values(n), source = a, stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("diag_to_csr", errmgr, flag)
-        return
-    end if
+    allocate(rst%row_indices(n1), rst%column_indices(n))
+    allocate(rst%values(n), source = a)
     rst%n = n
 
     ! Populate IA & JA
@@ -462,7 +378,7 @@ function diag_to_csr(a, err) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-subroutine csr_assign_to_dense(dense, sparse)
+pure subroutine csr_assign_to_dense(dense, sparse)
     !! Assigns the values of a CSR matrix to a dense matrix.
     real(real64), intent(out), dimension(:,:) :: dense
         !! The dense matrix.
@@ -470,11 +386,11 @@ subroutine csr_assign_to_dense(dense, sparse)
         !! The CSR matrix.
 
     ! Process
-    call csr_to_dense(sparse, dense)
+    dense = csr_to_dense(sparse)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine dense_assign_to_csr(sparse, dense)
+pure subroutine dense_assign_to_csr(sparse, dense)
     !! Assigns the values of a dense matrix to a CSR matrix.
     type(csr_matrix), intent(out) :: sparse
         !! The CSR matrix.
@@ -486,7 +402,7 @@ subroutine dense_assign_to_csr(sparse, dense)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_mtx_mult(a, b) result(rst)
+pure function csr_mtx_mtx_mult(a, b) result(rst)
     !! Multiplies two CSR matrices together.
     class(csr_matrix), intent(in) :: a
         !! The first CSR matrix.
@@ -498,10 +414,9 @@ function csr_mtx_mtx_mult(a, b) result(rst)
     ! Local Variables
     integer(int32), parameter :: sym_mult = 0
     integer(int32), parameter :: full_mult = 1
-    integer(int32) :: flag, m, n, k, nnza, nnzb, nnzc, ierr
+    integer(int32) :: m, n, k, nnza, nnzb, nnzc, ierr
     integer(int32), allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(a, 1)
@@ -513,14 +428,11 @@ function csr_mtx_mtx_mult(a, b) result(rst)
 
     ! Input Check
     if (size(b, 1) /= k) then
-        call report_inner_matrix_dimension_error("csr_mtx_mtx_mult", errmgr, &
-            "a", "b", k, size(b, 1))
-        return
+        error stop 2
     end if
 
     ! Local Memory Allocations
-    allocate(ic(m + 1), jc(nnzc), iw(n), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(ic(m + 1), jc(nnzc), iw(n))
 
     ! Determine the structure of C
     call amub(m, n, sym_mult, a%values, a%column_indices, a%row_indices, &
@@ -531,8 +443,7 @@ function csr_mtx_mtx_mult(a, b) result(rst)
         do while (ierr /= 0)
             deallocate(jc)
             nnzc = nnzc + nnza + nnzb
-            allocate(jc(nnzc), stat = flag)
-            if (flag /= 0) go to 10
+            allocate(jc(nnzc))
             call amub(m, n, sym_mult, a%values, a%column_indices, &
                 a%row_indices, b%values, b%column_indices, b%row_indices, &
                 dummy, jc, ic, nnzc, iw, ierr)
@@ -543,25 +454,16 @@ function csr_mtx_mtx_mult(a, b) result(rst)
     nnzc = ic(m + 1) - 1
     deallocate(ic)
     deallocate(jc)
-    rst = create_empty_csr_matrix(m, n, nnzc, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnzc)
 
     ! Compute the actual product
     call amub(m, n, full_mult, a%values, a%column_indices, a%row_indices, &
         b%values, b%column_indices, b%row_indices, rst%values, &
         rst%column_indices, rst%row_indices, nnzc, iw, ierr)
-
-    ! End
-    return
-
-    ! Memory Error
-10  continue
-    call report_memory_error("csr_mtx_mtx_mult", errmgr, flag)
-    return
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_vec_mult(a, b) result(rst)
+pure function csr_mtx_vec_mult(a, b) result(rst)
     !! Multiplies a CSR matrix by a vector.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
@@ -571,9 +473,8 @@ function csr_mtx_vec_mult(a, b) result(rst)
         !! The resulting vector.
 
     ! Local Variables
-    integer(int32) :: i, k, k1, k2, n, p, flag
+    integer(int32) :: i, k, k1, k2, n, p
     real(real64) :: t
-    type(errors) :: errmgr
 
     ! Initialization
     n = size(a, 1)
@@ -581,17 +482,11 @@ function csr_mtx_vec_mult(a, b) result(rst)
 
     ! Input Check
     if (size(b) /= p) then
-        call report_inner_matrix_dimension_error("csr_mtx_vec_mult", errmgr, &
-            "a", "b", p, size(b))
-        return
+        error stop 2
     end if
 
     ! Memory Allocation
-    allocate(rst(n), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("csr_mtx_vec_mult", errmgr, flag)
-        return
-    end if
+    allocate(rst(n))
 
     ! Process
     do i = 1, n
@@ -606,7 +501,7 @@ function csr_mtx_vec_mult(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_add(a, b) result(rst)
+pure function csr_mtx_add(a, b) result(rst)
     !! Adds two CSR matrices.
     class(csr_matrix), intent(in) :: a
         !! The first CSR matrix.
@@ -618,10 +513,9 @@ function csr_mtx_add(a, b) result(rst)
     ! Local Variables
     integer(int32), parameter :: sym_add = 0
     integer(int32), parameter :: full_add = 1
-    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr, flag
+    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr
     integer(int32), allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(a, 1)
@@ -632,14 +526,11 @@ function csr_mtx_add(a, b) result(rst)
 
     ! Input Checking
     if (size(b, 1) /= m .or. size(b, 2) /= n) then
-        call report_matrix_size_error("csr_mtx_add", errmgr, "b", m, n, &
-            size(b, 1), size(b, 2))
-        return
+        error stop 2
     end if
 
     ! Local Memory Allocations
-    allocate(ic(m + 1), jc(nnzc), iw(n), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(ic(m + 1), jc(nnzc), iw(n))
 
     ! Determine the structure of C
     call aplb(m, n, sym_add, a%values, a%column_indices, a%row_indices, &
@@ -650,8 +541,7 @@ function csr_mtx_add(a, b) result(rst)
         do while (ierr /= 0)
             deallocate(jc)
             nnzc = nnzc + nnza + nnzb
-            allocate(jc(nnzc), stat = flag)
-            if (flag /= 0) go to 10
+            allocate(jc(nnzc))
             call aplb(m, n, sym_add, a%values, a%column_indices, &
                 a%row_indices, b%values, b%column_indices, b%row_indices, &
                 dummy, jc, ic, nnzc, iw, ierr)
@@ -662,25 +552,16 @@ function csr_mtx_add(a, b) result(rst)
     nnzc = ic(m + 1) - 1
     deallocate(ic)
     deallocate(jc)
-    rst = create_empty_csr_matrix(m, n, nnzc, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnzc)
 
     ! Compute the actual sum
     call aplb(m, n, full_add, a%values, a%column_indices, a%row_indices, &
         b%values, b%column_indices, b%row_indices, rst%values, &
         rst%column_indices, rst%row_indices, nnzc, iw, ierr)
-
-    ! End
-    return
-
-    ! Memory Error
-10  continue
-    call report_memory_error("csr_mtx_add", errmgr, flag)
-    return
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_sub(a, b) result(rst)
+pure function csr_mtx_sub(a, b) result(rst)
     !! Subtracts two CSR matrices.
     class(csr_matrix), intent(in) :: a
         !! The first CSR matrix.
@@ -691,10 +572,9 @@ function csr_mtx_sub(a, b) result(rst)
 
     ! Local Variables
     integer(int32), parameter :: sym_add = 0
-    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr, flag
+    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr
     integer(int32), allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(a, 1)
@@ -705,14 +585,11 @@ function csr_mtx_sub(a, b) result(rst)
 
     ! Input Checking
     if (size(b, 1) /= m .or. size(b, 2) /= n) then
-        call report_matrix_size_error("csr_mtx_sub", errmgr, "b", m, n, &
-            size(b, 1), size(b, 2))
-        return
+        error stop 2
     end if
 
     ! Local Memory Allocations
-    allocate(ic(m + 1), jc(nnzc), iw(n), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(ic(m + 1), jc(nnzc), iw(n))
 
     ! Determine the structure of C
     call aplb(m, n, sym_add, a%values, a%column_indices, a%row_indices, &
@@ -723,8 +600,7 @@ function csr_mtx_sub(a, b) result(rst)
         do while (ierr /= 0)
             deallocate(jc)
             nnzc = nnzc + nnza + nnzb
-            allocate(jc(nnzc), stat = flag)
-            if (flag /= 0) go to 10
+            allocate(jc(nnzc))
             call aplb(m, n, sym_add, a%values, a%column_indices, &
                 a%row_indices, b%values, b%column_indices, b%row_indices, &
                 dummy, jc, ic, nnzc, iw, ierr)
@@ -735,25 +611,16 @@ function csr_mtx_sub(a, b) result(rst)
     nnzc = ic(m + 1) - 1
     deallocate(ic)
     deallocate(jc)
-    rst = create_empty_csr_matrix(m, n, nnzc, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnzc)
 
     ! Compute the actual sum
     call aplsb(m, n, a%values, a%column_indices, a%row_indices, -1.0d0, &
         b%values, b%column_indices, b%row_indices, rst%values, &
         rst%column_indices, rst%row_indices, nnzc, iw, ierr)
-
-    ! End
-    return
-
-    ! Memory Error
-10  continue
-    call report_memory_error("csr_mtx_sub", errmgr, flag)
-    return
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_mult_scalar_1(a, b) result(rst)
+pure function csr_mtx_mult_scalar_1(a, b) result(rst)
     !! Multiplies a CSR matrix by a scalar.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
@@ -764,7 +631,6 @@ function csr_mtx_mult_scalar_1(a, b) result(rst)
 
     ! Local Variables
     integer(int32) :: m, n, nnz
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(a, 1)
@@ -772,8 +638,7 @@ function csr_mtx_mult_scalar_1(a, b) result(rst)
     nnz = nonzero_count(a)
 
     ! Process
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnz)
 
     ! Compute the product
     rst%row_indices = a%row_indices
@@ -782,7 +647,7 @@ function csr_mtx_mult_scalar_1(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_mult_scalar_2(a, b) result(rst)
+pure function csr_mtx_mult_scalar_2(a, b) result(rst)
     !! Multiplies a scalar by a CSR matrix.
     real(real64), intent(in) :: a
         !! The scalar.
@@ -793,7 +658,6 @@ function csr_mtx_mult_scalar_2(a, b) result(rst)
 
     ! Local Variables
     integer(int32) :: m, n, nnz
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(b, 1)
@@ -801,8 +665,7 @@ function csr_mtx_mult_scalar_2(a, b) result(rst)
     nnz = nonzero_count(b)
 
     ! Process
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnz)
 
     ! Compute the product
     rst%row_indices = b%row_indices
@@ -811,7 +674,7 @@ function csr_mtx_mult_scalar_2(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_mtx_divide_scalar_1(a, b) result(rst)
+pure function csr_mtx_divide_scalar_1(a, b) result(rst)
     !! Divides a CSR matrix by a scalar.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
@@ -821,7 +684,6 @@ function csr_mtx_divide_scalar_1(a, b) result(rst)
 
     ! Local Variables
     integer(int32) :: m, n, nnz
-    type(errors) :: errmgr
     
     ! Initialization
     m = size(a, 1)
@@ -829,8 +691,7 @@ function csr_mtx_divide_scalar_1(a, b) result(rst)
     nnz = nonzero_count(a)
 
     ! Process
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnz)
 
     ! Compute the product
     rst%row_indices = a%row_indices
@@ -839,7 +700,7 @@ function csr_mtx_divide_scalar_1(a, b) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_transpose(a) result(rst)
+pure function csr_transpose(a) result(rst)
     !! Transposes a CSR matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
@@ -848,14 +709,12 @@ function csr_transpose(a) result(rst)
 
     ! Local Variables
     integer(int32) :: m, n, nnz
-    type(errors) :: errmgr
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
-    rst = create_empty_csr_matrix(n, m, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(n, m, nnz)
 
     ! Process
     call csrcsc2(m, n, 1, 1, a%values, a%column_indices, a%row_indices, &
@@ -863,11 +722,11 @@ function csr_transpose(a) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-pure subroutine csr_extract_diagonal(a, diag)
+pure function csr_extract_diagonal(a) result(diag)
     !! Extracts the diagonal from a CSR matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix.
-    real(real64), intent(out), dimension(:) :: diag
+    real(real64), allocatable, dimension(:) :: diag
         !! The diagonal values.
 
     ! Local Variables
@@ -878,36 +737,27 @@ pure subroutine csr_extract_diagonal(a, diag)
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-
-    ! Input Check
-    if (size(diag) /= mn) then
-        error stop 2
-    end if
-
-    ! Memory Allocation
-    allocate(idiag(mn))
+    allocate(diag(mn), idiag(mn))
 
     ! Process
     call getdia(m, n, 0, a%values, a%column_indices, a%row_indices, len, &
         diag, idiag, 0)
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
+pure function csr_solve_sparse_direct(a, b, droptol) result(x)
     !! Solves a linear system using a direct method.
     class(csr_matrix), intent(in) :: a
         !! The matrix.
     real(real64), intent(in), dimension(:) :: b
         !! The right-hand side.
-    real(real64), intent(out), dimension(:) :: x
-        !! The solution.
     real(real64), intent(in), optional :: droptol
         !! The drop tolerance for the ILUT factorization.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), allocatable, dimension(:) :: x
+        !! The solution.
 
     ! Local Variables
-    integer(int32) :: i, m, n, nnz, lfil, iwk, ierr, flag
+    integer(int32) :: i, m, n, nnz, lfil, iwk, ierr
     integer(int32), allocatable, dimension(:) :: jlu, ju, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt
@@ -915,11 +765,6 @@ subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
     type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(droptol)) then
         dt = droptol
     else
@@ -928,22 +773,14 @@ subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
+    allocate(x(n))
 
     ! Input Checking
     if (m /= n) then
-        call report_square_matrix_error("csr_solve_sparse_direct", errmgr, &
-            "a", m, m, n)
-        return
-    end if
-    if (size(x) /= n) then
-        call report_inner_matrix_dimension_error("csr_solve_sparse_direct", &
-            errmgr, "a", "x", n, size(x))
-        return
+        error stop 1
     end if
     if (size(b) /= n) then
-        call report_array_size_error("csr_solve_sparse_direct", errmgr, "b", &
-            n, size(b))
-        return
+        error stop 2
     end if
 
     ! Parameter Determination
@@ -954,8 +791,7 @@ subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
     iwk = max(lfil * m, nnz)  ! somewhat arbitrary - can be adjusted
 
     ! Local Memory Allocation
-    allocate(alu(iwk), w(n+1), jlu(iwk), ju(n), jw(2 * n), stat = flag)
-    if (flag /= 0) go to 10
+    allocate(alu(iwk), w(n+1), jlu(iwk), ju(n), jw(2 * n))
 
     ! Factorization
     do
@@ -971,64 +807,28 @@ subroutine csr_solve_sparse_direct(a, b, x, droptol, err)
             ! Zero pivot
         else if (ierr == -1) then
             ! The input matrix is not formatted correctly
-            go to 20
+            error stop LA_MATRIX_FORMAT_ERROR
         else if (ierr == -2 .or. ierr == -3) then
             ! ALU and JLU are too small - try something larger
             iwk = min(iwk + m + n, m * n)
             deallocate(alu)
             deallocate(jlu)
-            allocate(alu(iwk), jlu(iwk), stat = flag)
-            if (flag /= 0) go to 10
+            allocate(alu(iwk), jlu(iwk))
         else if (ierr == -4) then
             ! Illegal value for LFIL - reset and try again
             lfil = n
         else if (ierr == -5) then
             ! Zero row encountered
-            go to 30
+            error stop LA_MATRIX_FORMAT_ERROR
         else
             ! We should never get here, but just in case
-            go to 40
+            error stop LA_INVALID_OPERATION_ERROR
         end if
     end do
 
     ! Solution
     call lusol(n, b, x, alu, jlu, ju)
-
-    ! End
-    return
-
-    ! Memory Error
-10  continue
-    call report_memory_error("csr_solve_sparse_direct", errmgr, flag)
-    return
-
-    ! Matrix Format Error
-20  continue
-    call errmgr%report_error("csr_solve_sparse_direct", &
-        "The input matrix was incorrectly formatted.  A row with more " // &
-        "than N entries was found.", LA_MATRIX_FORMAT_ERROR)
-    return
-
-    ! Zero Row Error
-30  continue
-    call errmgr%report_error("csr_solve_sparse_direct", &
-        "A row with all zeros was encountered in the matrix.", &
-        LA_SINGULAR_MATRIX_ERROR)
-    return
-
-    ! Unknown Error
-40  continue
-    call errmgr%report_error("csr_solve_sparse_direct", "ILUT encountered " // &
-        "an unknown error.  The error code from the ILUT routine is " // &
-        "provided in the output.", ierr)
-    return
-
-    ! Zero Pivot Error
-50  continue
-    call errmgr%report_error("csr_solve_sparse_direct", &
-        "A zero pivot was encountered.", LA_SINGULAR_MATRIX_ERROR)
-    return
-end subroutine
+end function
 
 ! ******************************************************************************
 ! MSR ROUTINES
@@ -1069,7 +869,7 @@ pure function nonzero_count_msr(x) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function create_empty_msr_matrix(m, n, nnz, err) result(rst)
+pure function create_empty_msr_matrix(m, n, nnz) result(rst)
     !! Creates an empty MSR matrix.
     integer(int32), intent(in) :: m
         !! The number of rows in the matrix.
@@ -1077,41 +877,21 @@ function create_empty_msr_matrix(m, n, nnz, err) result(rst)
         !! The number of columns in the matrix.
     integer(int32), intent(in) :: nnz
         !! The number of non-zero elements in the matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(msr_matrix) :: rst
         !! The MSR matrix.
 
     ! Local Variables
-    integer(int32) :: nelem, mn, flag
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: nelem, mn
     
-    ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
-
     ! Input Checking
     if (m < 0) then
-        call errmgr%report_error("create_empty_msr_matrix", &
-            "The number of rows must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 1
     end if
     if (n < 0) then
-        call errmgr%report_error("create_empty_msr_matrix", &
-            "The number of columns must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 2
     end if
     if (nnz < 0) then
-        call errmgr%report_error("create_empty_msr_matrix", &
-            "The number of non-zero values must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 3
     end if
 
     ! Allocation
@@ -1120,64 +900,44 @@ function create_empty_msr_matrix(m, n, nnz, err) result(rst)
     rst%nnz = nnz
     mn = min(m, n)
     nelem = m + 1 + nnz - mn
-    allocate(rst%indices(nelem), source = 0, stat = flag)
-    if (flag == 0) allocate(rst%values(nelem), source = 0.0d0, stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("create_empty_msr_matrix", errmgr, flag)
-        return
-    end if
+    allocate(rst%indices(nelem), source = 0)
+    allocate(rst%values(nelem), source = 0.0d0)
 end function
 
 ! ------------------------------------------------------------------------------
-function csr_to_msr(a, err) result(rst)
+pure function csr_to_msr(a) result(rst)
     !! Converts a CSR matrix to an MSR matrix.
     class(csr_matrix), intent(in) :: a
         !! The CSR matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(msr_matrix) :: rst
         !! The MSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz, flag
+    integer(int32) :: m, n, nnz
     integer(int32), allocatable, dimension(:) :: iwork, jc, ic
     real(real64), allocatable, dimension(:) :: work, ac
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
 
     ! Memory Allocation
-    rst = create_empty_msr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
-    allocate(work(m), iwork(m + 1), stat = flag)
-    if (flag == 0) allocate(ac(nnz), source = a%values, stat = flag)
-    if (flag == 0) allocate(jc(nnz), source = a%column_indices, stat = flag)
-    if (flag == 0) allocate(ic(m+1), source = a%row_indices, stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("csr_to_msr", errmgr, flag)
-        return
-    end if
+    rst = create_empty_msr_matrix(m, n, nnz)
+    allocate(work(m), iwork(m + 1))
+    allocate(ac(nnz), source = a%values)
+    allocate(jc(nnz), source = a%column_indices)
+    allocate(ic(m+1), source = a%row_indices)
 
     ! Perform the conversion
     call csrmsr(m, ac, jc, ic, rst%values, rst%indices, work, iwork)
 end function
 
 ! ------------------------------------------------------------------------------
-function msr_to_csr(a, err) result(rst)
+pure function msr_to_csr(a) result(rst)
     !! Converts an MSR matrix to a CSR matrix.
     class(msr_matrix), intent(in) :: a
         !! The MSR matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The CSR matrix.
 
@@ -1185,27 +945,15 @@ function msr_to_csr(a, err) result(rst)
     integer(int32) :: m, n, nnz, flag
     integer(int32), allocatable, dimension(:) :: iwork
     real(real64), allocatable, dimension(:) :: work
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
     nnz = nonzero_count(a)
 
     ! Memory Allocation
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
-    allocate(work(m), iwork(m+1), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("msr_to_csr", errmgr, flag)
-        return
-    end if
+    rst = create_empty_csr_matrix(m, n, nnz)
+    allocate(work(m), iwork(m+1))
 
     ! Process
     call msrcsr(m, a%values, a%indices, rst%values, rst%column_indices, &
@@ -1213,74 +961,46 @@ function msr_to_csr(a, err) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
-function dense_to_msr(a, err) result(rst)
+pure function dense_to_msr(a) result(rst)
     !! Converts a dense matrix to an MSR matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The dense matrix to convert.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(msr_matrix) :: rst
         !! The MSR matrix.
 
     ! Local Variables
     type(csr_matrix) :: csr
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-    
-    ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Convert to CSR, and then from CSR to MSR
-    csr = dense_to_csr(a, errmgr)
+    csr = dense_to_csr(a)
 
     ! Convert to MSR
-    rst = csr_to_msr(csr, errmgr)
+    rst = csr_to_msr(csr)
 end function
 
 ! ------------------------------------------------------------------------------
-subroutine msr_to_dense(a, x, err)
+pure function msr_to_dense(a) result(x)
     !! Converts an MSR matrix to a dense matrix.
     class(msr_matrix), intent(in) :: a
         !! The MSR matrix to convert.
-    real(real64), intent(out), dimension(:,:) :: x
+    real(real64), allocatable, dimension(:,:) :: x
         !! The dense matrix.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Local Variables
-    integer(int32) :: m, n, flag
+    integer(int32) :: m, n
     type(csr_matrix) :: csr
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     m = size(a, 1)
     n = size(a, 2)
 
-    ! Input Check
-    if (size(x, 1) /= m .or. size(x, 2) /= n) then
-        call report_matrix_size_error("msr_to_dense", errmgr, "x", m, n, &
-            size(x, 1), size(x, 2))
-        return
-    end if
-
     ! Process
-    csr = msr_to_csr(a, errmgr)
-    if (errmgr%has_error_occurred()) return
-    call csr_to_dense(csr, x, errmgr)
-end subroutine
+    csr = msr_to_csr(a)
+    x = csr_to_dense(csr)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine msr_assign_to_dense(dense, msr)
+pure subroutine msr_assign_to_dense(dense, msr)
     !! Assigns an MSR matrix to a dense matrix.
     real(real64), intent(out), dimension(:,:) :: dense
         !! The dense matrix.
@@ -1288,11 +1008,11 @@ subroutine msr_assign_to_dense(dense, msr)
         !! The MSR matrix.
 
     ! Process
-    call msr_to_dense(msr, dense)
+    dense = msr_to_dense(msr)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine dense_assign_to_msr(msr, dense)
+pure subroutine dense_assign_to_msr(msr, dense)
     !! Assigns a dense matrix to an MSR matrix.
     type(msr_matrix), intent(out) :: msr
         !! The MSR matrix.
@@ -1304,7 +1024,7 @@ subroutine dense_assign_to_msr(msr, dense)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine csr_assign_to_msr(msr, csr)
+pure subroutine csr_assign_to_msr(msr, csr)
     !! Assigns a CSR matrix to an MSR matrix.
     type(msr_matrix), intent(out) :: msr
         !! The MSR matrix.
@@ -1316,7 +1036,7 @@ subroutine csr_assign_to_msr(msr, csr)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine msr_assign_to_csr(csr, msr)
+pure subroutine msr_assign_to_csr(csr, msr)
     !! Assigns an MSR matrix to a CSR matrix.
     type(csr_matrix), intent(out) :: csr
         !! The CSR matrix.
@@ -1328,7 +1048,7 @@ subroutine msr_assign_to_csr(csr, msr)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-function create_csr_matrix(m, n, rows, cols, vals, err) result(rst)
+pure function create_csr_matrix(m, n, rows, cols, vals) result(rst)
     !! Creates a CSR matrix from the input data.
     integer(int32), intent(in) :: m
         !! The number of rows in the matrix.
@@ -1340,67 +1060,38 @@ function create_csr_matrix(m, n, rows, cols, vals, err) result(rst)
         !! The column indices.
     real(real64), intent(in), dimension(:) :: vals
         !! The values.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
     type(csr_matrix) :: rst
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: i, flag, nnz
+    integer(int32) :: i, nnz
     integer(int32), allocatable, dimension(:) :: ir
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     nnz = size(rows)
 
     ! Input Checking
     if (m < 0) then
-        call errmgr%report_error("create_csr_matrix", &
-            "The number of rows must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 1
     end if
     if (n < 0) then
-        call errmgr%report_error("create_csr_matrix", &
-            "The number of columns must be a positive value.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 2
     end if
     if (size(cols) /= nnz .or. size(vals) /= nnz) then
-        call errmgr%report_error("create_csr_matrix", &
-            "The size of the input arrays must be the same.", &
-            LA_ARRAY_SIZE_ERROR)
-        return
+        error stop 5
     end if
     do i = 1, nnz
         if (rows(i) < 1 .or. rows(i) > m) then
-            call errmgr%report_error("create_csr_matrix", &
-                "All row indices must be within the bounds of the matrix.", &
-                LA_INVALID_INPUT_ERROR)
-            return
+            error stop 3
         end if
         if (cols(i) < 1 .or. cols(i) > n) then
-            call errmgr%report_error("create_csr_matrix", &
-                "All column indices must be within the bounds of the matrix.", &
-                LA_INVALID_INPUT_ERROR)
-            return
+            error stop 4
         end if
     end do
-    allocate(ir(nnz), source = rows, stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("create_csr_matrix", errmgr, flag)
-        return
-    end if
+    allocate(ir(nnz), source = rows)
 
     ! Create an empty matrix
-    rst = create_empty_csr_matrix(m, n, nnz, errmgr)
-    if (errmgr%has_error_occurred()) return
+    rst = create_empty_csr_matrix(m, n, nnz)
 
     ! Populate the empty matrix
     call coocsr(m, nnz, vals, ir, cols, rst%values, rst%column_indices, &
@@ -1413,7 +1104,7 @@ end function
 ! ------------------------------------------------------------------------------
 ! Additional References:
 ! - https://www.diva-portal.org/smash/get/diva2:360739/FULLTEXT01.pdf
-subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
+pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
     !! Solves a linear system using the PGMRES method.
     class(csr_matrix), intent(in) :: a
         !! The matrix.
@@ -1421,10 +1112,8 @@ subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
         !! The LU factored matrix.
     integer(int32), intent(in), dimension(:) :: ju
         !! The row tracking array.
-    real(real64), intent(inout), dimension(:) :: b
+    real(real64), intent(in), dimension(:) :: b
         !! The right-hand side.
-    real(real64), intent(out), dimension(:) :: x
-        !! The solution.
     integer(int32), intent(in), optional :: im
         !! The Krylov subspace size.
     integer(int32), intent(in), optional :: maxits
@@ -1433,23 +1122,17 @@ subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
         !! The output level.
     real(real64), intent(in), optional :: tol
         !! The convergence tolerance.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), allocatable, dimension(:) :: x
+        !! The solution.
 
     ! Local Variables
-    integer(int32) :: n, ierr, flag, io, mit, krylov
+    integer(int32) :: n, ierr, io, mit, krylov
     real(real64) :: eps
+    real(real64), allocatable, dimension(:) :: bc
     real(real64), allocatable, dimension(:,:) :: vv
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
     n = size(a, 1)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
     if (present(im)) then
         krylov = im
     else
@@ -1473,57 +1156,36 @@ subroutine csr_pgmres_solver(a, lu, ju, b, x, im, tol, maxits, iout, err)
 
     ! Input Checking
     if (size(a, 2) /= n) then
-        call report_square_matrix_error("csr_pgmres_solver", errmgr, "a", n, n, &
-            size(a, 2))
-        return
+        error stop 1
     end if
     if (size(lu, 1) /= n .or. size(lu, 2) /= n) then
-        call report_matrix_size_error("csr_pgmres_solver", errmgr, "lu", n, n, &
-            size(lu, 1), size(lu, 2))
-        return
+        error stop 2
     end if
     if (size(b) /= n) then
-        call report_array_size_error("csr_pgmres_solver", errmgr, "b", n, size(b))
-        return
-    end if
-    if (size(x) /= n) then
-        call report_array_size_error("csr_pgmres_solver", errmgr, "x", n, size(x))
-        return
+        error stop 3
     end if
     if (eps < epsilon(eps)) then
-        call errmgr%report_error("csr_pgmres_solver", &
-            "The convergence tolerance is too small.", LA_INVALID_INPUT_ERROR)
-        return
+        error stop 6
     end if
     if (mit < 1) then
-        call errmgr%report_error("csr_pgmres_solver", &
-            "Too few iterations allowed.", LA_INVALID_INPUT_ERROR)
-        return
+        error stop 7
     end if
     if (krylov < 1) then
-        call errmgr%report_error("csr_pgmres_solver", &
-            "The requested Krylov subspace size is too small.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 5
     end if
 
     ! Memory Allocation
-    allocate(vv(n,krylov+1), stat = flag)
-    if (flag /= 0) then
-        call report_memory_error("csr_pgmres_solver", errmgr, flag)
-        return
-    end if
+    allocate(vv(n,krylov+1))
 
     ! Process
-    call pgmres(n, krylov, b, x, vv, eps, mit, io, a%values, a%column_indices, &
+    allocate(bc(n), source = b)
+    allocate(x(n))
+    call pgmres(n, krylov, bc, x, vv, eps, mit, io, a%values, a%column_indices, &
         a%row_indices, lu%values, lu%indices, ju, ierr)
     if (ierr == 1) then
-        call errmgr%report_error("csr_pgmres_solver", &
-            "Convergence could not be achieved to the requested tolerance " // &
-            "in the allowed number of iterations.", LA_CONVERGENCE_ERROR)
-        return
+        error stop LA_CONVERGENCE_ERROR
     end if
-end subroutine
+end function
 
 ! ------------------------------------------------------------------------------
 end module

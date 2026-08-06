@@ -16,18 +16,16 @@ contains
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
-        real(real64), dimension(m, m) :: u1
-        real(real64), dimension(n, n) :: vt1
-        real(real64), dimension(n) :: s1
+        real(real64), allocatable, dimension(:,:) :: u1, vt1
+        real(real64), allocatable, dimension(:) :: s1
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         call diag_mtx_mult(.false., 1.0d0, s1, u1)  ! U1 = U1 * S1
@@ -49,18 +47,16 @@ contains
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, a1
-        complex(real64), dimension(m, m) :: u1
-        complex(real64), dimension(n, n) :: vt1
-        real(real64), dimension(n) :: s1
+        complex(real64), allocatable, dimension(:,:) :: u1, vt1
+        real(real64), allocatable, dimension(:) :: s1
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         call diag_mtx_mult(.false., one, s1, u1)  ! U1 = U1 * S1
@@ -80,19 +76,17 @@ contains
         integer(int32), parameter :: n = 50
 
         ! Local Variables
-        real(real64), dimension(m, n) :: a, a1, t1, u2
-        real(real64), dimension(m, m) :: u1
-        real(real64), dimension(n, n) :: vt1
-        real(real64), dimension(n) :: s1
+        real(real64), dimension(m, n) :: a, a1, t1
+        real(real64), allocatable, dimension(:,:) :: u1, vt1
+        real(real64), allocatable, dimension(:) :: s1
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         t1 = u1(:,1:n)
@@ -104,20 +98,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 1"
         end if
-
-        ! Compute the partial SVD - Incomplete U
-        a1 = a
-        call svd(a1, s1, u2, vt1)
-
-        ! Ensure A = U * S * V**T
-        call diag_mtx_mult(.false., 1.0d0, s1, u2) ! U2 = U2 * S1
-        a1 = matmul(u2, vt1)
-
-        ! Test
-        if (.not.assert(a, a1, tol = REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "Test Failed: Overdetermined Singular Value Decomposition, Test 2"
-        end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -128,19 +108,17 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1, t1, u2
-        complex(real64), dimension(m, m) :: u1
-        complex(real64), dimension(n, n) :: vt1
-        real(real64), dimension(n) :: s1
+        complex(real64), dimension(m, n) :: a, a1, t1
+        complex(real64), allocatable, dimension(:,:) :: u1, vt1
+        real(real64), allocatable, dimension(:) :: s1
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         t1 = u1(:,1:n)
@@ -152,20 +130,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Overdetermined Singular Value Decomposition, Test 1"
         end if
-
-        ! Compute the partial SVD - Incomplete U
-        a1 = a
-        call svd(a1, s1, u2, vt1)
-
-        ! Ensure A = U * S * V**T
-        call diag_mtx_mult(.false., one, s1, u2) ! U2 = U2 * S1
-        a1 = matmul(u2, vt1)
-
-        ! Test
-        if (.not.assert(a, a1, tol = REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "Test Failed: Complex-Valued Overdetermined Singular Value Decomposition, Test 2"
-        end if
     end function
 
 ! ------------------------------------------------------------------------------
@@ -176,19 +140,16 @@ contains
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1
-        real(real64), dimension(m, m) :: u1
-        real(real64), dimension(n, n) :: vt1
-        real(real64), dimension(m) :: s1
+        real(real64), allocatable :: u1(:,:), vt1(:,:), s1(:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
         t1 = 0.0d0
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         t1(:,1:m) = u1
@@ -211,20 +172,18 @@ contains
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
-        complex(real64), dimension(m, n) :: a, a1, t1
-        complex(real64), dimension(m, m) :: u1
-        complex(real64), dimension(n, n) :: vt1
-        real(real64), dimension(m) :: s1
+        complex(real64), dimension(m, n) :: a, t1, a1
+        complex(real64), allocatable, dimension(:,:) :: u1, vt1
+        real(real64), allocatable, dimension(:) :: s1
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
         t1 = zero
 
         ! Compute the full SVD of A
-        call svd(a1, s1, u1, vt1)
+        call svd(a, s = s1, u = u1, vt = vt1)
 
         ! Ensure A = U * S * V**T
         t1(:,1:m) = u1

@@ -6,7 +6,8 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,2), s(2), u(3,3), vt(2,2), ac(3,2)
+    real(real64) :: a(3,2), ac(3,2)
+    real(real64), allocatable :: s(:), u(:,:), vt(:,:)
     integer(int32) :: i
 
     ! Initialize the 3-by-2 matrix A
@@ -26,7 +27,7 @@ program example
     end do
 
     print '(A)', "S ="
-    print '(F9.5)', (s(i), i = 1, size(a, 2))
+    print '(F9.5)', (s(i), i = 1, size(s))
 
     print '(A)', "V**T ="
     do i = 1, size(vt, 1)

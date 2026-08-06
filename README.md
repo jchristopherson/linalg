@@ -261,7 +261,6 @@ Here is a list of external code libraries utilized by this library.
 - [BLAS](http://www.netlib.org/blas/)
 - [LAPACK](http://www.netlib.org/lapack/)
 - [QRUpdate](https://sourceforge.net/projects/qrupdate/)
-- [FERROR](https://github.com/jchristopherson/ferror)
 - [SPARSKIT](https://www-users.cse.umn.edu/~saad/software/SPARSKIT/)
 
 The dependencies do not necessarily have to be installed to be used.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.

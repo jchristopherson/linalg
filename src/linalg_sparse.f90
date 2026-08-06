@@ -761,8 +761,6 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
     integer(int32), allocatable, dimension(:) :: jlu, ju, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
     if (present(droptol)) then

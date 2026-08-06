@@ -241,8 +241,6 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
     integer(int32), allocatable, dimension(:) :: jlu, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
     
     ! Initialization
     if (present(droptol)) then

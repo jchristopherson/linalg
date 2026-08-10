@@ -1,5 +1,5 @@
 # linalg
-A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.  There is also an optional C API that is available as part of this library.
+A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
 ## Status
 ![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
@@ -31,8 +31,10 @@ program example
     implicit none
 
     ! Local Variables
-    real(dp) :: a(3,3), b(3)
-    integer(i32) :: i, pvt(3)
+    real(real64) :: a(3,3), b(3), x(3)
+    real(real64), allocatable :: lu(:,:)
+    integer(int32) :: i
+    integer(int32), allocatable :: pvt(:)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -53,15 +55,15 @@ program example
     ! x = | -2/3 |
     !     |   0  |
 
-    ! Compute the LU factorization
-    call lu_factor(a, pvt)
+    ! Compute the LU factorization.  The factored matrix is stored in LU as [L\\U]
+    call lu_factor(a, ipvt = pvt, lu = lu)
 
-    ! Compute the solution.  The results overwrite b.
-    call solve_lu(a, pvt, b)
+    ! Compute the solution.
+    x = solve_lu(lu, pvt, b)
 
     ! Display the results.
     print '(A)', "LU Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 end program
 ```
 The above program produces the following output.
@@ -82,8 +84,8 @@ program example
     implicit none
 
     ! Local Variables
-    real(dp) :: a(3,2), b(3)
-    integer(i32) :: i
+    real(real64) :: a(3,2), b(3), x(2)
+    integer(int32) :: i
 
     ! Build the 3-by-2 matrix A
     !     | 2   1 |
@@ -100,13 +102,12 @@ program example
     ! The solution is:
     ! x = [0.13158, -0.57895]**T
 
-    ! Compute the solution via a least-squares approach.  The results overwrite
-    ! the first 2 elements in b.
-    call solve_least_squares(a, b)
+    ! Compute the solution via a least-squares approach.
+    x = solve_least_squares(a, b)
 
     ! Display the results
     print '(A)', "Least Squares Solution: X = "
-    print '(F9.5)', (b(i), i = 1, size(a, 2))
+    print '(F9.5)', (x(i), i = 1, size(x))
 end program
 ```
 The above program produces the following output.
@@ -151,9 +152,9 @@ program example
     real(dp), parameter :: k4 = 5.0d6
 
     ! Local Variables
-    integer(i32) :: i, j
-    real(dp) :: m(3,3), k(3,3), natFreq(3)
-    complex(dp) :: vals(3), modeShapes(3,3)
+    integer(int32) :: i, j
+    real(real64) :: m(3,3), k(3,3), natFreq(3)
+    complex(real64), allocatable :: vals(:), modeShapes(:,:)
 
     ! Define the mass matrix
     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])
@@ -163,7 +164,7 @@ program example
         [3, 3])
 
     ! Compute the eigenvalues and eigenvectors.
-    call eigen(k, m, vals, vecs = modeShapes)
+    call eigen(k, m, vals, rvecs = modeShapes)
 
     ! Sort the eigenvalues and eigenvectors
     call sort(vals, modeShapes)
@@ -206,8 +207,9 @@ program example
     implicit none
 
     ! Local Variables
-    integer(int32) :: ipiv(4)
+    integer(int32), allocatable :: ipiv(:)
     real(real64) :: dense(4, 4), b(4), x(4), bc(4)
+    real(real64), allocatable :: lu(:,:)
     type(csr_matrix) :: sparse
 
     ! Build the matrices as dense matrices
@@ -223,7 +225,7 @@ program example
     sparse = dense
 
     ! Compute the solution to the sparse equations
-    call sparse_direct_solve(sparse, b, x)  ! Results stored in x
+    x = sparse_direct_solve(sparse, b)
 
     ! Print the solution
     print "(A)", "Sparse Solution:"
@@ -238,10 +240,10 @@ program example
     print *, b
 
     ! For comparison, solve the dense system via LU decomposition
-    call lu_factor(dense, ipiv)
-    call solve_lu(dense, ipiv, b)   ! Results stored in b
+    call lu_factor(dense, ipvt = ipiv, lu = lu)
+    x = solve_lu(dense, ipiv, b)
     print "(A)", "Dense Solution:"
-    print *, b
+    print *, x
 end program
 ```
 The above program produces the following output.

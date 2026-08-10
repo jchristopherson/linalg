@@ -14,9 +14,6 @@ source-dir = "src"
 source-form = "default"
 implicit-external = true
 
-[dependencies]
-ferror = { git = "https://github.com/jchristopherson/ferror" }
-
 [dev-dependencies]
 fortran_test_helper = { git = "https://github.com/jchristopherson/fortran_test_helper" }
 

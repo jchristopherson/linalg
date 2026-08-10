@@ -23,10 +23,10 @@ pure subroutine eigen_symm(a, vals, vecs)
     !! \(A\) is a symmetric matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N symmetric matrix on which to operate.
-    real(real64), intent(out), dimension(:) :: vals
+    real(real64), intent(out), allocatable, dimension(:) :: vals
         !! An N-element array that will contain the eigenvalues sorted into 
         !! ascending order.
-    real(real64), intent(out), optional, dimension(:,:) :: vecs
+    real(real64), intent(out), optional, allocatable, dimension(:,:) :: vecs
         !! If present, the eigenvectors will be computed and this matrix will 
         !! contain the eigenvectors (one per column) corresponding to each
         !! eigenvalue in vals.
@@ -45,16 +45,11 @@ pure subroutine eigen_symm(a, vals, vecs)
     else
         jobz = 'N'
     end if
+    allocate(vals(n))
 
     ! Input Check
     if (size(a, 2) /= n) then
         error stop 1
-    end if
-    if (size(vals) /= n) then
-        error stop 2
-    end if
-    if (present(vecs) .and. (size(vecs, 1) /= n .or. size(vecs, 2) /= n)) then
-        error stop 3
     end if
 
     ! Workspace Query
@@ -64,7 +59,7 @@ pure subroutine eigen_symm(a, vals, vecs)
 
     ! Process
     if (present(vecs)) then
-        vecs = a
+        allocate(vecs(n, n), source = a)
         call DSYEV('V', 'L', n, vecs, n, vals, w, lwork, flag)
     else
         allocate(ac(n, n), source = a)
@@ -83,13 +78,13 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     real(real64), intent(in), dimension(:,:) :: a
         !! On input, the N-by-N matrix on which to operate.  On output, the 
         !! contents of this matrix are overwritten.
-    complex(real64), intent(out), dimension(:) :: vals
+    complex(real64), intent(out), allocatable, dimension(:) :: vals
         !! An N-element array containing the eigenvalues of the matrix.  The 
         !! eigenvalues are not sorted.
-    complex(real64), intent(out), optional, dimension(:,:) :: rvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: rvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the 
         !! right eigenvectors (one per column).
-    complex(real64), intent(out), optional, dimension(:,:) :: lvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: lvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the
         !! left eigenvectors (one per column).
     
@@ -112,19 +107,11 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
         jobvl = 'N'
     end if
     n = size(a, 1)
+    allocate(vals(n))
 
     ! Input Check
     if (size(a, 2) /= n) then
         error stop 1
-    end if
-    if (size(vals) /= n) then
-        error stop 2
-    end if
-    if (present(rvecs)) then
-        if (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n) error stop 3
-    end if
-    if (present(lvecs)) then
-        if (size(lvecs, 1) /= n .or. size(lvecs, 2) /= n) error stop 4
     end if
 
     ! Workspace Query
@@ -137,20 +124,20 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     allocate(ac(n, n), source = a)
     if (present(rvecs) .and. present(lvecs)) then
         ! Compute both the right and left eigenvectors
-        allocate(vr(n, n), vl(n, n))
+        allocate(vr(n, n), vl(n, n), rvecs(n, n), lvecs(n, n))
         call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, vr, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vr, rvecs, vals)
         call extract_eigenvectors(wr, wi, vl, lvecs)
     else if (present(rvecs) .and. .not.present(lvecs)) then
         ! Compute the right eigenvectors
-        allocate(vr(n, n))
+        allocate(vr(n, n), rvecs(n, n))
         call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, dummy, n, vr, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vr, rvecs, vals)
     else if (.not.present(rvecs) .and. present(lvecs)) then
         ! Compute the left eigenvectors
-        allocate(vl(n, n))
+        allocate(vl(n, n), lvecs(n, n))
         call DGEEV(jobvl, jobvr, n, ac, n, wr, wi, vl, n, dummy, n, w, lwork, flag)
         if (flag > 0) error stop LA_CONVERGENCE_ERROR
         call extract_eigenvectors(wr, wi, vl, lvecs, vals)
@@ -171,7 +158,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
         !! The N-by-N matrix \(A\).
     real(real64), intent(in), dimension(:,:) :: b
         !! The N-by-N matrix \(B\).
-    complex(real64), intent(out), dimension(:) :: alpha
+    complex(real64), intent(out), allocatable, dimension(:) :: alpha
         !! An N-element array that, if beta is not supplied, contains the 
         !! eigenvalues.  If beta is supplied however, the eigenvalues must be 
         !! computed as \(\lambda = \alpha / \beta\).  This however, is not as
@@ -179,16 +166,16 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
         !! \(\alpha / \beta\) can overflow or underflow.  With that said, the 
         !! values in \(\alpha\) will always be less than and usually comparable 
         !! with the NORM(\(A\)).
-    real(real64), intent(out), optional, dimension(:) :: beta
+    real(real64), intent(out), optional, allocatable, dimension(:) :: beta
         !! An optional N-element array that if provided forces alpha to return 
         !! the numerator, and this array contains the denominator used to 
         !! determine the eigenvalues as \(\lambda = \alpha / \beta\).  If used,
         !! the values in this array will always be less than and usually 
         !! comparable with the NORM(\(B\)).
-    complex(real64), intent(out), optional, dimension(:,:) :: rvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: rvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the 
         !! right eigenvectors (one per column).
-    complex(real64), intent(out), optional, dimension(:,:) :: lvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: lvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the
         !! left eigenvectors (one per column).
 
@@ -214,6 +201,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
     end if
     n = size(a, 1)
     eps = epsilon(eps)
+    allocate(alpha(n))
 
     ! Input Check
     if (size(a, 2) /= n) then
@@ -221,18 +209,6 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
     end if
     if (size(b, 1) /= n .or. size(b, 2) /= n) then
         error stop 2
-    end if
-    if (size(alpha) /= n) then
-        error stop 3
-    end if
-    if (present(beta)) then
-        if (size(beta) /= n) error stop 4
-    end if
-    if (present(rvecs)) then
-        if (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n) error stop 5
-    end if
-    if (present(lvecs)) then
-        if (size(lvecs, 1) /= n .or. size(lvecs, 2) /= n) error stop 6
     end if
 
     ! Workspace Query
@@ -244,10 +220,14 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
     ! Process
     allocate(ac(n, n), source = a)
     allocate(bc(n, n), source = b)
-    if (.not.present(beta)) allocate(bt(n))
+    if (present(beta)) then
+        allocate(beta(n))
+    else
+        allocate(bt(n))
+    end if
     if (present(rvecs) .and. present(lvecs)) then
         ! Compute both the right and left eigenvectors
-        allocate(vl(n, n), vr(n, n))
+        allocate(vl(n, n), vr(n, n), rvecs(n, n), lvecs(n, n))
         if (present(beta)) then
             call DGGEV(jobvl, jobvr, n, ac, n, bc, n, ar, ai, beta, vl, n, &
                 vr, n, w, lwork, flag)
@@ -260,7 +240,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
         call extract_eigenvectors(ar, ai, vl, lvecs)
     else if (present(rvecs) .and. .not.present(lvecs)) then
         ! Compute the right eigenvectors
-        allocate(vr(n, n))
+        allocate(vr(n, n), rvecs(n, n))
         if (present(beta)) then
             call DGGEV(jobvl, jobvr, n, ac, n, bc, n, ar, ai, beta, dummy, n, &
                 vr, n, w, lwork, flag)
@@ -272,7 +252,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
         call extract_eigenvectors(ar, ai, vr, rvecs, alpha, .false.)
     else if (.not.present(rvecs) .and. present(lvecs)) then
         ! Compute the left eigenvectors
-        allocate(vl(n, n))
+        allocate(vl(n, n), lvecs(n, n))
         if (present(beta)) then
             call DGGEV(jobvl, jobvr, n, ac, n, bc, n, ar, ai, beta, vl, n, &
                 dummy, n, w, lwork, flag)
@@ -312,13 +292,13 @@ pure subroutine eigen_cmplx(a, vals, rvecs, lvecs)
     !! \(A\) is square, but not necessarily symmetric.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix on which to operate.
-    complex(real64), intent(out), dimension(:) :: vals
+    complex(real64), intent(out), allocatable, dimension(:) :: vals
         !! An N-element array containing the eigenvalues of the matrix.  The 
         !! eigenvalues are not sorted.
-    complex(real64), intent(out), optional, dimension(:,:) :: rvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: rvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the 
         !! right eigenvectors (one per column).
-    complex(real64), intent(out), optional, dimension(:,:) :: lvecs
+    complex(real64), intent(out), optional, allocatable, dimension(:,:) :: lvecs
         !! An optional N-by-N matrix, that if supplied, signals to compute the
         !! left eigenvectors (one per column).
 
@@ -344,19 +324,11 @@ pure subroutine eigen_cmplx(a, vals, rvecs, lvecs)
     end if
     n = size(a, 1)
     lrwork = 2 * n
+    allocate(vals(n))
 
     ! Input Check
     if (size(a, 2) /= n) then
         error stop 1
-    end if
-    if (size(vals) /= n) then
-        error stop 2
-    end if
-    if (present(rvecs)) then
-        if (size(rvecs, 1) /= n .or. size(rvecs, 2) /= n) error stop 3
-    end if
-    if (present(lvecs)) then
-        if (size(lvecs, 1) /= n .or. size(lvecs, 2) /= n) error stop 4
     end if
 
     ! Workspace Query
@@ -369,14 +341,17 @@ pure subroutine eigen_cmplx(a, vals, rvecs, lvecs)
     allocate(ac(n, n), source = a)
     if (present(rvecs) .and. present(lvecs)) then
         ! Compute the right and left eigenvectors
+        allocate(rvecs(n, n), lvecs(n, n))
         call ZGEEV(jobvl, jobvr, n, ac, n, vals, lvecs, n, rvecs, n, w, lwork, &
             rw, flag)
     else if (present(rvecs) .and. .not.present(lvecs)) then
         ! Compute the right eigenvectors
+        allocate(rvecs(n, n))
         call ZGEEV(jobvl, jobvr, n, ac, n, vals, dummy, n, rvecs, n, w, lwork, &
             rw, flag)
     else if (.not.present(rvecs) .and. present(lvecs)) then
         ! Compute the left eigenvectors
+        allocate(lvecs(n, n))
         call ZGEEV(jobvl, jobvr, n, ac, n, vals, lvecs, n, dummy, n, w, lwork, &
             rw, flag)
     else

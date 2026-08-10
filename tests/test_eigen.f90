@@ -16,8 +16,9 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, vecs, x, y
-        real(real64), dimension(n) :: vals
+        real(real64), dimension(n, n) :: a, x, y
+        real(real64), allocatable, dimension(:) :: vals
+        real(real64), allocatable, dimension(:,:) :: vecs
         logical :: rst
 
         ! Initialization
@@ -45,8 +46,9 @@ contains
 
         ! Local Variables
         real(real64), dimension(n, n) :: a
-        complex(real64), dimension(n, n) :: vecs, vmtx, x, y
-        complex(real64), dimension(n) :: vals, vals1
+        complex(real64), dimension(n, n) :: vmtx, x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals1
+        complex(real64), allocatable, dimension(:,:) :: vecs
         integer(int32) :: i
         logical :: rst
 
@@ -85,8 +87,9 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, vecs, vmtx, x, y
-        complex(real64), dimension(n) :: vals, vals1
+        complex(real64), dimension(n, n) :: a, vmtx, x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals1
+        complex(real64), allocatable, dimension(:,:) :: vecs
         integer(int32) :: i
         logical :: rst
 
@@ -119,8 +122,9 @@ contains
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, b
-        complex(real64), dimension(n) :: vals, vals2
-        complex(real64), dimension(n, n) :: vecs, x, y
+        complex(real64), dimension(n, n) :: x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals2
+        complex(real64), allocatable, dimension(:,:) :: vecs
         logical :: rst
 
         ! Initialization

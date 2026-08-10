@@ -12,14 +12,29 @@
 
     <title>linalg_lu &ndash; LINALG</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -72,9 +87,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title=" 4.5% of total for modules and submodules.">449 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 6.2% of total for modules and submodules.">416 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -94,9 +108,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -152,13 +168,12 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item">sparskit</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
-                  <li class="list-inline-item">ferror</li>
                   <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
-                  <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item">sparskit</li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item">lapack</li>
               </ul>
             </li>
         </ul>
@@ -182,207 +197,7 @@
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine form_lu_all(lu, ipvt, u, p, err)  
-
-    </h3>
-  <p>Extracts the L and U matrices from the condensed [L\U] storage format 
-used by the lu_factor.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lu~2"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>lu</strong></td>
-            <td>
-                <p>On input, the N-by-N matrix as output by lu_factor.  On output, the 
-N-by-N lower triangular matrix L.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ipvt~7"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>ipvt</strong></td>
-            <td>
-                <p>The N-element pivot array as output by lu_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-u"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>u</strong></td>
-            <td>
-                <p>An N-by-N matrix where the U matrix will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>p</strong></td>
-            <td>
-                <p>An N-by-N matrix where the row permutation matrix will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~20"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine form_lu_all_cmplx(lu, ipvt, u, p, err)  
-
-    </h3>
-  <p>Extracts the L and U matrices from the condensed [L\U] storage format 
-used by the lu_factor.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lu~3"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>lu</strong></td>
-            <td>
-                <p>On input, the N-by-N matrix as output by lu_factor.  On output, the 
-N-by-N lower triangular matrix L.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ipvt~8"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>ipvt</strong></td>
-            <td>
-                <p>The N-element pivot array as output by lu_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-u~2"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>u</strong></td>
-            <td>
-                <p>An N-by-N matrix where the U matrix will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p~2"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>p</strong></td>
-            <td>
-                <p>An N-by-N matrix where the row permutation matrix will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~21"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine form_lu_only(lu, u, err)  
+    private pure subroutine form_lu_all(lu, ipvt, u, p)  
 
     </h3>
   <p>Extracts the L and U matrices from the condensed [L\U] storage format 
@@ -417,6 +232,21 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-ipvt~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>ipvt</strong></td>
+            <td>
+                <p>The N-element pivot array as output by lu_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-u~3"></span>
               real(kind=real64),
             </td>
@@ -432,17 +262,17 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~22"></span>
-              class(errors),
+              <span class="anchor" id="variable-p~3"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>p</strong></td>
             <td>
-                <p>The error object to be updated.</p>
+                <p>An N-by-N matrix where the row permutation matrix will be written.</p>
             </td>
         </tr>
     </tbody>
@@ -452,7 +282,7 @@ N-by-N lower triangular matrix L.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine form_lu_only_cmplx(lu, u, err)  
+    private pure subroutine form_lu_all_cmplx(lu, ipvt, u, p)  
 
     </h3>
   <p>Extracts the L and U matrices from the condensed [L\U] storage format 
@@ -487,6 +317,21 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-ipvt~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>ipvt</strong></td>
+            <td>
+                <p>The N-element pivot array as output by lu_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-u~4"></span>
               complex(kind=real64),
             </td>
@@ -502,17 +347,127 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~23"></span>
-              class(errors),
+              <span class="anchor" id="variable-p~4"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>p</strong></td>
             <td>
-                <p>The error object to be updated.</p>
+                <p>An N-by-N matrix where the row permutation matrix will be written.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure subroutine form_lu_only(lu, u)  
+
+    </h3>
+  <p>Extracts the L and U matrices from the condensed [L\U] storage format 
+used by the lu_factor.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lu~6"></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>lu</strong></td>
+            <td>
+                <p>On input, the N-by-N matrix as output by lu_factor.  On output, the 
+N-by-N lower triangular matrix L.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~5"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>An N-by-N matrix where the U matrix will be written.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure subroutine form_lu_only_cmplx(lu, u)  
+
+    </h3>
+  <p>Extracts the L and U matrices from the condensed [L\U] storage format 
+used by the lu_factor.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lu~7"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>lu</strong></td>
+            <td>
+                <p>On input, the N-by-N matrix as output by lu_factor.  On output, the 
+N-by-N lower triangular matrix L.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~6"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>An N-by-N matrix where the U matrix will be written.</p>
             </td>
         </tr>
     </tbody>
@@ -532,7 +487,7 @@ N-by-N lower triangular matrix L.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine lu_factor_dbl(a, ipvt, err)  
+    private pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)  
 
     </h3>
   <p>Computes the LU factorization of an M-by-N matrix.</p>
@@ -550,7 +505,7 @@ N-by-N lower triangular matrix L.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~17"></span>
+              <span class="anchor" id="variable-a"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -560,41 +515,85 @@ N-by-N lower triangular matrix L.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N matrix on which to operate.  On output, the 
-LU factored matrix in the form [L\U] where the unit diagonal
-elements of L are not stored.</p>
+                <p>The N-by-N matrix to factor.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~5"></span>
+              <span class="anchor" id="variable-ipvt"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:)
             </td>
             <td>::</td>
             <td><strong>ipvt</strong></td>
             <td>
-                <p>An MIN(M, N)-element array used to track row-pivot operations.  The 
+                <p>An N-element array used to track row-pivot operations.  The 
 array stored pivot information such that row I is interchanged with 
 row IPVT(I).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~17"></span>
-              class(errors),
+              <span class="anchor" id="variable-lu"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(out),</td>
               <td>optional,</td>            <td>
-              target
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>lu</strong></td>
             <td>
-                <p>An error object to report any errors that occur.</p>
+                <p>The N-by-N factored matrix in the form [<script type="math/tex">L</script>\ <script type="math/tex">U</script>] where the unit
+diagonal elements of <script type="math/tex">L</script> are not stored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+            <td>
+                <p>The N-by-N lower triangular matrix <script type="math/tex">L</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>The N-by-N upper triangular matrix <script type="math/tex">U</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+                <p>The N-by-N row permutation matrix.</p>
             </td>
         </tr>
     </tbody>
@@ -604,7 +603,7 @@ row IPVT(I).</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine lu_factor_cmplx(a, ipvt, err)  
+    private pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)  
 
     </h3>
   <p>Computes the LU factorization of an M-by-N matrix.</p>
@@ -622,7 +621,7 @@ row IPVT(I).</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~18"></span>
+              <span class="anchor" id="variable-a~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -632,41 +631,85 @@ row IPVT(I).</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N matrix on which to operate.  On output, the 
-LU factored matrix in the form [L\U] where the unit diagonal
-elements of L are not stored.</p>
+                <p>The N-by-N matrix to factor.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~6"></span>
+              <span class="anchor" id="variable-ipvt~2"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:)
             </td>
             <td>::</td>
             <td><strong>ipvt</strong></td>
             <td>
-                <p>An MIN(M, N)-element array used to track row-pivot operations.  The 
+                <p>An N-element array used to track row-pivot operations.  The 
 array stored pivot information such that row I is interchanged with 
 row IPVT(I).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~18"></span>
-              class(errors),
+              <span class="anchor" id="variable-lu~2"></span>
+              complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(out),</td>
               <td>optional,</td>            <td>
-              target
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>lu</strong></td>
             <td>
-                <p>An error object to report any errors that occur.</p>
+                <p>The N-by-N factored matrix in the form [<script type="math/tex">L</script>\ <script type="math/tex">U</script>] where the unit
+diagonal elements of <script type="math/tex">L</script> are not stored.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~2"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+            <td>
+                <p>The N-by-N lower triangular matrix <script type="math/tex">L</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-u~2"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>u</strong></td>
+            <td>
+                <p>The N-by-N upper triangular matrix <script type="math/tex">U</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+                <p>The N-by-N row permutation matrix.</p>
             </td>
         </tr>
     </tbody>
@@ -676,7 +719,7 @@ row IPVT(I).</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine csr_lu_factor(a, lu, ju, droptol, err)  
+    private pure subroutine csr_lu_factor(a, lu, ju, droptol)  
 
     </h3>
   <p>Factors a matrix using an LU decomposition.</p>
@@ -694,7 +737,7 @@ row IPVT(I).</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~19"></span>
+              <span class="anchor" id="variable-a~3"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -709,7 +752,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu"></span>
+              <span class="anchor" id="variable-lu~3"></span>
               type(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(out)</td>
@@ -752,21 +795,6 @@ row IPVT(I).</p>
                 <p>The drop tolerance for the ILUT factorization.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~19"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -784,7 +812,7 @@ row IPVT(I).</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lu_mtx(a, ipvt, b, err)  
+    private pure function solve_lu_mtx(a, ipvt, b) result(x)  
 
     </h3>
   <p>Solves a system of LU-factored equations.</p>
@@ -802,7 +830,7 @@ row IPVT(I).</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~20"></span>
+              <span class="anchor" id="variable-a~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -817,7 +845,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~9"></span>
+              <span class="anchor" id="variable-ipvt~5"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -832,43 +860,32 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~14"></span>
+              <span class="anchor" id="variable-b"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the N-by-NRHS right-hand-side matrix.  On output, the 
-N-by-NRHS solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~24"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The N-by-NRHS right-hand-side matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lu_mtx_cmplx(a, ipvt, b, err)  
+    private pure function solve_lu_mtx_cmplx(a, ipvt, b) result(x)  
 
     </h3>
   <p>Solves a system of LU-factored equations.</p>
@@ -886,7 +903,7 @@ N-by-NRHS solution matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~21"></span>
+              <span class="anchor" id="variable-a~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -901,7 +918,7 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~10"></span>
+              <span class="anchor" id="variable-ipvt~6"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -916,43 +933,32 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~15"></span>
+              <span class="anchor" id="variable-b~2"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, the N-by-NRHS right-hand-side matrix.  On output, the 
-N-by-NRHS solution matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~25"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The N-by-NRHS right-hand-side matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS solution matrix.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lu_vec(a, ipvt, b, err)  
+    private pure function solve_lu_vec(a, ipvt, b) result(x)  
 
     </h3>
   <p>Solves a system of LU-factored equations.</p>
@@ -970,7 +976,7 @@ N-by-NRHS solution matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-a~6"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -985,7 +991,7 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~11"></span>
+              <span class="anchor" id="variable-ipvt~7"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -1000,10 +1006,10 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~16"></span>
+              <span class="anchor" id="variable-b~3"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
@@ -1013,29 +1019,19 @@ N-by-NRHS solution matrix.</p>
                 <p>The N-element right-hand-side array.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~26"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution array.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lu_vec_cmplx(a, ipvt, b, err)  
+    private pure function solve_lu_vec_cmplx(a, ipvt, b) result(x)  
 
     </h3>
   <p>Solves a system of LU-factored equations.</p>
@@ -1053,7 +1049,7 @@ N-by-NRHS solution matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~23"></span>
+              <span class="anchor" id="variable-a~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1068,7 +1064,7 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~12"></span>
+              <span class="anchor" id="variable-ipvt~8"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -1083,10 +1079,10 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~17"></span>
+              <span class="anchor" id="variable-b~4"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
@@ -1096,29 +1092,19 @@ N-by-NRHS solution matrix.</p>
                 <p>The N-element right-hand-side array.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~27"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element solution array.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine csr_lu_solve(lu, ju, b, x, err)  
+    private pure function csr_lu_solve(lu, ju, b) result(x)  
 
     </h3>
   <p>Solves a linear system using an LU decomposition.</p>
@@ -1136,7 +1122,7 @@ N-by-NRHS solution matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~6"></span>
+              <span class="anchor" id="variable-lu~8"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1166,7 +1152,7 @@ N-by-NRHS solution matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~18"></span>
+              <span class="anchor" id="variable-b~5"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1179,39 +1165,14 @@ N-by-NRHS solution matrix.</p>
                 <p>The right-hand side.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The solution.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~28"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The solution.</p>
 
           </li>
     </ul>
@@ -1234,40 +1195,21 @@ N-by-NRHS solution matrix.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

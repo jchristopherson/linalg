@@ -13,14 +13,29 @@
     <title>All Procedures &ndash; LINALG
 </title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -105,12 +120,6 @@
                  <td><p>An interface to the banded to dense matrix conversion routines.</p></td>
                </tr>
 			   <tr>
-                 <td><a href='..\proc\cholesky_factor.html'>cholesky_factor</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the Cholesky factorization of a positive-definite matrix.</p></td>
-               </tr>
-			   <tr>
                  <td><a href='..\interface\cholesky_factor.html'>cholesky_factor</a></td>
                  <td><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></td>
                  <td>Interface</td>
@@ -149,7 +158,7 @@
 			   <tr>
                  <td><a href='..\proc\csr_to_dense.html'>csr_to_dense</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
-                 <td>Subroutine</td>
+                 <td>Function</td>
                  <td><p>Converts a CSR matrix to a dense matrix.</p></td>
                </tr>
 			   <tr>
@@ -201,16 +210,22 @@
                  <td><p>An interface to the eigenvalue and eigenvector routines.</p></td>
                </tr>
 			   <tr>
-                 <td><a href='..\interface\eigen~2.html'>eigen</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Interface</td>
-                 <td></td>
-               </tr>
-			   <tr>
                  <td><a href='..\interface\extract_diagonal.html'>extract_diagonal</a></td>
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
                  <td><p>An interface to the diagonal extraction routines.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\extract_lower_triangular.html'>extract_lower_triangular</a></td>
+                 <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
+                 <td>Interface</td>
+                 <td><p>An interface to the lower triangular matrix extraction routines.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\extract_upper_triangular.html'>extract_upper_triangular</a></td>
+                 <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
+                 <td>Interface</td>
+                 <td><p>An interface to the upper triangular matrix extraction routines.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\form_lq.html'>form_lq</a></td>
@@ -232,15 +247,9 @@
                </tr>
 			   <tr>
                  <td><a href='..\proc\identity.html'>identity</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
+                 <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Function</td>
                  <td><p>Constructs an N-by-N identity matrix.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\inverse.html'>inverse</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the inverse of a square matrix.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\lq_factor.html'>lq_factor</a></td>
@@ -253,13 +262,6 @@
                  <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
                  <td>Interface</td>
                  <td></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\lu_factor.html'>lu_factor</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the LU factorization of a square matrix such that
-<script type="math/tex"> P A = L U </script>.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\matmul.html'>matmul</a></td>
@@ -276,7 +278,7 @@
 			   <tr>
                  <td><a href='..\proc\msr_to_dense.html'>msr_to_dense</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
-                 <td>Subroutine</td>
+                 <td>Function</td>
                  <td><p>Converts an MSR matrix to a dense matrix.</p></td>
                </tr>
 			   <tr>
@@ -358,19 +360,6 @@
                  <td></td>
                </tr>
 			   <tr>
-                 <td><a href='..\proc\pinverse.html'>pinverse</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the Moore-Penrose pseudoinverse of an M-by-N matrix.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\qr_factor.html'>qr_factor</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the QR factorization of an M-by-N matrix such that either
-<script type="math/tex">A = Q R </script> (no pivoting), or <script type="math/tex">A P = Q R</script> (with pivoting).</p></td>
-               </tr>
-			   <tr>
                  <td><a href='..\interface\qr_factor.html'>qr_factor</a></td>
                  <td><a href='..\module\linalg_qr.html'>linalg_qr</a></td>
                  <td>Interface</td>
@@ -393,43 +382,6 @@
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
                  <td><p>An interface to the reciprocal multiplication routines.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_array_size_error.html'>report_array_size_error</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports an array size error.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_inner_matrix_dimension_error.html'>report_inner_matrix_dimension_error</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports an inner matrix dimension error.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_matrix_size_error.html'>report_matrix_size_error</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports a matrix size error.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_memory_error.html'>report_memory_error</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports a memory allocation error.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_singular_matrix_warning.html'>report_singular_matrix_warning</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports a singular matrix error.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\report_square_matrix_error.html'>report_square_matrix_error</a></td>
-                 <td><a href='..\module\linalg_errors.html'>linalg_errors</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Reports an error where a square matrix was expected but a non-square 
-matrix was provided.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\rz_factor.html'>rz_factor</a></td>
@@ -456,12 +408,6 @@ matrix was provided.</p></td>
                  <td></td>
                </tr>
 			   <tr>
-                 <td><a href='..\interface\solve_least_squares~2.html'>solve_least_squares</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Interface</td>
-                 <td></td>
-               </tr>
-			   <tr>
                  <td><a href='..\interface\solve_least_squares_full.html'>solve_least_squares_full</a></td>
                  <td><a href='..\module\linalg_least_squares.html'>linalg_least_squares</a></td>
                  <td>Interface</td>
@@ -470,12 +416,6 @@ matrix was provided.</p></td>
 			   <tr>
                  <td><a href='..\interface\solve_least_squares_svd.html'>solve_least_squares_svd</a></td>
                  <td><a href='..\module\linalg_least_squares.html'>linalg_least_squares</a></td>
-                 <td>Interface</td>
-                 <td></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\interface\solve_linear_system.html'>solve_linear_system</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
                  <td>Interface</td>
                  <td></td>
                </tr>
@@ -499,12 +439,6 @@ matrix was provided.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\solve_triangular_system.html'>solve_triangular_system</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Interface</td>
-                 <td></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\interface\solve_triangular_system~2.html'>solve_triangular_system</a></td>
                  <td><a href='..\module\linalg_tri.html'>linalg_tri</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -522,13 +456,6 @@ matrix was provided.</p></td>
                  <td></td>
                </tr>
 			   <tr>
-                 <td><a href='..\proc\svd.html'>svd</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Function</td>
-                 <td><p>Computes the singular value decomposition of an M-by-N matrix such that
-<script type="math/tex"> A = U S V^{T} </script>.</p></td>
-               </tr>
-			   <tr>
                  <td><a href='..\interface\svd.html'>svd</a></td>
                  <td><a href='..\module\linalg_svd.html'>linalg_svd</a></td>
                  <td>Interface</td>
@@ -539,12 +466,6 @@ matrix was provided.</p></td>
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
                  <td><p>An interface to the swap routines.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='..\proc\swap_arrays.html'>swap_arrays</a></td>
-                 <td><a href='..\module\linear_algebra.html'>linear_algebra</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Swaps the contents of two arrays.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\trace.html'>trace</a></td>
@@ -573,40 +494,21 @@ matrix was provided.</p></td>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

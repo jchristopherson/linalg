@@ -33,7 +33,7 @@ program example
     ! Local Variables
     integer(int32) :: i, j
     real(real64) :: m(3,3), k(3,3), natFreq(3)
-    complex(real64) :: vals(3), modeShapes(3,3)
+    complex(real64), allocatable :: vals(:), modeShapes(:,:)
 
     ! Define the mass matrix
     m = reshape([m1, 0.0d0, 0.0d0, 0.0d0, m2, 0.0d0, 0.0d0, 0.0d0, m3], [3, 3])

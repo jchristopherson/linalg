@@ -4,8 +4,9 @@ program example
     implicit none
 
     ! Local Variables
-    integer(int32) :: ipiv(4)
+    integer(int32), allocatable :: ipiv(:)
     real(real64) :: dense(4, 4), b(4), x(4), bc(4)
+    real(real64), allocatable :: lu(:,:)
     type(csr_matrix) :: sparse
 
     ! Build the matrices as dense matrices
@@ -21,7 +22,7 @@ program example
     sparse = dense
 
     ! Compute the solution to the sparse equations
-    call sparse_direct_solve(sparse, b, x)  ! Results stored in x
+    x = sparse_direct_solve(sparse, b)
 
     ! Print the solution
     print "(A)", "Sparse Solution:"
@@ -36,8 +37,8 @@ program example
     print *, b
 
     ! For comparison, solve the dense system via LU decomposition
-    call lu_factor(dense, ipiv)
-    call solve_lu(dense, ipiv, b)   ! Results stored in b
+    call lu_factor(dense, ipvt = ipiv, lu = lu)
+    x = solve_lu(lu, ipiv, b)
     print "(A)", "Dense Solution:"
-    print *, b
+    print *, x
 end program

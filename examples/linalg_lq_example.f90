@@ -6,8 +6,9 @@ program example
     implicit none
 
     ! Local Variables
-    real(real64) :: a(3,3), tau(3), b(3)
-    integer(int32) :: i, pvt(3)
+    real(real64) :: a(3,3), b(3), x(3)
+    real(real64), allocatable :: tau(:), lq(:,:)
+    integer(int32) :: i
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -29,12 +30,12 @@ program example
     !     |   0  |
 
     ! Compute the LQ factorization
-    call lq_factor(a, tau)
+    call lq_factor(a, tau = tau, lq = lq)
 
-    ! Compute the solution.  The results overwrite b.
-    call solve_lq(a, tau, b)
+    ! Compute the solution.
+    x = solve_lq(lq, tau, b)
 
     ! Display the results
     print '(A)', "LQ Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 end program

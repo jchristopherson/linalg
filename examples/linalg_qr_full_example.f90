@@ -6,7 +6,8 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), b(3), q(3,3), tau(3)
+    real(real64) :: a(3,3), b(3), qtb(3), x(3)
+    real(real64), allocatable :: q(:,:), r(:,:)
     integer(int32) :: i
 
     ! Build the 3-by-3 matrix A.
@@ -29,10 +30,7 @@ program example
     !     |   0  |
 
     ! Compute the QR factorization without column pivoting
-    call qr_factor(a, tau)
-
-    ! Build Q and R.  A is overwritten with R
-    call form_qr(a, tau, q)
+    call qr_factor(a, q = q, r = r)
 
     ! As this system is square, matrix R is upper triangular.  Also, Q is
     ! always orthogonal such that it's inverse and transpose are equal.  As the
@@ -40,15 +38,15 @@ program example
     ! is then as simple as solving the upper triangular system: 
     ! R * X = Q**T * B.
 
-    ! Compute Q**T * B, and store the results in B
-    b = matmul(transpose(q), b)
+    ! Compute Q**T * B
+    qtb = matmul(transpose(q), b)
 
     ! Solve the upper triangular system R * X = Q**T * B for X
-    call solve_triangular_system(.true., .false., .true., a, b)
+    x = solve_triangular_system(.true., .false., .true., r, qtb)
 
     ! Display the results
     print '(A)', "QR Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 
     ! Notice, QR factorization with column pivoting could be accomplished via
     ! a similar approach, but the column pivoting would need to be accounted

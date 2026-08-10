@@ -12,14 +12,29 @@
 
     <title>mult_lq &ndash; LINALG</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -72,9 +87,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title="<p> 0.7% of total for procedures.</p>Including implementation: 240 statements, 26.8% of total for procedures.">6 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="<p> 1.2% of total for procedures.</p>Including implementation: 132 statements, 27.2% of total for procedures.">6 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -95,9 +109,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -154,7 +170,7 @@
 
         <h2>Module Procedures</h2>
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_mtx"></span> <h3>private  subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_mtx"></span> <h3>private pure function mult_lq_mtx(lside, trans, a, tau, c) result(qc)  
 </h3></div>
     <div class="card-body">
         <p>Multiplies a matrix by the orthogonal matrix <script type="math/tex">Q</script> from an LQ
@@ -173,7 +189,7 @@ factorization.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~14"></span>
+              <span class="anchor" id="variable-lside~16"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -189,7 +205,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~14"></span>
+              <span class="anchor" id="variable-trans~18"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -205,7 +221,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~99"></span>
+              <span class="anchor" id="variable-a~116"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -222,7 +238,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~32"></span>
+              <span class="anchor" id="variable-tau~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -241,76 +257,30 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~18"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-by-N matrix C.  On output, the product of the 
-orthogonal matrix Q and the original matrix C.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~65"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~53"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~106"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-N matrix <script type="math/tex">C</script>.  </p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N product of the orthogonal <script type="math/tex">Q</script> and the <script type="math/tex">C</script>.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_mtx_cmplx"></span> <h3>private  subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_mtx_cmplx"></span> <h3>private pure function mult_lq_mtx_cmplx(lside, trans, a, tau, c) result(qc)  
 </h3></div>
     <div class="card-body">
         <p>Multiplies a matrix by the orthogonal matrix <script type="math/tex">Q</script> from an LQ
@@ -329,7 +299,7 @@ factorization.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~15"></span>
+              <span class="anchor" id="variable-lside~17"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -345,7 +315,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~15"></span>
+              <span class="anchor" id="variable-trans~19"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -361,7 +331,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~100"></span>
+              <span class="anchor" id="variable-a~117"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -378,7 +348,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~33"></span>
+              <span class="anchor" id="variable-tau~32"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -397,76 +367,30 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~19"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-by-N matrix C.  On output, the product of the 
-orthogonal matrix Q and the original matrix C.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~66"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~54"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~107"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-N matrix <script type="math/tex">C</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N product of the orthogonal <script type="math/tex">Q</script> and the <script type="math/tex">C</script>.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_vec"></span> <h3>private  subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_vec"></span> <h3>private pure function mult_lq_vec(trans, a, tau, c) result(qc)  
 </h3></div>
     <div class="card-body">
         <p>Multiplies a vector with the orthogonal matrix <script type="math/tex">Q</script> from an LQ 
@@ -485,7 +409,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~16"></span>
+              <span class="anchor" id="variable-trans~20"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -501,7 +425,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~101"></span>
+              <span class="anchor" id="variable-a~118"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -518,7 +442,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~34"></span>
+              <span class="anchor" id="variable-tau~33"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -537,76 +461,31 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~20"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the product 
-of the orthogonal matrix <script type="math/tex">Q</script> and the original vector <script type="math/tex">\vec{c}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~67"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~55"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~108"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The M-element product of the orthogonal matrix <script type="math/tex">Q</script> and the 
+vector <script type="math/tex">\vec{c}</script>.</p>
 
     </div>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_vec_cmplx"></span> <h3>private  subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)  
+    <div class="card-header codesum"><span class="anchor" id="proc-mult_lq_vec_cmplx"></span> <h3>private pure function mult_lq_vec_cmplx(trans, a, tau, c) result(qc)  
 </h3></div>
     <div class="card-body">
         <p>Multiplies a vector with the orthogonal matrix <script type="math/tex">Q</script> from an LQ 
@@ -625,7 +504,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~17"></span>
+              <span class="anchor" id="variable-trans~21"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -641,7 +520,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~102"></span>
+              <span class="anchor" id="variable-a~119"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -658,7 +537,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~35"></span>
+              <span class="anchor" id="variable-tau~34"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -677,70 +556,25 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~21"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the product 
-of the orthogonal matrix <script type="math/tex">Q</script> and the original vector <script type="math/tex">\vec{c}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~68"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~56"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~109"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element vector <script type="math/tex">\vec{c}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The M-element product of the orthogonal matrix <script type="math/tex">Q</script> and the 
+vector <script type="math/tex">\vec{c}</script>.</p>
 
     </div>
   </div>
@@ -752,40 +586,21 @@ without performing any actual calculations.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

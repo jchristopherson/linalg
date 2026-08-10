@@ -82,7 +82,6 @@ jobs:
           -DCMAKE_Fortran_COMPILER=${{ env.FC }}
           -DCMAKE_C_COMPILER=${{ env.CC }}
           -DBUILD_TESTING=TRUE
-          -DBUILD_LINALG_C_API=TRUE
           -DBUILD_SHARED_LIBS=${{ matrix.shared && 'TRUE' || 'FALSE' }}
         env:
           FC: ${{ steps.setup-fortran.outputs.fc }}

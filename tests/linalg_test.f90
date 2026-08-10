@@ -13,6 +13,7 @@ program main
     use test_sort
     use test_lq
     use test_sparse
+    use test_rz
 
     ! Local Variables
     logical :: rst
@@ -358,87 +359,49 @@ program main
     rst = test_int32_ascend_sort()
     if (.not.rst) flag = 107
 
-    rst = test_lu_factor_pure()
-    if (.not.rst) flag = 108
-
-    rst = test_qr_factor_pure()
-    if (.not.rst) flag = 109
-
-    rst = test_cholesky_factor_pure()
-    if (.not.rst) flag = 110
-
-    rst = test_svd_pure()
-    if (.not.rst) flag = 111
-
-    rst = test_tri_mtx_solve_pure()
-    if (.not.rst) flag = 112
-
-    rst = test_linear_solve_pure_1()
-    if (.not.rst) flag = 113
-
-    rst = test_linear_solve_pure_2()
-    if (.not.rst) flag = 114
-
-    rst = test_linear_solve_pure_3()
-    if (.not.rst) flag = 115
-
-    ! rst = test_linear_least_squares_pure_1()
-    ! if (.not.rst) flag = 116
-
-    ! rst = test_linear_least_squares_pure_2()
-    ! if (.not.rst) flag = 117
-
-    rst = test_inverse_pure()
-    if (.not.rst) flag = 118
-
-    rst = test_pinverse_pure_1()
-    if (.not.rst) flag = 119
-
-    rst = test_pinverse_pure_2()
-    if (.not.rst) flag = 120
-
-    rst = test_eigen_pure_1()
-    if (.not.rst) flag = 121
-
-    rst = test_eigen_gen_pure_1()
-    if (.not.rst) flag = 122
-
     ! V1.8.8 Additions
     rst = test_qr_solve_no_pivot_vec()
-    if (.not.rst) flag = 123
+    if (.not.rst) flag = 108
 
     rst = test_qr_solve_no_pivot_cmplx_vec()
-    if (.not.rst) flag = 124
+    if (.not.rst) flag = 109
 
     rst = test_qr_solve_pivot_vec()
-    if (.not.rst) flag = 125
+    if (.not.rst) flag = 110
 
     rst = test_qr_solve_pivot_cmplx_vec()
-    if (.not.rst) flag = 126
+    if (.not.rst) flag = 111
 
     rst = test_qr_solve_pivot_od_vec()
-    if (.not.rst) flag = 127
+    if (.not.rst) flag = 112
 
     rst = test_qr_solve_pivot_od_cmplx_vec()
-    if (.not.rst) flag = 128
+    if (.not.rst) flag = 113
 
     rst = test_qr_solve_pivot_ud_vec()
-    if (.not.rst) flag = 129
+    if (.not.rst) flag = 114
 
     rst = test_qr_solve_pivot_ud_cmplx_vec()
-    if (.not.rst) flag = 130
+    if (.not.rst) flag = 115
 
     rst = test_qr_solve_no_pivot_od()
-    if (.not.rst) flag = 131
+    if (.not.rst) flag = 116
 
     rst = test_qr_solve_no_pivot_od_vec()
-    if (.not.rst) flag = 132
+    if (.not.rst) flag = 117
 
     rst = test_qr_solve_no_pivot_od_cmplx()
-    if (.not.rst) flag = 133
+    if (.not.rst) flag = 118
 
     rst = test_qr_solve_no_pivot_od_cmplx_vec()
-    if (.not.rst) flag = 134
+    if (.not.rst) flag = 119
+
+    ! Version 2.0.0 Additions
+    rst = test_rz_factor()
+    if (.not.rst) flag = 120
+
+    rst = test_rz_factor_cmplx()
+    if (.not.rst) flag = 121
 
     ! End
     if (flag /= 0) stop flag

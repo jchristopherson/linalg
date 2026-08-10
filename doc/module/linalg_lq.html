@@ -12,14 +12,29 @@
 
     <title>linalg_lq &ndash; LINALG</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -72,9 +87,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title=" 6.9% of total for modules and submodules.">697 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 6.2% of total for modules and submodules.">415 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -94,9 +108,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -154,8 +170,8 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='linalg_tri.html'>linalg_tri</a></li>
                   <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item"><a href='linalg_tri.html'>linalg_tri</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
@@ -180,7 +196,7 @@
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)  
+    private pure subroutine form_lq_no_pivot(l, tau, q)  
 
     </h3>
   <p>Forms the orthogonal matrix <script type="math/tex">Q</script> from the elementary reflectors returned 
@@ -199,8 +215,85 @@ by the LQ factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~5"></span>
+              <span class="anchor" id="variable-l~9"></span>
               real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>l</strong></td>
+            <td>
+                <p>On input, an M-by-N matrix where the elements above the diagonal 
+contain the elementary reflectors generated from the LQ factorization
+performed by lq_factor.  On and below the diagonal the matrix 
+contains the matrix <script type="math/tex">L</script>.  On output, the elements above the 
+diagonal are zeroed sucht hat the remaining matrix is the M-by-N 
+lower trapezoidal matrix <script type="math/tex">L</script> where only the M-by-M submatrix is 
+the lower triangular matrix <script type="math/tex">L</script>.  Notice, M must be less than or 
+equal to N for this routine.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~29"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of each 
+elementary reflector defined in <script type="math/tex">L</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q~14"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+                <p>An N-by-N matrix where the orthogonal matrix <script type="math/tex">Q</script> will be written.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure subroutine form_lq_no_pivot_cmplx(l, tau, q)  
+
+    </h3>
+  <p>Forms the orthogonal matrix <script type="math/tex">Q</script> from the elementary reflectors returned 
+by the LQ factorization algorithm.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~10"></span>
+              complex(kind=real64),
             </td>
 <td>intent(inout),</td>
               <td></td>            <td>
@@ -222,133 +315,6 @@ equal to N for this routine.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~30"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of each 
-elementary reflector defined in <script type="math/tex">L</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-q~7"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>q</strong></td>
-            <td>
-                <p>An N-by-N matrix where the orthogonal matrix <script type="math/tex">Q</script> will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~63"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~51"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~104"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)  
-
-    </h3>
-  <p>Forms the orthogonal matrix <script type="math/tex">Q</script> from the elementary reflectors returned 
-by the LQ factorization algorithm.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-l~6"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>l</strong></td>
-            <td>
-                <p>On input, an M-by-N matrix where the elements above the diagonal 
-contain the elementary reflectors generated from the LQ factorization
-performed by lq_factor.  On and below the diagonal the matrix 
-contains the matrix <script type="math/tex">L</script>.  On output, the elements above the 
-diagonal are zeroed sucht hat the remaining matrix is the M-by-N 
-lower trapezoidal matrix <script type="math/tex">L</script> where only the M-by-M submatrix is 
-the lower triangular matrix <script type="math/tex">L</script>.  Notice, M must be less than or 
-equal to N for this routine.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~31"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -364,7 +330,7 @@ elementary reflector defined in <script type="math/tex">L</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~8"></span>
+              <span class="anchor" id="variable-q~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -375,56 +341,6 @@ elementary reflector defined in <script type="math/tex">L</script>.</p>
             <td><strong>q</strong></td>
             <td>
                 <p>An N-by-N matrix where the orthogonal matrix <script type="math/tex">Q</script> will be written.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~64"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~52"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~105"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
             </td>
         </tr>
     </tbody>
@@ -444,7 +360,7 @@ without performing any actual calculations.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine lq_factor_no_pivot(a, tau, work, olwork, err)  
+    private pure subroutine lq_factor_no_pivot(a, tau, lq, l, q)  
 
     </h3>
   <p>Computes the LQ factorization of an M-by-N matrix <script type="math/tex">A = L Q</script> where
@@ -464,31 +380,27 @@ a orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~97"></span>
+              <span class="anchor" id="variable-a~114"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
-and below the diagonal contain the MIN(M, N)-by-N lower trapezoidal 
-matrix <script type="math/tex">L</script> (<script type="math/tex">L</script> is lower triangular if M &gt;= N).  The elements
-above the diagonal, along with the array tau, represent the 
-orthogonal matrix <script type="math/tex">Q</script> as a product of elementary reflectors.</p>
+                <p>The M-by-N matrix to factor.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~28"></span>
+              <span class="anchor" id="variable-tau~27"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:)
             </td>
             <td>::</td>
             <td><strong>tau</strong></td>
@@ -499,52 +411,51 @@ elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~61"></span>
+              <span class="anchor" id="variable-lq"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
               <td>optional,</td>            <td>
-              target, dimension(:)
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>work</strong></td>
+            <td><strong>lq</strong></td>
             <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
+                <p>An M-by-N matrix with the elements below the diagonal containing the
+MIN(M,N)-by-N lower trapezoidal matrix <script type="math/tex">L</script> (<script type="math/tex">L</script> is lower 
+triangluar if M &gt;= N).  The elements above the diagonal, along with
+the array tau, represent the orthogonal matrix <script type="math/tex">Q</script> as a product
+of elementary reflectors.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~49"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-l~7"></span>
+              real(kind=real64),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>olwork</strong></td>
+            <td><strong>l</strong></td>
             <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
+                <p>The M-by-N lower trapezoidal matrix <script type="math/tex">L</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~102"></span>
-              class(errors),
+              <span class="anchor" id="variable-q~12"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(out),</td>
               <td>optional,</td>            <td>
-              target
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>q</strong></td>
             <td>
-                <p>The error object to be updated.</p>
+                <p>The N-by-N orthogonal matrix <script type="math/tex">Q</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -554,7 +465,7 @@ without performing any actual calculations.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine lq_factor_no_pivot_cmplx(a, tau, work, olwork, err)  
+    private pure subroutine lq_factor_no_pivot_cmplx(a, tau, lq, l, q)  
 
     </h3>
   <p>Computes the LQ factorization of an M-by-N matrix <script type="math/tex">A = L Q</script> where
@@ -574,31 +485,27 @@ a orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~98"></span>
+              <span class="anchor" id="variable-a~115"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N matrix to factor.  On output, the elements on 
-and below the diagonal contain the MIN(M, N)-by-N lower trapezoidal 
-matrix <script type="math/tex">L</script> (<script type="math/tex">L</script> is lower triangular if M &gt;= N).  The elements
-above the diagonal, along with the array tau, represent the 
-orthogonal matrix <script type="math/tex">Q</script> as a product of elementary reflectors.</p>
+                <p>The M-by-N matrix to factor.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~29"></span>
+              <span class="anchor" id="variable-tau~28"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:)
             </td>
             <td>::</td>
             <td><strong>tau</strong></td>
@@ -609,52 +516,51 @@ elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-work~62"></span>
+              <span class="anchor" id="variable-lq~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
               <td>optional,</td>            <td>
-              target, dimension(:)
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>work</strong></td>
+            <td><strong>lq</strong></td>
             <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
+                <p>An M-by-N matrix with the elements below the diagonal containing the
+MIN(M,N)-by-N lower trapezoidal matrix <script type="math/tex">L</script> (<script type="math/tex">L</script> is lower 
+triangluar if M &gt;= N).  The elements above the diagonal, along with
+the array tau, represent the orthogonal matrix <script type="math/tex">Q</script> as a product
+of elementary reflectors.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-olwork~50"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-l~8"></span>
+              complex(kind=real64),
             </td>
 <td>intent(out),</td>
-              <td>optional</td>            <td>
-              
+              <td>optional,</td>            <td>
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>olwork</strong></td>
+            <td><strong>l</strong></td>
             <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
+                <p>The M-by-N lower trapezoidal matrix <script type="math/tex">L</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err~103"></span>
-              class(errors),
+              <span class="anchor" id="variable-q~13"></span>
+              complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(out),</td>
               <td>optional,</td>            <td>
-              target
+              allocatable, target, dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>err</strong></td>
+            <td><strong>q</strong></td>
             <td>
-                <p>The error object to be updated.</p>
+                <p>The N-by-N orthogonal matrix <script type="math/tex">Q</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -674,7 +580,7 @@ without performing any actual calculations.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)  
+    private pure function mult_lq_mtx(lside, trans, a, tau, c) result(qc)  
 
     </h3>
   <p>Multiplies a matrix by the orthogonal matrix <script type="math/tex">Q</script> from an LQ
@@ -693,7 +599,7 @@ factorization.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~14"></span>
+              <span class="anchor" id="variable-lside~16"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -709,7 +615,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~14"></span>
+              <span class="anchor" id="variable-trans~18"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -725,7 +631,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~99"></span>
+              <span class="anchor" id="variable-a~116"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -742,7 +648,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~32"></span>
+              <span class="anchor" id="variable-tau~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -761,75 +667,29 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~18"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-by-N matrix C.  On output, the product of the 
-orthogonal matrix Q and the original matrix C.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~65"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~53"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~106"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-N matrix <script type="math/tex">C</script>.  </p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N product of the orthogonal <script type="math/tex">Q</script> and the <script type="math/tex">C</script>.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)  
+    private pure function mult_lq_mtx_cmplx(lside, trans, a, tau, c) result(qc)  
 
     </h3>
   <p>Multiplies a matrix by the orthogonal matrix <script type="math/tex">Q</script> from an LQ
@@ -848,7 +708,7 @@ factorization.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~15"></span>
+              <span class="anchor" id="variable-lside~17"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -864,7 +724,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~15"></span>
+              <span class="anchor" id="variable-trans~19"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -880,7 +740,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~100"></span>
+              <span class="anchor" id="variable-a~117"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -897,7 +757,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~33"></span>
+              <span class="anchor" id="variable-tau~32"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -916,75 +776,29 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~19"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-by-N matrix C.  On output, the product of the 
-orthogonal matrix Q and the original matrix C.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~66"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~54"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~107"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-N matrix <script type="math/tex">C</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N product of the orthogonal <script type="math/tex">Q</script> and the <script type="math/tex">C</script>.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)  
+    private pure function mult_lq_vec(trans, a, tau, c) result(qc)  
 
     </h3>
   <p>Multiplies a vector with the orthogonal matrix <script type="math/tex">Q</script> from an LQ 
@@ -1003,7 +817,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~16"></span>
+              <span class="anchor" id="variable-trans~20"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1019,7 +833,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~101"></span>
+              <span class="anchor" id="variable-a~118"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1036,7 +850,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~34"></span>
+              <span class="anchor" id="variable-tau~33"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1055,75 +869,30 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~20"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the product 
-of the orthogonal matrix <script type="math/tex">Q</script> and the original vector <script type="math/tex">\vec{c}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~67"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~55"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~108"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The M-element product of the orthogonal matrix <script type="math/tex">Q</script> and the 
+vector <script type="math/tex">\vec{c}</script>.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)  
+    private pure function mult_lq_vec_cmplx(trans, a, tau, c) result(qc)  
 
     </h3>
   <p>Multiplies a vector with the orthogonal matrix <script type="math/tex">Q</script> from an LQ 
@@ -1142,7 +911,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~17"></span>
+              <span class="anchor" id="variable-trans~21"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1158,7 +927,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~102"></span>
+              <span class="anchor" id="variable-a~119"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1175,7 +944,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~35"></span>
+              <span class="anchor" id="variable-tau~34"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1194,70 +963,25 @@ reflector defined in a.</p>
               <span class="anchor" id="variable-c~21"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>c</strong></td>
             <td>
-                <p>On input, the M-element vector <script type="math/tex">\vec{c}</script>.  On output, the product 
-of the orthogonal matrix <script type="math/tex">Q</script> and the original vector <script type="math/tex">\vec{c}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~68"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~56"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~109"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element vector <script type="math/tex">\vec{c}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The M-element product of the orthogonal matrix <script type="math/tex">Q</script> and the 
+vector <script type="math/tex">\vec{c}</script>.</p>
 
           </li>
     </ul>
@@ -1272,7 +996,7 @@ without performing any actual calculations.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lq_mtx(a, tau, b, work, olwork, err)  
+    private pure function solve_lq_mtx(a, tau, b) result(x)  
 
     </h3>
   <p>Solves a system of LQ factored equations of the form <script type="math/tex">A X = L Q X = B</script>.</p>
@@ -1290,7 +1014,7 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~103"></span>
+              <span class="anchor" id="variable-a~120"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1300,15 +1024,89 @@ without performing any actual calculations.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N LQ factored matrix as returned by lq_factor.<br>
-On output, the contents of this matrix are restored.  Notice, N must
-be greater than or equal to M.</p>
+                <p>The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+must be greater than or equal to M.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~35"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+                <p>A MIN(M, N)-element array containing the scalar factors of the 
+elementary reflectors as returned by lq_factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~63"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The M-by-NRHS matrix <script type="math/tex">B</script>.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS matrix <script type="math/tex">X</script>.</p>
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure function solve_lq_mtx_cmplx(a, tau, b) result(x)  
+
+    </h3>
+  <p>Solves a system of LQ factored equations of the form <script type="math/tex">A X = L Q X = B</script>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~121"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+must be greater than or equal to M.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~36"></span>
-              real(kind=real64),
+              complex(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1323,82 +1121,36 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~53"></span>
-              real(kind=real64),
+              <span class="anchor" id="variable-b~64"></span>
+              complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, an N-by-NRHS matrix where the first M rows contain 
-the right-hand-side matrix <script type="math/tex">B</script>.  On output, the N-by-NRHS solution
-matrix <script type="math/tex">X</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~69"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~57"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~110"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-by-NRHS matrix <script type="math/tex">B</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The N-by-NRHS matrix <script type="math/tex">X</script>.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)  
+    private pure function solve_lq_vec(a, tau, b) result(x)  
 
     </h3>
-  <p>Solves a system of LQ factored equations of the form <script type="math/tex">A X = L Q X = B</script>.</p>
+  <p>Solves a system of LQ factored equations of the form 
+<script type="math/tex">A \vec{x} = L Q \vec{x} = \vec{b}</script>.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1413,8 +1165,8 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~104"></span>
-              complex(kind=real64),
+              <span class="anchor" id="variable-a~122"></span>
+              real(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1423,15 +1175,14 @@ without performing any actual calculations.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the M-by-N LQ factored matrix as returned by lq_factor.<br>
-On output, the contents of this matrix are restored.  Notice, N must
-be greater than or equal to M.</p>
+                <p>The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+must be greater than or equal to M.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~37"></span>
-              complex(kind=real64),
+              real(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1446,79 +1197,32 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~54"></span>
-              complex(kind=real64),
+              <span class="anchor" id="variable-b~65"></span>
+              real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
-              dimension(:,:)
+              dimension(:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, an N-by-NRHS matrix where the first M rows contain 
-the right-hand-side matrix <script type="math/tex">B</script>.  On output, the N-by-NRHS solution
-matrix <script type="math/tex">X</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~70"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~58"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~111"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element vector <script type="math/tex">\vec{b}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element vector <script type="math/tex">\vec{x}</script>.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine solve_lq_vec(a, tau, b, work, olwork, err)  
+    private pure function solve_lq_vec_cmplx(a, tau, b) result(x)  
 
     </h3>
   <p>Solves a system of LQ factored equations of the form 
@@ -1537,8 +1241,8 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~105"></span>
-              real(kind=real64),
+              <span class="anchor" id="variable-a~123"></span>
+              complex(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1547,138 +1251,13 @@ without performing any actual calculations.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>!! On input, the M-by-N LQ factored matrix as returned by lq_factor.<br>
-On output, the contents of this matrix are restored.  Notice, N must
-be greater than or equal to M.</p>
+                <p>The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+must be greater than or equal to M.</p>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-tau~38"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>tau</strong></td>
-            <td>
-                <p>A MIN(M, N)-element array containing the scalar factors of the 
-elementary reflectors as returned by lq_factor.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~55"></span>
-              real(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>On input, an N-element vector where the first M rows contain the 
-right-hand-side vector <script type="math/tex">\vec{b}</script>.  On output, the N-element vector
-<script type="math/tex">\vec{x}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~71"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~59"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~112"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine solve_lq_vec_cmplx(a, tau, b, work, olwork, err)  
-
-    </h3>
-  <p>Solves a system of LQ factored equations of the form 
-<script type="math/tex">A \vec{x} = L Q \vec{x} = \vec{b}</script>.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~106"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>!! On input, the M-by-N LQ factored matrix as returned by lq_factor.<br>
-On output, the contents of this matrix are restored.  Notice, N must
-be greater than or equal to M.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tau~39"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1694,74 +1273,27 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~56"></span>
+              <span class="anchor" id="variable-b~66"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:)
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>On input, an N-element vector where the first M rows contain the 
-right-hand-side vector <script type="math/tex">\vec{b}</script>.  On output, the N-element vector
-<script type="math/tex">\vec{x}</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~72"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local memory 
-allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least 
-olwork.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~60"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size.  If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~113"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The error object to be updated.</p>
+                <p>The M-element vector <script type="math/tex">\vec{b}</script>.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The N-element vector <script type="math/tex">\vec{x}</script>.</p>
 
           </li>
     </ul>
@@ -1784,40 +1316,21 @@ without performing any actual calculations.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

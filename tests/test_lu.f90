@@ -15,21 +15,18 @@ contains
         integer(int32), parameter :: n = 75
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1, l, u, p
-        integer(int32), dimension(n) :: ipvt
+        real(real64), dimension(n, n) :: a
+        real(real64), allocatable, dimension(:,:) :: l, u, p
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a  ! Forces us to keep a copy of the original matrix
 
         ! Compute the factorization
-        call lu_factor(a1, ipvt)
+        call lu_factor(a, l = l, u = u, p = p)
 
-        ! Extract L, U, and P to determine if P * A = L * U
-        l = a1
-        call form_lu(l, ipvt, u, p)
+        ! Determine if P * A = L * U
         if (.not.assert(matmul(p, a), matmul(l, u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Test"
@@ -43,23 +40,22 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1
+        real(real64), dimension(n, n) :: a
         real(real64), dimension(n, nrhs) :: b, x
-        integer(int32), dimension(n) :: ipvt
+        integer(int32), allocatable :: ipvt(:)
+        real(real64), allocatable :: lu(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
-        x = b
 
         ! Factor A
-        call lu_factor(a1, ipvt)
+        call lu_factor(a, ipvt = ipvt, lu = lu)
 
         ! Solve for X
-        call solve_lu(a1, ipvt, x)
+        x = solve_lu(lu, ipvt, b)
 
         ! Test by determining if A * X = B
         if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
@@ -74,23 +70,19 @@ contains
         integer(int32), parameter :: n = 75
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, a1, l, u
-        real(real64), dimension(n, n) :: p
-        integer(int32) :: i, j
-        integer(int32), dimension(n) :: ipvt
+        complex(real64), dimension(n, n) :: a
+        complex(real64), allocatable, dimension(:,:) :: l, u
+        real(real64), allocatable, dimension(:,:) :: p
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
 
         ! Compute the factorization
-        call lu_factor(a1, ipvt)
+        call lu_factor(a, l = l, u = u, p = p)
 
-        ! Extract L, U, and P to determine if P * A = L * U
-        l = a1
-        call form_lu(l, ipvt, u, p)
+        ! Determine if P * A = L * U
         if (.not.assert(matmul(p, a), matmul(l, u), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization Test"
@@ -104,24 +96,23 @@ contains
         integer(int32), parameter :: nrhs = 20
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, a1
+        complex(real64), dimension(n, n) :: a
         complex(real64), dimension(n, nrhs) :: b, x
         integer(int32) :: i, j
-        integer(int32), dimension(n) :: ipvt
+        integer(int32), allocatable :: ipvt(:)
+        complex(real64), allocatable :: lu(:,:)
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
-        x = b
 
         ! Factor A
-        call lu_factor(a1, ipvt)
+        call lu_factor(a, ipvt = ipvt, lu = lu)
 
         ! Solve for X
-        call solve_lu(a1, ipvt, x)
+        x = solve_lu(lu, ipvt, b)
 
         ! Test by determining if A * X = B
         if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
@@ -131,28 +122,4 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-    function test_lu_factor_pure() result(rst)
-        use linear_algebra
-
-        ! Parameters
-        integer(int32), parameter :: n = 75
-
-        ! Local Variables
-        real(real64) :: a(n,n)
-        type(lu_factors) :: x
-        logical :: rst
-
-        ! Initialization
-        rst = .true.
-        call create_random_array(a)
-
-        ! Compute the factorization
-        x = lu_factor(a)
-
-        ! Tests
-        if (.not.assert(matmul(x%P, a), matmul(x%L, x%U), tol = REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "TEST FAILED: test_lu_factor_pure"
-        end if
-    end function
 end module

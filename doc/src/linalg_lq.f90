@@ -35,167 +35,181 @@ module linalg_lq
     end interface
 contains
 ! ------------------------------------------------------------------------------
-subroutine lq_factor_no_pivot(a, tau, work, olwork, err)
+pure subroutine lq_factor_no_pivot(a, tau, lq, l, q)
     !! Computes the LQ factorization of an M-by-N matrix \(A = L Q\) where
     !! \(L\) is a lower triangular (or lower trapezoidal) matrix and \(Q\) is
     !! a orthogonal matrix.
-    real(real64), intent(inout), dimension(:,:) :: a
-        !! On input, the M-by-N matrix to factor.  On output, the elements on 
-        !! and below the diagonal contain the MIN(M, N)-by-N lower trapezoidal 
-        !! matrix \(L\) (\(L\) is lower triangular if M >= N).  The elements
-        !! above the diagonal, along with the array tau, represent the 
-        !! orthogonal matrix \(Q\) as a product of elementary reflectors.
-    real(real64), intent(out), dimension(:) :: tau
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix to factor.
+    real(real64), intent(out), allocatable, optional, target, dimension(:) :: tau
         !! A MIN(M, N)-element array used to store the scalar factors of the 
         !! elementary reflectors.
-    real(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(out), allocatable, optional, target, dimension(:,:) :: lq
+        !! An M-by-N matrix with the elements below the diagonal containing the
+        !! MIN(M,N)-by-N lower trapezoidal matrix \(L\) (\(L\) is lower 
+        !! triangluar if M >= N).  The elements above the diagonal, along with
+        !! the array tau, represent the orthogonal matrix \(Q\) as a product
+        !! of elementary reflectors.
+    real(real64), intent(out), allocatable, optional, target, dimension(:,:) :: l
+        !! The M-by-N lower trapezoidal matrix \(L\).
+    real(real64), intent(out), allocatable, optional, target, dimension(:,:) :: q
+        !! The N-by-N orthogonal matrix \(Q\).
 
     ! Local Variables
-    integer(int32) :: m, n, mn, istat, lwork, flag
+    logical :: buildlq
+    integer(int32) :: m, n, mn, lwork, flag
     real(real64), dimension(1) :: temp
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    real(real64), allocatable, target, dimension(:) :: w, tc
+    real(real64), allocatable, target, dimension(:,:) :: ac, lc, qc
+    real(real64), pointer, dimension(:) :: tptr
+    real(real64), pointer, dimension(:,:) :: aptr, lptr, qptr
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-    if (present(err)) then
-        errmgr => err
+    if (present(tau)) then
+        allocate(tau(mn))
+        tptr => tau
     else
-        errmgr => deferr
+        allocate(tc(mn))
+        tptr => tc
     end if
-
-    ! Input Check
-    if (size(tau) /= mn) then
-        call report_array_size_error("lq_factor_no_pivot", errmgr, "tau", &
-            mn, size(tau))
-        return
+    if (present(lq)) then
+        allocate(lq(m, n), source = a)
+        aptr => lq
+    else
+        allocate(ac(m, n), source = a)
+        aptr => ac
     end if
+    buildlq = present(l) .or. present(q)
 
     ! Workspace Query
-    call DGELQF(m, n, a, m, tau, temp, -1, flag)
+    call DGELQF(m, n, temp, m, temp, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("lq_factor_no_pivot", errmgr, &
-                "work", lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("lq_factor_no_pivot", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call DGELQF
-    call DGELQF(m, n, a, m, tau, wptr, lwork, flag)
+    call DGELQF(m, n, aptr, m, tptr, w, lwork, flag)
+
+    ! Build L & Q?
+    if (buildlq) then
+        ! L
+        if (present(l)) then
+            allocate(l(m, n), source = aptr)
+            lptr => l
+        else
+            if (allocated(ac)) then
+                lptr => ac
+            else
+                allocate(lc(m, n), source = aptr)
+                lptr => lc
+            end if
+        end if
+
+        ! Q
+        if (present(q)) then
+            allocate(q(n, n))
+            qptr => q
+        else
+            allocate(qc(n, n))
+            qptr => q
+        end if
+
+        ! Build L & Q
+        call form_lq(lptr, tptr, qptr)
+    end if
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine lq_factor_no_pivot_cmplx(a, tau, work, olwork, err)
+pure subroutine lq_factor_no_pivot_cmplx(a, tau, lq, l, q)
     !! Computes the LQ factorization of an M-by-N matrix \(A = L Q\) where
     !! \(L\) is a lower triangular (or lower trapezoidal) matrix and \(Q\) is
     !! a orthogonal matrix.
-    complex(real64), intent(inout), dimension(:,:) :: a
-        !! On input, the M-by-N matrix to factor.  On output, the elements on 
-        !! and below the diagonal contain the MIN(M, N)-by-N lower trapezoidal 
-        !! matrix \(L\) (\(L\) is lower triangular if M >= N).  The elements
-        !! above the diagonal, along with the array tau, represent the 
-        !! orthogonal matrix \(Q\) as a product of elementary reflectors.
-    complex(real64), intent(out), dimension(:) :: tau
+    complex(real64), intent(in), dimension(:,:) :: a
+        !! The M-by-N matrix to factor.
+    complex(real64), intent(out), allocatable, optional, target, dimension(:) :: tau
         !! A MIN(M, N)-element array used to store the scalar factors of the 
         !! elementary reflectors.
-    complex(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(out), allocatable, optional, target, dimension(:,:) :: lq
+        !! An M-by-N matrix with the elements below the diagonal containing the
+        !! MIN(M,N)-by-N lower trapezoidal matrix \(L\) (\(L\) is lower 
+        !! triangluar if M >= N).  The elements above the diagonal, along with
+        !! the array tau, represent the orthogonal matrix \(Q\) as a product
+        !! of elementary reflectors.
+    complex(real64), intent(out), allocatable, optional, target, dimension(:,:) :: l
+        !! The M-by-N lower trapezoidal matrix \(L\).
+    complex(real64), intent(out), allocatable, optional, target, dimension(:,:) :: q
+        !! The N-by-N orthogonal matrix \(Q\).
 
     ! Local Variables
-    integer(int32) :: m, n, mn, istat, lwork, flag
+    logical :: buildlq
+    integer(int32) :: m, n, mn, lwork, flag
     complex(real64), dimension(1) :: temp
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    complex(real64), allocatable, target, dimension(:) :: w, tc
+    complex(real64), allocatable, target, dimension(:,:) :: ac, lc, qc
+    complex(real64), pointer, dimension(:) :: tptr
+    complex(real64), pointer, dimension(:,:) :: aptr, lptr, qptr
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
-    if (present(err)) then
-        errmgr => err
+    if (present(tau)) then
+        allocate(tau(mn))
+        tptr => tau
     else
-        errmgr => deferr
+        allocate(tc(mn))
+        tptr => tc
     end if
-
-    ! Input Check
-    if (size(tau) /= mn) then
-        call report_array_size_error("lq_factor_no_pivot_cmplx", errmgr, &
-            "tau", mn, size(tau))
-        return
+    if (present(lq)) then
+        allocate(lq(m, n), source = a)
+        aptr => lq
+    else
+        allocate(ac(m, n), source = a)
+        aptr => ac
     end if
+    buildlq = present(l) .or. present(q)
 
     ! Workspace Query
-    call ZGELQF(m, n, a, m, tau, temp, -1, flag)
+    call ZGELQF(m, n, temp, m, temp, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("lq_factor_no_pivot_cmplx", errmgr, &
-                "work", lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("lq_factor_no_pivot_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call ZGELQF
-    call ZGELQF(m, n, a, m, tau, wptr, lwork, flag)
+    call ZGELQF(m, n, aptr, m, tptr, w, lwork, flag)
+
+    ! Build L & Q?
+    if (buildlq) then
+        ! L
+        if (present(l)) then
+            allocate(l(m, n), source = aptr)
+            lptr => l
+        else
+            if (allocated(ac)) then
+                lptr => ac
+            else
+                allocate(lc(m, n), source = aptr)
+                lptr => lc
+            end if
+        end if
+
+        ! Q
+        if (present(q)) then
+            allocate(q(n, n))
+            qptr => q
+        else
+            allocate(qc(n, n))
+            qptr => q
+        end if
+
+        ! Build L & Q
+        call form_lq(lptr, tptr, qptr)
+    end if
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)
+pure subroutine form_lq_no_pivot(l, tau, q)
     !! Forms the orthogonal matrix \(Q\) from the elementary reflectors returned 
     !! by the LQ factorization algorithm.
     real(real64), intent(inout), dimension(:,:) :: l
@@ -212,79 +226,35 @@ subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)
         !! elementary reflector defined in \(L\).
     real(real64), intent(out), dimension(:,:) :: q
         !! An N-by-N matrix where the orthogonal matrix \(Q\) will be written.
-    real(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
+    integer(int32) :: i, j, m, n, mn, k, flag, lwork
+    real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
-
+    
     ! Initialization
     m = size(l, 1)
     n = size(l, 2)
     mn = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (m > n) then
-        call errmgr%report_error("form_lq_no_pivot", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
-    else if (size(tau) /= mn) then
-        call report_array_size_error("form_lq_no_pivot", errmgr, "tau", &
-            mn, size(tau))
-        return
-    else if (size(q, 1) /= n .or. size(q, 2) /= n) then
-        call report_matrix_size_error("form_lq_no_pivot", errmgr, "q", &
-            n, n, size(q, 1), size(q, 2))
-        return
+        error stop LA_INVALID_INPUT_ERROR
+    end if
+    if (size(tau) /= mn) then
+        error stop 2
+    end if
+    if (size(q, 1) /= n .or. size(q, 2) /= n) then
+        error stop 3
     end if
 
     ! Workspace Query
-    call DORGLQ(n, n, mn, q, n, tau, temp, -1, flag)
+    call DORGLQ(n, n, mn, temp, n, tau, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("form_lq_no_pivot", errmgr, &
-                "work", lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("form_lq_no_pivot", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Copy the upper triangular portion of L to Q, and then zero it out in L
     do j = 2, n
@@ -294,11 +264,11 @@ subroutine form_lq_no_pivot(l, tau, q, work, olwork, err)
     end do
 
     ! Build Q
-    call DORGLQ(n, n, mn, q, n, tau, wptr, lwork, flag)
+    call DORGLQ(n, n, mn, q, n, tau, w, lwork, flag)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)
+pure subroutine form_lq_no_pivot_cmplx(l, tau, q)
     !! Forms the orthogonal matrix \(Q\) from the elementary reflectors returned 
     !! by the LQ factorization algorithm.
     complex(real64), intent(inout), dimension(:,:) :: l
@@ -315,79 +285,35 @@ subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)
         !! elementary reflector defined in \(L\).
     complex(real64), intent(out), dimension(:,:) :: q
         !! An N-by-N matrix where the orthogonal matrix \(Q\) will be written.
-    complex(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, k, istat, flag, lwork
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
+    integer(int32) :: i, j, m, n, mn, k, flag, lwork
+    complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(l, 1)
     n = size(l, 2)
     mn = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (m > n) then
-        call errmgr%report_error("form_lq_no_pivot_cmplx", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
-    else if (size(tau) /= mn) then
-        call report_array_size_error("form_lq_no_pivot_cmplx", errmgr, "tau", &
-            mn, size(tau))
-        return
-    else if (size(q, 1) /= n .or. size(q, 2) /= n) then
-        call report_matrix_size_error("form_lq_no_pivot_cmplx", errmgr, "q", &
-            n, n, size(q, 1), size(q, 2))
-        return
+        error stop LA_INVALID_INPUT_ERROR
+    end if
+    if (size(tau) /= mn) then
+        error stop 2
+    end if
+    if (size(q, 1) /= n .or. size(q, 2) /= n) then
+        error stop 3
     end if
 
     ! Workspace Query
-    call ZUNGLQ(n, n, mn, q, n, tau, temp, -1, flag)
+    call ZUNGLQ(n, n, mn, temp, n, tau, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("form_lq_no_pivot_cmplx", errmgr, &
-                "work", lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("form_lq_no_pivot_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Copy the upper triangular portion of L to Q, and then zero it out in L
     do j = 2, n
@@ -397,11 +323,11 @@ subroutine form_lq_no_pivot_cmplx(l, tau, q, work, olwork, err)
     end do
 
     ! Build Q
-    call ZUNGLQ(n, n, mn, q, n, tau, wptr, lwork, flag)
+    call ZUNGLQ(n, n, mn, q, n, tau, w, lwork, flag)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)
+pure function mult_lq_mtx(lside, trans, a, tau, c) result(qc)
     !! Multiplies a matrix by the orthogonal matrix \(Q\) from an LQ
     !! factorization.
     logical, intent(in) :: lside
@@ -417,34 +343,22 @@ subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)
     real(real64), intent(in), dimension(:) :: tau
         !! A K-element array containing the scalar factors of each elementary 
         !! reflector defined in a.
-    real(real64), intent(inout), dimension(:,:) :: c
-        !! On input, the M-by-N matrix C.  On output, the product of the 
-        !! orthogonal matrix Q and the original matrix C.
-    real(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(in), dimension(:,:) :: c
+        !! The M-by-N matrix \(C\).  
+    real(real64), allocatable, dimension(:,:) :: qc
+        !! The M-by-N product of the orthogonal \(Q\) and the \(C\).
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, ncola, istat, flag, lwork
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
+    integer(int32) :: m, n, k, ncola, flag, lwork
+    real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(c, 1)
     n = size(c, 2)
     k = size(tau)
+    allocate(qc(m,n), source = c)
     if (lside) then
         side = 'L'
         ncola = m
@@ -457,50 +371,23 @@ subroutine mult_lq_mtx(lside, trans, a, tau, c, work, olwork, err)
     else
         t = 'N'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= k .or. size(a, 2) /= ncola) then
-        call report_matrix_size_error("mult_lq_mtx", errmgr, "a", k, ncola, &
-            size(a, 1), size(a, 2))
-        return
+        error stop 3
     end if
 
     ! Workspace Query
-    call DORMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
+    call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("mult_lq_mtx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_lq_mtx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call DORMLQ
-    call DORMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
-end subroutine
+    call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, w, lwork, flag)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
+pure function mult_lq_mtx_cmplx(lside, trans, a, tau, c) result(qc)
     !! Multiplies a matrix by the orthogonal matrix \(Q\) from an LQ
     !! factorization.
     logical, intent(in) :: lside
@@ -516,34 +403,22 @@ subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
     complex(real64), intent(in), dimension(:) :: tau
         !! A K-element array containing the scalar factors of each elementary 
         !! reflector defined in a.
-    complex(real64), intent(inout), dimension(:,:) :: c
-        !! On input, the M-by-N matrix C.  On output, the product of the 
-        !! orthogonal matrix Q and the original matrix C.
-    complex(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(in), dimension(:,:) :: c
+        !! The M-by-N matrix \(C\).
+    complex(real64), allocatable, dimension(:,:) :: qc
+        !! The M-by-N product of the orthogonal \(Q\) and the \(C\).
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, ncola, istat, flag, lwork
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
+    integer(int32) :: m, n, k, ncola, flag, lwork
+    complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(c, 1)
     n = size(c, 2)
     k = size(tau)
+    allocate(qc(m, n), source = c)
     if (lside) then
         side = 'L'
         ncola = m
@@ -556,50 +431,23 @@ subroutine mult_lq_mtx_cmplx(lside, trans, a, tau, c, work, olwork, err)
     else
         t = 'N'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= k .or. size(a, 2) /= ncola) then
-        call report_matrix_size_error("mult_lq_mtx_cmplx", errmgr, "a", k, &
-            ncola, size(a, 1), size(a, 2))
-        return
+        error stop 2
     end if
 
     ! Workspace Query
-    call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
+    call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("mult_lq_mtx_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_lq_mtx_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call ZUNMLQ
-    call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
-end subroutine
+    call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, w, lwork, flag)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)
+pure function mult_lq_vec(trans, a, tau, c) result(qc)
     !! Multiplies a vector with the orthogonal matrix \(Q\) from an LQ 
     !! factorization such that \(\vec{c} = op(Q) \vec{c}\).
     logical, intent(in) :: trans
@@ -612,84 +460,46 @@ subroutine mult_lq_vec(trans, a, tau, c, work, olwork, err)
     real(real64), intent(in), dimension(:) :: tau
         !! A K-element array containing the scalar factors of each elementary 
         !! reflector defined in a.
-    real(real64), intent(inout), dimension(:) :: c
-        !! On input, the M-element vector \(\vec{c}\).  On output, the product 
-        !! of the orthogonal matrix \(Q\) and the original vector \(\vec{c}\).
-    real(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(in), dimension(:) :: c
+        !! On input, the M-element vector \(\vec{c}\).
+    real(real64), allocatable, dimension(:) :: qc
+        !! The M-element product of the orthogonal matrix \(Q\) and the 
+        !! vector \(\vec{c}\).
 
     ! Local Variables
     character :: side, t
     integer(int32) :: m, n, k, istat, flag, lwork
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
+    real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(c)
     n = 1
     k = size(tau)
+    allocate(qc(m), source = c)
     side = 'L'
     if (trans) then
         t = 'T'
     else
         t = 'N'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= k .or. size(a, 2) /= m) then
-        call report_matrix_size_error("mult_lq_vec", errmgr, "a", k, m, &
-            size(a, 1), size(a, 2))
-        return
+        error stop 2
     end if
 
     ! Workspace Query
-    call DORMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
+    call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("mult_lq_vec", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_lq_vec", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call DORMLQ
-    call DORMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
-end subroutine
+    call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, w, lwork, flag)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)
+pure function mult_lq_vec_cmplx(trans, a, tau, c) result(qc)
     !! Multiplies a vector with the orthogonal matrix \(Q\) from an LQ 
     !! factorization such that \(\vec{c} = op(Q) \vec{c}\).
     logical, intent(in) :: trans
@@ -702,469 +512,211 @@ subroutine mult_lq_vec_cmplx(trans, a, tau, c, work, olwork, err)
     complex(real64), intent(in), dimension(:) :: tau
         !! A K-element array containing the scalar factors of each elementary 
         !! reflector defined in a.
-    complex(real64), intent(inout), dimension(:) :: c
-        !! On input, the M-element vector \(\vec{c}\).  On output, the product 
-        !! of the orthogonal matrix \(Q\) and the original vector \(\vec{c}\).
-    complex(real64), intent(out), target, dimension(:), optional :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(in), dimension(:) :: c
+        !! The M-element vector \(\vec{c}\).
+    complex(real64), allocatable, dimension(:) :: qc
+        !! The M-element product of the orthogonal matrix \(Q\) and the 
+        !! vector \(\vec{c}\).
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, istat, flag, lwork
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
+    integer(int32) :: m, n, k, flag, lwork
+    complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
 
     ! Initialization
     m = size(c)
     n = 1
     k = size(tau)
+    allocate(qc(m), source = c)
     side = 'L'
     if (trans) then
         t = 'C'
     else
         t = 'N'
     end if
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (size(a, 1) /= k .or. size(a, 2) /= m) then
-        call report_matrix_size_error("mult_lq_vec_cmplx", errmgr, "a", k, m, &
-            size(a, 1), size(a, 2))
-        return
+        error stop 2
     end if
 
     ! Workspace Query
-    call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, temp, -1, flag)
+    call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
     lwork = int(temp(1), int32)
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("mult_lq_vec_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("mult_lq_vec_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(w(lwork))
 
     ! Call ZUNMLQ
-    call ZUNMLQ(side, t, m, n, k, a, k, tau, c, m, wptr, lwork, flag)
-end subroutine
+    call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, w, lwork, flag)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_lq_mtx(a, tau, b, work, olwork, err)
+pure function solve_lq_mtx(a, tau, b) result(x)
     !! Solves a system of LQ factored equations of the form \(A X = L Q X = B\).
     real(real64), intent(in), dimension(:,:) :: a
-        !! On input, the M-by-N LQ factored matrix as returned by lq_factor.  
-        !! On output, the contents of this matrix are restored.  Notice, N must
-        !! be greater than or equal to M.
+        !! The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+        !! must be greater than or equal to M.
     real(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by lq_factor.
-    real(real64), intent(inout), dimension(:,:) :: b
-        !! On input, an N-by-NRHS matrix where the first M rows contain 
-        !! the right-hand-side matrix \(B\).  On output, the N-by-NRHS solution
-        !! matrix \(X\).
-    real(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The M-by-NRHS matrix \(B\).
+    real(real64), allocatable, dimension(:,:) :: x
+        !! The N-by-NRHS matrix \(X\).
 
     ! Parameters
+    real(real64), parameter :: zero = 0.0d0
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k, lwork, istat
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: m, n, nrhs, k
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     nrhs = size(b, 2)
     k = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
+    allocate(x(n, nrhs), source = zero)
 
     ! Input Check
     if (m > n) then
-        call errmgr%report_error("solve_lq_mtx", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
+        error stop 1
     else if (size(tau) /= k) then
-        call report_array_size_error("solve_lq_mtx", errmgr, "tau", k, &
-            size(tau))
-        return
-    else if (size(b, 1) /= n) then
-        call report_matrix_size_error("solve_lq_mtx", errmgr, "b", n, nrhs, &
-            size(b, 1), size(b, 2))
-        return
-    end if
-
-    ! Workspace Query
-    call mult_lq(.true., .true., a, tau, b, olwork = lwork)
-
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("solve_lq_mtx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("solve_lq_mtx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
+        error stop 2
+    else if (size(b, 1) /= m) then
+        error stop 3
     end if
 
     ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
     ! The lower triangular system is M-by-M and Y is M-by-NHRS.
-    call solve_triangular_system(.true., .false., .false., .true., one, &
-        a(1:m,1:m), b(1:m,:), errmgr)
-    if (errmgr%has_error_occurred()) return
+    x(1:m,:) = solve_triangular_system(.true., .false., .false., .true., one, &
+        a(1:m,1:m), b)
 
     ! Compute Q**T * Y = X
-    call mult_lq(.true., .true., a, tau, b, work = wptr, err = errmgr)
-    if (errmgr%has_error_occurred()) return
-end subroutine
+    x = mult_lq(.true., .true., a, tau, x)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_lq_mtx_cmplx(a, tau, b, work, olwork, err)
+pure function solve_lq_mtx_cmplx(a, tau, b) result(x)
     !! Solves a system of LQ factored equations of the form \(A X = L Q X = B\).
     complex(real64), intent(in), dimension(:,:) :: a
-        !! On input, the M-by-N LQ factored matrix as returned by lq_factor.  
-        !! On output, the contents of this matrix are restored.  Notice, N must
-        !! be greater than or equal to M.
+        !! The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+        !! must be greater than or equal to M.
     complex(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by lq_factor.
-    complex(real64), intent(inout), dimension(:,:) :: b
-        !! On input, an N-by-NRHS matrix where the first M rows contain 
-        !! the right-hand-side matrix \(B\).  On output, the N-by-NRHS solution
-        !! matrix \(X\).
-    complex(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(in), dimension(:,:) :: b
+        !! The M-by-NRHS matrix \(B\).
+    complex(real64), allocatable, dimension(:,:) :: x
+        !! The N-by-NRHS matrix \(X\).
 
     ! Parameters
+    complex(real64), parameter :: zero = (0.0d0, 0.0d0)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k, lwork, istat
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: m, n, nrhs, k
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     nrhs = size(b, 2)
     k = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
+    allocate(x(n, nrhs), source = zero)
 
     ! Input Check
     if (m > n) then
-        call errmgr%report_error("solve_lq_mtx_cmplx", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
-    else if (size(tau) /= k) then
-        call report_array_size_error("solve_lq_mtx_cmplx", errmgr, "tau", k, &
-            size(tau))
-        return
-    else if (size(b, 1) /= n) then
-        call report_matrix_size_error("solve_lq_mtx_cmplx", errmgr, "b", n, &
-            nrhs, size(b, 1), size(b, 2))
-        return
+        error stop 1
     end if
-
-    ! Workspace Query
-    call mult_lq(.true., .true., a, tau, b, olwork = lwork)
-
-    if (present(olwork)) then
-        olwork = lwork
-        return
+    if (size(tau) /= k) then
+        error stop 2
     end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("solve_lq_mtx_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("solve_lq_mtx_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
+    if (size(b, 1) /= m) then
+        error stop 3
     end if
 
     ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
     ! The lower triangular system is M-by-M and Y is M-by-NHRS.
-    call solve_triangular_system(.true., .false., .false., .true., one, &
-        a(1:m,1:m), b(1:m,:), errmgr)
-    if (errmgr%has_error_occurred()) return
+    x(1:m,:) = solve_triangular_system(.true., .false., .false., .true., one, &
+        a(1:m,1:m), b)
 
     ! Compute Q**T * Y = X
-    call mult_lq(.true., .true., a, tau, b, work = wptr, err = errmgr)
-    if (errmgr%has_error_occurred()) return
-end subroutine
+    x = mult_lq(.true., .true., a, tau, x)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_lq_vec(a, tau, b, work, olwork, err)
+pure function solve_lq_vec(a, tau, b) result(x)
     !! Solves a system of LQ factored equations of the form 
     !! \(A \vec{x} = L Q \vec{x} = \vec{b}\).
     real(real64), intent(in), dimension(:,:) :: a
-        !! !! On input, the M-by-N LQ factored matrix as returned by lq_factor.  
-        !! On output, the contents of this matrix are restored.  Notice, N must
-        !! be greater than or equal to M.
+        !! The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+        !! must be greater than or equal to M.
     real(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by lq_factor.
-    real(real64), intent(inout), dimension(:) :: b
-        !! On input, an N-element vector where the first M rows contain the 
-        !! right-hand-side vector \(\vec{b}\).  On output, the N-element vector
-        !! \(\vec{x}\).
-    real(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    real(real64), intent(in), dimension(:) :: b
+        !! The M-element vector \(\vec{b}\).
+    real(real64), allocatable, dimension(:) :: x
+        !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, k, lwork, istat
-    real(real64), pointer, dimension(:) :: wptr
-    real(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: m, n, k
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     k = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
-
-    ! Input Check
-    if (m > n) then
-        call errmgr%report_error("solve_lq_vec", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
-    else if (size(tau) /= k) then
-        call report_array_size_error("solve_lq_vec", errmgr, "tau", k, &
-            size(tau))
-        return
-    else if (size(b) /= n) then
-        call report_memory_error("solve_lq_vec", errmgr, istat)
-        return
-    end if
-
-    ! Workspace Query
-    call mult_lq(.true., a, tau, b, olwork = lwork)
-
-    if (present(olwork)) then
-        olwork = lwork
-        return
-    end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("solve_lq_vec", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("solve_lq_vec", errmgr, istat)
-            return
-        end if
-        wptr => wrk
-    end if
+    allocate(x(n), source = 0.0d0)
 
     ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
     ! The lower triangular system is M-by-M and Y is M-by-NHRS.
-    call solve_triangular_system(.false., .false., .true., a(1:m,1:m), &
-        b(1:m), errmgr)
-    if (errmgr%has_error_occurred()) return
+    x(1:m) = solve_triangular_system(.false., .false., .true., a(1:m,1:m), b)
 
     ! Compute Q**T * Y = X
-    call mult_lq(.true., a, tau, b, work = wptr, err = errmgr)
-    if (errmgr%has_error_occurred()) return
-end subroutine
+    x = mult_lq(.true., a, tau, x)
+end function
 
 ! ------------------------------------------------------------------------------
-subroutine solve_lq_vec_cmplx(a, tau, b, work, olwork, err)
+pure function solve_lq_vec_cmplx(a, tau, b) result(x)
     !! Solves a system of LQ factored equations of the form 
     !! \(A \vec{x} = L Q \vec{x} = \vec{b}\).
     complex(real64), intent(in), dimension(:,:) :: a
-        !! !! On input, the M-by-N LQ factored matrix as returned by lq_factor.  
-        !! On output, the contents of this matrix are restored.  Notice, N must
-        !! be greater than or equal to M.
+        !! The M-by-N LQ factored matrix as returned by lq_factor.  Notice, N 
+        !! must be greater than or equal to M.
     complex(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by lq_factor.
-    complex(real64), intent(inout), dimension(:) :: b
-        !! On input, an N-element vector where the first M rows contain the 
-        !! right-hand-side vector \(\vec{b}\).  On output, the N-element vector
-        !! \(\vec{x}\).
-    complex(real64), intent(out), target, optional, dimension(:) :: work
-        !! An optional input, that if provided, prevents any local memory 
-        !! allocation.  If not provided, the memory required is allocated
-        !! within.  If provided, the length of the array must be at least 
-        !! olwork.
-    integer(int32), intent(out), optional :: olwork
-        !! An optional output used to determine workspace size.  If supplied, 
-        !! the routine determines the optimal size for work, and returns 
-        !! without performing any actual calculations.
-    class(errors), intent(inout), optional, target :: err
-        !! The error object to be updated.
+    complex(real64), intent(in), dimension(:) :: b
+        !! The M-element vector \(\vec{b}\).
+    complex(real64), allocatable, dimension(:) :: x
+        !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, k, lwork, istat
-    complex(real64), pointer, dimension(:) :: wptr
-    complex(real64), allocatable, target, dimension(:) :: wrk
-    class(errors), pointer :: errmgr
-    type(errors), target :: deferr
+    integer(int32) :: m, n, k
 
     ! Initialization
     m = size(a, 1)
     n = size(a, 2)
     k = min(m, n)
-    if (present(err)) then
-        errmgr => err
-    else
-        errmgr => deferr
-    end if
 
     ! Input Check
     if (m > n) then
-        call errmgr%report_error("solve_lq_vec_cmplx", &
-            "This routine does not handle the overdetermined case.", &
-            LA_INVALID_INPUT_ERROR)
-        return
-    else if (size(tau) /= k) then
-        call report_array_size_error("solve_lq_vec_cmplx", errmgr, "tau", k, &
-            size(tau))
-        return
-    else if (size(b) /= n) then
-        call report_memory_error("solve_lq_vec_cmplx", errmgr, istat)
-        return
+        error stop 1
     end if
-
-    ! Workspace Query
-    call mult_lq(.true., a, tau, b, olwork = lwork)
-
-    if (present(olwork)) then
-        olwork = lwork
-        return
+    if (size(tau) /= k) then
+        error stop 2
     end if
-
-    ! Local Memory Allocation
-    if (present(work)) then
-        if (size(work) < lwork) then
-            call report_array_size_error("solve_lq_vec_cmplx", errmgr, "work", &
-                lwork, size(work))
-            return
-        end if
-        wptr => work(1:lwork)
-    else
-        allocate(wrk(lwork), stat = istat)
-        if (istat /= 0) then
-            call report_memory_error("solve_lq_vec_cmplx", errmgr, istat)
-            return
-        end if
-        wptr => wrk
+    if (size(b) /= m) then
+        error stop 3
     end if
 
     ! Solve the lower triangular system L * Y = B for Y, where Y = Q * X.
     ! The lower triangular system is M-by-M and Y is M-by-NHRS.
-    call solve_triangular_system(.false., .false., .true., a(1:m,1:m), &
-        b(1:m), errmgr)
-    if (errmgr%has_error_occurred()) return
+    x(1:m) = solve_triangular_system(.false., .false., .true., a(1:m,1:m), b)
 
     ! Compute Q**T * Y = X
-    call mult_lq(.true., a, tau, b, work = wptr, err = errmgr)
-    if (errmgr%has_error_occurred()) return
-end subroutine
+    x = mult_lq(.true., a, tau, x)
+end function
 
 ! ------------------------------------------------------------------------------
 end module

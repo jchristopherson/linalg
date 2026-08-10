@@ -6,7 +6,7 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,2), ai(2,3), ao(3,2), c(2,2)
+    real(real64) :: a(3,2), ai(2,3), c(2,2)
     integer(int32) :: i
 
     ! Create the 3-by-2 matrix A
@@ -14,17 +14,15 @@ program example
     ! A = | 0   1 |
     !     | 0   1 |
     a = reshape([1.0d0, 0.0d0, 0.0d0, 0.0d0, 1.0d0, 1.0d0], [3, 2])
-    ao = a  ! Just making a copy for later as mtx_pinverse will destroy the
-            ! contents of the original matrix
 
     ! The Moore-Penrose pseudo-inverse of this matrix is:
     !         | 1   0    0  |
     ! A**-1 = |             |
     !         | 0  1/2  1/2 |
-    call mtx_pinverse(a, ai)
+    ai = mtx_pinverse(a)
 
     ! Notice, A**-1 * A is an identity matrix.
-    c = matmul(ai, ao)
+    c = matmul(ai, a)
 
     ! Display the inverse
     print '(A)', "Inverse:"

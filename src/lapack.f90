@@ -439,5 +439,11 @@ module lapack
                 vl(ldvl,*), vr(ldvr,*), work(*)
             integer(int32), intent(out) :: info
         end subroutine
+
+        pure subroutine DLADIV(a, b, c, d, p, q)
+            use iso_fortran_env, only : real64
+            real(real64), intent(in) :: a, b, c, d
+            real(real64), intent(out) :: p, q
+        end subroutine
     end interface
 end module

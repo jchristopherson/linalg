@@ -16,8 +16,9 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, vecs, x, y
-        real(real64), dimension(n) :: vals
+        real(real64), dimension(n, n) :: a, x, y
+        real(real64), allocatable, dimension(:) :: vals
+        real(real64), allocatable, dimension(:,:) :: vecs
         logical :: rst
 
         ! Initialization
@@ -25,8 +26,7 @@ contains
         call create_random_array(a, mtype = SYMMETRIC_MATRIX)
 
         ! Compute the eigenvalues and eigenvectors of A
-        vecs = a
-        call eigen(.true., vecs, vals)
+        call eigen(a, vals, vecs)
 
         ! Compute vecs * vals, where vals is a diagonal matrix
         call diag_mtx_mult(.false., .false., 1.0d0, vals, vecs, 0.0d0, x)
@@ -45,20 +45,20 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1
-        complex(real64), dimension(n, n) :: vecs, vmtx, x, y
-        complex(real64), dimension(n) :: vals, vals1
+        real(real64), dimension(n, n) :: a
+        complex(real64), dimension(n, n) :: vmtx, x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals1
+        complex(real64), allocatable, dimension(:,:) :: vecs
         integer(int32) :: i
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
-        call eigen(a1, vals, vecs)
+        call eigen(a, vals, rvecs = vecs)
 
         ! Compute vecs * vals, where vals is a diagonal matrix
         do i = 1, n
@@ -87,19 +87,19 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        complex(real64), dimension(n, n) :: a, a1, vecs, vmtx, x, y
-        complex(real64), dimension(n) :: vals, vals1
+        complex(real64), dimension(n, n) :: a, vmtx, x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals1
+        complex(real64), allocatable, dimension(:,:) :: vecs
         integer(int32) :: i
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a, mtype = SYMMETRIC_MATRIX)
-        a1 = a
         vmtx = cmplx(0.0d0, 0.0d0, real64)
 
         ! Compute the eigenvalues and eigenvectors of A
-        call eigen(a1, vals, vecs)
+        call eigen(a, vals, vecs)
 
         ! Compute vecs * vals, where vals is a diagonal matrix
         do i = 1, n
@@ -121,20 +121,19 @@ contains
         integer(int32), parameter :: n = 100
 
         ! Local Variables
-        real(real64), dimension(n, n) :: a, a1, b, b1
-        complex(real64), dimension(n) :: vals, vals2
-        complex(real64), dimension(n, n) :: vecs, x, y
+        real(real64), dimension(n, n) :: a, b
+        complex(real64), dimension(n, n) :: x, y
+        complex(real64), allocatable, dimension(:) :: vals, vals2
+        complex(real64), allocatable, dimension(:,:) :: vecs
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
         call create_random_array(b)
-        a1 = a
-        b1 = b
 
         ! Test 1
-        call eigen(a1, b1, vals, vecs = vecs)
+        call eigen(a, b, vals, rvecs = vecs)
 
         ! Compute X = A * VECS
         x = matmul(a, vecs)
@@ -154,71 +153,6 @@ contains
         if (.not.assert(vals, vals2, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Generalized Eigen Values Test 2"
-        end if
-    end function
-
-! ------------------------------------------------------------------------------
-    function test_eigen_pure_1() result(rst)
-        use linear_algebra
-
-        ! Arguments
-        logical :: rst
-
-        ! Parameters and Variables
-        integer(int32), parameter :: n = 100
-        integer(int32) :: i
-        real(real64) :: a(n, n)
-        complex(real64) :: vmtx(n, n), x(n, n), y(n, n)
-        type(eigen_solution) :: z
-
-        ! Initialization
-        rst = .true.
-        call create_random_array(a, mtype = SYMMETRIC_MATRIX)
-        vmtx = cmplx(0.0d0, 0.0d0, real64)
-
-        ! Compute the eigen solution of A
-        z = eigen(a)
-
-        ! Test
-        do i = 1, n
-            vmtx(i,i) = z%values(i)
-        end do
-        x = matmul(z%vectors, vmtx)
-        y = matmul(a, z%vectors)
-        if (.not.assert(x, y, REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "TEST FAILED test_eigen_pure_1"
-        end if
-    end function
-
-! ------------------------------------------------------------------------------
-    function test_eigen_gen_pure_1() result(rst)
-        use linear_algebra
-
-        ! Arguments
-        logical :: rst
-
-        ! Parameters & Variables
-        integer(int32), parameter :: n = 100
-        real(real64) :: a(n, n), b(n, n)
-        complex(real64) :: vals(n)
-        complex(real64) :: x(n, n), y(n, n)
-        type(eigen_solution) :: z
-
-        ! Initialization
-        rst = .true.
-        call create_random_array(a)
-        call create_random_array(b)
-
-        ! Tests
-        z = eigen(a, b)
-
-        x = matmul(a, z%vectors)
-        call diag_mtx_mult(.false., LA_NO_OPERATION, 1.0d0, z%values, z%vectors, 0.0d0, y)
-        y = matmul(b, y)
-        if (.not.assert(x, y, REAL64_TOL)) then
-            rst = .false.
-            print '(A)', "TEST FAILED: test_eigen_gen_pure_1"
         end if
     end function
 

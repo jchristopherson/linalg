@@ -11,7 +11,8 @@ program example
     implicit none
 
     ! Local Variables
-    real(real64) :: a(3,3), tau(3), b(3)
+    real(real64) :: a(3,3), b(3), x(3)
+    real(real64), allocatable :: tau(:), qr(:,:)
     integer(int32) :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
@@ -35,14 +36,14 @@ program example
 
     ! Compute the QR factorization, using pivoting
     pvt = 0     ! Zero every entry in order not to lock any column in place
-    call qr_factor(a, tau, pvt)
+    call qr_factor(a, pvt, tau = tau, qr = qr)
 
-    ! Compute the solution.  The results overwrite b.
-    call solve_qr(a, tau, pvt, b)
+    ! Compute the solution.
+    x = solve_qr(qr, tau, pvt, b)
 
     ! Display the results.
     print '(A)', "QR Solution: X = "
-    print '(F8.4)', (b(i), i = 1, size(b))
+    print '(F8.4)', (x(i), i = 1, size(x))
 
     ! Notice, QR factorization without pivoting could be accomplished in the
     ! same manner.  The only difference is to omit the PVT array (column pivot

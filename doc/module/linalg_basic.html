@@ -12,14 +12,29 @@
 
     <title>linalg_basic &ndash; LINALG</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="../css/pygments.css" rel="stylesheet">
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
-      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="../css/pygments.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -72,9 +87,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip"
-                 data-bs-placement="bottom" data-html="true"
-                 title="23.3% of total for modules and submodules.">2339 statements</a>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="28.1% of total for modules and submodules.">1884 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -94,9 +108,11 @@
     </div>
   </div>
   <script>
-    $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-    })
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
   </script>
 
   </div>
@@ -141,6 +157,8 @@
             <a class="list-group-item" href="../module/linalg_basic.html#interface-det">det</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-diag_mtx_mult">diag_mtx_mult</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-extract_diagonal">extract_diagonal</a>
+            <a class="list-group-item" href="../module/linalg_basic.html#interface-extract_lower_triangular">extract_lower_triangular</a>
+            <a class="list-group-item" href="../module/linalg_basic.html#interface-extract_upper_triangular">extract_upper_triangular</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-mtx_mult">mtx_mult</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-mtx_rank">mtx_rank</a>
             <a class="list-group-item" href="../module/linalg_basic.html#interface-rank1_update">rank1_update</a>
@@ -154,7 +172,18 @@
 
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/linalg_basic.html#proc-identity">identity</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -177,12 +206,11 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item">ferror</li>
                   <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
-                  <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item">blas</li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item">blas</li>
+                  <li class="list-inline-item">lapack</li>
               </ul>
             </li>
         </ul>
@@ -277,7 +305,7 @@ parameter
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b, err)  
+    private pure subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">A = \alpha A B</script> or <script type="math/tex">A = \alpha B A</script> 
@@ -323,7 +351,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~45"></span>
+              <span class="anchor" id="variable-m~56"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -368,7 +396,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~21"></span>
+              <span class="anchor" id="variable-alpha~23"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -383,7 +411,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~54"></span>
+              <span class="anchor" id="variable-a~77"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -398,7 +426,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~36"></span>
+              <span class="anchor" id="variable-b~41"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -411,21 +439,6 @@ end do
                 <p>The diagonal matrix to multiply by.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~62"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -433,7 +446,7 @@ end do
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b, err)  
+    private pure subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">A = \alpha A B</script> or <script type="math/tex">A = \alpha B A</script> 
@@ -479,7 +492,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~46"></span>
+              <span class="anchor" id="variable-m~57"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -524,7 +537,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~22"></span>
+              <span class="anchor" id="variable-alpha~24"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -539,7 +552,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~55"></span>
+              <span class="anchor" id="variable-a~78"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -554,7 +567,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~37"></span>
+              <span class="anchor" id="variable-b~42"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -565,21 +578,6 @@ end do
             <td><strong>b</strong></td>
             <td>
                 <p>The diagonal matrix to multiply by.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~63"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
             </td>
         </tr>
     </tbody>
@@ -602,7 +600,7 @@ end do
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, y, err)  
+    private pure subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, y)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">y = \alpha A x + \beta y</script> or
@@ -632,7 +630,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~8"></span>
+              <span class="anchor" id="variable-trans~12"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -679,7 +677,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~19"></span>
+              <span class="anchor" id="variable-alpha~21"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -694,7 +692,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~52"></span>
+              <span class="anchor" id="variable-a~75"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -709,7 +707,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~13"></span>
+              <span class="anchor" id="variable-x~33"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -753,21 +751,6 @@ end do
 operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~58"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -775,7 +758,7 @@ operation.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, beta, y, err)  
+    private pure subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, beta, y)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">y = \alpha op(A) x + \beta y</script>  where 
@@ -805,7 +788,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~9"></span>
+              <span class="anchor" id="variable-trans~13"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -862,7 +845,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~20"></span>
+              <span class="anchor" id="variable-alpha~22"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -877,7 +860,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~53"></span>
+              <span class="anchor" id="variable-a~76"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -892,7 +875,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~14"></span>
+              <span class="anchor" id="variable-x~34"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -936,21 +919,6 @@ Possible options are:</p>
 operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~59"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -971,7 +939,7 @@ operation.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_to_full_mtx_dbl(kl, ku, b, f, err)  
+    private pure subroutine band_to_full_mtx_dbl(kl, ku, b, f)  
 
     </h3>
   <p>Converts a banded matrix to a full matrix.</p>
@@ -1030,7 +998,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~34"></span>
+              <span class="anchor" id="variable-b~39"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1058,21 +1026,6 @@ end do
                 <p>The full matrix to store the result in.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~60"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -1080,7 +1033,7 @@ end do
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine band_to_full_mtx_cmplx(kl, ku, b, f, err)  
+    private pure subroutine band_to_full_mtx_cmplx(kl, ku, b, f)  
 
     </h3>
   <p>Converts a banded matrix to a full matrix.</p>
@@ -1139,7 +1092,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~35"></span>
+              <span class="anchor" id="variable-b~40"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1167,21 +1120,6 @@ end do
                 <p>The full matrix to store the result in.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~61"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -1202,7 +1140,7 @@ end do
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine banded_to_dense_dbl(m, kl, ku, a, x, err)  
+    private pure function banded_to_dense_dbl(m, kl, ku, a) result(x)  
 
     </h3>
   <p>Converts a banded matrix to a dense matrix.</p>
@@ -1231,7 +1169,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~47"></span>
+              <span class="anchor" id="variable-m~58"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1241,7 +1179,7 @@ end do
             <td>::</td>
             <td><strong>m</strong></td>
             <td>
-                <p>The M-by-N dense matrix.</p>
+                <p>The number of rows in the M-by-N dense matrix.</p>
             </td>
         </tr>
         <tr>
@@ -1276,7 +1214,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~56"></span>
+              <span class="anchor" id="variable-a~79"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1289,44 +1227,19 @@ end do
                 <p>The (KL+KU+1)-by-N banded matrix.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~15"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The M-by-N dense matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~64"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N dense matrix.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine banded_to_dense_cmplx(m, kl, ku, a, x, err)  
+    private pure function banded_to_dense_cmplx(m, kl, ku, a) result(x)  
 
     </h3>
   <p>Converts a banded matrix to a dense matrix.</p>
@@ -1355,7 +1268,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~48"></span>
+              <span class="anchor" id="variable-m~59"></span>
               integer(kind=int32),
             </td>
 <td>intent(in)</td>
@@ -1400,7 +1313,7 @@ end do
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~57"></span>
+              <span class="anchor" id="variable-a~80"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1413,39 +1326,14 @@ end do
                 <p>The (KL+KU+1)-by-N banded matrix.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~16"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The M-by-N dense matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~65"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-N dense matrix.</p>
 
           </li>
     </ul>
@@ -1463,7 +1351,7 @@ end do
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine dense_to_banded_dbl(a, kl, ku, x, err)  
+    private pure function dense_to_banded_dbl(a, kl, ku) result(x)  
 
     </h3>
   <p>Converts a banded matrix stored in dense format to a compressed form.</p>
@@ -1492,7 +1380,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~58"></span>
+              <span class="anchor" id="variable-a~81"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1535,44 +1423,19 @@ end do
                 <p>The number of superdiagonals.  Must be at least 0.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~17"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The (KL+KU+1)-by-N banded matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~66"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The (KL+KU+1)-by-N banded matrix.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine dense_to_banded_cmplx(a, kl, ku, x, err)  
+    private pure function dense_to_banded_cmplx(a, kl, ku) result(x)  
 
     </h3>
   <p>Converts a banded matrix stored in dense format to a compressed form.</p>
@@ -1601,7 +1464,7 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~59"></span>
+              <span class="anchor" id="variable-a~82"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1644,39 +1507,14 @@ end do
                 <p>The number of superdiagonals.  Must be at least 0.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~18"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The (KL+KU+1)-by-N banded matrix.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~67"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The (KL+KU+1)-by-N banded matrix.</p>
 
           </li>
     </ul>
@@ -1694,7 +1532,7 @@ end do
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  function det_dbl(a, iwork, err) result(x)  
+    private pure function det_dbl(a) result(x)  
 
     </h3>
   <p>Computes the determinant of a matrix.</p>
@@ -1712,51 +1550,17 @@ end do
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~47"></span>
+              <span class="anchor" id="variable-a~70"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the matrix on which to operate.  On output, the LU factored
-matrix in the form [L\U] where L is unit lower triangular and U is
-upper triangular.  The unit diagonal elements of L are not stored.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-iwork"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>iwork</strong></td>
-            <td>
-                <p>An MIN(M, N)-element array used to track row-pivot operations.  The
-array stored pivot information such that row I is interchanged with 
-row IPVT(I).  If not supplied, this array is allocated within.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~52"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
+                <p>The N-by-N matrix on which to operate.</p>
             </td>
         </tr>
     </tbody>
@@ -1771,7 +1575,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  function det_cmplx(a, iwork, err) result(x)  
+    private pure function det_cmplx(a) result(x)  
 
     </h3>
   <p>Computes the determinant of a matrix.</p>
@@ -1789,51 +1593,17 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~48"></span>
+              <span class="anchor" id="variable-a~71"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>On input, the matrix on which to operate.  On output, the LU factored
-matrix in the form [L\U] where L is unit lower triangular and U is
-upper triangular.  The unit diagonal elements of L are not stored.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-iwork~2"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>iwork</strong></td>
-            <td>
-                <p>An MIN(M, N)-element array used to track row-pivot operations.  The
-array stored pivot information such that row I is interchanged with 
-row IPVT(I).  If not supplied, this array is allocated within.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~53"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
+                <p>The matrix on which to operate.</p>
             </td>
         </tr>
     </tbody>
@@ -1861,7 +1631,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c, err)  
+    private pure subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
@@ -1880,7 +1650,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~3"></span>
+              <span class="anchor" id="variable-lside~5"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1895,7 +1665,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~6"></span>
+              <span class="anchor" id="variable-trans~10"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1910,7 +1680,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~8"></span>
+              <span class="anchor" id="variable-alpha~10"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -1925,7 +1695,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~36"></span>
+              <span class="anchor" id="variable-a~59"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1940,7 +1710,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~23"></span>
+              <span class="anchor" id="variable-b~28"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1983,21 +1753,6 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~41"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2005,7 +1760,7 @@ row IPVT(I).  If not supplied, this array is allocated within.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx2(lside, alpha, a, b, err)  
+    private pure subroutine diag_mtx_mult_mtx2(lside, alpha, a, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
@@ -2024,7 +1779,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~4"></span>
+              <span class="anchor" id="variable-lside~6"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2039,7 +1794,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~9"></span>
+              <span class="anchor" id="variable-alpha~11"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2054,7 +1809,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~37"></span>
+              <span class="anchor" id="variable-a~60"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2069,7 +1824,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~24"></span>
+              <span class="anchor" id="variable-b~29"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2082,21 +1837,6 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
                 <p>The matrix <script type="math/tex">B</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~42"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2104,7 +1844,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c, err)  
+    private pure subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
@@ -2123,7 +1863,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~5"></span>
+              <span class="anchor" id="variable-lside~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2138,7 +1878,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~7"></span>
+              <span class="anchor" id="variable-trans~11"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2153,7 +1893,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~10"></span>
+              <span class="anchor" id="variable-alpha~12"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2168,7 +1908,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~38"></span>
+              <span class="anchor" id="variable-a~61"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2183,7 +1923,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~25"></span>
+              <span class="anchor" id="variable-b~30"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2226,21 +1966,6 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~43"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2248,7 +1973,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c, err)  
+    private pure subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
@@ -2267,7 +1992,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~6"></span>
+              <span class="anchor" id="variable-lside~8"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2309,7 +2034,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~11"></span>
+              <span class="anchor" id="variable-alpha~13"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2324,7 +2049,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~39"></span>
+              <span class="anchor" id="variable-a~62"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2339,7 +2064,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~26"></span>
+              <span class="anchor" id="variable-b~31"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2382,21 +2107,6 @@ Possible options are:</p>
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~44"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2404,7 +2114,7 @@ Possible options are:</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c, err)  
+    private pure subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
@@ -2423,7 +2133,7 @@ Possible options are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~7"></span>
+              <span class="anchor" id="variable-lside~9"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -2465,7 +2175,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~12"></span>
+              <span class="anchor" id="variable-alpha~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2480,7 +2190,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~40"></span>
+              <span class="anchor" id="variable-a~63"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2495,7 +2205,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~27"></span>
+              <span class="anchor" id="variable-b~32"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2538,21 +2248,6 @@ Possible options are:</p>
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~45"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2560,262 +2255,7 @@ Possible options are:</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b, err)  
-
-    </h3>
-  <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
-where <script type="math/tex">A</script> is a diagonal matrix.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lside~8"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lside</strong></td>
-            <td>
-                <p>A logical flag indicating if the diagonal matrix is on the left.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alpha~13"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alpha</strong></td>
-            <td>
-                <p>The scalar <script type="math/tex">\alpha</script> to multiply the product of <script type="math/tex">A</script> and <script type="math/tex">B</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~41"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>The diagonal matrix <script type="math/tex">A</script> in the operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~28"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>The matrix <script type="math/tex">B</script> in the operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~46"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c, err)  
-
-    </h3>
-  <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
-<script type="math/tex">C = \alpha op(B) A + \beta C </script> where <script type="math/tex">A</script> is a diagonal matrix.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-lside~9"></span>
-              logical,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>lside</strong></td>
-            <td>
-                <p>A logical flag indicating if the diagonal matrix is on the left.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-opb~4"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>opb</strong></td>
-            <td>
-                <p>An integer flag indicating the operation to perform on matrix <script type="math/tex">B</script>.
-Possible options are:</p>
-<ul>
-<li>
-<p>LA_NO_OPERATION: No operation is performed on matrix.</p>
-</li>
-<li>
-<p>LA_TRANSPOSE: The transpose of matrix is used.</p>
-</li>
-<li>
-<p>LA_HERMITIAN_TRANSPOSE: The Hermitian transpose of matrix is used.</p>
-</li>
-</ul>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alpha~14"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alpha</strong></td>
-            <td>
-                <p>The scalar <script type="math/tex">\alpha</script> to multiply the product of <script type="math/tex">A</script> and <script type="math/tex">B</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~42"></span>
-              real(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-                <p>The diagonal matrix <script type="math/tex">A</script> in the operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b~29"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>b</strong></td>
-            <td>
-                <p>The matrix <script type="math/tex">B</script> in the operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta~10"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta</strong></td>
-            <td>
-                <p>The scalar <script type="math/tex">\beta</script> to multiply the matrix <script type="math/tex">C</script>.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-c~13"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              dimension(:,:)
-            </td>
-            <td>::</td>
-            <td><strong>c</strong></td>
-            <td>
-                <p>The matrix <script type="math/tex">C</script> in the operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~47"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-          </li>
-          <li class="list-group-item">
-                <h3>
-    private  subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b, err)  
+    private pure subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
@@ -2864,8 +2304,8 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~43"></span>
-              real(kind=real64),
+              <span class="anchor" id="variable-a~64"></span>
+              complex(kind=real64),
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -2879,7 +2319,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~30"></span>
+              <span class="anchor" id="variable-b~33"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -2892,21 +2332,6 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
                 <p>The matrix <script type="math/tex">B</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~48"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2914,11 +2339,11 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine diag_mtx_sparse_mult(lside, alpha, a, b, err)  
+    private pure subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c)  
 
     </h3>
-  <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
-where <script type="math/tex">A</script> is a diagonal matrix and <script type="math/tex">B</script> is a sparse matrix.</p>
+  <p>Performs the matrix operation <script type="math/tex">C = \alpha A op(B) + \beta C </script> or
+<script type="math/tex">C = \alpha op(B) A + \beta C </script> where <script type="math/tex">A</script> is a diagonal matrix.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2943,12 +2368,237 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
             <td>::</td>
             <td><strong>lside</strong></td>
             <td>
-                
+                <p>A logical flag indicating if the diagonal matrix is on the left.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-opb~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>opb</strong></td>
+            <td>
+                <p>An integer flag indicating the operation to perform on matrix <script type="math/tex">B</script>.
+Possible options are:</p>
+<ul>
+<li>
+<p>LA_NO_OPERATION: No operation is performed on matrix.</p>
+</li>
+<li>
+<p>LA_TRANSPOSE: The transpose of matrix is used.</p>
+</li>
+<li>
+<p>LA_HERMITIAN_TRANSPOSE: The Hermitian transpose of matrix is used.</p>
+</li>
+</ul>
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-alpha~16"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alpha</strong></td>
+            <td>
+                <p>The scalar <script type="math/tex">\alpha</script> to multiply the product of <script type="math/tex">A</script> and <script type="math/tex">B</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~65"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The diagonal matrix <script type="math/tex">A</script> in the operation.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~34"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The matrix <script type="math/tex">B</script> in the operation.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta~10"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong></td>
+            <td>
+                <p>The scalar <script type="math/tex">\beta</script> to multiply the matrix <script type="math/tex">C</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~13"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>c</strong></td>
+            <td>
+                <p>The matrix <script type="math/tex">C</script> in the operation.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b)  
+
+    </h3>
+  <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
+where <script type="math/tex">A</script> is a diagonal matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lside~12"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lside</strong></td>
+            <td>
+                <p>A logical flag indicating if the diagonal matrix is on the left.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alpha~17"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alpha</strong></td>
+            <td>
+                <p>The scalar <script type="math/tex">\alpha</script> to multiply the product of <script type="math/tex">A</script> and <script type="math/tex">B</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~66"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The diagonal matrix <script type="math/tex">A</script> in the operation.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~35"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The matrix <script type="math/tex">B</script> in the operation.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure subroutine diag_mtx_sparse_mult(lside, alpha, a, b)  
+
+    </h3>
+  <p>Performs the matrix operation <script type="math/tex">B = \alpha A B </script> or <script type="math/tex">B = \alpha B A </script>
+where <script type="math/tex">A</script> is a diagonal matrix and <script type="math/tex">B</script> is a sparse matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lside~13"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lside</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alpha~18"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -2963,7 +2613,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~44"></span>
+              <span class="anchor" id="variable-a~67"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2978,7 +2628,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~31"></span>
+              <span class="anchor" id="variable-b~36"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(inout)</td>
@@ -2987,21 +2637,6 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
             </td>
             <td>::</td>
             <td><strong>b</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~49"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
             <td>
                 
             </td>
@@ -3026,7 +2661,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine extract_diagonal_dbl(a, diag, err)  
+    private pure function extract_diagonal_dbl(a) result(diag)  
 
     </h3>
   <p>Extracts the diagonal of a matrix.</p>
@@ -3044,7 +2679,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~60"></span>
+              <span class="anchor" id="variable-a~83"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3057,44 +2692,19 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
                 <p>The M-by-N matrix.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-diag"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>diag</strong></td>
-            <td>
-                <p>The MIN(M, N) element array for the diagonal elements.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~68"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The MIN(M, N) element array for the diagonal elements.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine extract_diagonal_cmplx(a, diag, err)  
+    private pure function extract_diagonal_cmplx(a) result(diag)  
 
     </h3>
   <p>Extracts the diagonal of a matrix.</p>
@@ -3112,7 +2722,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~61"></span>
+              <span class="anchor" id="variable-a~84"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3125,44 +2735,19 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
                 <p>The M-by-N matrix.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-diag~2"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td></td>            <td>
-              dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>diag</strong></td>
-            <td>
-                <p>The MIN(M, N) element array for the diagonal elements.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~69"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The MIN(M, N) element array for the diagonal elements.</p>
 
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine extract_diagonal_csr(a, diag, err)  
+    private pure function extract_diagonal_csr(a) result(diag)  
 
     </h3>
   <p>Extracts the diagonal of a matrix.</p>
@@ -3180,7 +2765,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~62"></span>
+              <span class="anchor" id="variable-a~85"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -3193,39 +2778,212 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
                 <p>The M-by-N matrix.</p>
             </td>
         </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The MIN(M, N) element array for the diagonal elements.</p>
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-extract_lower_triangular"></span>
+      <h3>public        interface <a href='..\interface\extract_lower_triangular.html'>extract_lower_triangular</a> 
+      </h3>
+    </div>
+      <div class="card-body">
+        <p>An interface to the lower triangular matrix extraction routines.</p>
+      </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private pure function extract_lower_triangular_dbl(x) result(rst)  
+
+    </h3>
+  <p>Extracts the lower triangular portion of a matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-diag~3"></span>
+              <span class="anchor" id="variable-x~41"></span>
               real(kind=real64),
             </td>
-<td>intent(out),</td>
+<td>intent(in),</td>
               <td></td>            <td>
-              dimension(:)
+              dimension(:,:)
             </td>
             <td>::</td>
-            <td><strong>diag</strong></td>
+            <td><strong>x</strong></td>
             <td>
-                <p>The MIN(M, N) element array for the diagonal elements.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~70"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
+                <p>The M-by-N matrix.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-K lower triangular matrix where K = MIN(M, N).</p>
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure function extract_lower_triangular_cmplx(x) result(rst)  
+
+    </h3>
+  <p>Extracts the lower triangular portion of a matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~42"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>The M-by-N matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The M-by-K lower triangular matrix where K = MIN(M, N).</p>
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-extract_upper_triangular"></span>
+      <h3>public        interface <a href='..\interface\extract_upper_triangular.html'>extract_upper_triangular</a> 
+      </h3>
+    </div>
+      <div class="card-body">
+        <p>An interface to the upper triangular matrix extraction routines.</p>
+      </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private pure function extract_upper_triangular_dbl(x) result(rst)  
+
+    </h3>
+  <p>Extracts the upper triangular portion of a matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~39"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>The M-by-N matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The K-by-N upper triangular matrix where K = MIN(M, N).</p>
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private pure function extract_upper_triangular_cmplx(x) result(rst)  
+
+    </h3>
+  <p>Extracts the upper triangular portion of a matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~40"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>The M-by-N matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>complex(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The K-by-N upper triangular matrix where K = MIN(M, N).</p>
 
           </li>
     </ul>
@@ -3243,7 +3001,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c, err)  
+    private pure subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A B + \beta C </script>.</p>
@@ -3261,7 +3019,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-transa"></span>
+              <span class="anchor" id="variable-transa~3"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3291,7 +3049,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~2"></span>
+              <span class="anchor" id="variable-alpha~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3306,7 +3064,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~30"></span>
+              <span class="anchor" id="variable-a~53"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3321,7 +3079,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~19"></span>
+              <span class="anchor" id="variable-b~24"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3364,21 +3122,6 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~35"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -3386,7 +3129,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine mtx_mult_vec(trans, alpha, a, b, beta, c, err)  
+    private pure subroutine mtx_mult_vec(trans, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix-vector operation <script type="math/tex">C = \alpha A B + \beta C </script>.</p>
@@ -3404,7 +3147,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~5"></span>
+              <span class="anchor" id="variable-trans~9"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -3419,7 +3162,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~3"></span>
+              <span class="anchor" id="variable-alpha~5"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3434,7 +3177,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~31"></span>
+              <span class="anchor" id="variable-a~54"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3449,7 +3192,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~20"></span>
+              <span class="anchor" id="variable-b~25"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3492,21 +3235,6 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
                 <p>The vector <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~36"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -3514,7 +3242,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c, err)  
+    private pure subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">C = \alpha A B + \beta C </script>.</p>
@@ -3586,7 +3314,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~4"></span>
+              <span class="anchor" id="variable-alpha~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3601,7 +3329,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~32"></span>
+              <span class="anchor" id="variable-a~55"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3616,7 +3344,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~21"></span>
+              <span class="anchor" id="variable-b~26"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3659,21 +3387,6 @@ Possible options are:</p>
                 <p>The matrix <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~37"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -3681,7 +3394,7 @@ Possible options are:</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c, err)  
+    private pure subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c)  
 
     </h3>
   <p>Performs the matrix-vector operation <script type="math/tex">C = \alpha A B + \beta C </script>.</p>
@@ -3726,7 +3439,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~5"></span>
+              <span class="anchor" id="variable-alpha~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -3741,7 +3454,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~33"></span>
+              <span class="anchor" id="variable-a~56"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3756,7 +3469,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~22"></span>
+              <span class="anchor" id="variable-b~27"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3799,21 +3512,6 @@ Possible options are:</p>
                 <p>The vector <script type="math/tex">C</script> in the operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~38"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -3834,7 +3532,7 @@ Possible options are:</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  function mtx_rank_dbl(a, tol, work, olwork, err) result(rnk)  
+    private pure function mtx_rank_dbl(a, tol) result(rnk)  
 
     </h3>
   <p>Computes the rank of a matrix.</p>
@@ -3852,10 +3550,10 @@ Possible options are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~45"></span>
+              <span class="anchor" id="variable-a~68"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
@@ -3867,7 +3565,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol"></span>
+              <span class="anchor" id="variable-tol~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3884,56 +3582,6 @@ MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
 smallest value that causes an overflow if inverted, the tolerance
 reverts back to its default value, and the operation continues; 
 however, a warning message is issued.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~23"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local
-memory allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least
-olwork.  If not provided, the memory required is allocated within.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~23"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size. If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~50"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
             </td>
         </tr>
     </tbody>
@@ -3948,7 +3596,7 @@ without performing any actual calculations.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  function mtx_rank_cmplx(a, tol, work, olwork, rwork, err) result(rnk)  
+    private pure function mtx_rank_cmplx(a, tol) result(rnk)  
 
     </h3>
   <p>Computes the rank of a matrix.</p>
@@ -3966,10 +3614,10 @@ without performing any actual calculations.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~46"></span>
+              <span class="anchor" id="variable-a~69"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
@@ -3981,7 +3629,7 @@ without performing any actual calculations.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~2"></span>
+              <span class="anchor" id="variable-tol~5"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -3998,74 +3646,6 @@ MAX(M, N) * EPS * MAX(S).  If the supplied value is less than the
 smallest value that causes an overflow if inverted, the tolerance
 reverts back to its default value, and the operation continues; 
 however, a warning message is issued.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-work~24"></span>
-              complex(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>work</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any local
-memory allocation.  If not provided, the memory required is allocated
-within.  If provided, the length of the array must be at least
-olwork.  If not provided, the memory required is allocated within.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-olwork~24"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>olwork</strong></td>
-            <td>
-                <p>An optional output used to determine workspace size. If supplied, 
-the routine determines the optimal size for work, and returns 
-without performing any actual calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-rwork~6"></span>
-              real(kind=real64),
-            </td>
-<td>intent(out),</td>
-              <td>optional,</td>            <td>
-              target, dimension(:)
-            </td>
-            <td>::</td>
-            <td><strong>rwork</strong></td>
-            <td>
-                <p>An optional input, that if provided, prevents any
-local memory allocation for real-valued workspace arrays.  If not 
-provided, the memory required is allocated within.  If provided, the
-length of the array must be at least 6 * MIN(M, N).</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~51"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>The rank of the matrix.</p>
             </td>
         </tr>
     </tbody>
@@ -4093,7 +3673,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine rank1_update_dbl(alpha, x, y, a, err)  
+    private pure subroutine rank1_update_dbl(alpha, x, y, a)  
 
     </h3>
   <p>Performs a rank-1 update of a matrix of the form <script type="math/tex">A = \alpha x y^T + A</script>.</p>
@@ -4111,7 +3691,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~6"></span>
+              <span class="anchor" id="variable-alpha~8"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4126,7 +3706,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~2"></span>
+              <span class="anchor" id="variable-x~22"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4156,7 +3736,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~34"></span>
+              <span class="anchor" id="variable-a~57"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4169,21 +3749,6 @@ length of the array must be at least 6 * MIN(M, N).</p>
                 <p>The matrix <script type="math/tex">A</script> to update.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~39"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -4191,7 +3756,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine rank1_update_cmplx(alpha, x, y, a, err)  
+    private pure subroutine rank1_update_cmplx(alpha, x, y, a)  
 
     </h3>
   <p>Performs a rank-1 update of a matrix of the form <script type="math/tex">A = \alpha x y^H + A</script>.</p>
@@ -4209,7 +3774,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~7"></span>
+              <span class="anchor" id="variable-alpha~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4224,7 +3789,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~3"></span>
+              <span class="anchor" id="variable-x~23"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4254,7 +3819,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~35"></span>
+              <span class="anchor" id="variable-a~58"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4265,21 +3830,6 @@ length of the array must be at least 6 * MIN(M, N).</p>
             <td><strong>a</strong></td>
             <td>
                 <p>The matrix <script type="math/tex">A</script> to update.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~40"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
             </td>
         </tr>
     </tbody>
@@ -4302,7 +3852,7 @@ length of the array must be at least 6 * MIN(M, N).</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine recip_mult_array_dbl(a, x)  
+    private pure subroutine recip_mult_array_dbl(a, x)  
 
     </h3>
   <p>Computes the product of a scalar and a vector, where the scalar is 
@@ -4321,7 +3871,7 @@ the reciprocal of the scalar A.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~49"></span>
+              <span class="anchor" id="variable-a~72"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4336,7 +3886,7 @@ the reciprocal of the scalar A.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~11"></span>
+              <span class="anchor" id="variable-x~31"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4370,7 +3920,7 @@ vector and the scalar reciprocal.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine swap_dbl(x, y, err)  
+    private pure subroutine swap_dbl(x, y)  
 
     </h3>
   <p>Swaps the contents of two arrays.</p>
@@ -4388,7 +3938,7 @@ vector and the scalar reciprocal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~9"></span>
+              <span class="anchor" id="variable-x~29"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4418,21 +3968,6 @@ first array are copied to the second array.</p>
 second array are copied to the first array.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~54"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -4440,7 +3975,7 @@ second array are copied to the first array.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine swap_cmplx(x, y, err)  
+    private pure subroutine swap_cmplx(x, y)  
 
     </h3>
   <p>Swaps the contents of two arrays.</p>
@@ -4458,7 +3993,7 @@ second array are copied to the first array.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~10"></span>
+              <span class="anchor" id="variable-x~30"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4486,21 +4021,6 @@ first array are copied to the second array.</p>
             <td>
                 <p>On input, the second array to swap.  On output, the contents of the
 second array are copied to the first array.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~55"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
             </td>
         </tr>
     </tbody>
@@ -4541,7 +4061,7 @@ second array are copied to the first array.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~4"></span>
+              <span class="anchor" id="variable-x~24"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4584,7 +4104,7 @@ second array are copied to the first array.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~5"></span>
+              <span class="anchor" id="variable-x~25"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4622,7 +4142,7 @@ second array are copied to the first array.</p>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private  subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b, err)  
+    private pure subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">B = \alpha A^T A + \beta B</script> or 
@@ -4641,7 +4161,7 @@ second array are copied to the first array.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper"></span>
+              <span class="anchor" id="variable-upper~11"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -4657,7 +4177,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~17"></span>
+              <span class="anchor" id="variable-alpha~19"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4672,7 +4192,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~50"></span>
+              <span class="anchor" id="variable-a~73"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4702,7 +4222,7 @@ second array are copied to the first array.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~32"></span>
+              <span class="anchor" id="variable-b~37"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4716,21 +4236,6 @@ second array are copied to the first array.</p>
 operation.</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~56"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
@@ -4738,7 +4243,7 @@ operation.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b, err)  
+    private pure subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b)  
 
     </h3>
   <p>Performs the matrix operation <script type="math/tex">B = \alpha A^T A + \beta B</script> or
@@ -4757,7 +4262,7 @@ operation.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~2"></span>
+              <span class="anchor" id="variable-upper~12"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -4773,7 +4278,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~18"></span>
+              <span class="anchor" id="variable-alpha~20"></span>
               complex(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -4788,7 +4293,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~51"></span>
+              <span class="anchor" id="variable-a~74"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -4818,7 +4323,7 @@ operation.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~33"></span>
+              <span class="anchor" id="variable-b~38"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -4830,21 +4335,6 @@ operation.</p>
             <td>
                 <p>On input, the matrix <script type="math/tex">B</script> to multiply.  On output, the result of the
 operation.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~57"></span>
-              class(errors),
-            </td>
-<td>intent(inout),</td>
-              <td>optional,</td>            <td>
-              target
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>An error object to report any errors that occur.</p>
             </td>
         </tr>
     </tbody>
@@ -4860,6 +4350,55 @@ operation.</p>
 
 
 
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-identity"></span> <h3>public pure function <a href='..\proc\identity.html'>identity</a>(n) result(rst)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Constructs an N-by-N identity matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~106"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>The size of the matrix.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The resulting matrix.</p>
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -4872,40 +4411,21 @@ operation.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2025 
+          <div class="col">
+            <p>
+              LINALG
+ was developed by Jason Christopherson<br>              &copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2025-11-14 13:18              </p>
+ on 2026-08-06 14:30 -0500             </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
-
-    <!-- Bootstrap core JavaScript -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
-
-    <!-- MathJax JavaScript
-             ================================================== -->
-             <!-- Placed at the end of the document so the pages load faster -->
-        <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-          });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-          <script src="../tipuesearch/tipuesearch_content.js"></script>
-          <script src="../tipuesearch/tipuesearch_set.js"></script>
-          <script src="../tipuesearch/tipuesearch.js"></script>
-
   </body>
 </html>

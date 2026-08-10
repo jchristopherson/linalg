@@ -12,6 +12,7 @@ set(linalg_test_sources
     test_sort.f90
     test_lq.f90
     test_sparse.f90
+    test_rz.f90
 )
 
 # Dependencies
@@ -41,30 +42,6 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     COMMAND $<TARGET_FILE:linalg_test>
 )
-
-if (${BUILD_LINALG_C_API})
-    include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/C
-        ${CMAKE_SOURCE_DIR}/include
-    )
-
-    set(linalg_c_test_sources
-        C/c_linalg_test.c
-        C/c_test_core.c
-        C/c_linalg_test_misc.c
-        C/c_linalg_test_factor.c
-        C/c_linalg_test_eigen.c
-    )
-
-    add_executable(linalg_c_test ${linalg_c_test_sources})
-    target_link_libraries(linalg_c_test linalg)
-
-    add_test(
-        NAME linalg_c_test
-        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        COMMAND $<TARGET_FILE:linalg_c_test>
-    )
-endif()
 
 if (${BUILD_SHARED_LIBS} AND WIN32)
     add_custom_command(

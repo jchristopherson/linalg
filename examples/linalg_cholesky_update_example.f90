@@ -6,7 +6,7 @@ program example
     implicit none
 
     ! Variables
-    real(real64) :: a(3,3), u(3), au(3,3)
+    real(real64) :: a(3,3), u(3), au(3,3), r(3,3), ru(3,3)
     integer(int32) :: i
 
     ! Build the 3-by-3 positive-definite matrix A.
@@ -24,22 +24,22 @@ program example
     call rank1_update(1.0d0, u, u, au)
 
     ! Compute the Cholesky factorization of the original matrix
-    call cholesky_factor(a)
+    r = cholesky_factor(a)
 
     ! Apply the rank 1 update to the factored matrix
-    call cholesky_rank1_update(a, u)
+    call cholesky_rank1_update(r, u)
 
     ! Compute the Cholesky factorization of the update of the original matrix
-    call cholesky_factor(au)
+    ru = cholesky_factor(au)
 
     ! Display the matrices
     print '(A)', "Updating the Factored Form:"
     do i = 1, size(a, 1)
-        print *, a(i,:)
+        print *, r(i,:)
     end do
     
     print '(A)', "Updating A Directly:"
     do i = 1, size(au, 1)
-        print *, au(i,:)
+        print *, ru(i,:)
     end do
 end program

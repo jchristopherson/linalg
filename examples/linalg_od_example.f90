@@ -7,7 +7,7 @@ program example
     implicit none
 
     ! Local Variables
-    real(real64) :: a(3,2), b(3)
+    real(real64) :: a(3,2), b(3), x(2)
     integer(int32) :: i
 
     ! Build the 3-by-2 matrix A
@@ -25,11 +25,10 @@ program example
     ! The solution is:
     ! x = [0.13158, -0.57895]**T
 
-    ! Compute the solution via a least-squares approach.  The results overwrite
-    ! the first 2 elements in b.
-    call solve_least_squares_svd(a, b)
+    ! Compute the solution via a least-squares approach.
+    x = solve_least_squares_svd(a, b)
 
     ! Display the results
     print '(A)', "Least Squares Solution: X = "
-    print '(F9.5)', (b(i), i = 1, size(a, 2))
+    print '(F9.5)', (x(i), i = 1, size(x))
 end program

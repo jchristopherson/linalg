@@ -53,14 +53,4 @@ if (${BUILD_SHARED_LIBS} AND WIN32)
         COMMAND_EXPAND_LISTS
     )
 
-    if (TARGET fth_test)
-        add_custom_command(
-            TARGET fth_test
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            $<TARGET_RUNTIME_DLLS:fth_test>
-            $<TARGET_FILE_DIR:fth_test>
-            COMMAND_EXPAND_LISTS
-        )
-    endif()
 endif()

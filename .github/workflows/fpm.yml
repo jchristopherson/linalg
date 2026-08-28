@@ -80,7 +80,7 @@ jobs:
         run: |
           LIB_DIR="$MSYS2_LOCATION/mingw64/lib"
           OPENBLAS_LIB=""
-          for CANDIDATE in "$LIB_DIR/libopenblas.a" "$LIB_DIR/libopenblas.dll.a"; do
+          for CANDIDATE in "$LIB_DIR/libopenblas.dll.a" "$LIB_DIR/libopenblas.a"; do
             if [[ -f "$CANDIDATE" ]]; then
               OPENBLAS_LIB="$CANDIDATE"
               break

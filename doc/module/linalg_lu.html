@@ -12,29 +12,14 @@
 
     <title>linalg_lu &ndash; LINALG</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Font Awesome -->
-    <link href="../css/fontawesome.min.css" rel="stylesheet">
-    <link href="../css/brands.min.css" rel="stylesheet">
-    <link href="../css/regular.min.css" rel="stylesheet">
-    <link href="../css/solid.min.css" rel="stylesheet">
-    <link href="../css/v4-font-face.min.css" rel="stylesheet">
-    <link href="../css/v4-shims.min.css" rel="stylesheet">
-    <!-- MathJax -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { equationNumbers: { autoNumber: "AMS" } }
-      });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
-            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
-    <!-- Other scripts and stylesheets -->
-    <link href="../css/local.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -87,8 +72,9 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 6.2% of total for modules and submodules.">416 statements</a>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title=" 6.5% of total for modules and submodules.">433 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -108,11 +94,9 @@
     </div>
   </div>
   <script>
-    // Enable Bootstrap tooltips
-    (function () {
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    })();
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
   </script>
 
   </div>
@@ -168,12 +152,13 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
                   <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
+                  <li class="list-inline-item">sparskit</li>
+                  <li class="list-inline-item">lapack</li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
                   <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item">sparskit</li>
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
-                  <li class="list-inline-item">lapack</li>
               </ul>
             </li>
         </ul>
@@ -216,7 +201,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~4"></span>
+              <span class="anchor" id="variable-lu~5"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -247,7 +232,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~3"></span>
+              <span class="anchor" id="variable-u~7"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -262,7 +247,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~3"></span>
+              <span class="anchor" id="variable-p~4"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -301,7 +286,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~5"></span>
+              <span class="anchor" id="variable-lu~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -332,7 +317,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~4"></span>
+              <span class="anchor" id="variable-u~8"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -347,7 +332,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~4"></span>
+              <span class="anchor" id="variable-p~5"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -386,7 +371,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~6"></span>
+              <span class="anchor" id="variable-lu~7"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -402,7 +387,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~5"></span>
+              <span class="anchor" id="variable-u~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -441,7 +426,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~7"></span>
+              <span class="anchor" id="variable-lu~8"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -457,7 +442,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~6"></span>
+              <span class="anchor" id="variable-u~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -490,7 +475,8 @@ N-by-N lower triangular matrix L.</p>
     private pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)  
 
     </h3>
-  <p>Computes the LU factorization of an M-by-N matrix.</p>
+  <p>Computes the LU factorization of an M-by-N matrix.  In the event of a 
+singular matrix, the output matrices are populated with NaN's.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -505,7 +491,7 @@ N-by-N lower triangular matrix L.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a"></span>
+              <span class="anchor" id="variable-a~26"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -537,7 +523,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu"></span>
+              <span class="anchor" id="variable-lu~2"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -568,7 +554,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u"></span>
+              <span class="anchor" id="variable-u~5"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -583,7 +569,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p"></span>
+              <span class="anchor" id="variable-p~2"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -606,7 +592,8 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     private pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)  
 
     </h3>
-  <p>Computes the LU factorization of an M-by-N matrix.</p>
+  <p>Computes the LU factorization of an M-by-N matrix.  In the event of a 
+singular matrix, the output matrices are populated with NaN's.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -621,7 +608,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~2"></span>
+              <span class="anchor" id="variable-a~27"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -653,7 +640,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~2"></span>
+              <span class="anchor" id="variable-lu~3"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -684,7 +671,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~2"></span>
+              <span class="anchor" id="variable-u~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -699,7 +686,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~2"></span>
+              <span class="anchor" id="variable-p~3"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -737,7 +724,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~3"></span>
+              <span class="anchor" id="variable-a~28"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -752,7 +739,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~3"></span>
+              <span class="anchor" id="variable-lu~4"></span>
               type(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(out)</td>
@@ -767,7 +754,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ju"></span>
+              <span class="anchor" id="variable-ju~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -782,7 +769,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-droptol"></span>
+              <span class="anchor" id="variable-droptol~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -830,7 +817,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~4"></span>
+              <span class="anchor" id="variable-a~29"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -860,7 +847,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b"></span>
+              <span class="anchor" id="variable-b~14"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -903,7 +890,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~5"></span>
+              <span class="anchor" id="variable-a~30"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -933,7 +920,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~2"></span>
+              <span class="anchor" id="variable-b~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -976,7 +963,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~6"></span>
+              <span class="anchor" id="variable-a~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1006,7 +993,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~3"></span>
+              <span class="anchor" id="variable-b~16"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1049,7 +1036,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~7"></span>
+              <span class="anchor" id="variable-a~32"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1079,7 +1066,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~4"></span>
+              <span class="anchor" id="variable-b~17"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1122,7 +1109,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~8"></span>
+              <span class="anchor" id="variable-lu~9"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1137,7 +1124,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ju~2"></span>
+              <span class="anchor" id="variable-ju~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -1152,7 +1139,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~5"></span>
+              <span class="anchor" id="variable-b~18"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1195,21 +1182,40 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col">
-            <p>
-              LINALG
- was developed by Jason Christopherson<br>              &copy; 2026 
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-06 14:30 -0500             </p>
+ on 2026-08-28 13:34              </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>

@@ -49,21 +49,49 @@ jobs:
             compiler: gcc
             version: '14'
             shared: true
+          - os: windows-latest
+            compiler: gcc
+            version: 'msys2'
+            shared: false
+          - os: windows-latest
+            compiler: gcc
+            version: 'msys2'
+            shared: true
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: fortran-lang/setup-fortran@v1
+        if: runner.os != 'Windows'
         id: setup-fortran
         with:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
-      
+
+      - name: Set up MSYS2 toolchain and BLAS/LAPACK (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        id: msys2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+
+      - name: Add MinGW64 toolchain to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\mingw64\bin"
+
       - name: Show Fortran compiler version
         run: ${{ env.FC }} --version
         env:
-          FC: ${{ steps.setup-fortran.outputs.fc }}
-          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
+          CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
 
       - name: Install BLAS/LAPACK dependencies
         run: |
@@ -83,9 +111,10 @@ jobs:
           -DCMAKE_C_COMPILER=${{ env.CC }}
           -DBUILD_TESTING=TRUE
           -DBUILD_SHARED_LIBS=${{ matrix.shared && 'TRUE' || 'FALSE' }}
+          ${{ runner.os == 'Windows' && '-G Ninja' || '' }}
         env:
-          FC: ${{ steps.setup-fortran.outputs.fc }}
-          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
+          CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
 
       - name: Build with CMake
         run: cmake --build build --config ${{ env.BUILD_TYPE }}
@@ -117,5 +146,10 @@ jobs:
           end program main
           EOF
 
-          cmake -S consumer -B consumer/build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install
+          GENERATOR_FLAG=""
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            GENERATOR_FLAG="-G Ninja"
+          fi
+
+          cmake -S consumer -B consumer/build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install $GENERATOR_FLAG
           cmake --build consumer/build

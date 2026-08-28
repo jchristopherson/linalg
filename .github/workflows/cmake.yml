@@ -154,5 +154,8 @@ jobs:
             GENERATOR_FLAG="-G Ninja"
           fi
 
-          cmake -S consumer -B consumer/build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install $GENERATOR_FLAG
+          INSTALL_PREFIX="${GITHUB_WORKSPACE}/install"
+          INSTALL_PREFIX="${INSTALL_PREFIX//\\//}"
+
+          cmake -S consumer -B consumer/build -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}" $GENERATOR_FLAG
           cmake --build consumer/build

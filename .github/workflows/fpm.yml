@@ -72,6 +72,33 @@ jobs:
         run: |
           Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\mingw64\bin"
 
+      - name: Provide BLAS/LAPACK linker aliases (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+        run: |
+          LIB_DIR="$MSYS2_LOCATION/mingw64/lib"
+          OPENBLAS_LIB=""
+          for CANDIDATE in "$LIB_DIR/libopenblas.a" "$LIB_DIR/libopenblas.dll.a"; do
+            if [[ -f "$CANDIDATE" ]]; then
+              OPENBLAS_LIB="$CANDIDATE"
+              break
+            fi
+          done
+
+          if [[ -z "$OPENBLAS_LIB" ]]; then
+            echo "Unable to locate OpenBLAS library in $LIB_DIR"
+            ls -la "$LIB_DIR"/libopenblas* || true
+            exit 1
+          fi
+
+          ALIAS_DIR="$RUNNER_TEMP/blas-lapack-alias"
+          mkdir -p "$ALIAS_DIR"
+          cp "$OPENBLAS_LIB" "$ALIAS_DIR/libblas.a"
+          cp "$OPENBLAS_LIB" "$ALIAS_DIR/liblapack.a"
+          echo "LIBRARY_PATH=$ALIAS_DIR${LIBRARY_PATH:+:$LIBRARY_PATH}" >> "$GITHUB_ENV"
+
       - name: Show compiler version
         shell: bash
         env:

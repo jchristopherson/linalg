@@ -5,6 +5,7 @@ module linalg_lu
     use linalg_basic
     use lapack
     use sparskit
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
     implicit none
     private
     public :: lu_factor
@@ -34,7 +35,8 @@ module linalg_lu
 contains
 ! ------------------------------------------------------------------------------
 pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
-    !! Computes the LU factorization of an M-by-N matrix.
+    !! Computes the LU factorization of an M-by-N matrix.  In the event of a 
+    !! singular matrix, the output matrices are populated with NaN's.
     real(real64), intent(inout), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
     integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
@@ -56,6 +58,7 @@ pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
     integer(int32) :: n, flag
     integer(int32), allocatable, target, dimension(:) :: ic
     integer(int32), pointer, dimension(:) :: iptr
+    real(real64) :: nan
     real(real64), allocatable, target, dimension(:,:) :: ac, lc, uc, pc
     real(real64), pointer, dimension(:,:) :: aptr, lptr, uptr, pptr
 
@@ -86,7 +89,13 @@ pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
     ! call to LAPACK
     if (flag > 0) then
         ! WARNING: Singular matrix
-        error stop "Singular matrix encountered."
+        nan = ieee_value(nan, ieee_quiet_nan)
+        if (present(lu)) lu = nan
+        if (present(l)) allocate(l(n,n), source = nan)
+        if (present(u)) allocate(u(n,n), source = nan)
+        if (present(p)) allocate(p(n,n), source = nan)
+        if (present(ipvt)) ipvt = 0
+        return
     end if
 
     ! Build L & U?
@@ -129,7 +138,8 @@ end subroutine
 
 ! ------------------------------------------------------------------------------
 pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
-    !! Computes the LU factorization of an M-by-N matrix.
+    !! Computes the LU factorization of an M-by-N matrix.  In the event of a 
+    !! singular matrix, the output matrices are populated with NaN's.
     complex(real64), intent(inout), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
     integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
@@ -153,6 +163,8 @@ pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
     integer(int32), pointer, dimension(:) :: iptr
     real(real64), allocatable, target, dimension(:,:) :: pc
     real(real64), pointer, dimension(:,:) :: pptr
+    real(real64) :: nan
+    complex(real64) :: cnan
     complex(real64), allocatable, target, dimension(:,:) :: ac, lc, uc
     complex(real64), pointer, dimension(:,:) :: aptr, lptr, uptr
 
@@ -183,7 +195,14 @@ pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
     ! call to LAPACK
     if (flag > 0) then
         ! WARNING: Singular matrix
-        error stop "Singular matrix encountered."
+        nan = ieee_value(nan, ieee_quiet_nan)
+        cnan = cmplx(nan, nan)
+        if (present(lu)) lu = cnan
+        if (present(l)) allocate(l(n,n), source = cnan)
+        if (present(u)) allocate(u(n,n), source = cnan)
+        if (present(p)) allocate(p(n,n), source = nan)
+        if (present(ipvt)) ipvt = 0
+        return
     end if
 
     ! Build L & U?

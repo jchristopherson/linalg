@@ -3,6 +3,7 @@ module linalg_inverse
     use lapack
     use blas
     use linalg_errors
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
     implicit none
     private
     public :: mtx_inverse
@@ -20,7 +21,8 @@ module linalg_inverse
 contains
 ! ------------------------------------------------------------------------------
 pure function mtx_inverse_dbl(a) result(rst)
-    !! Computes the inverse of a square matrix.
+    !! Computes the inverse of a square matrix.  In the event of a singular
+    !! matrix, the resulting matrix is filled with NaN's.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to invert.
     real(real64), allocatable, dimension(:,:) :: rst
@@ -29,6 +31,7 @@ pure function mtx_inverse_dbl(a) result(rst)
     ! Local Variables
     integer(int32) :: n, lwork, flag
     integer(int32), allocatable, dimension(:) :: ipvt
+    real(real64) :: nan
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -55,13 +58,16 @@ pure function mtx_inverse_dbl(a) result(rst)
 
     ! Check for a singular matrix
     if (flag > 0) then
-        error stop LA_SINGULAR_MATRIX_ERROR
+        ! Singular Matrix
+        nan = ieee_value(nan, ieee_quiet_nan)
+        rst = nan
     end if
 end function
 
 ! ------------------------------------------------------------------------------
 pure function mtx_inverse_cmplx(a) result(rst)
-    !! Computes the inverse of a square matrix.
+    !! Computes the inverse of a square matrix.  In the event of a singular
+    !! matrix, the resulting matrix is filled with NaN's.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to invert.
     complex(real64), allocatable, dimension(:,:) :: rst
@@ -69,6 +75,7 @@ pure function mtx_inverse_cmplx(a) result(rst)
     ! Local Variables
     integer(int32) :: n, lwork, flag
     integer(int32), allocatable, dimension(:) :: ipvt
+    real(real64) :: nan
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -95,7 +102,9 @@ pure function mtx_inverse_cmplx(a) result(rst)
 
     ! Check for a singular matrix
     if (flag > 0) then
-        error stop LA_SINGULAR_MATRIX_ERROR
+        ! Singular Matrix
+        nan = ieee_value(nan, ieee_quiet_nan)
+        rst = cmplx(nan, nan)
     end if
 end function
 

@@ -1623,7 +1623,7 @@ pure function mtx_rank_dbl(a, tol) result(rnk)
 
     ! Compute the singular values of A
     call DGESVD('N', 'N', m, n, ac, m, s, dummy, m, dummy, n, w, &
-        lwork - mn, flag)
+        lwork, flag)
     if (flag > 0) then
         error stop LA_CONVERGENCE_ERROR
     end if

@@ -30,7 +30,7 @@ else()
     set(FTH_LIBRARIES fortran_test_helper::fortran_test_helper)
 endif()
 
-# Build the Fortran API tests
+# Build the tests
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(
     linalg_test

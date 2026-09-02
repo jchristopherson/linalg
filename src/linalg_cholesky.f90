@@ -3,6 +3,7 @@ module linalg_cholesky
     use linalg_errors
     use lapack
     use qrupdate
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
     implicit none
     private
     public :: cholesky_factor
@@ -44,7 +45,8 @@ pure function cholesky_factor_dbl(a, upper) result(rst)
         !! as \(A = L L^T\) (set to false).  The default is true such that
         !! \(A = U^T U\).
     real(real64), allocatable, dimension(:,:) :: rst
-        !! The factored matrix.
+        !! The factored matrix.  If the input matrix is not positive-definite,
+        !! the return matrix is populated with NaN's.
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -52,6 +54,7 @@ pure function cholesky_factor_dbl(a, upper) result(rst)
     ! Local Variables
     character :: uplo
     integer(int32) :: i, n, flag
+    real(real64) :: nan
 
     ! Initialization
     n = size(a, 1)
@@ -74,7 +77,10 @@ pure function cholesky_factor_dbl(a, upper) result(rst)
     allocate(rst(n, n), source = a)
     call DPOTRF(uplo, n, rst, n, flag)
     if (flag > 0) then
-        error stop LA_MATRIX_FORMAT_ERROR
+        ! The matrix is not positive definite.  Return NaN
+        nan = ieee_value(nan, ieee_quiet_nan)
+        rst = nan
+        return
     end if
 
     ! Zero out the non-used upper or lower diagonal
@@ -103,7 +109,8 @@ pure function cholesky_factor_cmplx(a, upper) result(rst)
         !! as \(A = L L^H\) (set to false).  The default is true such that
         !! \(A = U^H U\).
     complex(real64), allocatable, dimension(:,:) :: rst
-        !! The factored matrix.
+        !! The factored matrix.  If the input matrix is not positive-definite,
+        !! the return matrix is populated with NaN's.
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -111,6 +118,8 @@ pure function cholesky_factor_cmplx(a, upper) result(rst)
     ! Local Variables
     character :: uplo
     integer(int32) :: i, n, flag
+    real(real64) :: nan
+    complex(real64) :: cnan
 
     ! Initialization
     n = size(a, 1)
@@ -133,8 +142,11 @@ pure function cholesky_factor_cmplx(a, upper) result(rst)
     allocate(rst(n, n), source = a)
     call ZPOTRF(uplo, n, rst, n, flag)
     if (flag > 0) then
-        ! ERROR: Matrix is not positive definite
-        error stop LA_MATRIX_FORMAT_ERROR
+        ! The matrix is not positive definite.  Return NaN
+        nan = ieee_value(nan, ieee_quiet_nan)
+        cnan = cmplx(nan, nan, real64)
+        rst = cnan
+        return
     end if
 
     ! Zero out the non-used upper or lower diagonal
@@ -221,7 +233,8 @@ end subroutine
 pure subroutine cholesky_rank1_downdate_dbl(r, u)
     !! Computes the rank 1 downdate to a Cholesky factored matrix \(A = R^T R\) 
     !! such that \(A_1 = A - \vec{u} \vec{u}^T\).  This operation only works if
-    !! the new matrix \(A_1\) is positive definite.
+    !! the new matrix \(A_1\) is positive definite.  If the resulting matrix
+    !! is not positive definite, the matrix is returned filled with NaN's.
     real(real64), intent(inout), dimension(:,:) :: r
         !! On input, the N-by-N upper triangular matrix \(R\).  On output, the 
         !! updated matrix \(R_1\).
@@ -232,6 +245,7 @@ pure subroutine cholesky_rank1_downdate_dbl(r, u)
     ! Local Variables
     integer(int32) :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
+    real(real64) :: nan
 
     ! Initialization
     n = size(r, 1)
@@ -249,12 +263,11 @@ pure subroutine cholesky_rank1_downdate_dbl(r, u)
 
     ! Process
     call DCH1DN(n, r, n, u, w, flag)
-    if (flag == 1) then
+    if (flag == 1 .or. flag == 2) then
         ! ERROR: The matrix is not positive definite
-        error stop LA_MATRIX_FORMAT_ERROR
-    else if (flag == 2) then
-        ! ERROR: The matrix is singular
-        error stop LA_SINGULAR_MATRIX_ERROR
+        nan = ieee_value(nan, ieee_quiet_nan)
+        r = nan
+        return
     end if
 end subroutine
 
@@ -262,7 +275,8 @@ end subroutine
 pure subroutine cholesky_rank1_downdate_cmplx(r, u)
     !! Computes the rank 1 downdate to a Cholesky factored matrix \(A = R^H R\) 
     !! such that \(A_1 = A - \vec{u} \vec{u}^H\).  This operation only works if
-    !! the new matrix \(A_1\) is positive definite.
+    !! the new matrix \(A_1\) is positive definite.  If the resulting matrix
+    !! is not positive definite, the matrix is returned filled with NaN's.
     complex(real64), intent(inout), dimension(:,:) :: r
         !! On input, the N-by-N upper triangular matrix \(R\).  On output, the 
         !! updated matrix \(R_1\).
@@ -273,6 +287,8 @@ pure subroutine cholesky_rank1_downdate_cmplx(r, u)
     ! Local Variables
     integer(int32) :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
+    real(real64) :: nan
+    complex(real64) :: cnan
 
     ! Initialization
     n = size(r, 1)
@@ -290,12 +306,12 @@ pure subroutine cholesky_rank1_downdate_cmplx(r, u)
 
     ! Process
     call ZCH1DN(n, r, n, u, w, flag)
-    if (flag == 1) then
+    if (flag == 1 .or. flag == 2) then
         ! ERROR: The matrix is not positive definite
-        error stop LA_MATRIX_FORMAT_ERROR
-    else if (flag == 2) then
-        ! ERROR: The matrix is singular
-        error stop LA_SINGULAR_MATRIX_ERROR
+        nan = ieee_value(nan, ieee_quiet_nan)
+        cnan = cmplx(nan, nan, real64)
+        r = cnan
+        return
     end if
 end subroutine
 

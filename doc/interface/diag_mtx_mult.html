@@ -12,29 +12,14 @@
 
     <title>diag_mtx_mult &ndash; LINALG</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Font Awesome -->
-    <link href="../css/fontawesome.min.css" rel="stylesheet">
-    <link href="../css/brands.min.css" rel="stylesheet">
-    <link href="../css/regular.min.css" rel="stylesheet">
-    <link href="../css/solid.min.css" rel="stylesheet">
-    <link href="../css/v4-font-face.min.css" rel="stylesheet">
-    <link href="../css/v4-shims.min.css" rel="stylesheet">
-    <!-- MathJax -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { equationNumbers: { autoNumber: "AMS" } }
-      });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
-            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
-    <!-- Other scripts and stylesheets -->
-    <link href="../css/local.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -87,7 +72,8 @@
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
                  title="<p> 2.3% of total for procedures.</p>Including implementation: 754 statements, 155.1% of total for procedures.">11 statements</a>
             </li>
 
@@ -109,11 +95,9 @@
     </div>
   </div>
   <script>
-    // Enable Bootstrap tooltips
-    (function () {
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    })();
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
   </script>
 
   </div>
@@ -194,7 +178,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~5"></span>
+              <span class="anchor" id="variable-lside~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -209,7 +193,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~10"></span>
+              <span class="anchor" id="variable-trans~14"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -239,7 +223,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~59"></span>
+              <span class="anchor" id="variable-a~73"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -254,7 +238,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~28"></span>
+              <span class="anchor" id="variable-b~40"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -284,7 +268,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~9"></span>
+              <span class="anchor" id="variable-c~13"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -324,7 +308,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~6"></span>
+              <span class="anchor" id="variable-lside~8"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -354,7 +338,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~60"></span>
+              <span class="anchor" id="variable-a~74"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -369,7 +353,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~29"></span>
+              <span class="anchor" id="variable-b~41"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -409,7 +393,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~7"></span>
+              <span class="anchor" id="variable-lside~9"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -424,7 +408,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~11"></span>
+              <span class="anchor" id="variable-trans~15"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -454,7 +438,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~61"></span>
+              <span class="anchor" id="variable-a~75"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -469,7 +453,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~30"></span>
+              <span class="anchor" id="variable-b~42"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -499,7 +483,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~10"></span>
+              <span class="anchor" id="variable-c~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -539,7 +523,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~8"></span>
+              <span class="anchor" id="variable-lside~10"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -596,7 +580,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~62"></span>
+              <span class="anchor" id="variable-a~76"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -611,7 +595,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~31"></span>
+              <span class="anchor" id="variable-b~43"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -641,7 +625,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~11"></span>
+              <span class="anchor" id="variable-c~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -681,7 +665,7 @@ Possible options are:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~9"></span>
+              <span class="anchor" id="variable-lside~11"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -738,7 +722,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~63"></span>
+              <span class="anchor" id="variable-a~77"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -753,7 +737,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~32"></span>
+              <span class="anchor" id="variable-b~44"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -783,7 +767,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~12"></span>
+              <span class="anchor" id="variable-c~16"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -823,7 +807,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~10"></span>
+              <span class="anchor" id="variable-lside~12"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -853,7 +837,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~64"></span>
+              <span class="anchor" id="variable-a~78"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -868,7 +852,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~33"></span>
+              <span class="anchor" id="variable-b~45"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -908,7 +892,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~11"></span>
+              <span class="anchor" id="variable-lside~13"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -965,7 +949,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~65"></span>
+              <span class="anchor" id="variable-a~79"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -980,7 +964,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~34"></span>
+              <span class="anchor" id="variable-b~46"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1010,7 +994,7 @@ Possible options are:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~13"></span>
+              <span class="anchor" id="variable-c~17"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1050,7 +1034,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~12"></span>
+              <span class="anchor" id="variable-lside~14"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1080,7 +1064,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~66"></span>
+              <span class="anchor" id="variable-a~80"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1095,7 +1079,7 @@ where <script type="math/tex">A</script> is a diagonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~35"></span>
+              <span class="anchor" id="variable-b~47"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1135,7 +1119,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~13"></span>
+              <span class="anchor" id="variable-lside~15"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -1165,7 +1149,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~67"></span>
+              <span class="anchor" id="variable-a~81"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1180,7 +1164,7 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~36"></span>
+              <span class="anchor" id="variable-b~48"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(inout)</td>
@@ -1207,21 +1191,40 @@ where <script type="math/tex">A</script> is a diagonal matrix and <script type="
     <footer>
       <div class="container">
         <div class="row justify-content-between">
-          <div class="col">
-            <p>
-              LINALG
- was developed by Jason Christopherson<br>              &copy; 2026 
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2026 
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-06 14:30 -0500             </p>
+ on 2026-08-28 13:34              </p>
           </div>
         </div>
         <br>
       </div> <!-- /container -->
     </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>

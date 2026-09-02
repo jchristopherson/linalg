@@ -24,13 +24,16 @@ if (NOT fortran_test_helper_FOUND)
         GIT_TAG "origin/main"
         GIT_REPOSITORY https://github.com/jchristopherson/fortran_test_helper
     )
+    set(_linalg_build_testing ${BUILD_TESTING})
+    set(BUILD_TESTING OFF)
     FetchContent_MakeAvailable(fortran_test_helper)
+    set(BUILD_TESTING ${_linalg_build_testing})
     set(FTH_LIBRARIES fortran_test_helper)
 else()
     set(FTH_LIBRARIES fortran_test_helper::fortran_test_helper)
 endif()
 
-# Build the Fortran API tests
+# Build the tests
 add_executable(linalg_test ${linalg_test_sources})
 target_link_libraries(
     linalg_test
@@ -47,7 +50,7 @@ if (${BUILD_SHARED_LIBS} AND WIN32)
     add_custom_command(
         TARGET linalg_test
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy 
+        COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_RUNTIME_DLLS:linalg_test> 
         $<TARGET_FILE_DIR:linalg_test>
         COMMAND_EXPAND_LISTS

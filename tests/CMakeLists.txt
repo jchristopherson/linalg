@@ -47,7 +47,7 @@ if (${BUILD_SHARED_LIBS} AND WIN32)
     add_custom_command(
         TARGET linalg_test
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_RUNTIME_DLLS:linalg_test> 
         $<TARGET_FILE_DIR:linalg_test>
         COMMAND_EXPAND_LISTS

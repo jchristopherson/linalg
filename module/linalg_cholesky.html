@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 3.8% of total for modules and submodules.">257 statements</a>
+                 title=" 4.0% of total for modules and submodules.">270 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -154,8 +154,9 @@
             <li class="list-group-item">
               <ul class="list-inline">
                   <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
                   <li class="list-inline-item">qrupdate</li>
               </ul>
             </li>
@@ -199,7 +200,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~20"></span>
+              <span class="anchor" id="variable-a~7"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -237,7 +238,8 @@ as <script type="math/tex">A = L L^T</script> (set to false).  The default is tr
     Return Value
     <small>real(kind=real64), allocatable, dimension(:,:)</small>
     </h4>
-    <p>The factored matrix.</p>
+    <p>The factored matrix.  If the input matrix is not positive-definite,
+the return matrix is populated with NaN's.</p>
 
           </li>
           <li class="list-group-item">
@@ -261,7 +263,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~21"></span>
+              <span class="anchor" id="variable-a~8"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -299,7 +301,8 @@ as <script type="math/tex">A = L L^H</script> (set to false).  The default is tr
     Return Value
     <small>complex(kind=real64), allocatable, dimension(:,:)</small>
     </h4>
-    <p>The factored matrix.</p>
+    <p>The factored matrix.  If the input matrix is not positive-definite,
+the return matrix is populated with NaN's.</p>
 
           </li>
     </ul>
@@ -319,7 +322,8 @@ as <script type="math/tex">A = L L^H</script> (set to false).  The default is tr
     </h3>
   <p>Computes the rank 1 downdate to a Cholesky factored matrix <script type="math/tex">A = R^T R</script> 
 such that <script type="math/tex">A_1 = A - \vec{u} \vec{u}^T</script>.  This operation only works if
-the new matrix <script type="math/tex">A_1</script> is positive definite.</p>
+the new matrix <script type="math/tex">A_1</script> is positive definite.  If the resulting matrix
+is not positive definite, the matrix is returned filled with NaN's.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -376,7 +380,8 @@ sines used to transform <script type="math/tex">R</script> to <script type="math
     </h3>
   <p>Computes the rank 1 downdate to a Cholesky factored matrix <script type="math/tex">A = R^H R</script> 
 such that <script type="math/tex">A_1 = A - \vec{u} \vec{u}^H</script>.  This operation only works if
-the new matrix <script type="math/tex">A_1</script> is positive definite.</p>
+the new matrix <script type="math/tex">A_1</script> is positive definite.  If the resulting matrix
+is not positive definite, the matrix is returned filled with NaN's.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -595,7 +600,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-a~9"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -610,7 +615,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~10"></span>
+              <span class="anchor" id="variable-b"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -670,7 +675,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~23"></span>
+              <span class="anchor" id="variable-a~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -685,7 +690,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~11"></span>
+              <span class="anchor" id="variable-b~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -746,7 +751,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~24"></span>
+              <span class="anchor" id="variable-a~11"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -761,7 +766,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~12"></span>
+              <span class="anchor" id="variable-b~3"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -822,7 +827,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~25"></span>
+              <span class="anchor" id="variable-a~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -837,7 +842,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~13"></span>
+              <span class="anchor" id="variable-b~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -887,7 +892,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-28 13:34              </p>
+ on 2026-09-07 13:39              </p>
           </div>
         </div>
         <br>

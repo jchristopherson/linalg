@@ -152,13 +152,13 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
-                  <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
-                  <li class="list-inline-item">sparskit</li>
                   <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
-                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
+                  <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
+                  <li class="list-inline-item">sparskit</li>
               </ul>
             </li>
         </ul>
@@ -217,7 +217,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~3"></span>
+              <span class="anchor" id="variable-ipvt~5"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -232,7 +232,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~7"></span>
+              <span class="anchor" id="variable-u~11"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -302,7 +302,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~4"></span>
+              <span class="anchor" id="variable-ipvt~6"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -317,7 +317,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~8"></span>
+              <span class="anchor" id="variable-u~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -387,7 +387,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~9"></span>
+              <span class="anchor" id="variable-u~13"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -442,7 +442,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~10"></span>
+              <span class="anchor" id="variable-u~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -491,10 +491,10 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~26"></span>
+              <span class="anchor" id="variable-a~38"></span>
               real(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
@@ -506,7 +506,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt"></span>
+              <span class="anchor" id="variable-ipvt~3"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -539,7 +539,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l"></span>
+              <span class="anchor" id="variable-l~5"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -554,7 +554,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~5"></span>
+              <span class="anchor" id="variable-u~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -608,10 +608,10 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~27"></span>
+              <span class="anchor" id="variable-a~39"></span>
               complex(kind=real64),
             </td>
-<td>intent(inout),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               dimension(:,:)
             </td>
@@ -623,7 +623,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~2"></span>
+              <span class="anchor" id="variable-ipvt~4"></span>
               integer(kind=int32),
             </td>
 <td>intent(out),</td>
@@ -656,7 +656,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~2"></span>
+              <span class="anchor" id="variable-l~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -671,7 +671,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~6"></span>
+              <span class="anchor" id="variable-u~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -724,7 +724,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~28"></span>
+              <span class="anchor" id="variable-a~40"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -817,7 +817,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~29"></span>
+              <span class="anchor" id="variable-a~41"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -832,7 +832,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~5"></span>
+              <span class="anchor" id="variable-ipvt~7"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -890,7 +890,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~30"></span>
+              <span class="anchor" id="variable-a~42"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -905,7 +905,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~6"></span>
+              <span class="anchor" id="variable-ipvt~8"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -963,7 +963,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~31"></span>
+              <span class="anchor" id="variable-a~43"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -978,7 +978,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~7"></span>
+              <span class="anchor" id="variable-ipvt~9"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -1036,7 +1036,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~32"></span>
+              <span class="anchor" id="variable-a~44"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1051,7 +1051,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~8"></span>
+              <span class="anchor" id="variable-ipvt~10"></span>
               integer(kind=int32),
             </td>
 <td>intent(in),</td>
@@ -1189,7 +1189,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-28 13:34              </p>
+ on 2026-09-07 13:39              </p>
           </div>
         </div>
         <br>

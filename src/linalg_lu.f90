@@ -37,7 +37,7 @@ contains
 pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
     !! Computes the LU factorization of an M-by-N matrix.  In the event of a 
     !! singular matrix, the output matrices are populated with NaN's.
-    real(real64), intent(inout), dimension(:,:) :: a
+    real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
     integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
         !! An N-element array used to track row-pivot operations.  The 
@@ -140,7 +140,7 @@ end subroutine
 pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
     !! Computes the LU factorization of an M-by-N matrix.  In the event of a 
     !! singular matrix, the output matrices are populated with NaN's.
-    complex(real64), intent(inout), dimension(:,:) :: a
+    complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
     integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
         !! An N-element array used to track row-pivot operations.  The 

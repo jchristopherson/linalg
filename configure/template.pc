@@ -7,4 +7,5 @@ Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@PROJECT_NAME@
+Libs.private: -larpack
 Cflags: -I${includedir} -I${moduledir}

@@ -701,4 +701,223 @@ function test_pgmres_1() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_csr_eigen_symm_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Parameters
+    integer(int32), parameter :: n = 50
+    integer(int32), parameter :: k = 4
+    real(real64), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    integer(int32) :: i
+    real(real64) :: dense(n, n)
+    real(real64), allocatable :: vals(:), vecs(:,:), dvals(:), r(:)
+    type(csr_matrix) :: a
+
+    ! Initialization
+    rst = .true.
+    dense = 0.0d0
+    do i = 1, n
+        dense(i,i) = 2.0d0 + real(i, real64)
+        if (i > 1) then
+            dense(i,i-1) = -1.0d0
+            dense(i-1,i) = -1.0d0
+        end if
+    end do
+    a = dense
+
+    ! Compute the k largest magnitude eigenvalues of the sparse matrix
+    call eigen(a, k, vals, vecs)
+
+    ! Compute all eigenvalues of the dense matrix for comparison
+    call eigen(dense, dvals)
+
+    ! The ARPACK results are returned in ascending order of algebraic value
+    if (.not.assert(vals, dvals(n-k+1:n), tol)) then
+        rst = .false.
+        print "(A)", "Test Failed: test_csr_eigen_symm_1 -1"
+    end if
+
+    ! Verify the eigenvectors satisfy A * v = lambda * v
+    do i = 1, k
+        r = matmul(a, vecs(:,i)) - vals(i) * vecs(:,i)
+        if (norm2(r) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_symm_1 -2"
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function test_csr_eigen_asymm_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Parameters
+    integer(int32), parameter :: n = 50
+    integer(int32), parameter :: k = 4
+    real(real64), parameter :: tol = 1.0d-8
+
+    ! Local Variables
+    integer(int32) :: i
+    real(real64) :: dense(n, n)
+    complex(real64), allocatable :: vals(:), vecs(:,:), dvals(:), r(:)
+    complex(real64) :: cvec(n)
+    type(csr_matrix) :: a
+
+    ! Initialization
+    rst = .true.
+    dense = 0.0d0
+    do i = 1, n
+        dense(i,i) = 2.0d0 + real(i, real64)
+        if (i > 1) dense(i,i-1) = -2.0d0
+        if (i < n) dense(i,i+1) = 1.0d0
+    end do
+    a = dense
+
+    ! Compute the k largest magnitude eigenvalues of the sparse matrix
+    call eigen(a, k, vals, vecs)
+
+    ! Compute all eigenvalues of the dense matrix for comparison
+    call eigen(dense, dvals)
+
+    ! Ensure each computed eigenvalue appears in the dense solution
+    do i = 1, size(vals)
+        if (minval(abs(dvals - vals(i))) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_asymm_1 -1"
+        end if
+    end do
+
+    ! Verify the eigenvectors satisfy A * v = lambda * v
+    do i = 1, size(vals)
+        cvec = vecs(:,i)
+        r = matmul(cmplx(dense, 0.0d0, real64), cvec) - vals(i) * cvec
+        if (norm2(abs(r)) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_asymm_1 -2"
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function test_csr_eigen_gen_symm_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Parameters
+    integer(int32), parameter :: n = 30
+    integer(int32), parameter :: k = 3
+    real(real64), parameter :: tol = 1.0d-6
+
+    ! Local Variables
+    integer(int32) :: i
+    real(real64) :: da(n, n), db(n, n)
+    real(real64), allocatable :: vals(:), vecs(:,:), beta(:), dvals(:), r(:)
+    complex(real64), allocatable :: alpha(:)
+    type(csr_matrix) :: a, b
+
+    ! Initialization
+    rst = .true.
+    da = 0.0d0
+    db = 0.0d0
+    do i = 1, n
+        da(i,i) = 2.0d0 + real(i, real64)
+        db(i,i) = 2.0d0
+        if (i > 1) then
+            da(i,i-1) = -1.0d0
+            da(i-1,i) = -1.0d0
+            db(i,i-1) = 0.5d0
+            db(i-1,i) = 0.5d0
+        end if
+    end do
+    a = da
+    b = db
+
+    ! A zero shift exercises the shift-invert path and returns the eigenvalues
+    ! nearest zero
+    call eigen(a, b, k, vals, vecs, sigma = 0.0d0)
+
+    ! Compute the dense solution for comparison
+    call eigen(da, db, alpha, beta)
+    dvals = real(alpha, real64) / beta
+
+    ! Test
+    do i = 1, size(vals)
+        if (minval(abs(dvals - vals(i))) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_gen_symm_1 -1"
+        end if
+
+        r = matmul(a, vecs(:,i)) - vals(i) * matmul(b, vecs(:,i))
+        if (norm2(r) / norm2(matmul(a, vecs(:,i))) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_gen_symm_1 -2"
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
+function test_csr_eigen_gen_asymm_1() result(rst)
+    ! Arguments
+    logical :: rst
+
+    ! Parameters
+    integer(int32), parameter :: n = 30
+    integer(int32), parameter :: k = 3
+    real(real64), parameter :: tol = 1.0d-6
+
+    ! Local Variables
+    integer(int32) :: i
+    real(real64) :: da(n, n), db(n, n)
+    real(real64), allocatable :: beta(:)
+    complex(real64), allocatable :: vals(:), vecs(:,:), alpha(:), dvals(:), r(:)
+    complex(real64) :: cvec(n)
+    type(csr_matrix) :: a, b
+
+    ! Initialization
+    rst = .true.
+    da = 0.0d0
+    db = 0.0d0
+    do i = 1, n
+        da(i,i) = 2.0d0 + real(i, real64)
+        db(i,i) = 2.0d0
+        if (i > 1) then
+            da(i,i-1) = -2.0d0
+            db(i,i-1) = 0.5d0
+            db(i-1,i) = 0.5d0
+        end if
+        if (i < n) da(i,i+1) = 1.0d0
+    end do
+    a = da
+    b = db
+
+    ! No shift exercises the regular inverse path
+    call eigen(a, b, k, vals, vecs)
+
+    ! Compute the dense solution for comparison
+    call eigen(da, db, alpha, beta)
+    dvals = alpha / beta
+
+    ! Test
+    do i = 1, size(vals)
+        if (minval(abs(dvals - vals(i))) > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_gen_asymm_1 -1"
+        end if
+
+        cvec = vecs(:,i)
+        r = matmul(cmplx(da, 0.0d0, real64), cvec) - &
+            vals(i) * matmul(cmplx(db, 0.0d0, real64), cvec)
+        if (norm2(abs(r)) / norm2(abs(matmul(cmplx(da, 0.0d0, real64), cvec))) &
+            > tol) then
+            rst = .false.
+            print "(A)", "Test Failed: test_csr_eigen_gen_asymm_1 -2"
+        end if
+    end do
+end function
+
+! ------------------------------------------------------------------------------
 end module

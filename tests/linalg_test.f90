@@ -403,6 +403,19 @@ program main
     rst = test_rz_factor_cmplx()
     if (.not.rst) flag = 121
 
+    ! ARPACK-Based Sparse Eigen Solvers
+    rst = test_csr_eigen_symm_1()
+    if (.not.rst) flag = 122
+
+    rst = test_csr_eigen_asymm_1()
+    if (.not.rst) flag = 123
+
+    rst = test_csr_eigen_gen_symm_1()
+    if (.not.rst) flag = 124
+
+    rst = test_csr_eigen_gen_asymm_1()
+    if (.not.rst) flag = 125
+
     ! End
     if (flag /= 0) stop flag
 end program

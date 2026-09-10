@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 6.2% of total for modules and submodules.">415 statements</a>
+                 title=" 5.0% of total for modules and submodules.">415 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -153,9 +153,9 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='linalg_tri.html'>linalg_tri</a></li>
               </ul>
             </li>
@@ -199,7 +199,7 @@ by the LQ factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~9"></span>
+              <span class="anchor" id="variable-l~11"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -221,7 +221,7 @@ equal to N for this routine.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~29"></span>
+              <span class="anchor" id="variable-tau~47"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -237,7 +237,7 @@ elementary reflector defined in <script type="math/tex">L</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~14"></span>
+              <span class="anchor" id="variable-q~17"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -276,7 +276,7 @@ by the LQ factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~10"></span>
+              <span class="anchor" id="variable-l~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -298,7 +298,7 @@ equal to N for this routine.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~30"></span>
+              <span class="anchor" id="variable-tau~48"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -314,7 +314,7 @@ elementary reflector defined in <script type="math/tex">L</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~15"></span>
+              <span class="anchor" id="variable-q~18"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -364,7 +364,7 @@ a orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~114"></span>
+              <span class="anchor" id="variable-a~172"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -379,7 +379,7 @@ a orthogonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~27"></span>
+              <span class="anchor" id="variable-tau~45"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -414,7 +414,7 @@ of elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~7"></span>
+              <span class="anchor" id="variable-l~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -429,7 +429,7 @@ of elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~12"></span>
+              <span class="anchor" id="variable-q~15"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -469,7 +469,7 @@ a orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~115"></span>
+              <span class="anchor" id="variable-a~173"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -484,7 +484,7 @@ a orthogonal matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~28"></span>
+              <span class="anchor" id="variable-tau~46"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -519,7 +519,7 @@ of elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~8"></span>
+              <span class="anchor" id="variable-l~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -534,7 +534,7 @@ of elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~13"></span>
+              <span class="anchor" id="variable-q~16"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -599,7 +599,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~18"></span>
+              <span class="anchor" id="variable-trans~28"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -615,7 +615,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~116"></span>
+              <span class="anchor" id="variable-a~174"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -632,7 +632,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~31"></span>
+              <span class="anchor" id="variable-tau~49"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -648,7 +648,7 @@ reflector defined in a.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~18"></span>
+              <span class="anchor" id="variable-c~32"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -708,7 +708,7 @@ compute <script type="math/tex">C = C op(Q)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~19"></span>
+              <span class="anchor" id="variable-trans~29"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -724,7 +724,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~117"></span>
+              <span class="anchor" id="variable-a~175"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -741,7 +741,7 @@ else, if lside is set to false, P = N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~32"></span>
+              <span class="anchor" id="variable-tau~50"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -757,7 +757,7 @@ reflector defined in a.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~19"></span>
+              <span class="anchor" id="variable-c~33"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -801,7 +801,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~20"></span>
+              <span class="anchor" id="variable-trans~30"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -817,7 +817,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~118"></span>
+              <span class="anchor" id="variable-a~176"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -834,7 +834,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~33"></span>
+              <span class="anchor" id="variable-tau~51"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -850,7 +850,7 @@ reflector defined in a.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~20"></span>
+              <span class="anchor" id="variable-c~34"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -895,7 +895,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~21"></span>
+              <span class="anchor" id="variable-trans~31"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -911,7 +911,7 @@ compute <script type="math/tex">op(Q) = Q</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~119"></span>
+              <span class="anchor" id="variable-a~177"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -928,7 +928,7 @@ matrix are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~34"></span>
+              <span class="anchor" id="variable-tau~52"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -944,7 +944,7 @@ reflector defined in a.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~21"></span>
+              <span class="anchor" id="variable-c~35"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -998,7 +998,7 @@ vector <script type="math/tex">\vec{c}</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~120"></span>
+              <span class="anchor" id="variable-a~178"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1014,7 +1014,7 @@ must be greater than or equal to M.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~35"></span>
+              <span class="anchor" id="variable-tau~53"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1030,7 +1030,7 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~63"></span>
+              <span class="anchor" id="variable-b~82"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1073,7 +1073,7 @@ elementary reflectors as returned by lq_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~121"></span>
+              <span class="anchor" id="variable-a~179"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1089,7 +1089,7 @@ must be greater than or equal to M.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~36"></span>
+              <span class="anchor" id="variable-tau~54"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1105,7 +1105,7 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~64"></span>
+              <span class="anchor" id="variable-b~83"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1149,7 +1149,7 @@ elementary reflectors as returned by lq_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~122"></span>
+              <span class="anchor" id="variable-a~180"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1165,7 +1165,7 @@ must be greater than or equal to M.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~37"></span>
+              <span class="anchor" id="variable-tau~55"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1181,7 +1181,7 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~65"></span>
+              <span class="anchor" id="variable-b~84"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1225,7 +1225,7 @@ elementary reflectors as returned by lq_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~123"></span>
+              <span class="anchor" id="variable-a~181"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1241,7 +1241,7 @@ must be greater than or equal to M.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~38"></span>
+              <span class="anchor" id="variable-tau~56"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1257,7 +1257,7 @@ elementary reflectors as returned by lq_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~66"></span>
+              <span class="anchor" id="variable-b~85"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1307,7 +1307,7 @@ elementary reflectors as returned by lq_factor.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-07 13:39              </p>
+ on 2026-09-10 06:42              </p>
           </div>
         </div>
         <br>

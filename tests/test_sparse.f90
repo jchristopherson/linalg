@@ -680,14 +680,14 @@ function test_pgmres_1() result(rst)
         0.0d0, 0.0d0, 0.0d0, 5.0d0], [4, 4])
     a = dense
     am = m
-    call random_number(b)
+    b = [1.0d0, 2.0d0, 3.0d0, 4.0d0]
     bc = b
 
     ! Compute the preconditioner
     call lu_factor(am, lu, ju)
 
     ! Solve the sparse system
-    x = pgmres_solver(a, lu, ju, b)
+    x = pgmres_solver(a, lu, ju, b, tol = 1.0d-6, maxits = 500)
 
     ! Solve the dense system directly
     call lu_factor(dense, ipvt = ipiv, lu = dlu)

@@ -9,12 +9,26 @@ A linear algebra library that provides a user-friendly interface to several BLAS
 The documentation can be found [here](https://jchristopherson.github.io/linalg/).
 
 ## Building LINALG
-[CMake](https://cmake.org/)This library can be built using CMake.  For instructions see [Running CMake](https://cmake.org/runningcmake/).
+### CMake
+This library can be built using [CMake](https://cmake.org/).  For general instructions see [Running CMake](https://cmake.org/runningcmake/).
+```txt
+cmake -B build -S .
+cmake --build build
+```
+CMake will search for existing installations of BLAS, LAPACK, and ARPACK (via `find_package`).  If any of these are not found on the system, CMake will automatically download and build reference versions of the missing libraries as part of the build, so no additional setup is required to get a working build.
 
+To install the library, run the following from the build directory.
+```txt
+cmake --install build
+```
+
+### FPM
 [FPM](https://github.com/fortran-lang/fpm) can also be used to build this library using the provided fpm.toml.
 ```txt
 fpm build
 ```
+**Note:** Unlike the CMake build, FPM does not download or build missing dependencies.  BLAS, LAPACK, and [ARPACK](https://github.com/opencollab/arpack-ng) must already be installed on your system, with their libraries discoverable by the linker (e.g. `libopenblas-dev`, `liblapack-dev`, and `libarpack2-dev` on Debian/Ubuntu, or `mingw-w64-x86_64-openblas` and `mingw-w64-x86_64-arpack` via MSYS2 on Windows), before running `fpm build` or `fpm test`.
+
 The LINALG library can be used within your FPM project by adding the following to your fpm.toml file.
 ```toml
 [dependencies]
@@ -262,7 +276,8 @@ Dense Solution:
 Here is a list of external code libraries utilized by this library.
 - [BLAS](http://www.netlib.org/blas/)
 - [LAPACK](http://www.netlib.org/lapack/)
+- [ARPACK](https://github.com/opencollab/arpack-ng)
 - [QRUpdate](https://sourceforge.net/projects/qrupdate/)
 - [SPARSKIT](https://www-users.cse.umn.edu/~saad/software/SPARSKIT/)
 
-The dependencies do not necessarily have to be installed to be used.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.
+When building with CMake, these dependencies do not necessarily have to be pre-installed.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.  When building with FPM, however, BLAS, LAPACK, and ARPACK must already be installed on the system as FPM does not build missing dependencies (see [Building LINALG](#building-linalg)).

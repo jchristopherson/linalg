@@ -1,6 +1,7 @@
 ! linalg_sorting.f90
 
 module linalg_sorting
+    !! Provides sorting routines for real and complex arrays.
     use iso_fortran_env, only : int32, real64
     use lapack
     use linalg_errors

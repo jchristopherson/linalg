@@ -1,4 +1,5 @@
 module linalg_lu
+    !! Provides LU factorization, factor extraction, and linear-system solvers.
     use iso_fortran_env
     use linalg_errors
     use linalg_sparse

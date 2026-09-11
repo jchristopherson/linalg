@@ -1,4 +1,5 @@
 module linalg_inverse
+    !! Provides matrix inverse and Moore-Penrose pseudoinverse routines.
     use iso_fortran_env, only : int32, real64
     use lapack
     use blas

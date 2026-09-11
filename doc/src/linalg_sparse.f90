@@ -1,4 +1,5 @@
 module linalg_sparse
+    !! Provides sparse matrix types, conversions, arithmetic, and iterative or direct solvers.
     use iso_fortran_env, only : int32, real64
     use sparskit
     use blas
@@ -1182,7 +1183,7 @@ pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
 
     ! Process
     allocate(bc(n), source = b)
-    allocate(x(n))
+    allocate(x(n), source = 0.0d0)
     call pgmres(n, krylov, bc, x, vv, eps, mit, io, a%values, a%column_indices, &
         a%row_indices, lu%values, lu%indices, ju, ierr)
     if (ierr == 1) then

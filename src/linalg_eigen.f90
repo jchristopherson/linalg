@@ -1,6 +1,7 @@
 ! linalg_eigen.f90
 
 module linalg_eigen
+    !! Provides eigenvalue and eigenvector computations for dense and sparse matrices.
     use iso_fortran_env, only : int32, real64
     use lapack
     use arpack

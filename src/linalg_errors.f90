@@ -1,4 +1,5 @@
 module linalg_errors
+    !! Defines error types and error-reporting utilities for the library.
     use iso_fortran_env
     implicit none
 

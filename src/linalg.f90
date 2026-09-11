@@ -1,6 +1,7 @@
 ! linalg.f90
 
 module linalg
+    !! Public facade for the library's dense and sparse linear algebra APIs.
     use linalg_sparse
     use linalg_basic
     use linalg_sorting

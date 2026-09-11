@@ -1,4 +1,5 @@
 module linalg_sparse
+    !! Provides sparse matrix types, conversions, arithmetic, and iterative or direct solvers.
     use iso_fortran_env, only : int32, real64
     use sparskit
     use blas

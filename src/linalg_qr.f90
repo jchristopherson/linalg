@@ -1,4 +1,5 @@
 module linalg_qr
+    !! Provides QR factorization, updates, factor formation, and least-squares solvers.
     use iso_fortran_env
     use linalg_errors
     use linalg_rz

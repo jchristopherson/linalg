@@ -1,4 +1,5 @@
 module linalg_least_squares
+    !! Provides dense least-squares solvers for full-rank and rank-deficient systems.
     use iso_fortran_env, only : int32, real64
     use lapack
     use linalg_errors

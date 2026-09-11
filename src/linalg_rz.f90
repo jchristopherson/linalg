@@ -1,4 +1,5 @@
 module linalg_rz
+    !! Provides RZ factorization and multiplication by its orthogonal or unitary factor.
     use iso_fortran_env, only : int32, real64
     use linalg_errors
     use lapack

@@ -1,8 +1,10 @@
 module linalg_sparse
+    !! Provides sparse matrix types, conversions, arithmetic, and iterative or direct solvers.
     use iso_fortran_env, only : int32, real64
     use sparskit
     use blas
     use linalg_errors
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
     implicit none
     private
     public :: csr_matrix
@@ -746,7 +748,8 @@ end function
 
 ! ------------------------------------------------------------------------------
 pure function csr_solve_sparse_direct(a, b, droptol) result(x)
-    !! Solves a linear system using a direct method.
+    !! Solves a linear system using a direct method.  In the event of a
+    !! singular matrix, the solution is populated with NaN's.
     class(csr_matrix), intent(in) :: a
         !! The matrix.
     real(real64), intent(in), dimension(:) :: b
@@ -760,7 +763,7 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
     integer(int32) :: i, m, n, nnz, lfil, iwk, ierr
     integer(int32), allocatable, dimension(:) :: jlu, ju, jw
     real(real64), allocatable, dimension(:) :: alu, w
-    real(real64) :: dt
+    real(real64) :: dt, nan
     
     ! Initialization
     if (present(droptol)) then
@@ -802,7 +805,10 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
             ! Success
             exit
         else if (ierr > 0) then
-            ! Zero pivot
+            ! WARNING: Singular matrix - a zero pivot was found at step IERR
+            nan = ieee_value(nan, ieee_quiet_nan)
+            x = nan
+            return
         else if (ierr == -1) then
             ! The input matrix is not formatted correctly
             error stop LA_MATRIX_FORMAT_ERROR
@@ -1177,7 +1183,7 @@ pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
 
     ! Process
     allocate(bc(n), source = b)
-    allocate(x(n))
+    allocate(x(n), source = 0.0d0)
     call pgmres(n, krylov, bc, x, vv, eps, mit, io, a%values, a%column_indices, &
         a%row_indices, lu%values, lu%indices, ju, ierr)
     if (ierr == 1) then

@@ -1,4 +1,5 @@
 module linalg_tri
+    !! Provides solvers for triangular systems of linear equations.
     use iso_fortran_env
     use blas
     use linalg_errors

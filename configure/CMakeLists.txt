@@ -29,6 +29,57 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
 
+# Locate the dependencies.  This must happen before the package config file is
+# generated as that file must know whether a dependency was built here.
+include(FetchContent)
+
+find_package(BLAS)
+find_package(LAPACK)
+find_package(arpackng)
+
+if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
+  message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
+  FetchContent_Declare(
+      lapack
+      GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
+  )
+  FetchContent_MakeAvailable(lapack)
+  set(BLAS_LIBRARIES blas)
+  set(LAPACK_LIBRARIES lapack)
+  set(BUILD_LAPACK_BLAS TRUE)
+
+  # ARPACK-NG performs its own REQUIRED search unless these targets already
+  # exist, which would either fail or link it against a different BLAS/LAPACK
+  if (NOT TARGET BLAS::BLAS)
+    add_library(BLAS::BLAS INTERFACE IMPORTED GLOBAL)
+    set_target_properties(BLAS::BLAS PROPERTIES
+      INTERFACE_LINK_LIBRARIES ${BLAS_LIBRARIES})
+  endif()
+  if (NOT TARGET LAPACK::LAPACK)
+    add_library(LAPACK::LAPACK INTERFACE IMPORTED GLOBAL)
+    set_target_properties(LAPACK::LAPACK PROPERTIES
+      INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
+  endif()
+else()
+  set(BUILD_LAPACK_BLAS FALSE)
+endif()
+
+if (NOT arpackng_FOUND)
+  message(STATUS "ARPACK could not be found.  A reference version will be employed.")
+  FetchContent_Declare(
+      arpack
+      GIT_REPOSITORY "https://github.com/opencollab/arpack-ng.git"
+  )
+  FetchContent_MakeAvailable(arpack)
+endif()
+# Both the system package and arpack-ng itself export this target name
+set(ARPACK_LIBRARIES arpack)
+
+set(BLAS_LIBRARIES "${BLAS_LIBRARIES}" PARENT_SCOPE)
+set(LAPACK_LIBRARIES "${LAPACK_LIBRARIES}" PARENT_SCOPE)
+set(ARPACK_LIBRARIES "${ARPACK_LIBRARIES}" PARENT_SCOPE)
+set(BUILD_LAPACK_BLAS "${BUILD_LAPACK_BLAS}" PARENT_SCOPE)
+
 # Export a pkg-config file
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/template.pc"

@@ -100,6 +100,7 @@ set(LINALG_SOURCES
     ${dir}/lapack.f90
     ${dir}/qrupdate.f90
     ${dir}/sparskit.f90
+    ${dir}/arpack.f90
     ${dir}/linalg_sparse.f90
     ${dir}/linalg_errors.f90
     ${dir}/linalg_lu.f90
@@ -116,31 +117,13 @@ list(APPEND LINALG_SOURCES ${QRUPDATE_SOURCES})
 list(APPEND LINALG_SOURCES ${SPARSEKIT_SOURCES})
 set(LINALG_SOURCES ${LINALG_SOURCES} PARENT_SCOPE)
 
-include(FetchContent)
-
-find_package(BLAS)
-find_package(LAPACK)
-
-if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
-  message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")
-  FetchContent_Declare(
-      lapack
-      GIT_REPOSITORY "https://github.com/Reference-LAPACK/lapack"
-  )
-  FetchContent_MakeAvailable(lapack)
-  set(BLAS_LIBRARIES blas)
-  set(LAPACK_LIBRARIES lapack)
-  set(BUILD_LAPACK_BLAS TRUE)
-else()
-    set(BUILD_LAPACK_BLAS FALSE)
-endif()
-
 add_library(${PROJECT_NAME} ${LINALG_SOURCES})
 target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     ${BLAS_LIBRARIES}
     ${LAPACK_LIBRARIES}
+    ${ARPACK_LIBRARIES}
 )
 
 set_target_properties(
@@ -173,19 +156,3 @@ install(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(DIRECTORY ${LINALG_MOD_DIR} DESTINATION ${CMAKE_INSTALL_MODULEDIR})
-
-if (${BUILD_SHARED_LIBS})
-    if (${BUILD_LAPACK_BLAS})
-        install(TARGETS ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-    endif()
-else()
-    if (${BUILD_LAPACK_BLAS})
-        install(TARGETS ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-    endif()
-endif()

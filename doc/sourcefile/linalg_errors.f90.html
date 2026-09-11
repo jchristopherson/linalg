@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 0.2% of total for source files.">12 statements</a>
+                 title=" 0.1% of total for source files.">12 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -152,26 +152,27 @@
       <section>
         <h2><span class="anchor" id="src"></span>Source Code</h2>
         <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="k">module </span><span class="n">linalg_errors</span>
-<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">    </span><span class="k">use </span><span class="n">iso_fortran_env</span>
-<a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">    </span><span class="k">implicit none</span>
-<a id="ln-4" name="ln-4" href="#ln-4"></a>
-<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="k">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_NO_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
-<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">        </span><span class="c">!! An flag denoting no error condition.</span>
-<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_INVALID_INPUT_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">101</span>
-<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">        </span><span class="c">!! An error flag denoting an invalid input.</span>
-<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_ARRAY_SIZE_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">102</span>
-<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">        </span><span class="c">!! An error flag denoting an improperly sized array.</span>
-<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_SINGULAR_MATRIX_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">103</span>
-<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">        </span><span class="c">!! An error flag denoting a singular matrix.</span>
-<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_MATRIX_FORMAT_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">104</span>
-<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">        </span><span class="c">!! An error flag denoting an issue with the matrix format.</span>
-<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_OUT_OF_MEMORY_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">105</span>
-<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">        </span><span class="c">!! An error flag denoting that there is insufficient memory available.</span>
-<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_CONVERGENCE_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">106</span>
-<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">        </span><span class="c">!! An error flag denoting a convergence failure.</span>
-<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_INVALID_OPERATION_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">107</span>
-<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">        </span><span class="c">!! An error resulting from an invalid operation.</span>
-<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="k">end module</span>
+<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="w">    </span><span class="c">!! Defines error types and error-reporting utilities for the library.</span>
+<a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">    </span><span class="k">use </span><span class="n">iso_fortran_env</span>
+<a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">    </span><span class="k">implicit none</span>
+<a id="ln-5" name="ln-5" href="#ln-5"></a>
+<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="k">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_NO_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="w">        </span><span class="c">!! An flag denoting no error condition.</span>
+<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_INVALID_INPUT_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">101</span>
+<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="w">        </span><span class="c">!! An error flag denoting an invalid input.</span>
+<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_ARRAY_SIZE_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">102</span>
+<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">        </span><span class="c">!! An error flag denoting an improperly sized array.</span>
+<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_SINGULAR_MATRIX_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">103</span>
+<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">        </span><span class="c">!! An error flag denoting a singular matrix.</span>
+<a id="ln-14" name="ln-14" href="#ln-14"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_MATRIX_FORMAT_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">104</span>
+<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="w">        </span><span class="c">!! An error flag denoting an issue with the matrix format.</span>
+<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_OUT_OF_MEMORY_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">105</span>
+<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">        </span><span class="c">!! An error flag denoting that there is insufficient memory available.</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_CONVERGENCE_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">106</span>
+<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">        </span><span class="c">!! An error flag denoting a convergence failure.</span>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">int32</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">LA_INVALID_OPERATION_ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">107</span>
+<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">        </span><span class="c">!! An error resulting from an invalid operation.</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="k">end module</span>
 </pre></div>
 
       </section>
@@ -190,7 +191,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-07 13:39              </p>
+ on 2026-09-11 05:40              </p>
           </div>
         </div>
         <br>

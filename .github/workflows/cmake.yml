@@ -129,7 +129,7 @@ jobs:
           mkdir -p consumer
           cat > consumer/CMakeLists.txt <<'EOF'
           cmake_minimum_required(VERSION 3.24)
-          project(linalg_consumer LANGUAGES Fortran)
+          project(linalg_consumer LANGUAGES Fortran C)
 
           find_package(linalg CONFIG REQUIRED)
 

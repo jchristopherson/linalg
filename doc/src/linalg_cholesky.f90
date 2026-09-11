@@ -1,4 +1,5 @@
 module linalg_cholesky
+    !! Provides Cholesky factorization, updates, downdates, and solvers.
     use iso_fortran_env, only : int32, real64
     use linalg_errors
     use lapack

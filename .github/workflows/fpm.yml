@@ -65,6 +65,7 @@ jobs:
           install: >-
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-openblas
+            mingw-w64-x86_64-arpack
 
       - name: Add MinGW64 toolchain to PATH (Windows)
         if: runner.os == 'Windows'
@@ -107,12 +108,12 @@ jobs:
         run: |
           "$FC" --version
 
-      - name: Install BLAS/LAPACK (Linux)
+      - name: Install BLAS/LAPACK/ARPACK (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y libopenblas-dev liblapack-dev
+          sudo apt-get install -y libopenblas-dev liblapack-dev libarpack2-dev
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5

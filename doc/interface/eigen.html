@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="<p> 1.2% of total for procedures.</p>Including implementation: 223 statements, 45.9% of total for procedures.">6 statements</a>
+                 title="<p> 0.0% of total for procedures.</p>Including implementation: 557 statements,  1.6% of total for procedures.">10 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,6 +135,10 @@
             <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_asymm">eigen_asymm</a>
             <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_gen">eigen_gen</a>
             <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_cmplx">eigen_cmplx</a>
+            <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_sparse_symm">eigen_sparse_symm</a>
+            <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_sparse_asymm">eigen_sparse_asymm</a>
+            <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_sparse_gen_symm">eigen_sparse_gen_symm</a>
+            <a class="list-group-item" href="../interface/eigen.html#moduleprocedure-eigen_sparse_gen_asymm">eigen_sparse_gen_asymm</a>
         </div>
       </div>
     </div>
@@ -174,7 +178,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~45"></span>
+              <span class="anchor" id="variable-a"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -189,7 +193,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~4"></span>
+              <span class="anchor" id="variable-vals"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -205,7 +209,7 @@ ascending order.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~3"></span>
+              <span class="anchor" id="variable-vecs"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -248,7 +252,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~46"></span>
+              <span class="anchor" id="variable-a~2"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -264,7 +268,7 @@ contents of this matrix are overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~5"></span>
+              <span class="anchor" id="variable-vals~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -337,7 +341,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~47"></span>
+              <span class="anchor" id="variable-a~3"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -352,7 +356,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~19"></span>
+              <span class="anchor" id="variable-b"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -465,7 +469,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~48"></span>
+              <span class="anchor" id="variable-a~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -480,7 +484,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~6"></span>
+              <span class="anchor" id="variable-vals~3"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -533,6 +537,754 @@ left eigenvectors (one per column).</p>
     </div>
   </div>
 
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eigen_sparse_symm"></span> <h3>private  subroutine eigen_sparse_symm(a, k, vals, vecs, which, ncv, maxiter, tol)  
+</h3></div>
+    <div class="card-body">
+        <p>Computes the k largest, or smallest, eigenvalues, and optionally the
+corresponding eigenvectors, of a sparse matrix stored in compressed
+sparse row (CSR) format by solving the eigenvalue problem 
+<script type="math/tex">A \vec{v} = \lambda \vec{v}</script> when <script type="math/tex">A</script> is a symmetric matrix.  The
+calculations are performed by way of the implicitly restarted Lanczos
+iteration provided by ARPACK.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~5"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N symmetric CSR matrix on which to operate.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>The number of eigenvalues to compute.  This value must be greater
+than zero, but less than N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~4"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong></td>
+            <td>
+                <p>A K-element array containing the requested eigenvalues.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong></td>
+            <td>
+                <p>If present, the eigenvectors will be computed and this N-by-K matrix
+will contain the eigenvectors (one per column) corresponding to each
+eigenvalue in vals.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>An optional parameter identifying which eigenvalues to compute.  The
+default is 'LM'.  The available options are as follows.</p>
+<ul>
+<li>
+<p>'LA': The K eigenvalues of largest algebraic value.</p>
+</li>
+<li>
+<p>'SA': The K eigenvalues of smallest algebraic value.</p>
+</li>
+<li>
+<p>'LM': The K eigenvalues of largest magnitude.</p>
+</li>
+<li>
+<p>'SM': The K eigenvalues of smallest magnitude.</p>
+</li>
+<li>
+<p>'BE': K eigenvalues taken from both ends of the spectrum.</p>
+</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>An optional parameter controlling the number of Lanczos basis
+vectors to utilize.  This value must be greater than k, but no
+greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>An optional parameter controlling the maximum number of iterations
+allowed.  The default is 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>An optional parameter controlling the convergence tolerance.  If
+zero, or less than zero, machine precision is utilized.  The default
+is zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eigen_sparse_asymm"></span> <h3>private  subroutine eigen_sparse_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)  
+</h3></div>
+    <div class="card-body">
+        <p>Computes the k largest, or smallest, eigenvalues, and optionally the
+corresponding eigenvectors, of a sparse matrix stored in compressed
+sparse row (CSR) format by solving the eigenvalue problem 
+<script type="math/tex">A \vec{v} = \lambda \vec{v}</script> when <script type="math/tex">A</script> is square, but not 
+necessarily symmetric.  The calculations are performed by way of the
+implicitly restarted Arnoldi iteration provided by ARPACK.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~6"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N CSR matrix on which to operate.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~2"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>The number of eigenvalues to compute.  This value must be greater
+than zero, but less than N - 1.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~5"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong></td>
+            <td>
+                <p>A K-element array containing the requested eigenvalues.  The
+eigenvalues are not sorted.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~3"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong></td>
+            <td>
+                <p>If present, the right eigenvectors will be computed and this N-by-K
+matrix will contain the eigenvectors (one per column) corresponding
+to each eigenvalue in vals.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~2"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>An optional parameter identifying which eigenvalues to compute.  The
+default is 'LM'.  The available options are as follows.</p>
+<ul>
+<li>
+<p>'LM': The K eigenvalues of largest magnitude.</p>
+</li>
+<li>
+<p>'SM': The K eigenvalues of smallest magnitude.</p>
+</li>
+<li>
+<p>'LR': The K eigenvalues of largest real part.</p>
+</li>
+<li>
+<p>'SR': The K eigenvalues of smallest real part.</p>
+</li>
+<li>
+<p>'LI': The K eigenvalues of largest imaginary part.</p>
+</li>
+<li>
+<p>'SI': The K eigenvalues of smallest imaginary part.</p>
+</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~2"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>An optional parameter controlling the number of Arnoldi basis
+vectors to utilize.  This value must be at least k + 2, but no
+greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~2"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>An optional parameter controlling the maximum number of iterations
+allowed.  The default is 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>An optional parameter controlling the convergence tolerance.  If
+zero, or less than zero, machine precision is utilized.  The default
+is zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eigen_sparse_gen_symm"></span> <h3>private  subroutine eigen_sparse_gen_symm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+</h3></div>
+    <div class="card-body">
+        <p>Computes k eigenvalues, and optionally the corresponding eigenvectors,
+of a pair of sparse matrices stored in compressed sparse row (CSR)
+format by solving the generalized eigenvalue problem
+<script type="math/tex">A \vec{v} = \lambda B \vec{v}</script> when <script type="math/tex">A</script> is symmetric and <script type="math/tex">B</script> is
+symmetric positive definite.  The calculations are performed by way of
+the implicitly restarted Lanczos iteration provided by ARPACK.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~7"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N symmetric CSR matrix <script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~2"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The N-by-N symmetric positive definite CSR matrix <script type="math/tex">B</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>The number of eigenvalues to compute.  This value must be greater
+than zero, but less than N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~6"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong></td>
+            <td>
+                <p>A K-element array containing the requested eigenvalues.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~4"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong></td>
+            <td>
+                <p>If present, the eigenvectors will be computed and this N-by-K matrix
+will contain the eigenvectors (one per column) corresponding to each
+eigenvalue in vals.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong></td>
+            <td>
+                <p>An optional shift.  If supplied, the shift-invert transformation
+<script type="math/tex">(A - \sigma B)^{-1} B</script> is utilized, which is the preferred means
+of finding the eigenvalues nearest to <script type="math/tex">\sigma</script>.  If not supplied,
+the regular inverse transformation <script type="math/tex">B^{-1} A</script> is utilized.  Notice,
+<script type="math/tex">\sigma</script> must not be an eigenvalue of the pencil as the shifted
+matrix must be factorable.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~3"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>An optional parameter identifying which eigenvalues to compute.  The
+default is 'LM'.  The available options are 'LA', 'SA', 'LM', 'SM',
+and 'BE'.  Note that when a shift is supplied, the selection applies
+to the transformed spectrum such that 'LM' returns the eigenvalues
+nearest to <script type="math/tex">\sigma</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>An optional parameter controlling the number of Lanczos basis
+vectors to utilize.  This value must be greater than k, but no
+greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~3"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>An optional parameter controlling the maximum number of iterations
+allowed.  The default is 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>An optional parameter controlling the convergence tolerance.  If
+zero, or less than zero, machine precision is utilized.  The default
+is zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eigen_sparse_gen_asymm"></span> <h3>private  subroutine eigen_sparse_gen_asymm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+</h3></div>
+    <div class="card-body">
+        <p>Computes k eigenvalues, and optionally the corresponding eigenvectors,
+of a pair of sparse matrices stored in compressed sparse row (CSR)
+format by solving the generalized eigenvalue problem
+<script type="math/tex">A \vec{v} = \lambda B \vec{v}</script> when <script type="math/tex">A</script> is square, but not
+necessarily symmetric, and <script type="math/tex">B</script> is symmetric positive semi-definite.
+The calculations are performed by way of the implicitly restarted
+Arnoldi iteration provided by ARPACK.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~8"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N CSR matrix <script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~3"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The N-by-N symmetric positive semi-definite CSR matrix <script type="math/tex">B</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>The number of eigenvalues to compute.  This value must be greater
+than zero, but less than N - 1.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~7"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong></td>
+            <td>
+                <p>A K-element array containing the requested eigenvalues.  The
+eigenvalues are not sorted.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~5"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong></td>
+            <td>
+                <p>If present, the right eigenvectors will be computed and this N-by-K
+matrix will contain the eigenvectors (one per column) corresponding
+to each eigenvalue in vals.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong></td>
+            <td>
+                <p>An optional real-valued shift.  If supplied, the shift-invert
+transformation <script type="math/tex">(A - \sigma B)^{-1} B</script> is utilized, which is the
+preferred means of finding the eigenvalues nearest to <script type="math/tex">\sigma</script>.
+If not supplied, the regular inverse transformation <script type="math/tex">B^{-1} A</script> is
+utilized.  Notice, <script type="math/tex">\sigma</script> must not be an eigenvalue of the pencil
+as the shifted matrix must be factorable.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~4"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>An optional parameter identifying which eigenvalues to compute.  The
+default is 'LM'.  The available options are 'LM', 'SM', 'LR', 'SR',
+'LI', and 'SI'.  Note that when a shift is supplied, the selection
+applies to the transformed spectrum such that 'LM' returns the
+eigenvalues nearest to <script type="math/tex">\sigma</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>An optional parameter controlling the number of Arnoldi basis
+vectors to utilize.  This value must be at least k + 2, but no
+greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~4"></span>
+              integer(kind=int32),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>An optional parameter controlling the maximum number of iterations
+allowed.  The default is 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~4"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>An optional parameter controlling the convergence tolerance.  If
+zero, or less than zero, machine precision is utilized.  The default
+is zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
 </div>
   </div>
       <hr>
@@ -547,7 +1299,7 @@ left eigenvectors (one per column).</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-07 13:39              </p>
+ on 2026-09-11 05:40              </p>
           </div>
         </div>
         <br>

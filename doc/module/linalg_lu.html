@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 6.5% of total for modules and submodules.">433 statements</a>
+                 title=" 5.4% of total for modules and submodules.">441 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -145,20 +145,20 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      
+      <p>Provides LU factorization, factor extraction, and linear-system solvers.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
-                  <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
+                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
-                  <li class="list-inline-item">sparskit</li>
+                  <li class="list-inline-item"><a href='sparskit.html'>sparskit</a></li>
               </ul>
             </li>
         </ul>
@@ -201,7 +201,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~5"></span>
+              <span class="anchor" id="variable-lu~6"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -232,7 +232,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~11"></span>
+              <span class="anchor" id="variable-u~3"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -286,7 +286,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~6"></span>
+              <span class="anchor" id="variable-lu~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -317,7 +317,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~12"></span>
+              <span class="anchor" id="variable-u~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -371,7 +371,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~7"></span>
+              <span class="anchor" id="variable-lu~8"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -387,7 +387,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~13"></span>
+              <span class="anchor" id="variable-u~5"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -426,7 +426,7 @@ used by the lu_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~8"></span>
+              <span class="anchor" id="variable-lu~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -442,7 +442,7 @@ N-by-N lower triangular matrix L.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~14"></span>
+              <span class="anchor" id="variable-u~6"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -491,7 +491,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~38"></span>
+              <span class="anchor" id="variable-a~52"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -523,7 +523,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~2"></span>
+              <span class="anchor" id="variable-lu~3"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -554,7 +554,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~9"></span>
+              <span class="anchor" id="variable-u"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -608,7 +608,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~39"></span>
+              <span class="anchor" id="variable-a~53"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -640,7 +640,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~3"></span>
+              <span class="anchor" id="variable-lu~4"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -671,7 +671,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~10"></span>
+              <span class="anchor" id="variable-u~2"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -709,7 +709,8 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     private pure subroutine csr_lu_factor(a, lu, ju, droptol)  
 
     </h3>
-  <p>Factors a matrix using an LU decomposition.</p>
+  <p>Factors a matrix using an LU decomposition.  In the event of a singular
+matrix, the output matrix is populated with NaN's.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -724,7 +725,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~40"></span>
+              <span class="anchor" id="variable-a~54"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -739,7 +740,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~4"></span>
+              <span class="anchor" id="variable-lu~5"></span>
               type(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(out)</td>
@@ -769,7 +770,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-droptol~2"></span>
+              <span class="anchor" id="variable-droptol"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -817,7 +818,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~41"></span>
+              <span class="anchor" id="variable-a~55"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -847,7 +848,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~14"></span>
+              <span class="anchor" id="variable-b~27"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -890,7 +891,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~42"></span>
+              <span class="anchor" id="variable-a~56"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -920,7 +921,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~15"></span>
+              <span class="anchor" id="variable-b~28"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -963,7 +964,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~43"></span>
+              <span class="anchor" id="variable-a~57"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -993,7 +994,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~16"></span>
+              <span class="anchor" id="variable-b~29"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1036,7 +1037,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~44"></span>
+              <span class="anchor" id="variable-a~58"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1066,7 +1067,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~17"></span>
+              <span class="anchor" id="variable-b~30"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1109,7 +1110,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~9"></span>
+              <span class="anchor" id="variable-lu~10"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1139,7 +1140,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~18"></span>
+              <span class="anchor" id="variable-b~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1189,7 +1190,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-07 13:39              </p>
+ on 2026-09-11 05:40              </p>
           </div>
         </div>
         <br>

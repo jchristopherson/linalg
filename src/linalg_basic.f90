@@ -1,6 +1,7 @@
 ! linalg_basic.f90
 
 module linalg_basic
+    !! Provides core dense matrix operations and utility routines.
     use iso_fortran_env, only: int32, real64
     use blas
     use lapack

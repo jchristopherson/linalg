@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 3.5% of total for modules and submodules.">232 statements</a>
+                 title=" 2.8% of total for modules and submodules.">232 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -144,16 +144,16 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      
+      <p>Provides RZ factorization and multiplication by its orthogonal or unitary factor.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item">lapack</li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
               </ul>
             </li>
         </ul>
@@ -197,7 +197,7 @@ RZ factorization such that <script type="math/tex">C = op(Z) C</script> or <scri
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside"></span>
+              <span class="anchor" id="variable-lside~12"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -213,7 +213,7 @@ compute <script type="math/tex">C = C op(Z)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans"></span>
+              <span class="anchor" id="variable-trans~10"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -246,7 +246,7 @@ else, if lside is false, <script type="math/tex">N \ge L \ge 0</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~3"></span>
+              <span class="anchor" id="variable-a~48"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -280,7 +280,7 @@ reflectors, where <script type="math/tex">M \ge K \ge 0</script> if lside is tru
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c"></span>
+              <span class="anchor" id="variable-c~12"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -325,7 +325,7 @@ RZ factorization such that <script type="math/tex">C = op(Z) C</script> or <scri
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~2"></span>
+              <span class="anchor" id="variable-lside~13"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -341,7 +341,7 @@ compute <script type="math/tex">C = C op(Z)</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~2"></span>
+              <span class="anchor" id="variable-trans~11"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -374,7 +374,7 @@ else, if lside is false, <script type="math/tex">N \ge L \ge 0</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~4"></span>
+              <span class="anchor" id="variable-a~49"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -408,7 +408,7 @@ reflectors, where <script type="math/tex">M \ge K \ge 0</script> if lside is tru
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~2"></span>
+              <span class="anchor" id="variable-c~13"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -453,7 +453,7 @@ RZ factorization such that <script type="math/tex">C = op(Z) C</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~3"></span>
+              <span class="anchor" id="variable-trans~12"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -485,7 +485,7 @@ of the Householder vectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~5"></span>
+              <span class="anchor" id="variable-a~50"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -517,7 +517,7 @@ elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~3"></span>
+              <span class="anchor" id="variable-c~14"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -561,7 +561,7 @@ RZ factorization such that <script type="math/tex">C = op(Z) C</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~4"></span>
+              <span class="anchor" id="variable-trans~13"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -593,7 +593,7 @@ of the Householder vectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~6"></span>
+              <span class="anchor" id="variable-a~51"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -625,7 +625,7 @@ elementary reflectors.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~4"></span>
+              <span class="anchor" id="variable-c~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -682,7 +682,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a"></span>
+              <span class="anchor" id="variable-a~46"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -757,7 +757,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~2"></span>
+              <span class="anchor" id="variable-a~47"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -840,7 +840,7 @@ first M rows, with the array tau, represent the orthogonal matrix
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-07 13:39              </p>
+ on 2026-09-11 05:40              </p>
           </div>
         </div>
         <br>

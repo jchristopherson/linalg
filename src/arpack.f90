@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module arpack
     !! An interface to the ARPACK library available at
     !! https://github.com/opencollab/arpack-ng.

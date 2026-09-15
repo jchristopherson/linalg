@@ -1,4 +1,5 @@
 ! test_lu.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 ! Tests the LU factorization routines
 module test_lu

@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module linalg_inverse
     !! Provides matrix inverse and Moore-Penrose pseudoinverse routines.
     use iso_fortran_env, only : int32, real64

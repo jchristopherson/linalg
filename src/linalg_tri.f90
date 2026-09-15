@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module linalg_tri
     !! Provides solvers for triangular systems of linear equations.
     use iso_fortran_env

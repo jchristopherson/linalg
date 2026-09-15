@@ -281,3 +281,9 @@ Here is a list of external code libraries utilized by this library.
 - [SPARSKIT](https://www-users.cse.umn.edu/~saad/software/SPARSKIT/)
 
 When building with CMake, these dependencies do not necessarily have to be pre-installed.  The build will initially look for installed items, but if not found, will then download and build the latest version as part of the build process.  When building with FPM, however, BLAS, LAPACK, and ARPACK must already be installed on the system as FPM does not build missing dependencies (see [Building LINALG](#building-linalg)).
+
+## License
+
+This project is licensed under the **GNU Lesser General Public License v3.0 or later (LGPL-3.0-or-later)**.
+
+See the [LICENSE](LICENSE) file for details.

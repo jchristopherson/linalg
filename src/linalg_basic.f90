@@ -1,4 +1,5 @@
 ! linalg_basic.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 module linalg_basic
     !! Provides core dense matrix operations and utility routines.

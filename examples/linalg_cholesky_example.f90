@@ -1,4 +1,5 @@
 ! linalg_cholesky_example.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 program example
     use iso_fortran_env, only : real64, int32

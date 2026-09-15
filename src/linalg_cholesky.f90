@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module linalg_cholesky
     !! Provides Cholesky factorization, updates, downdates, and solvers.
     use iso_fortran_env, only : int32, real64

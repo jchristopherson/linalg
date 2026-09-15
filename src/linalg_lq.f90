@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module linalg_lq
     !! Provides LQ factorization, factor formation, multiplication, and solvers.
     use iso_fortran_env, only : int32, real64

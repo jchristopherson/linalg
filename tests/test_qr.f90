@@ -1,4 +1,5 @@
 ! test_qr.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 ! Tests for QR factorization/solution operations.
 module test_qr

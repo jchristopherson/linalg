@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module linalg_svd
     !! Provides singular value decompositions for dense real and complex matrices.
     use iso_fortran_env, only : int32, real64

@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module blas
     !! A module providing explicit interfaces to BLAS routines.
     !! These declarations expose the core dense linear algebra kernels used by

@@ -1,3 +1,4 @@
+! SPDX-License-Identifier: LGPL-3.0-or-later
 module qrupdate
     !! A module providing explicit interfaces for the QRUPDATE library.
     !! The routines support rank-one updates and downdates for QR

@@ -1,4 +1,5 @@
 ! test_cholesky.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 ! Tests the Cholesky factorization/solution operations
 module test_cholesky

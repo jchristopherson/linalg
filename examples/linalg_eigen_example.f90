@@ -1,4 +1,5 @@
 ! linalg_eigen_example.f90
+! SPDX-License-Identifier: LGPL-3.0-or-later
 
 ! This is an example illustrating the use of the eigenvalue and eigenvector 
 ! routines to solve a free vibration problem of 3 masses connected by springs.

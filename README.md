@@ -284,6 +284,6 @@ When building with CMake, these dependencies do not necessarily have to be pre-i
 
 ## License
 
-This project is licensed under the **GNU Lesser General Public License v3.0 or later (LGPL-3.0-or-later)**.
+This project is licensed under the **MIT License**.
 
 See the [LICENSE](LICENSE) file for details.

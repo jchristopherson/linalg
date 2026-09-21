@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_lu.f90
+! SPDX-License-Identifier: MIT
 module linalg_lu
     !! Provides LU factorization, factor extraction, and linear-system solvers.
     use iso_fortran_env

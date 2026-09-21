@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_sparse.f90
+! SPDX-License-Identifier: MIT
 module linalg_sparse
     !! Provides sparse matrix types, conversions, arithmetic, and iterative or direct solvers.
     use iso_fortran_env, only : int32, real64

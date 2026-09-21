@@ -1,5 +1,5 @@
 ! linalg_od_example.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! Example Source: https://en.wikipedia.org/wiki/Overdetermined_system
 program example

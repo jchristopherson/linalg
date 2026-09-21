@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_least_squares.f90
+! SPDX-License-Identifier: MIT
 module linalg_least_squares
     !! Provides dense least-squares solvers for full-rank and rank-deficient systems.
     use iso_fortran_env, only : int32, real64

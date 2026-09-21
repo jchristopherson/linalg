@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! test_sparse.f90
+! SPDX-License-Identifier: MIT
 module test_sparse
     use iso_fortran_env
     use linalg

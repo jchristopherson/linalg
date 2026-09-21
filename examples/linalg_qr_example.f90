@@ -1,5 +1,5 @@
 ! linalg_qr_example.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! Example Source:
 ! https://www.mathworks.com/help/matlab/ref/lu.html?s_tid=srchtitle

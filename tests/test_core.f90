@@ -1,5 +1,5 @@
 ! test_core.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! A module containing routines to support basic testing operations.
 module test_core

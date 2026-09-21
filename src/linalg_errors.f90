@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_errors.f90
+! SPDX-License-Identifier: MIT
 module linalg_errors
     !! Defines error types and error-reporting utilities for the library.
     use iso_fortran_env

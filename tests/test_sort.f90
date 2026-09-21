@@ -1,5 +1,5 @@
 ! test_sort.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! A module containing routines to support testing of the sorting routines.
 module test_sort

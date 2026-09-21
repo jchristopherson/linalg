@@ -1,5 +1,5 @@
 ! linalg_cholesky_downdate_example.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 program example
     use iso_fortran_env, only : real64, int32

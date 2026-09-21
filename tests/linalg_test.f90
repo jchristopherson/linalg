@@ -1,5 +1,5 @@
 ! linalg_test.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! A testing application.
 program main

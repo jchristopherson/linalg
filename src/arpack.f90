@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! arpack.f90
+! SPDX-License-Identifier: MIT
 module arpack
     !! An interface to the ARPACK library available at
     !! https://github.com/opencollab/arpack-ng.

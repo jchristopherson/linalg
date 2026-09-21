@@ -1,5 +1,5 @@
 ! test_lq.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! Tests for LQ factorization/solution operations.
 module test_lq

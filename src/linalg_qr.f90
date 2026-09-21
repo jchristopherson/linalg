@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_qr.f90
+! SPDX-License-Identifier: MIT
 module linalg_qr
     !! Provides QR factorization, updates, factor formation, and least-squares solvers.
     use iso_fortran_env

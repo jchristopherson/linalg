@@ -1,5 +1,5 @@
 ! test_eigen.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! Tests the eigenvalue/eigenvector routines
 module test_eigen

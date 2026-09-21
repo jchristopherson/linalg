@@ -1,5 +1,5 @@
 ! test_svd.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 ! Tests for SVD operations.
 module test_svd_ops

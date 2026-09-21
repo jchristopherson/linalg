@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! sparskit.f90
+! SPDX-License-Identifier: MIT
 module sparskit
     !! An interface to the SPARSKIT library available at
     !! https://www-users.cse.umn.edu/~saad/software/SPARSKIT/.

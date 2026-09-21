@@ -1,5 +1,5 @@
 ! linalg_eigen.f90
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! SPDX-License-Identifier: MIT
 
 module linalg_eigen
     !! Provides eigenvalue and eigenvector computations for dense and sparse matrices.

@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_sparse_direct_example.f90
+! SPDX-License-Identifier: MIT
 program example
     use iso_fortran_env
     use linalg

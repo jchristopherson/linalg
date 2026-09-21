@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! lapack.f90
+! SPDX-License-Identifier: MIT
 module lapack
     !! A module providing explicit interfaces to LAPACK routines.
     !! These declarations expose the factorization, eigensolver, and

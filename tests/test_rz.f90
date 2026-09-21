@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! test_rz.f90
+! SPDX-License-Identifier: MIT
 module test_rz
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core

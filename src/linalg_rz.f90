@@ -1,4 +1,5 @@
-! SPDX-License-Identifier: LGPL-3.0-or-later
+! linalg_rz.f90
+! SPDX-License-Identifier: MIT
 module linalg_rz
     !! Provides RZ factorization and multiplication by its orthogonal or unitary factor.
     use iso_fortran_env, only : int32, real64

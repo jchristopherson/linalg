@@ -1,7 +1,8 @@
 ! linalg_qr.f90
 ! SPDX-License-Identifier: MIT
 module linalg_qr
-    !! Provides QR factorization, updates, factor formation, and least-squares solvers.
+    !! Provides QR factorization, updates, factor formation, and least-squares 
+    !! solvers.
     use iso_fortran_env
     use linalg_errors
     use linalg_rz
@@ -9,6 +10,7 @@ module linalg_qr
     use lapack
     use blas
     use qrupdate
+    use linalg_types
     implicit none
     private
     public :: qr_factor
@@ -16,6 +18,44 @@ module linalg_qr
     public :: mult_qr
     public :: qr_rank1_update
     public :: solve_qr
+
+    type, extends(matrix_factorization) :: qr_factorization
+        !! A container for QR factorization of a matrix and associated
+        !! operations.
+        real(real64), private, allocatable, dimension(:,:) :: a
+            !! The matrix, and after a call to factor, the elements on and above
+            !! the diagonal contain the upper trapezoidal matrix R.  The 
+            !! remainder of the matrix contains the elementray reflectors used
+            !! to define Q along with the array tau.
+        real(real64), private, allocatable, dimension(:) :: tau
+            !! The scalar factors of the elementary reflectors.
+        logical, private :: factored = .false.
+            !! True if factored; else, false.
+        logical, private :: use_pivoting = .false.
+            !! True if column pivoting should be used; else, false.
+        integer, private, allocatable, dimension(:) :: pivot
+            !! The column pivot tracking array.
+        real(real64), allocatable, dimension(:) :: workspace
+            !! Workspace array that is large enough for the factorization,
+            !! multiplication, or solve calls.  This one workspace can be used
+            !! for all operations
+    contains
+        procedure, public :: is_factored => qrf_is_factored
+            !! Checks to see if the matrix has been factored.
+        procedure, public :: size => qrf_size
+            !! Gets the size of the factored matrix.
+        procedure, public :: factor => qrf_factor
+            !! Factors the matrix.
+        procedure, public :: solve_multiple_rhs => qrf_solve_multiple_rhs
+            !! Solves the factored system with multiple right-hand-side vectors.
+        procedure, public :: solve_single_rhs => qrf_solve_single_rhs
+            !! Solves the factored system with a single right-hand-side vector.
+        procedure, private :: qrf_multiply_mtx
+    end type
+
+    interface qr_factorization
+        module procedure :: qrf_init
+    end interface
 
     interface qr_factor
         module procedure :: qr_factor_no_pivot
@@ -54,6 +94,223 @@ module linalg_qr
         module procedure :: solve_qr_pivot_vec_cmplx
     end interface
 contains
+! ******************************************************************************
+! QR_FACTORIZATION MEMBERS
+! ------------------------------------------------------------------------------
+pure function qrf_init(a, pvt) result(rst)
+    !! Initializes a new [[qr_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by 
+        !! this object; therefore, this matrix is not altered.
+    logical, intent(in), optional :: pvt
+        !! An optional parameter that, if set to true, enables column pivoting.
+        !! The default is false such that no column pivoting will be utilized.
+    type(qr_factorization) :: rst
+        !! The new [[qr_factorization]] object.
+
+    ! Local Variables
+    integer :: m, n, mn, lwork, info, idummy(1)
+    real(real64) :: dummy(1), w(1)
+
+    m = size(a, 1)
+    n = size(a, 2)
+    mn = min(m, n)
+
+    allocate(rst%a(m, n), source = a)
+    allocate(rst%tau(mn))
+
+    rst%factored = .false.
+    rst%use_pivoting = .false.
+    if (present(pvt)) rst%use_pivoting = pvt
+
+    if (rst%use_pivoting) then
+        call DGEQP3(m, n, dummy, m, idummy, dummy, w, -1, info)
+        allocate(rst%pivot(n))
+    else
+        call DGEQRF(m, n, dummy, m, dummy, w, -1, info)
+    end if
+    lwork = int(w(1))
+    allocate(rst%workspace(lwork))
+end function
+
+! ------------------------------------------------------------------------------
+pure function qrf_is_factored(this) result(rst)
+    !! Gets a value querying whether the matrix has been factored.
+    class(qr_factorization), intent(in) :: this
+        !! The [[qr_factorization]] object.
+    logical :: rst
+        !! True if the matrix has been factored; else, false.
+    rst = this%factored
+end function
+
+! ------------------------------------------------------------------------------
+pure function qrf_size(this, dim) result(rst)
+    !! Retrieves the size of teh requested matrix dimension.
+    class(qr_factorization), intent(in) :: this
+        !! The [[qr_factorization]] object.
+    integer, intent(in) :: dim
+        !! The dimension to query.
+    integer :: rst
+        !! The requested dimension size.
+    if (allocated(this%a)) then
+        rst = size(this%a, dim)
+    else
+        rst = 0
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+subroutine qrf_factor(this, flag)
+    !! Factors the matrix.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    integer, intent(out), optional :: flag
+        !! An error flag
+
+    ! Local Variables
+    integer :: m, n, info, lwork
+
+    ! Initialization
+    if (present(flag)) flag = LA_NO_ERROR
+    m = this%size(1)
+    n = this%size(2)
+    lwork = size(this%workspace)
+
+    ! If not allocated, return with an error
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+
+    ! If factored, do nothing
+    if (this%is_factored()) return
+
+    ! Factor the matrix
+    if (this%use_pivoting) then
+        call DGEQP3(m, n, this%a, m, this%pivot, this%tau, this%workspace, &
+            lwork, info)
+    else
+        call DGEQRF(m, n, this%a, m, this%tau, this%workspace, lwork, info)
+    end if
+    this%factored = .true.
+end subroutine
+
+! ------------------------------------------------------------------------------
+function qrf_solve_multiple_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The right-hand-side matrix.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The solution matrix.
+end function
+
+! ------------------------------------------------------------------------------
+function qrf_solve_single_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(in), dimension(:) :: b
+        !! The right-hand-side vector.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The solution vector.
+end function
+
+! ------------------------------------------------------------------------------
+function qrf_multiply_mtx(this, lside, trans, c, flag) result(rst)
+    !! Multiplies a matrix by the orthogonal matrix \(Q\) with another matrix
+    !! \(C\) such that the operation is either \(op(Q) C \) or \(C op(Q)\)
+    !! where \(op(Q)\) is either \(Q**T\) or \(Q\).
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    logical, intent(in) :: lside
+        !! Set to true to apply \(Q\) or \(Q^T\) from the left; else, set to 
+        !! false to apply \(Q\) or \(Q^T\) from the right.
+    logical, intent(in) :: trans
+        !! Set to true to apply \(Q^T\); else, set to false to apply \(Q\).
+    real(real64), intent(in), dimension(:,:) :: c
+        !! The matrix
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The resulting matrix.
+
+    ! Local Variables
+    character :: side, trns
+    integer :: m, n, k, lda, lwork, info
+
+    ! Initialization
+    if (present(flag)) flag = LA_NO_ERROR
+    m = size(c, 1)
+    n = size(c, 2)
+    k = size(this%tau)
+    if (lside) then
+        lda = m
+    else
+        lda = n
+    end if
+    if (lside) then
+        side = "L"
+    else
+        side = "R"
+    end if
+    if (trans) then
+        trns = "T"
+    else
+        trns = "N"
+    end if
+    lwork = size(this%workspace)
+
+    ! Validation
+    if (this%size(1) /= lda) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+
+    ! Ensure the matrix has been factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    allocate(rst(m, n), source = c)
+    call DORMQR(side, trns, m, n, k, this%a, lda, this%tau, rst, m, &
+        this%workspace, lwork, info)
+end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ******************************************************************************
+! PROCEDURAL INTERFACE
 ! ------------------------------------------------------------------------------
 pure subroutine qr_factor_no_pivot(a, tau, qr, q, r)
     !! Computes the QR factorization of an M-by-N matrix.

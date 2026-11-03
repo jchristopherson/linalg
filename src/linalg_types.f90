@@ -9,7 +9,7 @@ module linalg_types
         !! Defines a matrix factorization container.
     contains
         procedure(get_logical_value), deferred, public, pass :: is_factored
-            !! Tests to see if the matrix has been factored.
+            !! Checks to see if the matrix has been factored.
         procedure(get_matrix_size), deferred, public, pass :: size
             !! Gets the size of the factored matrix.
         procedure(matrix_factor), deferred, public, pass :: factor
@@ -48,7 +48,7 @@ module linalg_types
             import matrix_factorization
             class(matrix_factorization), intent(inout) :: this
                 !! The [[matrix_factorization]] object.
-            integer, intent(out) :: flag
+            integer, intent(out), optional :: flag
                 !! An error flag.
         end subroutine
 
@@ -61,7 +61,7 @@ module linalg_types
                 !! The [[matrix_factorization]] object.
             real(real64), intent(in), dimension(:,:) :: b
                 !! The right-hand-side matrix.
-            integer, intent(out) :: flag
+            integer, intent(out), optional :: flag
                 !! An error flag.
             real(real64), allocatable, dimension(:,:) :: rst
                 !! The solution matrix.
@@ -76,7 +76,7 @@ module linalg_types
                 !! The [[matrix_factorization]] object.
             real(real64), intent(in), dimension(:) :: b
                 !! The right-hand-side vector.
-            integer, intent(out) :: flag
+            integer, intent(out), optional :: flag
                 !! An error flag.
             real(real64), allocatable, dimension(:) :: rst
                 !! The solution vector.

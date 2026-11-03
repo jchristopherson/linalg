@@ -18,17 +18,29 @@ module linalg_lu
     public :: solve_lu
 
     type, extends(matrix_factorization) :: lu_factorization
+        !! A container for LU factorization of a matrix and associated 
+        !! operations.
         real(real64), private, allocatable, dimension(:,:) :: a
+            !! The matrix, and after a call to factor, the factored matrix.
         logical, private :: factored = .false.
+            !! True if factored; else, false.
         integer, private, allocatable, dimension(:) :: pivot
+            !! The pivot array.
     contains
         procedure, public :: is_factored => luf_is_factored
+            !! Checks to see if the matrix has been factored.
         procedure, public :: size => luf_size
+            !! Gets the size of the factored matrix.
         procedure, public :: factor => luf_factor
+            !! Factors the matrix.
         procedure, public :: solve_multiple_rhs => luf_solve_multiple_rhs
+            !! Solves the factored system with multiple right-hand-side vectors.
         procedure, public :: solve_single_rhs => luf_solve_single_rhs
+            !! Solves the factored system with a single right-hand-side vector.
         procedure, public :: get_factored_form => luf_get_factored_matrices
+            !! Gets the factored matrices.
         procedure, public :: determinant => luf_det
+            !! Gets the determinant of the original matrix.
     end type
 
     interface lu_factorization
@@ -108,15 +120,23 @@ end function
 
 ! ------------------------------------------------------------------------------
 subroutine luf_factor(this, flag)
-    !! Factors the encapsulated matrix.
+    !! Factors the matrix.
     class(lu_factorization), intent(inout) :: this
-    integer, intent(out) :: flag
+        !! The [[lu_factorization]] object.
+    integer, intent(out), optional :: flag
+        !! An error flag.
 
     ! Local Variables
     integer :: m, n, info
 
     ! Initialization
-    flag = LA_NO_ERROR
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! If not allocated, return with an error
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
 
     ! If factored, do nothing
     if (this%is_factored()) return
@@ -126,7 +146,7 @@ subroutine luf_factor(this, flag)
     n = this%size(2)
     call DGETRF(m, n, this%a, m, this%pivot, info)
     if (info < 0) then
-        flag = info
+        if (present(flag)) flag = info
     else
         this%factored = .true.
     end if
@@ -142,36 +162,43 @@ function luf_solve_multiple_rhs(this, b, flag) result(rst)
         !! The [[lu_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: b
         !! The right-hand-side matrix.
-    integer, intent(out) :: flag
+    integer, intent(out), optional :: flag
         !! An error flag.
     real(real64), allocatable, dimension(:,:) :: rst
         !! The solution matrix.
 
     ! Local Variables
-    integer :: n, nrhs
+    integer :: n, nrhs, info
 
     ! Validation
     n = this%size(1)
     nrhs = size(b, 2)
-    flag = LA_NO_ERROR
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
     if (this%size(2) /= n) then
-        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        if (present(flag)) flag = LA_MATRIX_NOT_SQUARE_ERROR
         return
     end if
     if (size(b, 1) /= n) then
-        flag = LA_MATRIX_DIMENSION_ERROR
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
         return
     end if
 
     ! If the matrix is not factored, be sure to factor
     if (.not.this%is_factored()) then
-        call this%factor(flag)
-        if (flag /= LA_NO_ERROR) return
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
     end if
 
     ! Solve
     allocate(rst(n, nrhs), source = b)
-    call DGETRS("N", n, nrhs, this%a, n, this%pivot, rst, n, flag)
+    call DGETRS("N", n, nrhs, this%a, n, this%pivot, rst, n, info)
 end function
 
 ! ------------------------------------------------------------------------------
@@ -184,35 +211,42 @@ function luf_solve_single_rhs(this, b, flag) result(rst)
         !! The [[lu_factorization]] object.
     real(real64), intent(in), dimension(:) :: b
         !! The right-hand-side vector.
-    integer, intent(out) :: flag
+    integer, intent(out), optional :: flag
         !! An error flag.
     real(real64), allocatable, dimension(:) :: rst
         !! The solution vector.
 
     ! Local Variables
-    integer :: n
+    integer :: n, info
 
     ! Validation
     n = this%size(1)
-    flag = LA_NO_ERROR
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
     if (this%size(2) /= n) then
-        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        if (present(flag)) flag = LA_MATRIX_NOT_SQUARE_ERROR
         return
     end if
     if (size(b) /= n) then
-        flag = LA_MATRIX_DIMENSION_ERROR
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
         return
     end if
 
     ! If the matrix is not factored, be sure to factor
     if (.not.this%is_factored()) then
-        call this%factor(flag)
-        if (flag /= LA_NO_ERROR) return
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
     end if
 
     ! Solve
     allocate(rst(n), source = b)
-    call DGETRS("N", n, 1, this%a, n, this%pivot, rst, n, flag)
+    call DGETRS("N", n, 1, this%a, n, this%pivot, rst, n, info)
 end function
 
 ! ------------------------------------------------------------------------------
@@ -227,22 +261,31 @@ subroutine luf_get_factored_matrices(this, l, u, p, flag)
         !! The M-by-N \(U\) matrix.
     real(real64), intent(out), optional, allocatable, dimension(:,:) :: p
         !! The M-by-M \(P\) matrix.
-    integer, intent(out) :: flag
+    integer, intent(out), optional :: flag
         !! An error flag.
 
     ! Local Variables
-    integer :: j, jp, m, n, mn
+    integer :: j, jp, m, n, mn, info
 
     ! Initialization
     m = this%size(1)
     n = this%size(2)
     mn = min(m, n)
-    flag = LA_NO_ERROR
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! If not allocated, return with an error
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
 
     ! Is the matrix factored?
     if (.not.this%is_factored()) then
-        call this%factor(flag)
-        if (flag /= LA_NO_ERROR) return
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
     end if
 
     ! Form L
@@ -281,28 +324,35 @@ function luf_det(this, flag) result(rst)
     !! an LA_MATRIX_NOT_SQUARE_ERROR is returned.
     class(lu_factorization), intent(inout) :: this
         !! The [[lu_factorization]] object.
-    integer, intent(out) :: flag
+    integer, intent(out), optional :: flag
         !! An error flag.
     real(real64) :: rst
         !! The determinant of the matrix.
 
     ! Local Variables
-    integer :: i, ep, n
+    integer :: i, ep, n, info
     real(real64) :: temp
 
     ! Validation
     n = this%size(1)
-    flag = LA_NO_ERROR
+    if (present(flag)) flag = LA_NO_ERROR
     rst = ieee_value(0.0d0, ieee_quiet_nan)
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
     if (this%size(2) /= n) then
-        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        if (present(flag)) flag = LA_MATRIX_NOT_SQUARE_ERROR
         return
     end if
 
     ! Ensure the matrix is factored
     if (.not.this%is_factored()) then
-        call this%factor(flag)
-        if (flag /= 0) return
+        call this%factor(flag = info)
+        if (info /= 0) then
+            if (present(flag)) flag = info
+            return
+        end if
     end if
 
     ! Compute the determinant of the factored form

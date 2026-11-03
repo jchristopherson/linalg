@@ -26,4 +26,6 @@ module linalg_errors
         !! expecting a square matrix.
     integer(int32), parameter :: LA_MATRIX_DIMENSION_ERROR = 109
         !! An error resulting from disagreement in matrix dimensions.
+    integer(int32), parameter :: LA_NOT_INITIALIZED_ERROR = 110
+        !! An error resulting from trying to call an uninitialized object.
 end module

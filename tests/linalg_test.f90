@@ -421,6 +421,10 @@ program main
     rst = test_lu_factorization_type()
     if (.not.rst) flag = 126
 
+    ! QR factorization object tests
+    rst = test_qr_factorization_type()
+    if (.not.rst) flag = 127
+
     ! End
     if (flag /= 0) stop flag
 end program

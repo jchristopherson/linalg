@@ -13,6 +13,7 @@ module linalg_qr
     use linalg_types
     implicit none
     private
+    public :: qr_factorization
     public :: qr_factor
     public :: form_qr
     public :: mult_qr
@@ -251,11 +252,10 @@ function qrf_solve_multiple_rhs(this, b, flag) result(rst)
     end if
 
     ! Process
-    if (this%use_pivoting()) then
-        ! PIVOTING IN USE
+    if (this%use_pivoting) then
+        rst = solve_qr(this%a, this%tau, this%pivot, b)
     else
-        ! NO PIVOTING IN USE
-        rst = this%q_multiply(.true., .true., b, flag = info)
+        rst = solve_qr(this%a, this%tau, b)
     end if
 end function
 
@@ -275,6 +275,46 @@ function qrf_solve_single_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:) :: rst
         !! The solution vector.
+
+    ! Local Variables
+    integer :: m, n, info
+
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! Validation
+    if (size(b) /= m) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%use_pivoting) then
+        if (m < n) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    end if
+
+    ! Ensure the matrix is factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    if (this%use_pivoting) then
+        rst = solve_qr(this%a, this%tau, this%pivot, b)
+    else
+        rst = solve_qr(this%a, this%tau, b)
+    end if
 end function
 
 ! ------------------------------------------------------------------------------

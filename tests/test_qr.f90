@@ -6,6 +6,7 @@ module test_qr
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use linalg_errors, only : LA_NO_ERROR
     use fortran_test_helper
     implicit none
 contains
@@ -225,6 +226,82 @@ contains
         if (.not.assert(matmul(a, p2), matmul(q2, r2), tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Underdetermined QR Test 2, Part C"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_qr_factorization_type() result(rst)
+        integer(int32), parameter :: n = 3
+        real(real64), dimension(n, n), parameter :: a = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            2.0d0, 5.0d0, 7.0d0, &
+            3.0d0, 7.0d0, 11.0d0], [n, n])
+        real(real64), dimension(n, 2), parameter :: x_expected = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            4.0d0, 5.0d0, 6.0d0], [n, 2])
+
+        type(qr_factorization) :: fac, fac_pvt, fac_multiple_rhs, fac_single_rhs
+        real(real64), allocatable, dimension(:,:) :: x_multiple, x_multiple_pvt
+        real(real64), allocatable, dimension(:) :: x_single, x_single_pvt
+        real(real64), dimension(n, 2) :: b_multiple
+        real(real64), dimension(n) :: b_single
+        integer(int32) :: flag
+        logical :: rst
+
+        rst = .true.
+        b_multiple = matmul(a, x_expected)
+        b_single = matmul(a, x_expected(:, 1))
+
+        fac = qr_factorization(a)
+        if (fac%size(1) /= n .or. fac%size(2) /= n .or. fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Initialization"
+        end if
+
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Factor"
+        end if
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Repeated Factor"
+        end if
+
+        fac_multiple_rhs = qr_factorization(a)
+        x_multiple = fac_multiple_rhs%solve_multiple_rhs(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_multiple, x_expected, REAL64_TOL) .or. &
+            .not.fac_multiple_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Multiple RHS Solve"
+        end if
+
+        fac_single_rhs = qr_factorization(a)
+        x_single = fac_single_rhs%solve_single_rhs(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_single, x_expected(:,1), REAL64_TOL) .or. &
+            .not.fac_single_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Single RHS Solve"
+        end if
+
+        fac_pvt = qr_factorization(a, pvt = .true.)
+        x_multiple_pvt = fac_pvt%solve_multiple_rhs(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_multiple_pvt, x_expected, REAL64_TOL) .or. &
+            .not.fac_pvt%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Multiple RHS Solve"
+        end if
+
+        x_single_pvt = fac_pvt%solve_single_rhs(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_single_pvt, x_expected(:,1), REAL64_TOL) .or. &
+            .not.fac_pvt%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Single RHS Solve"
         end if
     end function
 

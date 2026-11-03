@@ -9,11 +9,29 @@ module linalg_lu
     use lapack
     use sparskit
     use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
+    use linalg_types
     implicit none
     private
+    public :: lu_factorization
     public :: lu_factor
     public :: form_lu
     public :: solve_lu
+
+    type, extends(matrix_factorization) :: lu_factorization
+        real(real64), private, allocatable, dimension(:,:) :: a
+        logical, private :: factored = .false.
+        integer, private, allocatable, dimension(:) :: pivot
+    contains
+        procedure, public :: is_factored => luf_is_factored
+        procedure, public :: size => luf_size
+        procedure, public :: factor => luf_factor
+        procedure, public :: solve_multiple_rhs => luf_solve_multiple_rhs
+        procedure, public :: solve_single_rhs => luf_solve_single_rhs
+    end type
+
+    interface lu_factorization
+        module procedure :: luf_init
+    end interface
 
     interface lu_factor
         module procedure :: lu_factor_dbl
@@ -36,6 +54,116 @@ module linalg_lu
         module procedure :: csr_lu_solve
     end interface
 contains
+! ******************************************************************************
+! LU_FACTORIZATION MEMBERS
+! ------------------------------------------------------------------------------
+pure function luf_init(a) result(rst)
+    !! Initializes a new [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is
+        !! made and stored by this object; therefore, this
+        !! matrix is not altered.
+    type(lu_factorization) :: rst
+        !! The new [[lu_factorization]] object.
+
+    integer :: m, n, mn
+
+    m = size(a, 1)
+    n = size(a, 2)
+    mn = min(m, n)
+
+    allocate(rst%a(m, n), source = a)
+    allocate(rst%pivot(mn))
+    rst%factored = .false.
+end function
+
+! ------------------------------------------------------------------------------
+pure function luf_is_factored(this) result(rst)
+    !! Gets a value querying whether the matrix has been factored.
+    class(lu_factorization), intent(in) :: this
+        !! The [[lu_factorization]] object.
+    logical :: rst
+        !! True if the matrix has been factored; else, false.
+    rst = this%factored
+end function
+
+! ------------------------------------------------------------------------------
+pure function luf_size(this, dim) result(rst)
+    !! Retrieves the size of the requested matrix dimension.
+    class(lu_factorization), intent(in) :: this
+        !! The [[lu_factorization]] object.
+    integer, intent(in) :: dim
+        !! The dimension to query.
+    integer :: rst
+        !! The requested dimension size.
+    if (allocated(this%a)) then
+        rst = size(this%a, dim)
+    else
+        rst = 0
+    end if
+end function
+
+
+! ------------------------------------------------------------------------------
+subroutine luf_factor(this, flag)
+    !! Factors the encapsulated matrix.
+    class(lu_factorization), intent(inout) :: this
+    integer, intent(out) :: flag
+
+    ! Local Variables
+    integer :: m, n, info
+
+    ! Initialization
+    flag = LA_NO_ERROR
+
+    ! If factored, do nothing
+    if (this%is_factored()) return
+
+    ! Factor the matrix
+    m = this%size(1)
+    n = this%size(2)
+    call DGETRF(m, n, this%a, m, this%pivot, info)
+    if (info < 0) flag = info
+end subroutine
+
+! ------------------------------------------------------------------------------
+function luf_solve_multiple_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The right-hand-side matrix.
+    integer, intent(out) :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The solution matrix.
+end function
+
+! ------------------------------------------------------------------------------
+function luf_solve_single_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:) :: b
+        !! The right-hand-side vector.
+    integer, intent(out) :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The solution vector.
+end function
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+
+! ******************************************************************************
+! PROCEDURAL INTERFACE
 ! ------------------------------------------------------------------------------
 pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
     !! Computes the LU factorization of an M-by-N matrix.  In the event of a 

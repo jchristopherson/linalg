@@ -16,4 +16,5 @@ module linalg
     use linalg_inverse
     use linalg_least_squares
     use linalg_rz
+    use linalg_types
 end module

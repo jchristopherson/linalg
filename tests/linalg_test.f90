@@ -417,6 +417,10 @@ program main
     rst = test_csr_eigen_gen_asymm_1()
     if (.not.rst) flag = 125
 
+    ! LU factorization object tests
+    rst = test_lu_factorization_type()
+    if (.not.rst) flag = 126
+
     ! End
     if (flag /= 0) stop flag
 end program

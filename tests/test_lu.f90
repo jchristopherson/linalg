@@ -6,6 +6,7 @@ module test_lu
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use linalg_errors, only : LA_NO_ERROR, LA_MATRIX_NOT_SQUARE_ERROR
     use fortran_test_helper
 contains
 ! ******************************************************************************
@@ -119,6 +120,102 @@ contains
         if (.not.assert(matmul(a, x), b, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued LU Factorization & Solution Test"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_lu_factorization_type() result(rst)
+        integer(int32), parameter :: n = 3
+        real(real64), dimension(n, n), parameter :: a = reshape([ &
+            0.0d0, 1.0d0, 0.0d0, &
+            2.0d0, 0.0d0, 1.0d0, &
+            0.0d0, 1.0d0, 1.0d0], [n, n])
+        real(real64), dimension(n, 2), parameter :: x_expected = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            4.0d0, 5.0d0, 6.0d0], [n, 2])
+
+        type(lu_factorization) :: fac, fac_form, fac_det
+        type(lu_factorization) :: fac_multiple_rhs, fac_single_rhs, fac_rect
+        real(real64), allocatable, dimension(:,:) :: l, u, p, x_multiple
+        real(real64), allocatable, dimension(:) :: x_single
+        real(real64), dimension(n, 2) :: b_multiple
+        real(real64), dimension(n) :: b_single
+        real(real64) :: det
+        integer(int32) :: flag
+        logical :: rst
+
+        rst = .true.
+        b_multiple = matmul(a, x_expected)
+        b_single = matmul(a, x_expected(:,1))
+
+        fac = lu_factorization(a)
+        if (fac%size(1) /= n .or. fac%size(2) /= n .or. fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Initialization"
+        end if
+
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Factor"
+        end if
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Repeated Factor"
+        end if
+
+        fac_form = lu_factorization(a)
+        call fac_form%get_factored_form(l, u, p, flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac_form%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Factored Form Status"
+        else if (.not.is_mtx_equal(matmul(p, a), matmul(l, u), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Factored Form"
+        end if
+        if (allocated(u)) deallocate(u)
+        call fac_form%get_factored_form(u = u, flag = flag)
+        if (flag /= LA_NO_ERROR .or. .not.allocated(u)) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Optional Factored Form"
+        end if
+
+        fac_det = lu_factorization(a)
+        det = fac_det%determinant(flag)
+        if (flag /= LA_NO_ERROR .or. abs(det + 2.0d0) > REAL64_TOL .or. &
+            .not.fac_det%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Determinant"
+        end if
+
+        fac_multiple_rhs = lu_factorization(a)
+        x_multiple = fac_multiple_rhs%solve_multiple_rhs(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_multiple, x_expected, REAL64_TOL) .or. &
+            .not.fac_multiple_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Multiple RHS Solve"
+        end if
+
+        fac_single_rhs = lu_factorization(a)
+        x_single = fac_single_rhs%solve_single_rhs(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_single, x_expected(:,1), REAL64_TOL) .or. &
+            .not.fac_single_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Single RHS Solve"
+        end if
+
+        fac_rect = lu_factorization(a(:,1:2))
+        if (fac_rect%size(1) /= n .or. fac_rect%size(2) /= n - 1) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Rectangular Size"
+        end if
+        det = fac_rect%determinant(flag)
+        if (flag /= LA_MATRIX_NOT_SQUARE_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Non-Square Determinant Validation"
         end if
     end function
 

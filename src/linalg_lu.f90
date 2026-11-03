@@ -27,6 +27,8 @@ module linalg_lu
         procedure, public :: factor => luf_factor
         procedure, public :: solve_multiple_rhs => luf_solve_multiple_rhs
         procedure, public :: solve_single_rhs => luf_solve_single_rhs
+        procedure, public :: get_factored_form => luf_get_factored_matrices
+        procedure, public :: determinant => luf_det
     end type
 
     interface lu_factorization
@@ -123,13 +125,19 @@ subroutine luf_factor(this, flag)
     m = this%size(1)
     n = this%size(2)
     call DGETRF(m, n, this%a, m, this%pivot, info)
-    if (info < 0) flag = info
+    if (info < 0) then
+        flag = info
+    else
+        this%factored = .true.
+    end if
 end subroutine
 
 ! ------------------------------------------------------------------------------
 function luf_solve_multiple_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining multiple right-hand-side vectors.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
     class(lu_factorization), intent(inout) :: this
         !! The [[lu_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: b
@@ -138,12 +146,40 @@ function luf_solve_multiple_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:,:) :: rst
         !! The solution matrix.
+
+    ! Local Variables
+    integer :: n, nrhs
+
+    ! Validation
+    n = this%size(1)
+    nrhs = size(b, 2)
+    flag = LA_NO_ERROR
+    if (this%size(2) /= n) then
+        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        return
+    end if
+    if (size(b, 1) /= n) then
+        flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
+    ! If the matrix is not factored, be sure to factor
+    if (.not.this%is_factored()) then
+        call this%factor(flag)
+        if (flag /= LA_NO_ERROR) return
+    end if
+
+    ! Solve
+    allocate(rst(n, nrhs), source = b)
+    call DGETRS("N", n, nrhs, this%a, n, this%pivot, rst, n, flag)
 end function
 
 ! ------------------------------------------------------------------------------
 function luf_solve_single_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining a single right-hand-side vector.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
     class(lu_factorization), intent(inout) :: this
         !! The [[lu_factorization]] object.
     real(real64), intent(in), dimension(:) :: b
@@ -152,15 +188,147 @@ function luf_solve_single_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:) :: rst
         !! The solution vector.
+
+    ! Local Variables
+    integer :: n
+
+    ! Validation
+    n = this%size(1)
+    flag = LA_NO_ERROR
+    if (this%size(2) /= n) then
+        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        return
+    end if
+    if (size(b) /= n) then
+        flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
+    ! If the matrix is not factored, be sure to factor
+    if (.not.this%is_factored()) then
+        call this%factor(flag)
+        if (flag /= LA_NO_ERROR) return
+    end if
+
+    ! Solve
+    allocate(rst(n), source = b)
+    call DGETRS("N", n, 1, this%a, n, this%pivot, rst, n, flag)
 end function
 
 ! ------------------------------------------------------------------------------
+subroutine luf_get_factored_matrices(this, l, u, p, flag)
+    !! Extracts the factored matrices \(L\), \(U\), and the row pivot 
+    !! matrix \(P\), where \(P A = L U\), and \(A\) is M-by-N.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(out), optional, allocatable, dimension(:,:) :: l
+        !! The M-by-M \(L\) matrix.
+    real(real64), intent(out), optional, allocatable, dimension(:,:) :: u
+        !! The M-by-N \(U\) matrix.
+    real(real64), intent(out), optional, allocatable, dimension(:,:) :: p
+        !! The M-by-M \(P\) matrix.
+    integer, intent(out) :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: j, jp, m, n, mn
+
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
+    mn = min(m, n)
+    flag = LA_NO_ERROR
+
+    ! Is the matrix factored?
+    if (.not.this%is_factored()) then
+        call this%factor(flag)
+        if (flag /= LA_NO_ERROR) return
+    end if
+
+    ! Form L
+    if (present(l)) then
+        allocate(l(m, m))
+        do j = 1, m
+            if (j > 1) l(1:j-1,j) = 0.0d0
+            l(j,j) = 1.0d0
+            l(j+1:,j) = this%a(j+1:,j)
+        end do
+    end if
+
+    ! Form U
+    if (present(u)) then
+        allocate(u(m, n))
+        do j = 1, n
+            u(1:j,j) = this%a(1:j,j)
+            u(j+1:,j) = 0.0d0
+        end do
+    end if
+
+    ! Form P
+    if (present(p)) then
+        allocate(p(m, m), source = 0.0d0)
+        call DLASET('A', mn, mn, 0.0d0, 1.0d0, p, m)
+        do j = 1, mn
+            jp = this%pivot(j)
+            if (j /= jp) call swap(p(j,1:mn), p(jp,1:mn))
+        end do
+    end if
+end subroutine
 
 ! ------------------------------------------------------------------------------
+function luf_det(this, flag) result(rst)
+    !! Returns the determinant of the matrix.  The matrix must be square; else,
+    !! an LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    integer, intent(out) :: flag
+        !! An error flag.
+    real(real64) :: rst
+        !! The determinant of the matrix.
 
-! ------------------------------------------------------------------------------
+    ! Local Variables
+    integer :: i, ep, n
+    real(real64) :: temp
 
-! ------------------------------------------------------------------------------
+    ! Validation
+    n = this%size(1)
+    flag = LA_NO_ERROR
+    rst = ieee_value(0.0d0, ieee_quiet_nan)
+    if (this%size(2) /= n) then
+        flag = LA_MATRIX_NOT_SQUARE_ERROR
+        return
+    end if
+
+    ! Ensure the matrix is factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag)
+        if (flag /= 0) return
+    end if
+
+    ! Compute the determinant of the factored form
+    temp = 1.0d0
+    ep = 0
+    do i = 1, n
+        if (this%pivot(i) /= i) temp = -temp
+
+        temp = this%a(i, i) * temp
+        if (temp == 0.0d0) then
+            rst = 0.0d0
+            exit
+        end if
+
+        do while (abs(temp) < 1.0d0)
+            temp = 1.0d1 * temp
+            ep = ep - 1
+        end do
+
+        do while (abs(temp) > 1.0d1)
+            temp = 1.0d-1 * temp
+            ep = ep + 1
+        end do
+    end do
+    rst = temp * (1.0d1)**ep
+end function
 
 ! ******************************************************************************
 ! PROCEDURAL INTERFACE

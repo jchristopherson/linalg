@@ -21,4 +21,9 @@ module linalg_errors
         !! An error flag denoting a convergence failure.
     integer(int32), parameter :: LA_INVALID_OPERATION_ERROR = 107
         !! An error resulting from an invalid operation.
+    integer(int32), parameter :: LA_MATRIX_NOT_SQUARE_ERROR = 108
+        !! An error resulting from passing a non-square matrix to a routine 
+        !! expecting a square matrix.
+    integer(int32), parameter :: LA_MATRIX_DIMENSION_ERROR = 109
+        !! An error resulting from disagreement in matrix dimensions.
 end module

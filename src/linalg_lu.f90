@@ -146,7 +146,7 @@ subroutine luf_factor(this, flag)
     n = this%size(2)
     call DGETRF(m, n, this%a, m, this%pivot, info)
     if (info < 0) then
-        if (present(flag)) flag = info
+        if (present(flag)) flag = LA_SINGULAR_MATRIX_ERROR
     else
         this%factored = .true.
     end if

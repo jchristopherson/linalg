@@ -51,6 +51,10 @@ module linalg_qr
         procedure, public :: solve_single_rhs => qrf_solve_single_rhs
             !! Solves the factored system with a single right-hand-side vector.
         procedure, private :: qrf_multiply_mtx
+        procedure, private :: qrf_multiply_vec
+        generic, public :: q_multiply => qrf_multiply_mtx, qrf_multiply_vec
+            !! Multiplies a matrix or a vector with the orthogonal matrix 
+            !! \(Q\) or its transpose.
     end type
 
     interface qr_factorization
@@ -200,7 +204,9 @@ function qrf_solve_multiple_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining multiple right-hand-side vectors.
     !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  For underdetermined systems,
+    !! pivoting must be utilized; else, an LA_INVALID_OPERATION_ERROR is
+    !! returned.
     class(qr_factorization), intent(inout) :: this
         !! The [[qr_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: b
@@ -209,6 +215,48 @@ function qrf_solve_multiple_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:,:) :: rst
         !! The solution matrix.
+
+    ! Local Variables
+    integer :: m, n, nrhs, info
+
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
+    nrhs = size(b, 2)
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! Validation
+    if (size(b, 1) /= m) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%use_pivoting) then
+        if (m < n) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    end if
+
+    ! Ensure the matrix is factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    if (this%use_pivoting()) then
+        ! PIVOTING IN USE
+    else
+        ! NO PIVOTING IN USE
+        rst = this%q_multiply(.true., .true., b, flag = info)
+    end if
 end function
 
 ! ------------------------------------------------------------------------------
@@ -216,7 +264,9 @@ function qrf_solve_single_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining a single right-hand-side vector.
     !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  For underdetermined systems,
+    !! pivoting must be utilized; else, an LA_INVALID_OPERATION_ERROR is
+    !! returned.
     class(qr_factorization), intent(inout) :: this
         !! The [[qr_factorization]] object.
     real(real64), intent(in), dimension(:) :: b
@@ -229,7 +279,7 @@ end function
 
 ! ------------------------------------------------------------------------------
 function qrf_multiply_mtx(this, lside, trans, c, flag) result(rst)
-    !! Multiplies a matrix by the orthogonal matrix \(Q\) with another matrix
+    !! Multiplies the orthogonal matrix \(Q\) with another matrix
     !! \(C\) such that the operation is either \(op(Q) C \) or \(C op(Q)\)
     !! where \(op(Q)\) is either \(Q**T\) or \(Q\).
     class(qr_factorization), intent(inout) :: this
@@ -298,6 +348,61 @@ function qrf_multiply_mtx(this, lside, trans, c, flag) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function qrf_multiply_vec(this, trans, c, flag) result(rst)
+    !! Multiplies tthe orthogonal matrix \(Q\) with a vector \(c\) such that 
+    !! the operation is either \(op(Q) c \) where \(op(Q)\) is either \(Q**T\)
+    !! or \(Q\).
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    logical, intent(in) :: trans
+        !! Set to true to apply \(Q^T\); else, set to false to apply \(Q\).
+    real(real64), intent(in), dimension(:) :: c
+        !! The vector
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The resulting vector.
+
+    ! Local Variables
+    character :: side, trns
+    integer :: m, k, lwork, info
+
+    ! Initialization
+    if (present(flag)) flag = LA_NO_ERROR
+    m = size(c)
+    k = size(this%tau)
+    side = "L"
+    if (trans) then
+        trns = "T"
+    else
+        trns = "N"
+    end if
+    lwork = size(this%workspace)
+
+    ! Validation
+    if (this%size(1) /= m) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+
+    ! Ensure the matrix has been factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    allocate(rst(m), source = c)
+    call DORMQR(side, trns, m, 1, k, this%a, m, this%tau, rst, m, &
+        this%workspace, lwork, info)
+end function
 
 ! ------------------------------------------------------------------------------
 

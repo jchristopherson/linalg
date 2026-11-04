@@ -134,9 +134,10 @@ contains
             1.0d0, 2.0d0, 3.0d0, &
             4.0d0, 5.0d0, 6.0d0], [n, 2])
 
-        type(lu_factorization) :: fac, fac_form, fac_det
+        type(lu_factorization) :: fac, fac_form, fac_det, fac_inverse
         type(lu_factorization) :: fac_multiple_rhs, fac_single_rhs, fac_rect
-        real(real64), allocatable, dimension(:,:) :: l, u, p, x_multiple
+        real(real64), allocatable, dimension(:,:) :: l, u, p, x_multiple, ainv
+        real(real64), dimension(n, n) :: identity_mtx
         real(real64), allocatable, dimension(:) :: x_single
         real(real64), dimension(n, 2) :: b_multiple
         real(real64), dimension(n) :: b_single
@@ -147,6 +148,7 @@ contains
         rst = .true.
         b_multiple = matmul(a, x_expected)
         b_single = matmul(a, x_expected(:,1))
+        identity_mtx = identity(n)
 
         fac = lu_factorization(a)
         if (fac%size(1) /= n .or. fac%size(2) /= n .or. fac%is_factored()) then
@@ -182,6 +184,18 @@ contains
             print '(A)', "Test Failed: LU Factorization Type Determinant"
         end if
 
+        fac_inverse = lu_factorization(a)
+        call fac_inverse%inverse(ainv, flag)
+        if (flag /= LA_NO_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Inverse Status"
+        else if (.not.is_mtx_equal(matmul(a, ainv), identity_mtx, REAL64_TOL) .or. &
+            .not.is_mtx_equal(matmul(ainv, a), identity_mtx, REAL64_TOL) .or. &
+            .not.fac_inverse%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Inverse"
+        end if
+
         fac_multiple_rhs = lu_factorization(a)
         x_multiple = fac_multiple_rhs%solve(b_multiple, flag)
         if (flag /= LA_NO_ERROR .or. &
@@ -209,6 +223,11 @@ contains
         if (flag /= LA_MATRIX_NOT_SQUARE_ERROR) then
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Type Non-Square Determinant Validation"
+        end if
+        call fac_rect%inverse(ainv, flag)
+        if (flag /= LA_MATRIX_NOT_SQUARE_ERROR .or. allocated(ainv)) then
+            rst = .false.
+            print '(A)', "Test Failed: LU Factorization Type Non-Square Inverse Validation"
         end if
     end function
 

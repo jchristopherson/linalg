@@ -26,6 +26,8 @@ module linalg_lu
             !! True if factored; else, false.
         integer, private, allocatable, dimension(:) :: pivot
             !! The pivot array.
+        real(real64), private, allocatable, dimension(:) :: workspace
+            !! A workspace array for matrix inversion.
     contains
         procedure, public :: is_factored => luf_is_factored
             !! Checks to see if the matrix has been factored.
@@ -45,6 +47,8 @@ module linalg_lu
             !! Gets the factored matrices.
         procedure, public :: determinant => luf_det
             !! Gets the determinant of the original matrix.
+        procedure, public :: inverse => luf_inverse
+            !! Computes the inverse of the matrix.
     end type
 
     interface lu_factorization
@@ -149,7 +153,7 @@ subroutine luf_factor(this, flag)
     m = this%size(1)
     n = this%size(2)
     call DGETRF(m, n, this%a, m, this%pivot, info)
-    if (info < 0) then
+    if (info > 0) then
         if (present(flag)) flag = LA_SINGULAR_MATRIX_ERROR
     else
         this%factored = .true.
@@ -423,6 +427,62 @@ function luf_det(this, flag) result(rst)
     end do
     rst = temp * (1.0d1)**ep
 end function
+
+! ------------------------------------------------------------------------------
+subroutine luf_inverse(this, ainv, flag)
+    !! Computes the inverse of the matrix.  The matrix must be square; else,
+    !! an LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(out), allocatable, dimension(:,:) :: ainv
+        !! The inverted matrix.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: n, lwork, info, idummy(1)
+    real(real64) :: dummy(1), w(1)
+
+    ! Validation
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (this%size(2) /= n) then
+        if (present(flag)) flag = LA_MATRIX_NOT_SQUARE_ERROR
+        return
+    end if
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+
+    ! Ensure the matrix is factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Determine workspace requirements
+    call DGETRI(n, dummy, n, idummy, w, -1, info)
+    lwork = int(w(1))
+    if (.not.allocated(this%workspace)) then
+        allocate(this%workspace(lwork))
+    else
+        if (size(this%workspace) < lwork) then
+            deallocate(this%workspace)
+            allocate(this%workspace(lwork))
+        end if
+    end if
+
+    ! Compute the inverse
+    allocate(ainv(n, n), source = this%a)
+    call DGETRI(n, ainv, n, this%pivot, this%workspace, lwork, info)
+    if (info > 0) then
+        if (present(flag)) flag = LA_SINGULAR_MATRIX_ERROR
+    end if
+end subroutine
 
 ! ******************************************************************************
 ! PROCEDURAL INTERFACE

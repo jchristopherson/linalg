@@ -309,11 +309,11 @@ subroutine luf_get_factored_matrices(this, l, u, p, flag)
     !! matrix \(P\), where \(P A = L U\), and \(A\) is M-by-N.
     class(lu_factorization), intent(inout) :: this
         !! The [[lu_factorization]] object.
-    real(real64), intent(out), optional, allocatable, dimension(:,:) :: l
+    real(real64), intent(out), allocatable, dimension(:,:) :: l
         !! The M-by-M \(L\) matrix.
-    real(real64), intent(out), optional, allocatable, dimension(:,:) :: u
+    real(real64), intent(out), allocatable, dimension(:,:) :: u
         !! The M-by-N \(U\) matrix.
-    real(real64), intent(out), optional, allocatable, dimension(:,:) :: p
+    real(real64), intent(out), allocatable, dimension(:,:) :: p
         !! The M-by-M \(P\) matrix.
     integer, intent(out), optional :: flag
         !! An error flag.
@@ -343,33 +343,23 @@ subroutine luf_get_factored_matrices(this, l, u, p, flag)
     end if
 
     ! Form L
-    if (present(l)) then
-        allocate(l(m, m))
-        do j = 1, m
-            if (j > 1) l(1:j-1,j) = 0.0d0
-            l(j,j) = 1.0d0
-            l(j+1:,j) = this%a(j+1:,j)
-        end do
-    end if
+    allocate(l(m, m), u(m, n), p(m, m), source = 0.0d0)
+    do j = 1, m
+        l(j,j) = 1.0d0
+        l(j+1:,j) = this%a(j+1:,j)
+    end do
 
     ! Form U
-    if (present(u)) then
-        allocate(u(m, n))
-        do j = 1, n
-            u(1:j,j) = this%a(1:j,j)
-            u(j+1:,j) = 0.0d0
-        end do
-    end if
+    do j = 1, n
+        u(1:j,j) = this%a(1:j,j)
+    end do
 
     ! Form P
-    if (present(p)) then
-        allocate(p(m, m), source = 0.0d0)
-        call DLASET('A', mn, mn, 0.0d0, 1.0d0, p, m)
-        do j = 1, mn
-            jp = this%pivot(j)
-            if (j /= jp) call swap(p(j,1:mn), p(jp,1:mn))
-        end do
-    end if
+    call DLASET('A', mn, mn, 0.0d0, 1.0d0, p, m)
+    do j = 1, mn
+        jp = this%pivot(j)
+        if (j /= jp) call swap(p(j,1:mn), p(jp,1:mn))
+    end do
 end subroutine
 
 ! ------------------------------------------------------------------------------

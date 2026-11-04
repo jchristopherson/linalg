@@ -17,6 +17,8 @@ module linalg_cholesky
     public :: solve_cholesky
 
     type, extends(matrix_factorization) :: cholesky_factorization
+        !! A container for Cholesky factorization of a matrix and associated
+        !! operations.
         real(real64), private, allocatable, dimension(:,:) :: a
         logical, private :: factored = .false.
         logical, private :: upper = .true.
@@ -32,9 +34,13 @@ module linalg_cholesky
         procedure, public :: solve_single_rhs => cf_solve_single_rhs
             !! Solves the factored system with a single right-hand-side vector.
         procedure, public :: solve_multiple_rhs_in_place => cf_solve_multiple_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors.
         procedure, public :: solve_single_rhs_in_place => cf_solve_single_rhs_in_place
+            !! Solves the factored system with a single right-hand-side vector.
         procedure, public :: is_upper => cf_is_upper
             !! Gets the type of Cholesky factorization.
+        procedure, public :: get_factored_form => cf_get_factored_matrix
+            !! Gets the factored matrix.
     end type
 
     interface cholesky_factorization
@@ -326,16 +332,47 @@ pure function cf_is_upper(this) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+subroutine cf_get_factored_matrix(this, r, flag)
+    !! Returns the factored matrix, either upper or lower.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(out), allocatable, dimension(:,:) :: r
+        !! The factored matrix.
+    integer, intent(out), optional :: flag
+        !! An error flag.
 
-! ------------------------------------------------------------------------------
+    ! Local Variables
+    integer :: j, n, info
 
-! ------------------------------------------------------------------------------
+    ! Validation
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
 
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
-
-! ------------------------------------------------------------------------------
+    ! Process
+    allocate(r(n, n))
+    if (this%is_upper()) then
+        do j = 1, n
+            r(1:j,j) = this%a(1:j,j)
+            r(j+1:,j) = 0.0d0
+        end do
+    else
+        do j = 1, n
+            r(1:j-1,j) = 0.0d0
+            r(j:,j) = this%a(j:,j)
+        end do
+    end if
+end subroutine
 
 ! ******************************************************************************
 ! PROCEDURAL INTERFACE

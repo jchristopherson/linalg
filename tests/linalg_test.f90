@@ -452,6 +452,15 @@ program main
     rst = test_gmres_sparse_adapters()
     if (.not.rst) flag = 133
 
+    rst = test_svd_factorization_type()
+    if (.not.rst) flag = 134
+
+    rst = test_svd_factorization_skinny()
+    if (.not.rst) flag = 135
+
+    rst = test_svd_factorization_errors()
+    if (.not.rst) flag = 136
+
     ! End
     if (flag /= 0) stop flag
 end program

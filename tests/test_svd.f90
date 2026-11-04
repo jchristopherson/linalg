@@ -6,6 +6,9 @@ module test_svd_ops
     use, intrinsic :: iso_fortran_env, only : int32, real64
     use test_core
     use linalg
+    use linalg_errors, only : LA_NO_ERROR, LA_NOT_INITIALIZED_ERROR, &
+        LA_MATRIX_NOT_SQUARE_ERROR, LA_MATRIX_DIMENSION_ERROR, &
+        LA_SINGULAR_MATRIX_ERROR
     use fortran_test_helper
     implicit none
 contains
@@ -195,6 +198,233 @@ contains
         if (.not.assert(a, a1, tol = REAL64_TOL)) then
             rst = .false.
             print '(A)', "Test Failed: Complex-Valued Underdetermined Singular Value Decomposition, Test 1"
+        end if
+    end function
+
+! ******************************************************************************
+! SVD FACTORIZATION TYPE TESTS
+! ------------------------------------------------------------------------------
+    function test_svd_factorization_type() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 6
+        integer(int32), parameter :: nrhs = 3
+
+        ! Local Variables
+        real(real64), dimension(n, n) :: a, t
+        real(real64), dimension(n, nrhs) :: x_expected, b_multiple, b_copy
+        real(real64), dimension(n) :: b_single, b_single_copy
+        real(real64), allocatable, dimension(:,:) :: u, vt, x_multiple
+        real(real64), allocatable, dimension(:) :: s, x_single
+        type(svd_factorization) :: fac, fac_form, fac_single, fac_multiple
+        type(svd_factorization) :: fac_inplace
+        integer(int32) :: i, flag
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(x_expected)
+        b_multiple = matmul(a, x_expected)
+        b_single = matmul(a, x_expected(:,1))
+
+        ! Initialization status
+        fac = svd_factorization(a)
+        if (fac%size(1) /= n .or. fac%size(2) /= n .or. fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Initialization"
+        end if
+
+        ! Factored form: A = U * S * V**T
+        fac_form = svd_factorization(a)
+        call fac_form%get_factored_form(u, s, vt, flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac_form%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Factored Form Status"
+        else
+            t = u
+            do i = 1, n
+                t(:,i) = t(:,i) * s(i)
+            end do
+            if (.not.assert(a, matmul(t, vt), tol = REAL64_TOL)) then
+                rst = .false.
+                print '(A)', "Test Failed: SVD Factorization Type Factored Form"
+            end if
+            if (.not.all(s(1:n-1) >= s(2:n))) then
+                rst = .false.
+                print '(A)', "Test Failed: SVD Factorization Type Singular Value Order"
+            end if
+        end if
+
+        ! Single right-hand-side solve (allocating)
+        fac_single = svd_factorization(a)
+        x_single = fac_single%solve(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac_single%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Single RHS Status"
+        else if (.not.assert(x_single, x_expected(:,1), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Single RHS"
+        end if
+
+        ! Multiple right-hand-side solve (allocating)
+        fac_multiple = svd_factorization(a)
+        x_multiple = fac_multiple%solve(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac_multiple%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Multiple RHS Status"
+        else if (.not.assert(x_multiple, x_expected, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Multiple RHS"
+        end if
+
+        ! Single right-hand-side solve (in-place, already factored)
+        b_single_copy = b_single
+        call fac_single%solve_in_place(b_single_copy, flag)
+        if (flag /= LA_NO_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type In-Place Single RHS Status"
+        else if (.not.assert(b_single_copy, x_expected(:,1), tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type In-Place Single RHS"
+        end if
+
+        ! Multiple right-hand-side solve (in-place, automatically factored)
+        fac_inplace = svd_factorization(a)
+        b_copy = b_multiple
+        call fac_inplace%solve_in_place(b_copy, flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac_inplace%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type In-Place Multiple RHS Status"
+        else if (.not.assert(b_copy, x_expected, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type In-Place Multiple RHS"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_svd_factorization_skinny() result(rst)
+        ! Parameters
+        integer(int32), parameter :: m = 8
+        integer(int32), parameter :: n = 5
+
+        ! Local Variables
+        real(real64), dimension(m, n) :: a
+        real(real64), dimension(m) :: b
+        real(real64), allocatable, dimension(:,:) :: u, vt, t
+        real(real64), allocatable, dimension(:) :: s, x
+        type(svd_factorization) :: fac_skinny, fac_full
+        integer(int32) :: i, flag
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        b = 1.0d0
+
+        ! Skinny U and V: A = U * S * V**T with U(M,N) and V**T(N,N)
+        fac_skinny = svd_factorization(a, skinny_u = .true., skinny_v = .true.)
+        call fac_skinny%get_factored_form(u, s, vt, flag)
+        if (flag /= LA_NO_ERROR .or. any(shape(u) /= [m, n]) .or. &
+            size(s) /= n .or. any(shape(vt) /= [n, n])) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Skinny Shapes"
+        else
+            t = u
+            do i = 1, n
+                t(:,i) = t(:,i) * s(i)
+            end do
+            if (.not.assert(a, matmul(t, vt), tol = REAL64_TOL)) then
+                rst = .false.
+                print '(A)', "Test Failed: SVD Factorization Type Skinny Reconstruction"
+            end if
+        end if
+
+        ! Full U and V: A = U(:,1:N) * S * V**T
+        fac_full = svd_factorization(a)
+        call fac_full%get_factored_form(u, s, vt, flag)
+        if (flag /= LA_NO_ERROR .or. any(shape(u) /= [m, m]) .or. &
+            any(shape(vt) /= [n, n])) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Full Shapes"
+        else
+            t = u(:,1:n)
+            do i = 1, n
+                t(:,i) = t(:,i) * s(i)
+            end do
+            if (.not.assert(a, matmul(t, vt), tol = REAL64_TOL)) then
+                rst = .false.
+                print '(A)', "Test Failed: SVD Factorization Type Full Reconstruction"
+            end if
+        end if
+
+        ! Rectangular systems cannot be solved
+        x = fac_full%solve(b, flag)
+        if (flag /= LA_MATRIX_NOT_SQUARE_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Skinny Solve Status"
+        end if
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_svd_factorization_errors() result(rst)
+        ! Parameters
+        integer(int32), parameter :: n = 4
+
+        ! Local Variables
+        real(real64), dimension(n, n) :: a, a_singular
+        real(real64), dimension(n) :: b
+        real(real64), dimension(n - 1) :: b_bad
+        real(real64), allocatable, dimension(:) :: x
+        type(svd_factorization) :: empty, fac, fac_singular
+        integer(int32) :: flag
+        logical :: rst
+
+        ! Initialization
+        rst = .true.
+        call create_random_array(a)
+        call create_random_array(b)
+        b_bad = 1.0d0
+
+        ! Uninitialized object
+        call empty%factor(flag)
+        if (flag /= LA_NOT_INITIALIZED_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Uninitialized Factor"
+        end if
+        x = empty%solve(b, flag)
+        if (flag /= LA_NOT_INITIALIZED_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Uninitialized Solve"
+        end if
+
+        ! Dimension mismatch
+        fac = svd_factorization(a)
+        x = fac%solve(b_bad, flag)
+        if (flag /= LA_MATRIX_DIMENSION_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Dimension Mismatch"
+        end if
+
+        ! Singular matrix (zero column)
+        a_singular = a
+        a_singular(:,2) = 0.0d0
+        fac_singular = svd_factorization(a_singular)
+        x = fac_singular%solve(b, flag)
+        if (flag /= LA_SINGULAR_MATRIX_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Singular Matrix"
+        end if
+
+        ! Updating the object destroys the existing factorization
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Update Pre-Factor"
+        end if
+        call fac%update(a)
+        if (fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Update"
         end if
     end function
 

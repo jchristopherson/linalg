@@ -6,7 +6,7 @@ module linalg_sparse
     use sparskit
     use blas
     use linalg_errors
-    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan, ieee_is_finite
     implicit none
     private
     public :: csr_matrix
@@ -33,6 +33,9 @@ module linalg_sparse
     public :: transpose
     public :: sparse_direct_solve
     public :: pgmres_solver
+    public :: pgmres_solve
+    public :: validate_csr_storage
+    public :: validate_msr_lu
 
 type :: csr_matrix
     !! A sparse matrix stored in compressed sparse row (CSR) format.
@@ -121,6 +124,11 @@ end interface
 
 interface pgmres_solver
     module procedure :: csr_pgmres_solver
+end interface
+
+interface pgmres_solve
+    !! Solves a CSR system with optional nonterminating status reporting.
+    module procedure :: csr_pgmres_solve
 end interface
 contains
 ! ******************************************************************************
@@ -749,23 +757,119 @@ pure function csr_extract_diagonal(a) result(diag)
 end function
 
 ! ------------------------------------------------------------------------------
-pure function csr_solve_sparse_direct(a, b, droptol) result(x)
-    !! Solves a linear system using a direct method.  In the event of a
-    !! singular matrix, the solution is populated with NaN's.
+pure function validate_csr_storage(a) result(flag)
+    !! Validates nonempty finite CSR storage before raw-array solver calls.
+    !! Rectangular matrices and zero rows are accepted by this storage check;
+    !! individual solvers impose their own square-system requirements.
     class(csr_matrix), intent(in) :: a
-        !! The matrix.
+        !! Matrix to inspect without modification. Rows may be unsorted, but
+        !! column indices within each row must be unique and in range.
+    integer(int32) :: flag
+        !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
+        !! LA_INVALID_INPUT_ERROR for empty dimensions or nonfinite values;
+        !! LA_MATRIX_FORMAT_ERROR for inconsistent lengths, pointers, or columns.
+    integer :: rows, columns, stored, row, entry
+    integer, allocatable :: seen(:)
+
+    flag = LA_NOT_INITIALIZED_ERROR
+    if (.not.allocated(a%row_indices) .or. &
+        .not.allocated(a%column_indices) .or. .not.allocated(a%values)) return
+    rows = size(a, 1)
+    columns = size(a, 2)
+    flag = LA_INVALID_INPUT_ERROR
+    if (rows < 1 .or. columns < 1) return
+    if (.not.all(ieee_is_finite(a%values))) return
+    stored = size(a%values)
+    flag = LA_MATRIX_FORMAT_ERROR
+    if (size(a%column_indices) /= stored) return
+    if (a%row_indices(1) /= 1 .or. a%row_indices(rows+1) /= stored+1) return
+    if (any(a%row_indices < 1) .or. any(a%row_indices > stored+1)) return
+    if (any(a%row_indices(2:) < a%row_indices(:rows))) return
+    if (any(a%column_indices < 1) .or. any(a%column_indices > columns)) return
+    allocate(seen(columns), source = 0)
+    do row = 1, rows
+        do entry = a%row_indices(row), a%row_indices(row+1)-1
+            if (seen(a%column_indices(entry)) == row) return
+            seen(a%column_indices(entry)) = row
+        end do
+    end do
+    flag = LA_NO_ERROR
+end function
+
+pure function validate_msr_lu(lu, ju) result(flag)
+    !! Validates the combined MSR triangular factors consumed by LUSOL.
+    !! The diagonal contains inverse U pivots, not the original U diagonal.
+    !! The unused value at N+1 and unused trailing capacity are not inspected.
+    class(msr_matrix), intent(in) :: lu
+        !! Nonempty square factors with row pointers in INDICES(1:N+1),
+        !! followed by lower entries and then upper entries within each row.
+    integer(int32), intent(in) :: ju(:)
+        !! N pointers splitting each row into its strict lower and upper parts.
+    integer(int32) :: flag
+        !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
+        !! LA_MATRIX_NOT_SQUARE_ERROR or LA_MATRIX_DIMENSION_ERROR for sizes;
+        !! LA_INVALID_INPUT_ERROR for empty factors; LA_MATRIX_FORMAT_ERROR
+        !! for invalid pointers or nontriangular columns; or
+        !! LA_SINGULAR_MATRIX_ERROR for zero inverse pivots/nonfinite factors.
+    integer :: order, stored, row, first, split, last
+
+    flag = LA_MATRIX_NOT_SQUARE_ERROR
+    order = size(lu, 1)
+    if (size(lu, 2) /= order) return
+    flag = LA_MATRIX_DIMENSION_ERROR
+    if (size(ju) /= order) return
+    flag = LA_NOT_INITIALIZED_ERROR
+    if (.not.allocated(lu%values) .or. .not.allocated(lu%indices)) return
+    flag = LA_INVALID_INPUT_ERROR
+    if (order < 1) return
+    stored = size(lu%values)
+    flag = LA_MATRIX_FORMAT_ERROR
+    if (size(lu%indices) /= stored .or. stored < order+1) return
+    if (lu%indices(1) /= order+2) return
+    if (any(lu%indices(:order+1) < order+2) .or. &
+        any(lu%indices(:order+1) > stored+1)) return
+    if (any(lu%indices(2:order+1) < lu%indices(:order))) return
+    do row = 1, order
+        first = lu%indices(row)
+        split = ju(row)
+        last = lu%indices(row+1) - 1
+        if (split < first .or. split > last+1) return
+        if (any(lu%indices(first:split-1) < 1) .or. &
+            any(lu%indices(first:split-1) >= row)) return
+        if (any(lu%indices(split:last) <= row) .or. &
+            any(lu%indices(split:last) > order)) return
+    end do
+    flag = LA_SINGULAR_MATRIX_ERROR
+    if (any(lu%values(:order) == 0.0d0)) return
+    if (.not.all(ieee_is_finite(lu%values(:order)))) return
+    if (.not.all(ieee_is_finite(lu%values(order+2:lu%indices(order+1)-1)))) return
+    flag = LA_NO_ERROR
+end function
+
+pure function csr_solve_sparse_direct(a, b, droptol) result(x)
+    !! Legacy convenience entry point for solving the original CSR system.
+    !! ILUT builds a preconditioner and GMRES refines the full-system solution;
+    !! despite the historical name, this is not a pivoted sparse direct solver.
+    !! Detected ILUT breakdown yields NaNs; nonconvergence uses ERROR STOP.
+    class(csr_matrix), intent(in) :: a
+        !! Nonempty N-by-N real coefficient matrix in valid CSR format.
     real(real64), intent(in), dimension(:) :: b
-        !! The right-hand side.
+        !! N-element right-hand side, not modified.
     real(real64), intent(in), optional :: droptol
-        !! The drop tolerance for the ILUT factorization.
+        !! Finite nonnegative ILUT drop threshold; default SQRT(EPSILON).
+        !! Controls the preconditioner, not final accuracy. GMRES uses its
+        !! default relative residual tolerance SQRT(EPSILON), restart length
+        !! MIN(N,50), and iteration budget 100. Use PGMRES_SOLVE for controls.
     real(real64), allocatable, dimension(:) :: x
-        !! The solution.
+        !! N-element solution of A * X = B to the GMRES residual tolerance.
+        !! Inputs are preserved; an explicitly detected breakdown yields NaNs.
 
     ! Local Variables
     integer(int32) :: i, m, n, nnz, lfil, iwk, ierr
     integer(int32), allocatable, dimension(:) :: jlu, ju, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt, nan
+    type(msr_matrix) :: factors
     
     ! Initialization
     if (present(droptol)) then
@@ -785,13 +889,25 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
     if (size(b) /= n) then
         error stop 2
     end if
+    ierr = validate_csr_storage(a)
+    if (ierr /= LA_NO_ERROR) error stop ierr
+    if (.not.ieee_is_finite(dt)) error stop LA_INVALID_INPUT_ERROR
+    if (dt < 0.0d0 .or. .not.all(ieee_is_finite(b))) &
+        error stop LA_INVALID_INPUT_ERROR
+    do i = 1, n
+        if (all(a%values(a%row_indices(i):a%row_indices(i+1)-1) == 0.0d0)) then
+            nan = ieee_value(0.0d0, ieee_quiet_nan)
+            x = nan
+            return
+        end if
+    end do
 
     ! Parameter Determination
     lfil = 1
     do i = 1, m
         lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))
     end do
-    iwk = max(lfil * m, nnz)  ! somewhat arbitrary - can be adjusted
+    iwk = max(n + 1, lfil * m + 1, nnz)
 
     ! Local Memory Allocation
     allocate(alu(iwk), w(n+1), jlu(iwk), ju(n), jw(2 * n))
@@ -816,7 +932,7 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
             error stop LA_MATRIX_FORMAT_ERROR
         else if (ierr == -2 .or. ierr == -3) then
             ! ALU and JLU are too small - try something larger
-            iwk = min(iwk + m + n, m * n)
+            iwk = iwk + max(m + n, iwk / 2)
             deallocate(alu)
             deallocate(jlu)
             allocate(alu(iwk), jlu(iwk))
@@ -825,15 +941,22 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
             lfil = n
         else if (ierr == -5) then
             ! Zero row encountered
-            error stop LA_MATRIX_FORMAT_ERROR
+            x = ieee_value(0.0d0, ieee_quiet_nan)
+            return
         else
             ! We should never get here, but just in case
             error stop LA_INVALID_OPERATION_ERROR
         end if
     end do
 
-    ! Solution
-    call lusol(n, b, x, alu, jlu, ju)
+    ! Incomplete factors precondition, rather than replace, the original system.
+    factors%m = n
+    factors%n = n
+    factors%nnz = jlu(n+1) - 1
+    factors%values = alu(:factors%nnz)
+    factors%indices = jlu(:factors%nnz)
+    factors%values(n+1) = 0.0d0
+    x = csr_pgmres_solver(a, factors, ju, b)
 end function
 
 ! ******************************************************************************
@@ -1111,25 +1234,68 @@ end function
 ! Additional References:
 ! - https://www.diva-portal.org/smash/get/diva2:360739/FULLTEXT01.pdf
 pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
-    !! Solves a linear system using the PGMRES method.
+    !! Function form of [[pgmres_solve]], retaining the existing pure API.
+    !! Invalid inputs and failure of the true-residual test use ERROR STOP.
     class(csr_matrix), intent(in) :: a
-        !! The matrix.
+        !! Nonempty N-by-N coefficient matrix in valid CSR format.
     class(msr_matrix), intent(in) :: lu
-        !! The LU factored matrix.
-    integer(int32), intent(in), dimension(:) :: ju
-        !! The row tracking array.
-    real(real64), intent(in), dimension(:) :: b
-        !! The right-hand side.
+        !! Prepared N-by-N ILUT preconditioner in MSR format.
+    integer(int32), intent(in) :: ju(:)
+        !! N pointers to upper-factor rows in LU.
+    real(real64), intent(in) :: b(:)
+        !! N-element right-hand side, not modified.
     integer(int32), intent(in), optional :: im
-        !! The Krylov subspace size.
-    integer(int32), intent(in), optional :: maxits
-        !! The maximum number of iterations.
-    integer(int32), intent(in), optional :: iout
-        !! The output level.
+        !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50).
     real(real64), intent(in), optional :: tol
-        !! The convergence tolerance.
-    real(real64), allocatable, dimension(:) :: x
-        !! The solution.
+        !! Finite relative residual tolerance at least EPSILON; default
+        !! SQRT(EPSILON). Success requires NORM2(B-A*X) <= TOL*NORM2(B).
+    integer(int32), intent(in), optional :: maxits
+        !! Positive iteration budget, checked at restart boundaries; default 100.
+    integer(int32), intent(in), optional :: iout
+        !! Output unit for iteration logs; nonpositive suppresses logs, default 0.
+    real(real64), allocatable :: x(:)
+        !! Computed N-element solution of the original system A * X = B.
+
+    call csr_pgmres_solve(a, lu, ju, b, x, im, tol, maxits, iout)
+end function
+
+pure subroutine csr_pgmres_solve(a, lu, ju, b, x, im, tol, maxits, iout, flag)
+    !! Solves A * X = B using right-preconditioned restarted GMRES, starting
+    !! from zero. The incomplete factors are only a preconditioner; convergence
+    !! is checked using the true residual of the original CSR system.
+    class(csr_matrix), intent(in) :: a
+        !! The nonempty N-by-N coefficient matrix in valid CSR format.
+    class(msr_matrix), intent(in) :: lu
+        !! Prepared N-by-N ILUT factors in MSR format, not modified.
+    integer(int32), intent(in), dimension(:) :: ju
+        !! N pointers to the starts of the upper-factor rows in LU.
+    real(real64), intent(in), dimension(:) :: b
+        !! N-element right-hand side, not modified. A zero vector yields zero.
+    integer(int32), intent(in), optional :: im
+        !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50). The upper
+        !! bound is imposed by the bundled SPARSKIT implementation.
+    integer(int32), intent(in), optional :: maxits
+        !! Positive iteration budget, default 100. SPARSKIT checks this budget
+        !! at restart boundaries and may exceed it by up to IM-1 iterations.
+    integer(int32), intent(in), optional :: iout
+        !! Fortran output unit for iteration information. Nonpositive values
+        !! suppress output; default zero.
+    real(real64), intent(in), optional :: tol
+        !! Finite relative residual tolerance, at least machine epsilon;
+        !! default SQRT(EPSILON). Success requires NORM2(B-A*X) <= TOL*NORM2(B).
+    integer(int32), intent(out), optional :: flag
+        !! LA_NO_ERROR on success; LA_CONVERGENCE_ERROR if iteration or the
+        !! true-residual check fails. Invalid dimensions return
+        !! LA_MATRIX_DIMENSION_ERROR or LA_MATRIX_NOT_SQUARE_ERROR; invalid
+        !! controls or nonfinite CSR values/B return LA_INVALID_INPUT_ERROR.
+        !! Missing storage returns LA_NOT_INITIALIZED_ERROR; malformed CSR or
+        !! MSR pointers/columns return LA_MATRIX_FORMAT_ERROR; singular or
+        !! nonfinite factors return LA_SINGULAR_MATRIX_ERROR. If omitted,
+        !! errors terminate with ERROR STOP, preserving the existing API.
+    real(real64), intent(out), allocatable, dimension(:) :: x
+        !! N-element solution on success, or final iterate on nonconvergence.
+        !! Unallocated on input errors. Call-local workspace leaves A and LU
+        !! unchanged; this does not assert reentrancy of external routines.
 
     ! Local Variables
     integer(int32) :: n, ierr, io, mit, krylov
@@ -1138,6 +1304,7 @@ pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
     real(real64), allocatable, dimension(:,:) :: vv
     
     ! Initialization
+    if (present(flag)) flag = LA_NO_ERROR
     n = size(a, 1)
     if (present(im)) then
         krylov = im
@@ -1161,37 +1328,50 @@ pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
     end if
 
     ! Input Checking
+    ierr = LA_NO_ERROR
     if (size(a, 2) /= n) then
-        error stop 1
+        ierr = LA_MATRIX_NOT_SQUARE_ERROR
+    else if (size(lu, 1) /= n .or. size(lu, 2) /= n .or. &
+        size(b) /= n .or. size(ju) /= n) then
+        ierr = LA_MATRIX_DIMENSION_ERROR
+    else if (n < 1 .or. .not.ieee_is_finite(eps)) then
+        ierr = LA_INVALID_INPUT_ERROR
+    else if (eps < epsilon(eps) .or. mit < 1 .or. &
+        krylov < 1 .or. krylov > min(n, 50)) then
+        ierr = LA_INVALID_INPUT_ERROR
+    else if (.not.all(ieee_is_finite(b))) then
+        ierr = LA_INVALID_INPUT_ERROR
     end if
-    if (size(lu, 1) /= n .or. size(lu, 2) /= n) then
-        error stop 2
-    end if
-    if (size(b) /= n) then
-        error stop 3
-    end if
-    if (eps < epsilon(eps)) then
-        error stop 6
-    end if
-    if (mit < 1) then
-        error stop 7
-    end if
-    if (krylov < 1) then
-        error stop 5
+    if (ierr == LA_NO_ERROR) ierr = validate_csr_storage(a)
+    if (ierr == LA_NO_ERROR) ierr = validate_msr_lu(lu, ju)
+    if (ierr /= LA_NO_ERROR) then
+        if (present(flag)) then
+            flag = ierr
+            return
+        end if
+        error stop ierr
     end if
 
     ! Memory Allocation
+    allocate(x(n), source = 0.0d0)
+    if (all(b == 0.0d0)) return
     allocate(vv(n,krylov+1))
 
     ! Process
     allocate(bc(n), source = b)
-    allocate(x(n), source = 0.0d0)
     call pgmres(n, krylov, bc, x, vv, eps, mit, io, a%values, a%column_indices, &
         a%row_indices, lu%values, lu%indices, ju, ierr)
-    if (ierr == 1) then
+    bc = b - matmul(a, x)
+    if ((ierr /= 0 .and. ierr /= -1) .or. &
+        .not.all(ieee_is_finite(x)) .or. .not.all(ieee_is_finite(bc)) .or. &
+        norm2(bc) > eps * norm2(b)) then
+        if (present(flag)) then
+            flag = LA_CONVERGENCE_ERROR
+            return
+        end if
         error stop LA_CONVERGENCE_ERROR
     end if
-end function
+end subroutine
 
 ! ------------------------------------------------------------------------------
 end module

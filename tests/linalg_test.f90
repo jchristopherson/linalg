@@ -19,9 +19,15 @@ program main
     ! Local Variables
     logical :: rst
     integer(int32) :: flag
+    character(len = 64) :: validation_case
 
     ! Initialization
     flag = 0
+    if (command_argument_count() > 0) then
+        call get_command_argument(1, validation_case)
+        call run_csr_solver_error_case(trim(validation_case))
+        stop 0
+    end if
 
     ! Misc. Item Tests
     rst = test_diagonal_mtx_mult()
@@ -430,6 +436,15 @@ program main
 
     rst = test_operator_eigen()
     if (.not.rst) flag = 128
+
+    rst = test_sparse_lu_factorization_type()
+    if (.not.rst) flag = 129
+
+    rst = test_csr_sparse_direct_complete()
+    if (.not.rst) flag = 130
+
+    rst = test_csr_solver_validation()
+    if (.not.rst) flag = 131
 
     ! End
     if (flag /= 0) stop flag

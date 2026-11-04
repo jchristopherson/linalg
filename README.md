@@ -40,15 +40,14 @@ This example solves a normally defined system of 3 equations of 3 unknowns.
 
 ```fortran
 program example
-    use iso_fortran_env
+    use iso_fortran_env, only : real64, int32
     use linalg
     implicit none
 
     ! Local Variables
     real(real64) :: a(3,3), b(3), x(3)
-    real(real64), allocatable :: lu(:,:)
     integer(int32) :: i
-    integer(int32), allocatable :: pvt(:)
+    type(lu_factorization) :: lu
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -57,7 +56,7 @@ program example
     a = reshape( &
         [1.0d0, 4.0d0, 7.0d0, 2.0d0, 5.0d0, 8.0d0, 3.0d0, 6.0d0, 0.0d0], &
         [3, 3])
-
+    
     ! Build the right-hand-side vector B.
     !     | -1 |
     ! b = | -2 |
@@ -69,11 +68,10 @@ program example
     ! x = | -2/3 |
     !     |   0  |
 
-    ! Compute the LU factorization.  The factored matrix is stored in LU as [L\\U]
-    call lu_factor(a, ipvt = pvt, lu = lu)
-
-    ! Compute the solution.
-    x = solve_lu(lu, pvt, b)
+    ! Compute the LU factorization and solve
+    lu = lu_factorization(a)
+    call lu%factor()
+    x = lu%solve(b)
 
     ! Display the results.
     print '(A)', "LU Solution: X = "
@@ -87,6 +85,108 @@ LU Solution: X =
  -0.6667
   0.0000
 ```
+
+## Sparse System Solver
+`sparse_lu_factorization` mirrors the dense type's construction, `update`,
+`factor`, `solve`, and `solve_in_place` workflow. It owns a copy of the original
+CSR matrix and prepares incomplete LU factors as a preconditioner. Its solve
+methods then use restarted GMRES to solve the **original system**, not just the
+incomplete triangular factors. This is an iterative solve to a requested
+tolerance, not a pivoted sparse direct LU factorization.
+
+```fortran
+program sparse_solution_example
+    use iso_fortran_env, only : real64
+    use linalg
+    use linalg_errors, only : LA_NO_ERROR
+    implicit none
+
+    real(real64) :: coefficients(3,3), rhs(3)
+    real(real64), allocatable :: solution(:)
+    type(csr_matrix) :: sparse_matrix
+    type(sparse_lu_factorization) :: factorization
+    integer :: status
+
+    coefficients = reshape([4.0d0, -1.0d0, 0.0d0, &
+        -1.0d0, 4.0d0, -1.0d0, 0.0d0, -1.0d0, 4.0d0], [3,3])
+    rhs = [2.0d0, 4.0d0, 10.0d0]
+    sparse_matrix = dense_to_csr(coefficients)
+    factorization = sparse_lu_factorization(sparse_matrix, tol = 1.0d-10)
+
+    call factorization%factor(status)
+    if (status /= LA_NO_ERROR) error stop status
+    solution = factorization%solve(rhs, status)
+    if (status /= LA_NO_ERROR) error stop status
+    print '(3F12.6)', solution
+end program
+```
+
+The solution is `[1, 2, 3]`. Dense-to-CSR conversion is used only to keep this
+small example readable; the constructor accepts an existing CSR matrix without
+forming a dense copy.
+
+The constructor and `update` accept the same optional controls:
+
+| Argument | Meaning |
+| --- | --- |
+| `a` | Required real CSR coefficient matrix. Factorization requires nonempty square storage with unique column indices within each row. The caller's matrix is copied, never modified. |
+| `droptol` | Finite nonnegative ILUT drop threshold, default `sqrt(epsilon(0.0d0))`. Controls preconditioner quality, not solution accuracy. ILUT also limits per-row fill; zero threshold does not guarantee exact factors. |
+| `tol` | Finite relative residual tolerance at least machine epsilon, default `sqrt(epsilon(0.0d0))`. Success requires `norm2(b - matmul(a, x)) <= tol * norm2(b)` for each RHS. A zero RHS returns zero. |
+| `maxits` | Positive GMRES iteration budget, default 100. The bundled solver checks the budget at restart boundaries and may perform up to `im-1` additional iterations. |
+| `im` | Restart length from 1 through `min(N, 50)`, default `min(N, 50)`. The bundled GMRES implementation has a hard maximum of 50. |
+
+Construction and `update` only store the matrix and controls; validation occurs
+in `factor` or the first solve. `update` discards cached factors and resets
+omitted controls to their defaults. `is_factored()` queries preconditioner
+readiness, and `size(dim)` returns matrix dimensions, or zero before initialization.
+
+`solve(b, flag)` allocates a vector or matrix with the same shape as `b`;
+`solve_in_place(b, flag)` replaces caller-owned RHS storage. Both prepare factors
+lazily and solve each RHS column independently. If any column fails, the whole
+result remains an unchanged copy of the RHS. The optional `flag` receives
+`LA_NO_ERROR` on success or an initialization, shape, CSR-format, control,
+factorization, or convergence error. Omitting it makes errors use `error stop`.
+
+`get_factored_form(lu, ju, flag)` returns owned copies of the incomplete MSR
+factors and upper-row pointers. These are preconditioner data, not exact factors
+of the original matrix. Determinant and inverse methods are intentionally absent.
+
+The legacy `sparse_direct_solve(a, b, droptol)` name is retained for compatibility,
+but it now refines the ILUT-preconditioned solution using GMRES against the
+original matrix. It is not a true sparse direct solver. It uses GMRES's default
+controls; use `pgmres_solve` or `sparse_lu_factorization` to configure convergence.
+By contrast, `solve_lu(lu, ju, b)` only applies the supplied triangular factors.
+
+`validate_csr_storage(a)` and `validate_msr_lu(lu, ju)` return library status
+codes for malformed storage before raw SPARSKIT calls. GMRES validates both
+formats, dimensions, finite inputs, and the 50-vector restart limit. Factor
+application validates MSR row boundaries, upper-row splits, and triangular
+column references; nonfinite or zero inverse pivots propagate as NaN results.
+The unused MSR separator value does not affect validation or solution.
+
+### Matrix-Free Integration
+SPARSKIT's reverse-communication Krylov routines can request `A*x` from a
+`linear_operator%apply` callback and preconditioner actions from another
+operator representing `M**(-1)`. This supports a matrix-free original operator
+with an assembled CSR approximation used only to build a preconditioner.
+The current `pgmres_solver` function and status-returning `pgmres_solve`
+subroutine are CSR-specific; accepting arbitrary operators requires a separate
+reverse-communication driver, not a change to the CSR storage type.
+
+For prepared full-system solves, `solve_prepared(b, x, flag)` takes the
+factorization object as `intent(in)` and writes into caller-owned `x`. Call
+`factor` first: this binding never initializes or changes the object. Its input
+and output vectors must have N elements and must not overlap. On failure it
+zeros `x` and reports a status, or stops if `flag` is omitted. It is suitable
+for a `linear_solver` adapter used by ARPACK, with an inner tolerance chosen
+for the eigenproblem. An incomplete-factor application alone is not a suitable
+substitute for an accurate shift-invert solve.
+
+Mutable lazy-setup calls must not run concurrently on the same object. Prepared
+calls use local workspace and read-only coefficients and factors; concurrent
+use still depends on the reentrancy of linked SPARSKIT/BLAS routines. The
+`matrix_factorization` and `linear_solver` abstractions have different solve
+contracts, so an adapter is preferable to making one inherit from the other.
 
 ## Overdetermined System Example
 This example solves an overdetermined system of 3 equations of 2 uknowns.

@@ -5,15 +5,75 @@ module linalg_svd
     use iso_fortran_env, only : int32, real64
     use lapack
     use linalg_errors
+    use linalg_types
     implicit none
     private
+    ! public :: svd_factorization
     public :: svd
+
+    ! type, extends(matrix_factorization) :: svd_factorization
+    !     real(real64), private, allocatable, dimension(:,:) :: a
+    !         !! The M-by-N matrix to factor.  Once factored, this is a workspace
+    !         !! matrix as the original matrix is destroyed.
+    !     real(real64), private, allocatable, dimension(:) :: workspace
+    !         !! A workspace array large enough for any of the operations 
+    !         !! undertaken for this type.
+    !     real(real64), private, allocatable, dimension(:,:) :: u
+    !         !! The orthogonal matrix U.  If skinny_u is true, this is 
+    !         !! M-by-MIN(M,N); else, this is the full M-by-M orthogonal matrix
+    !         !! U.
+    !     real(real64), private, allocatable, dimension(:,:) :: vt
+    !         !! The transpose of the orthogonal matrix V.  If skinny_v is true,
+    !         !! this matrix is MIN(M,N)-by-N; else, this is the full N-by-N
+    !         !! transpose of the orthogonal matrix V.
+    !     real(real64), private, allocatable, dimension(:) :: s
+    !         !! The MIN(M,N) element array containing the singular values.
+    !     logical, private :: factored = .false.
+    !         !! True if the matrix is factored; else, false.
+    !     logical, private :: skinny_u = .false.
+    !         !! True if the skinny version of U should be computed; else, false
+    !         !! to compute the full U.
+    !     logical, private :: skinny_v = .false.
+    !         !! True if the skinny version of V should be computed; else, false
+    !         !! to compute the full V.
+    ! end type
+
+    ! interface svd_factorization
+    !     module procedure :: svd_init
+    ! end interface
 
     interface svd
         module procedure :: svd_dbl
         module procedure :: svd_cmplx
     end interface
 contains
+! ******************************************************************************
+! SVD_FACTORIZATION INTERFACE
+! ------------------------------------------------------------------------------
+! pure function svd_init(a, skinny_u, skinny_v, flag) result(rst)
+!     !! Initializes a new [[svd_factorization]] object.
+!     real(real64), intent(in), dimension(:,:) :: a
+!         !! The M-by-N matrix to factor.
+!     logical, intent(in), optional :: skinny_u
+!         !! True if the skinny version of \(U\) should be computed; else, false
+!         !! to compute the full \(U\).  The default is false such that the full
+!         !! matrix is computed.
+!     logical, intent(in), optional :: skinny_v
+!         !! True if the skinny version of \(V\) should be computed; else, false
+!         !! to compute the full \(V\).  The default is false such that the full
+!         !! matrix is computed.
+!     integer, intent(out), optional :: flag
+!         !! An error flag.
+!     type(svd_factorization) :: rst
+!         !! The new [[svd_factorization]] object.
+
+!     ! Local Variables
+! end function
+
+! ------------------------------------------------------------------------------
+
+! ******************************************************************************
+! PROCEDURAL INTERFACE
 ! ------------------------------------------------------------------------------
 pure subroutine svd_dbl(a, s, u, vt)
     !! Computes the singular value decomposition of an M-by-N matrix \(A\) such 

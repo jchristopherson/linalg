@@ -49,6 +49,8 @@ module linalg_lu
             !! Gets the determinant of the original matrix.
         procedure, public :: inverse => luf_inverse
             !! Computes the inverse of the matrix.
+        procedure, public :: update => luf_update
+            !! Updates the factorization.
     end type
 
     interface lu_factorization
@@ -79,7 +81,7 @@ contains
 ! ******************************************************************************
 ! LU_FACTORIZATION MEMBERS
 ! ------------------------------------------------------------------------------
-pure function luf_init(a) result(rst)
+function luf_init(a) result(rst)
     !! Initializes a new [[lu_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: a
         !! The matrix to factor.  A copy of this matrix is
@@ -88,16 +90,33 @@ pure function luf_init(a) result(rst)
     type(lu_factorization) :: rst
         !! The new [[lu_factorization]] object.
 
+    call rst%update(a)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine luf_update(this, a)
+    !! Updates the [[lu_factorization]] object with a new matrix.  The matrix
+    !! is only stored, not factored; therefore a call to factor is still 
+    !! required.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by
+        !! the object; therefore, this matrix is not altered.  Also, any
+        !! existing factorization is destroyed by this routine.
+
     integer :: m, n, mn
 
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
 
-    allocate(rst%a(m, n), source = a)
-    allocate(rst%pivot(mn))
-    rst%factored = .false.
-end function
+    if (allocated(this%a)) deallocate(this%a)
+    if (allocated(this%pivot)) deallocate(this%pivot)
+    allocate(this%a(m, n), source = a)
+    allocate(this%pivot(mn))
+    this%factored = .false.
+end subroutine
 
 ! ------------------------------------------------------------------------------
 pure function luf_is_factored(this) result(rst)

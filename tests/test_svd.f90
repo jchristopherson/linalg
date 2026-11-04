@@ -7,8 +7,7 @@ module test_svd_ops
     use test_core
     use linalg
     use linalg_errors, only : LA_NO_ERROR, LA_NOT_INITIALIZED_ERROR, &
-        LA_MATRIX_NOT_SQUARE_ERROR, LA_MATRIX_DIMENSION_ERROR, &
-        LA_SINGULAR_MATRIX_ERROR
+        LA_MATRIX_DIMENSION_ERROR
     use fortran_test_helper
     implicit none
 contains
@@ -223,6 +222,9 @@ contains
         ! Initialization
         rst = .true.
         call create_random_array(a)
+        do i = 1, n
+            a(i,i) = a(i,i) + real(n, real64)
+        end do
         call create_random_array(x_expected)
         b_multiple = matmul(a, x_expected)
         b_single = matmul(a, x_expected(:,1))
@@ -309,17 +311,20 @@ contains
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
-        real(real64), dimension(m) :: b
+        real(real64), dimension(m) :: b, b_inplace
+        real(real64), dimension(n) :: zero_n
+        real(real64), dimension(n, m) :: wide
+        real(real64), dimension(n) :: b_wide
         real(real64), allocatable, dimension(:,:) :: u, vt, t
-        real(real64), allocatable, dimension(:) :: s, x
-        type(svd_factorization) :: fac_skinny, fac_full
+        real(real64), allocatable, dimension(:) :: s, x, x_wide, x_ref
+        type(svd_factorization) :: fac_skinny, fac_full, fac_wide
         integer(int32) :: i, flag
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
-        b = 1.0d0
+        zero_n = 0.0d0
 
         ! Skinny U and V: A = U * S * V**T with U(M,N) and V**T(N,N)
         fac_skinny = svd_factorization(a, skinny_u = .true., skinny_v = .true.)
@@ -357,11 +362,48 @@ contains
             end if
         end if
 
-        ! Rectangular systems cannot be solved
+        ! Overdetermined least-squares solution: A**T * (A * X - B) = 0
+        call create_random_array(b)
         x = fac_full%solve(b, flag)
-        if (flag /= LA_MATRIX_NOT_SQUARE_ERROR) then
+        if (flag /= LA_NO_ERROR .or. size(x) /= n) then
             rst = .false.
             print '(A)', "Test Failed: SVD Factorization Type Skinny Solve Status"
+        else if (.not.assert(matmul(transpose(a), matmul(a, x) - b), &
+            zero_n, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Skinny Solve"
+        end if
+
+        ! In-place solve: B has MAX(M, N) rows; the solution is in the first N
+        b_inplace = 0.0d0
+        b_inplace(1:m) = b
+        call fac_full%solve_in_place(b_inplace, flag)
+        if (flag /= LA_NO_ERROR) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Skinny In-Place Status"
+        else if (.not.assert(b_inplace(1:n), x, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Skinny In-Place"
+        end if
+
+        ! Underdetermined (wide) system: minimum-norm solution X = V S^+ U**T B
+        wide = transpose(a)
+        b_wide = 1.0d0
+        fac_wide = svd_factorization(wide, skinny_u = .true., skinny_v = .true.)
+        x_wide = fac_wide%solve(b_wide, flag)
+        if (flag /= LA_NO_ERROR .or. size(x_wide) /= m) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Wide Solve Status"
+        else if (.not.assert(matmul(wide, x_wide), b_wide, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Wide Solve"
+        else
+            call fac_wide%get_factored_form(u, s, vt, flag)
+            x_ref = matmul(transpose(vt), matmul(transpose(u), b_wide) / s)
+            if (.not.assert(x_wide, x_ref, tol = REAL64_TOL)) then
+                rst = .false.
+                print '(A)', "Test Failed: SVD Factorization Type Wide Minimum Norm"
+            end if
         end if
     end function
 
@@ -372,18 +414,22 @@ contains
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a_singular
-        real(real64), dimension(n) :: b
+        real(real64), dimension(n) :: b, zero_n
         real(real64), dimension(n - 1) :: b_bad
         real(real64), allocatable, dimension(:) :: x
         type(svd_factorization) :: empty, fac, fac_singular
-        integer(int32) :: flag
+        integer(int32) :: flag, i
         logical :: rst
 
         ! Initialization
         rst = .true.
         call create_random_array(a)
+        do i = 1, n
+            a(i,i) = a(i,i) + real(n, real64)
+        end do
         call create_random_array(b)
         b_bad = 1.0d0
+        zero_n = 0.0d0
 
         ! Uninitialized object
         call empty%factor(flag)
@@ -405,14 +451,19 @@ contains
             print '(A)', "Test Failed: SVD Factorization Type Dimension Mismatch"
         end if
 
-        ! Singular matrix (zero column)
+        ! Rank-deficient matrix (zero column): minimum-norm solution with a
+        ! zero component in the null direction
         a_singular = a
         a_singular(:,2) = 0.0d0
         fac_singular = svd_factorization(a_singular)
         x = fac_singular%solve(b, flag)
-        if (flag /= LA_SINGULAR_MATRIX_ERROR) then
+        if (flag /= LA_NO_ERROR .or. abs(x(2)) > REAL64_TOL) then
             rst = .false.
-            print '(A)', "Test Failed: SVD Factorization Type Singular Matrix"
+            print '(A)', "Test Failed: SVD Factorization Type Rank-Deficient Solve"
+        else if (.not.assert(matmul(transpose(a_singular), &
+            matmul(a_singular, x) - b), zero_n, tol = REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: SVD Factorization Type Rank-Deficient Least Squares"
         end if
 
         ! Updating the object destroys the existing factorization

@@ -15,8 +15,10 @@ module linalg_svd
     type, extends(matrix_factorization) :: svd_factorization
         !! A container for the singular value decomposition of a matrix and
         !! associated operations.  The decomposition is \(A = U \Sigma V^T\).
-        !! The solvers require a square matrix and compute
-        !! \(X = V \Sigma^{-1} U^T B\).
+        !! The solvers compute the minimum-norm least-squares solution
+        !! \(X = A^+ B\) using the Moore-Penrose pseudo-inverse
+        !! \(A^+ = V \Sigma^+ U^T\), where singular values below a tolerance
+        !! are treated as zero.  Any matrix shape is supported.
         real(real64), private, allocatable, dimension(:,:) :: a
             !! The M-by-N matrix to factor.  Once factored, this is a workspace
             !! matrix as the original matrix is destroyed.
@@ -41,6 +43,9 @@ module linalg_svd
         logical, private :: skinny_v = .false.
             !! True if the skinny version of V should be computed; else, false
             !! to compute the full V.
+        integer, private :: numerical_rank = 0
+            !! The number of singular values greater than the tolerance used
+            !! to define the pseudo-inverse.
     contains
         procedure, public :: is_factored => svdf_is_factored
             !! Checks to see if the matrix has been factored.
@@ -94,9 +99,11 @@ end function
 
 ! ------------------------------------------------------------------------------
 pure subroutine svdf_update(this, a, skinny_u, skinny_v)
-    !! Updates the [[svd_factorization]] object with a new matrix.  The matrix
-    !! is only stored, not factored; therefore a call to factor is still 
-    !! required.  Any existing factorization is destroyed by this routine.
+    !! Updates the [[svd_factorization]] object with a new matrix.  All
+    !! memory required for the factorization and the solvers is allocated
+    !! here.  The matrix is only stored, not factored; therefore a call to
+    !! factor is still required.  Any existing factorization is destroyed by
+    !! this routine.
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: a
@@ -110,6 +117,12 @@ pure subroutine svdf_update(this, a, skinny_u, skinny_v)
         !! to compute the full \(V\).  The default is false such that the full
         !! matrix is computed.
 
+    ! Local Variables
+    character :: jobu, jobvt
+    integer :: m, n, mn
+    integer(int32) :: info, lwork
+    real(real64), dimension(1) :: temp
+
     if (allocated(this%a)) deallocate(this%a)
     if (allocated(this%workspace)) deallocate(this%workspace)
     if (allocated(this%u)) deallocate(this%u)
@@ -117,10 +130,26 @@ pure subroutine svdf_update(this, a, skinny_u, skinny_v)
     if (allocated(this%s)) deallocate(this%s)
     allocate(this%a(size(a, 1), size(a, 2)), source = a)
     this%factored = .false.
+    this%numerical_rank = 0
     this%skinny_u = .false.
     this%skinny_v = .false.
     if (present(skinny_u)) this%skinny_u = skinny_u
     if (present(skinny_v)) this%skinny_v = skinny_v
+
+    m = size(this%a, 1)
+    n = size(this%a, 2)
+    mn = min(m, n)
+    jobu = merge('S', 'A', this%skinny_u)
+    jobvt = merge('S', 'A', this%skinny_v)
+    allocate(this%u(m, merge(mn, m, this%skinny_u)), &
+        this%vt(merge(mn, n, this%skinny_v), n), this%s(mn))
+
+    ! Workspace query.  The workspace is also large enough to hold the
+    ! intermediate results of the solvers.
+    call DGESVD(jobu, jobvt, m, n, this%a, m, this%s, this%u, m, this%vt, &
+        size(this%vt, 1), temp, -1, info)
+    lwork = max(int(temp(1), int32), int(mn, int32), 1_int32)
+    allocate(this%workspace(lwork))
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -163,9 +192,9 @@ subroutine svdf_factor(this, flag)
 
     ! Local Variables
     character :: jobu, jobvt
-    integer :: m, n, mn, ucols, vtrows
-    integer(int32) :: info, lwork
-    real(real64), dimension(1) :: temp
+    integer :: m, n
+    integer(int32) :: info
+    real(real64) :: tol
 
     ! Initialization
     if (present(flag)) flag = LA_NO_ERROR
@@ -177,81 +206,54 @@ subroutine svdf_factor(this, flag)
 
     m = size(this%a, 1)
     n = size(this%a, 2)
-    mn = min(m, n)
-    if (this%skinny_u) then
-        jobu = 'S'
-        ucols = mn
-    else
-        jobu = 'A'
-        ucols = m
-    end if
-    if (this%skinny_v) then
-        jobvt = 'S'
-        vtrows = mn
-    else
-        jobvt = 'A'
-        vtrows = n
-    end if
-
-    if (allocated(this%u)) deallocate(this%u)
-    if (allocated(this%vt)) deallocate(this%vt)
-    if (allocated(this%s)) deallocate(this%s)
-    if (allocated(this%workspace)) deallocate(this%workspace)
-    allocate(this%u(m, ucols), this%vt(vtrows, n), this%s(mn))
-
-    ! Workspace query
-    call DGESVD(jobu, jobvt, m, n, this%a, m, this%s, this%u, m, this%vt, &
-        vtrows, temp, -1, info)
-    lwork = max(int(temp(1), int32), int(mn, int32), 1_int32)
-    allocate(this%workspace(lwork))
+    jobu = merge('S', 'A', this%skinny_u)
+    jobvt = merge('S', 'A', this%skinny_v)
 
     ! Factor the matrix
     call DGESVD(jobu, jobvt, m, n, this%a, m, this%s, this%u, m, this%vt, &
-        vtrows, this%workspace, lwork, info)
+        size(this%vt, 1), this%workspace, size(this%workspace, kind = int32), &
+        info)
     if (info > 0) then
         if (present(flag)) flag = LA_CONVERGENCE_ERROR
     else if (info < 0) then
         if (present(flag)) flag = LA_INVALID_INPUT_ERROR
     else
         this%factored = .true.
+        tol = real(max(m, n), real64) * epsilon(1.0_real64) * this%s(1)
+        this%numerical_rank = count(this%s > tol)
     end if
 end subroutine
 
 ! ------------------------------------------------------------------------------
 function svdf_prepare_solve(this, nrows) result(rst)
-    !! Validates the system dimensions and factors the matrix, if necessary,
-    !! prior to a solve.  A matrix is considered singular if any singular
-    !! value is negligible relative to the largest singular value.
+    !! Validates the right-hand-side dimension and factors the matrix, if
+    !! necessary, prior to a solve.  The right-hand-side must have
+    !! MAX(M, N) rows.
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     integer, intent(in) :: nrows
-        !! The number of rows in the right-hand-side.
+        !! The number of rows in the right-hand-side storage.
     integer :: rst
         !! LA_NO_ERROR on success; otherwise, an LA_* error code.
 
     rst = LA_NO_ERROR
     if (.not.allocated(this%a)) then
         rst = LA_NOT_INITIALIZED_ERROR
-    else if (size(this%a, 2) /= size(this%a, 1)) then
-        rst = LA_MATRIX_NOT_SQUARE_ERROR
-    else if (nrows /= size(this%a, 1)) then
+    else if (nrows /= max(size(this%a, 1), size(this%a, 2))) then
         rst = LA_MATRIX_DIMENSION_ERROR
-    else
-        if (.not.this%is_factored()) call this%factor(flag = rst)
-        if (rst == LA_NO_ERROR) then
-            if (any(this%s <= real(size(this%s), real64) * &
-                epsilon(1.0_real64) * this%s(1))) then
-                rst = LA_SINGULAR_MATRIX_ERROR
-            end if
-        end if
+    else if (.not.this%is_factored()) then
+        call this%factor(flag = rst)
     end if
 end function
 
 ! ------------------------------------------------------------------------------
 subroutine svdf_solve_vec(this, b)
-    !! Overwrites a single right-hand-side vector with the solution of the
-    !! factored system.  The object's workspace array is used for all
-    !! intermediate results, so no allocations occur.
+    !! Overwrites a single right-hand-side vector with the minimum-norm
+    !! least-squares solution of the factored system.  The first M entries of
+    !! the input vector hold the right-hand-side.  The first N entries of the
+    !! output vector hold the solution; the remaining entries are unchanged.
+    !! The object's workspace array is used for all intermediate results, so
+    !! no allocations occur.
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     real(real64), intent(inout), dimension(:) :: b
@@ -259,22 +261,28 @@ subroutine svdf_solve_vec(this, b)
         !! vector.
 
     ! Local Variables
-    integer :: n
+    integer :: m, n, r
 
-    n = size(this%s)
-    call DGEMV('T', n, n, 1.0_real64, this%u, n, b, 1, 0.0_real64, &
-        this%workspace, 1)
-    this%workspace(1:n) = this%workspace(1:n) / this%s
-    call DGEMV('T', n, n, 1.0_real64, this%vt, n, this%workspace, 1, &
-        0.0_real64, b, 1)
+    m = size(this%a, 1)
+    n = size(this%a, 2)
+    r = this%numerical_rank
+    if (r == 0) then
+        b(1:n) = 0.0_real64
+    else
+        call DGEMV('T', m, r, 1.0_real64, this%u, m, b, 1, 0.0_real64, &
+            this%workspace, 1)
+        this%workspace(1:r) = this%workspace(1:r) / this%s(1:r)
+        call DGEMV('T', r, n, 1.0_real64, this%vt, size(this%vt, 1), &
+            this%workspace, 1, 0.0_real64, b, 1)
+    end if
 end subroutine
 
 ! ------------------------------------------------------------------------------
 function svdf_solve_multiple_rhs(this, b, flag) result(rst)
-    !! Solves the linear system \(A X = B \) where \(B\)
-    !! is a matrix defining multiple right-hand-side vectors.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    !! Solves the linear system \(A X = B \) where \(B\) is a matrix defining
+    !! multiple right-hand-side vectors.  The solution is the minimum-norm
+    !! least-squares solution computed with the Moore-Penrose pseudo-inverse.
+    !! The number of rows in \(B\) must equal the number of rows in \(A\).
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: b
@@ -282,18 +290,39 @@ function svdf_solve_multiple_rhs(this, b, flag) result(rst)
     integer, intent(out), optional :: flag
         !! An error flag.
     real(real64), allocatable, dimension(:,:) :: rst
-        !! The solution matrix.
+        !! The N-by-K solution matrix.
 
-    allocate(rst(size(b, 1), size(b, 2)), source = b)
-    call this%solve_multiple_rhs_in_place(rst, flag = flag)
+    ! Local Variables
+    integer :: info, n
+    real(real64), allocatable, dimension(:,:) :: work
+
+    info = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        info = LA_NOT_INITIALIZED_ERROR
+    else if (size(b, 1) /= size(this%a, 1)) then
+        info = LA_MATRIX_DIMENSION_ERROR
+    end if
+    if (info /= LA_NO_ERROR) then
+        if (present(flag)) flag = info
+        allocate(rst(0, 0))
+        return
+    end if
+
+    n = size(this%a, 2)
+    allocate(work(max(size(this%a, 1), n), size(b, 2)))
+    work = 0.0_real64
+    work(1:size(b, 1), :) = b
+    call this%solve_multiple_rhs_in_place(work, flag = info)
+    if (present(flag)) flag = info
+    allocate(rst(n, size(b, 2)), source = work(1:n, :))
 end function
 
 ! ------------------------------------------------------------------------------
 function svdf_solve_single_rhs(this, b, flag) result(rst)
-    !! Solves the linear system \(A X = B \) where \(B\)
-    !! is a matrix defining a single right-hand-side vector.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    !! Solves the linear system \(A x = b \) where \(b\) is a vector defining
+    !! a single right-hand-side.  The solution is the minimum-norm
+    !! least-squares solution computed with the Moore-Penrose pseudo-inverse.
+    !! The number of entries in \(b\) must equal the number of rows in \(A\).
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     real(real64), intent(in), dimension(:) :: b
@@ -301,19 +330,42 @@ function svdf_solve_single_rhs(this, b, flag) result(rst)
     integer, intent(out), optional :: flag
         !! An error flag.
     real(real64), allocatable, dimension(:) :: rst
-        !! The solution vector.
+        !! The N-element solution vector.
 
-    allocate(rst(size(b)), source = b)
-    call this%solve_single_rhs_in_place(rst, flag = flag)
+    ! Local Variables
+    integer :: info, n
+    real(real64), allocatable, dimension(:) :: work
+
+    info = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        info = LA_NOT_INITIALIZED_ERROR
+    else if (size(b) /= size(this%a, 1)) then
+        info = LA_MATRIX_DIMENSION_ERROR
+    end if
+    if (info /= LA_NO_ERROR) then
+        if (present(flag)) flag = info
+        allocate(rst(0))
+        return
+    end if
+
+    n = size(this%a, 2)
+    allocate(work(max(size(this%a, 1), n)))
+    work = 0.0_real64
+    work(1:size(b)) = b
+    call this%solve_single_rhs_in_place(work, flag = info)
+    if (present(flag)) flag = info
+    allocate(rst(n), source = work(1:n))
 end function
 
 ! ------------------------------------------------------------------------------
 subroutine svdf_solve_multiple_rhs_in_place(this, b, flag)
-    !! Solves the linear system \(A X = B \) where \(B\)
-    !! is a matrix defining multiple right-hand-side vectors.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  No allocations occur
-    !! when the matrix has already been factored.
+    !! Solves the linear system \(A X = B \) where \(B\) is a matrix defining
+    !! multiple right-hand-side vectors.  The solution is the minimum-norm
+    !! least-squares solution computed with the Moore-Penrose pseudo-inverse.
+    !! Following the LAPACK DGELS convention, \(B\) must have MAX(M, N) rows.
+    !! The first M rows hold the right-hand-side on input, and the first N
+    !! rows hold the solution on output.  No allocations occur when the
+    !! matrix has already been factored.
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.
     real(real64), intent(inout), dimension(:,:) :: b
@@ -335,10 +387,12 @@ end subroutine
 
 ! ------------------------------------------------------------------------------
 subroutine svdf_solve_single_rhs_in_place(this, b, flag)
-    !! Solves the linear system \(A X = B \) where \(B\)
-    !! is a matrix defining a single right-hand-side vector.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  No allocations occur
+    !! Solves the linear system \(A x = b \) where \(b\) is a vector defining
+    !! a single right-hand-side.  The solution is the minimum-norm
+    !! least-squares solution computed with the Moore-Penrose pseudo-inverse.
+    !! Following the LAPACK DGELS convention, \(b\) must have MAX(M, N)
+    !! entries.  The first M entries hold the right-hand-side on input, and
+    !! the first N entries hold the solution on output.  No allocations occur
     !! when the matrix has already been factored.
     class(svd_factorization), intent(inout) :: this
         !! The [[svd_factorization]] object.

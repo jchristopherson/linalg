@@ -17,4 +17,6 @@ module linalg
     use linalg_least_squares
     use linalg_rz
     use linalg_types
+    use linalg_linear_operators
+    use linalg_iterative_solvers
 end module

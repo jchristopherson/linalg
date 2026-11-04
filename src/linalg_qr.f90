@@ -73,6 +73,8 @@ module linalg_qr
             !! Estimates the rank of the pivoted triangular factor.
         procedure, public :: get_factored_form => qrf_get_factored_matrices
             !! Gets the factored matrices.
+        procedure, public :: update => qrf_update
+            !! Updates the factorization.
     end type
 
     interface qr_factorization
@@ -119,7 +121,7 @@ contains
 ! ******************************************************************************
 ! QR_FACTORIZATION MEMBERS
 ! ------------------------------------------------------------------------------
-pure function qrf_init(a, pvt) result(rst)
+function qrf_init(a, pvt) result(rst)
     !! Initializes a new [[qr_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: a
         !! The matrix to factor.  A copy of this matrix is made and stored by 
@@ -130,7 +132,24 @@ pure function qrf_init(a, pvt) result(rst)
     type(qr_factorization) :: rst
         !! The new [[qr_factorization]] object.
 
-    ! Local Variables
+    call rst%update(a, pvt = pvt)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine qrf_update(this, a, pvt)
+    !! Updates the [[qr_factorization]] object with a new matrix.  The matrix
+    !! is only stored, not factored; therefore a call to factor is still 
+    !! required.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by
+        !! the object; therefore, this matrix is not altered.  Also, any
+        !! existing factorization is destroyed by this routine.
+    logical, intent(in), optional :: pvt
+        !! An optional parameter that, if set to true, enables column pivoting.
+        !! The default is false such that no column pivoting will be utilized.
+
     integer :: m, n, mn, lwork, info, idummy(1)
     real(real64) :: dummy(1), w(1)
 
@@ -138,24 +157,24 @@ pure function qrf_init(a, pvt) result(rst)
     n = size(a, 2)
     mn = min(m, n)
 
-    allocate(rst%a(m, n), source = a)
-    allocate(rst%tau(mn))
+    allocate(this%a(m, n), source = a)
+    allocate(this%tau(mn))
 
-    rst%factored = .false.
-    rst%use_pivoting = .false.
-    if (present(pvt)) rst%use_pivoting = pvt
+    this%factored = .false.
+    this%use_pivoting = .false.
+    if (present(pvt)) this%use_pivoting = pvt
 
-    if (rst%use_pivoting) then
+    if (this%use_pivoting) then
         call DGEQP3(m, n, dummy, m, idummy, dummy, w, -1, info)
-        allocate(rst%pivot(n), source = 0)
-        allocate(rst%solve_matrix(max(1, m), n), source = 0.0d0)
-        allocate(rst%solve_tau(mn))
+        allocate(this%pivot(n), source = 0)
+        allocate(this%solve_matrix(max(1, m), n), source = 0.0d0)
+        allocate(this%solve_tau(mn))
     else
         call DGEQRF(m, n, dummy, m, dummy, w, -1, info)
     end if
     lwork = max(int(w(1)), 2 * max(m, n) + 1)
-    allocate(rst%workspace(lwork))
-end function
+    allocate(this%workspace(lwork))
+end subroutine
 
 ! ------------------------------------------------------------------------------
 pure function qrf_is_factored(this) result(rst)

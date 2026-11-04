@@ -8,11 +8,12 @@ module linalg_lu
     use linalg_basic
     use lapack
     use sparskit
-    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan, ieee_is_finite
     use linalg_types
     implicit none
     private
     public :: lu_factorization
+    public :: sparse_lu_factorization
     public :: lu_factor
     public :: form_lu
     public :: solve_lu
@@ -49,7 +50,64 @@ module linalg_lu
             !! Gets the determinant of the original matrix.
         procedure, public :: inverse => luf_inverse
             !! Computes the inverse of the matrix.
+        procedure, public :: update => luf_update
+            !! Updates the factorization.
     end type
+
+    type, extends(matrix_factorization) :: sparse_lu_factorization
+        !! Owns a real CSR system and an ILUT preconditioner. SOLVE and
+        !! SOLVE_IN_PLACE solve the original A * X = B using restarted GMRES;
+        !! they do not merely apply the incomplete factors. This is an
+        !! iterative solver, not a pivoted sparse direct LU factorization.
+        !! FACTOR prepares the preconditioner explicitly, or solves prepare
+        !! it lazily. UPDATE invalidates it. No dense matrix copy is formed.
+        !! Errors return through optional FLAG arguments; if omitted, errors
+        !! terminate with ERROR STOP. No inverse or determinant is provided.
+        type(csr_matrix), private :: a
+            !! Owned copy of the original coefficient matrix.
+        type(msr_matrix), private :: lu
+            !! Cached incomplete factors, with inverse upper diagonal.
+        integer(int32), private, allocatable :: ju(:)
+            !! Pointers to the starts of the upper-factor rows in LU.
+        logical, private :: initialized = .false.
+            !! Whether UPDATE or the constructor has stored a matrix.
+        logical, private :: factored = .false.
+            !! Whether the cached preconditioner is ready for use.
+        real(real64), private :: drop_tolerance = sqrt(epsilon(0.0d0))
+            !! ILUT threshold, independent of the GMRES convergence tolerance.
+        real(real64), private :: tolerance = sqrt(epsilon(0.0d0))
+            !! Required relative true-residual tolerance for every RHS.
+        integer, private :: max_iterations = 100
+            !! GMRES iteration budget, checked at restart boundaries.
+        integer, private :: restart = 50
+            !! GMRES restart length, bounded by the matrix order and 50.
+    contains
+        procedure, public :: is_factored => sluf_is_factored
+            !! Queries whether the cached ILUT preconditioner is ready.
+        procedure, public :: size => sluf_size
+            !! Queries dimensions of the owned CSR matrix.
+        procedure, public :: factor => sluf_factor
+            !! Validates settings and prepares the ILUT preconditioner once.
+        procedure, public :: update => sluf_update
+            !! Copies a new CSR matrix, resets controls, and invalidates factors.
+        procedure, public :: solve_multiple_rhs => sluf_solve_multiple_rhs
+            !! Allocates complete solutions for columns of a RHS matrix.
+        procedure, public :: solve_single_rhs => sluf_solve_single_rhs
+            !! Allocates the complete solution for one RHS vector.
+        procedure, public :: solve_multiple_rhs_in_place => sluf_solve_multiple_rhs_in_place
+            !! Replaces a RHS matrix only if all column solves converge.
+        procedure, public :: solve_single_rhs_in_place => sluf_solve_single_rhs_in_place
+            !! Replaces a RHS vector only if its solve converges.
+        procedure, public :: solve_prepared => sluf_solve_prepared
+            !! Read-only solve into caller storage; requires explicit FACTOR.
+        procedure, public :: get_factored_form => sluf_get_factored_form
+            !! Copies the incomplete preconditioner, not exact factors of A.
+    end type
+
+    interface sparse_lu_factorization
+        !! Constructs an owned CSR system without performing factorization.
+        module procedure :: sluf_init
+    end interface
 
     interface lu_factorization
         module procedure :: luf_init
@@ -77,9 +135,300 @@ module linalg_lu
     end interface
 contains
 ! ******************************************************************************
+! SPARSE_LU_FACTORIZATION MEMBERS
+! ------------------------------------------------------------------------------
+function sluf_init(a, droptol, tol, maxits, im) result(rst)
+    !! Constructs a sparse solver. The matrix and controls are stored without
+    !! factorization; FACTOR or the first solve validates them.
+    class(csr_matrix), intent(in) :: a
+        !! Coefficient matrix to copy. Solving requires valid nonempty square
+        !! CSR storage with unique column indices within each row.
+    real(real64), intent(in), optional :: droptol
+        !! Finite nonnegative ILUT drop threshold; default SQRT(EPSILON).
+    real(real64), intent(in), optional :: tol
+        !! Finite relative true-residual tolerance, at least EPSILON;
+        !! default SQRT(EPSILON). Independent of DROPTOL.
+    integer, intent(in), optional :: maxits
+        !! Positive GMRES iteration budget, default 100. Checked at restart
+        !! boundaries, so up to IM-1 additional iterations may be performed.
+    integer, intent(in), optional :: im
+        !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50).
+    type(sparse_lu_factorization) :: rst
+        !! New unfactored solver owning its own copy of A and the controls.
+
+    call rst%update(a, droptol, tol, maxits, im)
+end function
+
+subroutine sluf_update(this, a, droptol, tol, maxits, im)
+    !! Replaces the owned system and discards all cached factors. Omitted
+    !! controls reset to defaults, rather than retaining previous settings.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose matrix, controls, and factorization state are replaced.
+    class(csr_matrix), intent(in) :: a
+        !! New coefficient matrix, copied without changing the caller's data.
+    real(real64), intent(in), optional :: droptol
+        !! Finite nonnegative ILUT threshold; default SQRT(EPSILON).
+    real(real64), intent(in), optional :: tol
+        !! Finite relative residual tolerance at least EPSILON;
+        !! default SQRT(EPSILON). Applies to the original system, not its factors.
+    integer, intent(in), optional :: maxits
+        !! Positive GMRES budget checked at restart boundaries; default 100.
+    integer, intent(in), optional :: im
+        !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50).
+
+    this%a = a
+    this%lu = msr_matrix()
+    if (allocated(this%ju)) deallocate(this%ju)
+    this%initialized = .true.
+    this%factored = .false.
+    this%drop_tolerance = sqrt(epsilon(0.0d0))
+    this%tolerance = sqrt(epsilon(0.0d0))
+    this%max_iterations = 100
+    this%restart = min(size(a, 1), 50)
+    if (present(droptol)) this%drop_tolerance = droptol
+    if (present(tol)) this%tolerance = tol
+    if (present(maxits)) this%max_iterations = maxits
+    if (present(im)) this%restart = im
+end subroutine
+
+pure function sluf_is_factored(this) result(rst)
+    !! Queries preconditioner readiness without modifying the solver.
+    class(sparse_lu_factorization), intent(in) :: this
+        !! Solver to query.
+    logical :: rst
+        !! True after successful FACTOR, until UPDATE invalidates the factors.
+    rst = this%factored
+end function
+
+pure function sluf_size(this, dim) result(rst)
+    !! Queries the dimensions of the original CSR system.
+    class(sparse_lu_factorization), intent(in) :: this
+        !! Solver to query; need not be factored or initialized.
+    integer, intent(in) :: dim
+        !! Dimension: 1 for rows, 2 for columns; other values return zero.
+    integer :: rst
+        !! Requested extent, or zero when no matrix has been stored.
+    rst = 0
+    if (this%initialized) rst = size(this%a, dim)
+end function
+
+pure subroutine report_sparse_lu_status(info, flag)
+    !! Applies the sparse solver's optional-status/error-stop policy.
+    integer, intent(in) :: info
+        !! Library status: LA_NO_ERROR for success, an LA_* error otherwise.
+    integer, intent(out), optional :: flag
+        !! Receives INFO when present. A nonzero INFO terminates execution
+        !! when FLAG is absent; successful calls never terminate.
+    if (present(flag)) then
+        flag = info
+    else if (info /= LA_NO_ERROR) then
+        error stop info
+    end if
+end subroutine
+
+subroutine sluf_factor(this, flag)
+    !! Validates the matrix and controls and prepares its ILUT preconditioner.
+    !! Repeated successful calls reuse the existing factors. ILUT does not
+    !! pivot and may regularize zero pivots; readiness alone does not guarantee
+    !! nonsingularity of A or convergence of a subsequent GMRES solve.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose incomplete factors are created and cached.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR without a stored
+        !! matrix; LA_INVALID_INPUT_ERROR for invalid controls; or CSR/ILUT
+        !! validation errors from [[lu_factor]]. Omit to use ERROR STOP.
+    integer :: info
+
+    info = LA_NO_ERROR
+    if (.not.this%initialized) then
+        info = LA_NOT_INITIALIZED_ERROR
+    else if (.not.this%factored) then
+        if (.not.ieee_is_finite(this%tolerance)) then
+            info = LA_INVALID_INPUT_ERROR
+        else if (this%tolerance < epsilon(0.0d0) .or. &
+            this%max_iterations < 1 .or. this%restart < 1 .or. &
+            this%restart > min(this%size(1), 50)) then
+            info = LA_INVALID_INPUT_ERROR
+        else
+            if (allocated(this%ju)) deallocate(this%ju)
+            allocate(this%ju(this%size(1)))
+            call csr_lu_factor(this%a, this%lu, this%ju, &
+                this%drop_tolerance, info)
+            if (info == LA_NO_ERROR) then
+                if (.not.all(ieee_is_finite(this%lu%values))) &
+                    info = LA_SINGULAR_MATRIX_ERROR
+            end if
+        end if
+        this%factored = info == LA_NO_ERROR
+    end if
+    call report_sparse_lu_status(info, flag)
+end subroutine
+
+subroutine sluf_prepare_solve(this, rows, flag)
+    !! Validates RHS row count and lazily prepares the preconditioner.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose factors may be prepared if not yet available.
+    integer, intent(in) :: rows
+        !! Number of elements in a RHS vector or rows of a RHS matrix.
+    integer, intent(out) :: flag
+        !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR,
+        !! LA_MATRIX_NOT_SQUARE_ERROR, LA_MATRIX_DIMENSION_ERROR, or FACTOR's
+        !! status otherwise. This internal routine never intentionally stops.
+    flag = LA_NO_ERROR
+    if (.not.this%initialized) then
+        flag = LA_NOT_INITIALIZED_ERROR
+    else if (this%size(1) /= this%size(2)) then
+        flag = LA_MATRIX_NOT_SQUARE_ERROR
+    else if (rows /= this%size(1)) then
+        flag = LA_MATRIX_DIMENSION_ERROR
+    else
+        call this%factor(flag)
+    end if
+end subroutine
+
+subroutine sluf_solve_prepared(this, b, x, flag)
+    !! Solves the original CSR system using already prepared factors. No
+    !! factorization, caching, or mutation of THIS occurs. Workspace is local
+    !! to this call; external-library reentrancy remains a separate requirement.
+    class(sparse_lu_factorization), intent(in) :: this
+        !! Read-only solver after successful FACTOR and before any UPDATE.
+    real(real64), intent(in) :: b(:)
+        !! N-element RHS vector, not modified; must not overlap X.
+    real(real64), intent(out) :: x(:)
+        !! Caller-owned N-element solution. Set to zero on any reported error.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR if NORM2(B-A*X) <= TOL*NORM2(B);
+        !! LA_INVALID_OPERATION_ERROR if not factored;
+        !! LA_MATRIX_DIMENSION_ERROR for incorrect vector lengths;
+        !! LA_INVALID_INPUT_ERROR for nonfinite B; or LA_CONVERGENCE_ERROR
+        !! on iteration/residual failure. Omit to use ERROR STOP.
+    real(real64), allocatable :: solution(:)
+    integer :: info
+
+    x = 0.0d0
+    info = LA_NO_ERROR
+    if (.not.this%factored) then
+        info = LA_INVALID_OPERATION_ERROR
+    else if (size(b) /= this%size(1) .or. size(x) /= this%size(2)) then
+        info = LA_MATRIX_DIMENSION_ERROR
+    else
+        call pgmres_solve(this%a, this%lu, this%ju, b, solution, &
+            im = this%restart, tol = this%tolerance, &
+            maxits = this%max_iterations, flag = info)
+        if (info == LA_NO_ERROR) x = solution
+    end if
+    call report_sparse_lu_status(info, flag)
+end subroutine
+
+function sluf_solve_single_rhs(this, b, flag) result(rst)
+    !! Allocates a complete GMRES solution for one RHS, preparing factors lazily.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose preconditioner is prepared if necessary.
+    real(real64), intent(in) :: b(:)
+        !! RHS with N elements, not modified.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR on convergence; otherwise the preparation or prepared
+        !! solve error described by SOLVE_SINGLE_RHS_IN_PLACE. Omit to stop.
+    real(real64), allocatable :: rst(:)
+        !! N-element solution on success; an unchanged copy of B on error.
+        !! Always has the input shape, even if an incorrect RHS size is given.
+    rst = b
+    call this%solve_single_rhs_in_place(rst, flag)
+end function
+
+function sluf_solve_multiple_rhs(this, b, flag) result(rst)
+    !! Solves each RHS column with GMRES, reusing one cached preconditioner.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose preconditioner is prepared if necessary.
+    real(real64), intent(in) :: b(:,:)
+        !! N-by-NRHS matrix with a RHS in each column, not modified.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR if every column converges; otherwise the first
+        !! preparation or solve error. Omit to use ERROR STOP.
+    real(real64), allocatable :: rst(:,:)
+        !! N-by-NRHS solutions on success; an unchanged copy of B on error.
+        !! Always has the input shape; no partial column results are returned.
+    rst = b
+    call this%solve_multiple_rhs_in_place(rst, flag)
+end function
+
+subroutine sluf_solve_single_rhs_in_place(this, b, flag)
+    !! Replaces a RHS with the solution only after successful preparation and
+    !! convergence against the true residual of the original system.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose incomplete factors are prepared lazily and then reused.
+    real(real64), intent(inout) :: b(:)
+        !! N-element RHS on entry; complete solution on success. Unchanged
+        !! on any reported error, including nonconvergence.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR,
+        !! LA_MATRIX_NOT_SQUARE_ERROR, LA_MATRIX_DIMENSION_ERROR,
+        !! LA_MATRIX_FORMAT_ERROR, LA_INVALID_INPUT_ERROR,
+        !! LA_SINGULAR_MATRIX_ERROR, LA_INVALID_OPERATION_ERROR, or
+        !! LA_CONVERGENCE_ERROR otherwise. Omit to use ERROR STOP.
+    real(real64), allocatable :: solution(:)
+    integer :: info
+
+    call sluf_prepare_solve(this, size(b), info)
+    if (info == LA_NO_ERROR) then
+        allocate(solution(size(b)))
+        call this%solve_prepared(b, solution, info)
+        if (info == LA_NO_ERROR) b = solution
+    end if
+    call report_sparse_lu_status(info, flag)
+end subroutine
+
+subroutine sluf_solve_multiple_rhs_in_place(this, b, flag)
+    !! Replaces all RHS columns only if every independent GMRES solve succeeds.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose incomplete factors are prepared lazily and reused.
+    real(real64), intent(inout) :: b(:,:)
+        !! N-by-NRHS right-hand sides on entry; complete solutions on success.
+        !! The entire matrix is unchanged if any column fails.
+    integer, intent(out), optional :: flag
+        !! LA_NO_ERROR on success; otherwise the first preparation or solve
+        !! status listed for SOLVE_SINGLE_RHS_IN_PLACE. Omit to use ERROR STOP.
+    real(real64), allocatable :: solution(:,:)
+    integer :: info, column
+
+    call sluf_prepare_solve(this, size(b, 1), info)
+    if (info == LA_NO_ERROR) then
+        allocate(solution(size(b, 1), size(b, 2)))
+        do column = 1, size(b, 2)
+            call this%solve_prepared(b(:,column), solution(:,column), info)
+            if (info /= LA_NO_ERROR) exit
+        end do
+        if (info == LA_NO_ERROR) b = solution
+    end if
+    call report_sparse_lu_status(info, flag)
+end subroutine
+
+subroutine sluf_get_factored_form(this, lu, ju, flag)
+    !! Copies the ILUT preconditioner, preparing it if needed. These are not
+    !! exact factors of A; using LUSOL alone is not the complete system solve.
+    class(sparse_lu_factorization), intent(inout) :: this
+        !! Solver whose preconditioner may be prepared and then copied.
+    type(msr_matrix), intent(out) :: lu
+        !! Owned copy of the incomplete MSR factors, including inverse U
+        !! diagonal. Reset to an empty matrix on error.
+    integer(int32), intent(out), allocatable :: ju(:)
+        !! Owned copy of the N upper-row pointers; unallocated on error.
+    integer, intent(out), optional :: flag
+        !! FACTOR's status; LA_NO_ERROR on success. Omit to use ERROR STOP.
+    integer :: info
+
+    call this%factor(info)
+    if (info == LA_NO_ERROR) then
+        lu = this%lu
+        ju = this%ju
+    end if
+    call report_sparse_lu_status(info, flag)
+end subroutine
+
+! ******************************************************************************
 ! LU_FACTORIZATION MEMBERS
 ! ------------------------------------------------------------------------------
-pure function luf_init(a) result(rst)
+function luf_init(a) result(rst)
     !! Initializes a new [[lu_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: a
         !! The matrix to factor.  A copy of this matrix is
@@ -88,16 +437,33 @@ pure function luf_init(a) result(rst)
     type(lu_factorization) :: rst
         !! The new [[lu_factorization]] object.
 
+    call rst%update(a)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine luf_update(this, a)
+    !! Updates the [[lu_factorization]] object with a new matrix.  The matrix
+    !! is only stored, not factored; therefore a call to factor is still 
+    !! required.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by
+        !! the object; therefore, this matrix is not altered.  Also, any
+        !! existing factorization is destroyed by this routine.
+
     integer :: m, n, mn
 
     m = size(a, 1)
     n = size(a, 2)
     mn = min(m, n)
 
-    allocate(rst%a(m, n), source = a)
-    allocate(rst%pivot(mn))
-    rst%factored = .false.
-end function
+    if (allocated(this%a)) deallocate(this%a)
+    if (allocated(this%pivot)) deallocate(this%pivot)
+    allocate(this%a(m, n), source = a)
+    allocate(this%pivot(mn))
+    this%factored = .false.
+end subroutine
 
 ! ------------------------------------------------------------------------------
 pure function luf_is_factored(this) result(rst)
@@ -697,17 +1063,56 @@ pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
 end subroutine
 
 ! ------------------------------------------------------------------------------
-pure subroutine csr_lu_factor(a, lu, ju, droptol)
-    !! Factors a matrix using an LU decomposition.  In the event of a singular
-    !! matrix, the output matrix is populated with NaN's.
+pure function validate_csr_factor_input(a) result(flag)
+    !! Validates CSR storage before passing raw arrays to SPARSKIT ILUT.
     class(csr_matrix), intent(in) :: a
-        !! The matrix to factor.
+        !! Matrix to inspect without modification. Rows may be unsorted, but
+        !! column indices within each row must be unique and in range.
+    integer(int32) :: flag
+        !! LA_NO_ERROR for valid nonempty square storage; otherwise
+        !! LA_NOT_INITIALIZED_ERROR, LA_MATRIX_NOT_SQUARE_ERROR,
+        !! LA_INVALID_INPUT_ERROR, LA_MATRIX_FORMAT_ERROR, or
+        !! LA_SINGULAR_MATRIX_ERROR for a numerically zero row.
+    integer :: order, row, first, last
+
+    flag = validate_csr_storage(a)
+    if (flag /= LA_NO_ERROR) return
+    order = size(a, 1)
+    flag = LA_MATRIX_NOT_SQUARE_ERROR
+    if (size(a, 2) /= order) return
+    do row = 1, order
+        first = a%row_indices(row)
+        last = a%row_indices(row+1) - 1
+        if (all(a%values(first:last) == 0.0d0)) then
+            flag = LA_SINGULAR_MATRIX_ERROR
+            return
+        end if
+    end do
+    flag = LA_NO_ERROR
+end function
+
+pure subroutine csr_lu_factor(a, lu, ju, droptol, flag)
+    !! Builds incomplete LU factors using SPARSKIT ILUT. These approximate
+    !! factors are intended for preconditioning, not an exact direct solve.
+    !! A detected zero pivot retains the legacy NaN-valued factor output.
+    class(csr_matrix), intent(in) :: a
+        !! Nonempty square CSR matrix, copied into neither dense storage nor A.
+        !! Storage must be valid with unique column indices within each row.
     type(msr_matrix), intent(out) :: lu
-        !! The LU matrix.
+        !! Combined incomplete factors in MSR format, with inverse U diagonal.
+        !! Not usable when FLAG reports an error.
     integer(int32), intent(out), dimension(:) :: ju
-        !! The row tracking array.
+        !! Caller-owned N-element array receiving upper-factor row pointers.
     real(real64), intent(in), optional :: droptol
-        !! The drop tolerance for the ILUT factorization.
+        !! Finite nonnegative ILUT drop tolerance; default SQRT(EPSILON).
+        !! Zero disables threshold dropping, but the per-row fill cap remains.
+    integer(int32), intent(out), optional :: flag
+        !! LA_NO_ERROR on success. Validation returns the statuses documented
+        !! by VALIDATE_CSR_FACTOR_INPUT; incorrect JU size returns
+        !! LA_MATRIX_DIMENSION_ERROR. ILUT breakdown returns
+        !! LA_SINGULAR_MATRIX_ERROR, LA_MATRIX_FORMAT_ERROR, or
+        !! LA_INVALID_OPERATION_ERROR. When omitted, validation and format
+        !! errors use ERROR STOP; a zero pivot retains the legacy NaN output.
 
     ! Local Variables
     integer(int32) :: i, m, n, nn, nnz, lfil, iwk, ierr
@@ -716,6 +1121,7 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
     real(real64) :: dt, nan
     
     ! Initialization
+    if (present(flag)) flag = LA_NO_ERROR
     if (present(droptol)) then
         dt = droptol
     else
@@ -726,8 +1132,20 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
     nnz = nonzero_count(a)
 
     ! Input Check
-    if (size(ju) /= m) then
-        error stop 3
+    ierr = validate_csr_factor_input(a)
+    if (ierr == LA_NO_ERROR .and. size(ju) /= m) &
+        ierr = LA_MATRIX_DIMENSION_ERROR
+    if (.not.ieee_is_finite(dt)) then
+        ierr = LA_INVALID_INPUT_ERROR
+    else if (dt < 0.0d0) then
+        ierr = LA_INVALID_INPUT_ERROR
+    end if
+    if (ierr /= LA_NO_ERROR) then
+        if (present(flag)) then
+            flag = ierr
+            return
+        end if
+        error stop ierr
     end if
 
     ! Parameter Determination
@@ -735,7 +1153,7 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
     do i = 1, m
         lfil = max(lfil, a%row_indices(i+1) - a%row_indices(i))
     end do
-    iwk = max(lfil * m, nnz)  ! somewhat arbitrary - can be adjusted
+    iwk = max(n + 1, lfil * m + 1, nnz)
 
     ! Local Memory Allocation
     allocate(alu(iwk), w(n+1), jlu(iwk), jw(2 * n))
@@ -761,15 +1179,20 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
             allocate(lu%values(m + 1), source = nan)
             allocate(lu%indices(m + 1), source = m + 2)
             ju = m + 2
+            if (present(flag)) flag = LA_SINGULAR_MATRIX_ERROR
             return
         else if (ierr == -1) then
             ! The input matrix is not formatted correctly
+            if (present(flag)) then
+                flag = LA_MATRIX_FORMAT_ERROR
+                return
+            end if
             error stop LA_MATRIX_FORMAT_ERROR
         else if (ierr == -2 .or. ierr == -3) then
             ! ALU and JLU are too small - try something larger
             ! This is the main reason for the loop - to offload worrying about
             ! workspace size from the user
-            iwk = min(iwk + m + n, m * n)
+            iwk = iwk + max(m + n, iwk / 2)
             deallocate(alu)
             deallocate(jlu)
             allocate(alu(iwk), jlu(iwk))
@@ -778,9 +1201,17 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
             lfil = n
         else if (ierr == -5) then
             ! Zero row encountered
+            if (present(flag)) then
+                flag = LA_SINGULAR_MATRIX_ERROR
+                return
+            end if
             error stop LA_MATRIX_FORMAT_ERROR
         else
             ! We should never get here, but just in case
+            if (present(flag)) then
+                flag = LA_INVALID_OPERATION_ERROR
+                return
+            end if
             error stop LA_INVALID_OPERATION_ERROR
         end if
     end do
@@ -792,9 +1223,11 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol)
     lu%m = m
     lu%n = n
     lu%nnz = nnz
-    nn = m + 1 + nnz - min(m, n)
+    nn = nnz
     allocate(lu%values(nn), source = alu(:nn))
     allocate(lu%indices(nn), source = jlu(:nn))
+    ! The unused MSR separator must be defined for whole-array finite checks.
+    lu%values(n + 1) = 0.0d0
 end subroutine
 
 ! ------------------------------------------------------------------------------
@@ -1128,18 +1561,22 @@ end function
 
 ! ------------------------------------------------------------------------------
 pure function csr_lu_solve(lu, ju, b) result(x)
-    !! Solves a linear system using an LU decomposition.
+    !! Applies the combined triangular factors with SPARSKIT LUSOL. If the
+    !! factors came from ILUT, this solves the incomplete-factor system only;
+    !! use PGMRES_SOLVE or SPARSE_LU_FACTORIZATION for the original CSR system.
+    !! Malformed factors use ERROR STOP; singular/nonfinite factors yield NaNs.
     class(msr_matrix), intent(in) :: lu
-        !! The LU matrix.
+        !! Nonempty square MSR factors, with inverse U pivots on the diagonal.
     integer(int32), intent(in), dimension(:) :: ju
-        !! The row tracking array.
+        !! N pointers splitting each row into strict lower and upper entries.
     real(real64), intent(in), dimension(:) :: b
-        !! The right-hand side.
+        !! Finite N-element right-hand side, not modified.
     real(real64), allocatable, dimension(:) :: x
-        !! The solution.
+        !! N-element solution of the factor system. Singular/nonfinite factors
+        !! yield NaNs, preserving legacy propagation. No GMRES refinement occurs.
 
     ! Local Variables
-    integer(int32) :: m, n
+    integer(int32) :: m, n, info
     
     ! Initialization
     m = size(lu, 1)
@@ -1147,13 +1584,21 @@ pure function csr_lu_solve(lu, ju, b) result(x)
 
     ! Input Check
     if (m /= n) then
-        error stop 1
+        error stop LA_MATRIX_NOT_SQUARE_ERROR
     end if
     if (size(ju) /= m) then
-        error stop 2
+        error stop LA_MATRIX_DIMENSION_ERROR
     end if
     if (size(b) /= m) then
-        error stop 3
+        error stop LA_MATRIX_DIMENSION_ERROR
+    end if
+    if (.not.all(ieee_is_finite(b))) error stop LA_INVALID_INPUT_ERROR
+    info = validate_msr_lu(lu, ju)
+    if (info == LA_SINGULAR_MATRIX_ERROR) then
+        allocate(x(m), source = ieee_value(0.0d0, ieee_quiet_nan))
+        return
+    else if (info /= LA_NO_ERROR) then
+        error stop info
     end if
 
     ! Process

@@ -41,6 +41,8 @@ module linalg_cholesky
             !! Gets the type of Cholesky factorization.
         procedure, public :: get_factored_form => cf_get_factored_matrix
             !! Gets the factored matrix.
+        procedure, public :: update => cf_update
+            !! Updates the factorization.
     end type
 
     interface cholesky_factorization
@@ -86,6 +88,28 @@ function cf_init(a, upper, flag) result(rst)
     type(cholesky_factorization) :: rst
         !! The new [[cholesky_factorization]] object.
 
+    call rst%update(a, upper = upper, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine cf_update(this, a, upper, flag)
+    !! Updates the [[cholesky_factorization]] object with a new matrix.  The matrix
+    !! is only stored, not factored; therefore a call to factor is still 
+    !! required.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by
+        !! the object; therefore, this matrix is not altered.  Also, any
+        !! existing factorization is destroyed by this routine.
+    logical, intent(in), optional :: upper
+        !! Set to true if the upper factorization is to be computed 
+        !! (\(A = U^T U\)); else, set to false to compute the lower 
+        !! factorization (\(A = L L^T\)).  The default is true such that
+        !! the upper factorization is computed.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
     ! Local Variables
     integer :: n
 
@@ -98,11 +122,11 @@ function cf_init(a, upper, flag) result(rst)
     end if
 
     ! Process
-    allocate(rst%a(n, n), source = a)
-    rst%factored = .false.
-    rst%upper = .true.
-    if (present(upper)) rst%upper = upper
-end function
+    allocate(this%a(n, n), source = a)
+    this%factored = .false.
+    this%upper = .true.
+    if (present(upper)) this%upper = upper
+end subroutine
 
 ! ------------------------------------------------------------------------------
 pure function cf_is_factored(this) result(rst)

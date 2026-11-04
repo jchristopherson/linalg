@@ -6,10 +6,10 @@ program example
     implicit none
 
     ! Local Variables
-    integer(int32), allocatable :: ipiv(:)
     real(real64) :: dense(4, 4), b(4), x(4), bc(4)
-    real(real64), allocatable :: lu(:,:)
     type(csr_matrix) :: sparse
+    type(sparse_lu_factorization) :: sparse_solver
+    type(lu_factorization) :: dense_solver
 
     ! Build the matrices as dense matrices
     dense = reshape([ &
@@ -24,7 +24,9 @@ program example
     sparse = dense
 
     ! Compute the solution to the sparse equations
-    x = sparse_direct_solve(sparse, b)
+    sparse_solver = sparse_lu_factorization(sparse)
+    call sparse_solver%factor()
+    x = sparse_solver%solve(b)
 
     ! Print the solution
     print "(A)", "Sparse Solution:"
@@ -39,8 +41,9 @@ program example
     print *, b
 
     ! For comparison, solve the dense system via LU decomposition
-    call lu_factor(dense, ipvt = ipiv, lu = lu)
-    x = solve_lu(lu, ipiv, b)
+    dense_solver = lu_factorization(dense)
+    call dense_solver%factor()
+    x = dense_solver%solve(b)
     print "(A)", "Dense Solution:"
     print *, x
 end program

@@ -46,6 +46,26 @@ add_test(
     COMMAND $<TARGET_FILE:linalg_test>
 )
 
+# Pure function APIs report invalid input with ERROR STOP in isolated processes.
+foreach(validation_case IN ITEMS
+    csr_direct_bad_rhs
+    csr_direct_bad_storage
+    csr_lu_bad_rhs
+    csr_lu_bad_pointer
+    csr_gmres_bad_restart
+    csr_gmres_bad_storage
+    operator_gmres_bad_restart
+    csr_operator_bad_storage
+    ilu_operator_bad_pointer
+)
+    add_test(
+        NAME ${validation_case}
+        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        COMMAND $<TARGET_FILE:linalg_test> ${validation_case}
+    )
+    set_tests_properties(${validation_case} PROPERTIES WILL_FAIL TRUE)
+endforeach()
+
 if (${BUILD_SHARED_LIBS} AND WIN32)
     add_custom_command(
         TARGET linalg_test

@@ -5,6 +5,39 @@ module sparskit
     !! https://www-users.cse.umn.edu/~saad/software/SPARSKIT/.
     implicit none
 
+    interface
+        subroutine gmres(n, rhs, sol, ipar, fpar, w)
+            !! Restarted GMRES with reverse communication from ITERS.F.
+            !! Saved backend state makes complete solves nonreentrant: do not
+            !! interleave concurrent or nested invocations of this routine.
+            use iso_fortran_env, only : int32, real64
+            integer(int32), intent(in) :: n
+                !! Positive system order.
+            real(real64), intent(in) :: rhs(n)
+                !! Right-hand side, preserved across communication requests.
+            real(real64), intent(inout) :: sol(n)
+                !! Initial guess on entry; current solution on return.
+            integer(int32), intent(inout) :: ipar(16)
+                !! Protocol and counters. Start with IPAR(1)=0. Returns 1 for
+                !! A*X, 5 for right-preconditioner application, or a nonpositive
+                !! termination status. IPAR(2) selects preconditioning (0 none,
+                !! 2 right); IPAR(3)=2 selects RHS-relative residual stopping;
+                !! IPAR(4) is W length; IPAR(5) is restart length (>1, else
+                !! backend uses 15); IPAR(6) is the matvec budget. IPAR(8:9)
+                !! point to input/output vectors in W. Other entries retain
+                !! backend state and must be preserved between requests.
+            real(real64), intent(inout) :: fpar(16)
+                !! Relative and absolute tolerances in entries 1 and 2, with
+                !! 0 <= FPAR(1) < 1 and FPAR(2) >= 0, not both zero. Other
+                !! entries hold residual estimates, counters, and backend state.
+            real(real64), intent(inout) :: w(*)
+                !! Caller-owned workspace, retained between requests. For
+                !! restart length M, allocate at least
+                !! (N+3)*(M+2) + M*(M+1)/2 real elements. Requested vectors
+                !! occupy W(IPAR(8):IPAR(8)+N-1) and the analogous IPAR(9) slice.
+        end subroutine
+    end interface
+
     ! BLASSM.F
     interface
         pure subroutine amub(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, &

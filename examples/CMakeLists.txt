@@ -66,9 +66,9 @@ target_link_libraries(lq_mult_example linalg)
 add_executable(lq_example linalg_lq_example.f90)
 target_link_libraries(lq_example linalg)
 
-# Sparse Direct Solve Example
-add_executable(sparse_direct_example linalg_sparse_direct_example.f90)
-target_link_libraries(sparse_direct_example linalg)
+# Sparse Solve Example
+add_executable(sparse_example linalg_sparse_example.f90)
+target_link_libraries(sparse_example linalg)
 
 # ------------------------------------------------------------------------------
 if (${BUILD_SHARED_LIBS} AND WIN32)

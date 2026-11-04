@@ -213,6 +213,9 @@ program main
     rst =  test_cholesky_factor()
     if (.not.rst) flag = 60
 
+    rst = test_cholesky_factorization_type()
+    if (.not.rst) flag = 128
+
     rst = test_cholesky_factor_cmplx()
     if (.not.rst) flag = 61
     

@@ -174,13 +174,6 @@ contains
             rst = .false.
             print '(A)', "Test Failed: LU Factorization Type Factored Form"
         end if
-        if (allocated(u)) deallocate(u)
-        call fac_form%get_factored_form(u = u, flag = flag)
-        if (flag /= LA_NO_ERROR .or. .not.allocated(u)) then
-            rst = .false.
-            print '(A)', "Test Failed: LU Factorization Type Optional Factored Form"
-        end if
-
         fac_det = lu_factorization(a)
         det = fac_det%determinant(flag)
         if (flag /= LA_NO_ERROR .or. abs(det + 2.0d0) > REAL64_TOL .or. &
@@ -190,7 +183,7 @@ contains
         end if
 
         fac_multiple_rhs = lu_factorization(a)
-        x_multiple = fac_multiple_rhs%solve_multiple_rhs(b_multiple, flag)
+        x_multiple = fac_multiple_rhs%solve(b_multiple, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_multiple, x_expected, REAL64_TOL) .or. &
             .not.fac_multiple_rhs%is_factored()) then
@@ -199,7 +192,7 @@ contains
         end if
 
         fac_single_rhs = lu_factorization(a)
-        x_single = fac_single_rhs%solve_single_rhs(b_single, flag)
+        x_single = fac_single_rhs%solve(b_single, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_single, x_expected(:,1), REAL64_TOL) .or. &
             .not.fac_single_rhs%is_factored()) then

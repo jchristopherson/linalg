@@ -142,6 +142,8 @@ subroutine cf_factor(this, flag)
     character :: uplo
     integer :: n, info
 
+    if (present(flag)) flag = LA_NO_ERROR
+
     ! If not allocated, return with an error
     if (.not.allocated(this%a)) then
         if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR

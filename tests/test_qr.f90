@@ -305,7 +305,7 @@ contains
         end if
 
         fac_multiple_rhs = qr_factorization(a)
-        x_multiple = fac_multiple_rhs%solve_multiple_rhs(b_multiple, flag)
+        x_multiple = fac_multiple_rhs%solve(b_multiple, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_multiple, x_expected, REAL64_TOL) .or. &
             .not.fac_multiple_rhs%is_factored()) then
@@ -314,7 +314,7 @@ contains
         end if
 
         fac_single_rhs = qr_factorization(a)
-        x_single = fac_single_rhs%solve_single_rhs(b_single, flag)
+        x_single = fac_single_rhs%solve(b_single, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_single, x_expected(:,1), REAL64_TOL) .or. &
             .not.fac_single_rhs%is_factored()) then
@@ -323,7 +323,7 @@ contains
         end if
 
         fac_pvt = qr_factorization(a, pvt = .true.)
-        x_multiple_pvt = fac_pvt%solve_multiple_rhs(b_multiple, flag)
+        x_multiple_pvt = fac_pvt%solve(b_multiple, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_multiple_pvt, x_expected, REAL64_TOL) .or. &
             .not.fac_pvt%is_factored()) then
@@ -331,7 +331,7 @@ contains
             print '(A)', "Test Failed: QR Factorization Type Pivoted Multiple RHS Solve"
         end if
 
-        x_single_pvt = fac_pvt%solve_single_rhs(b_single, flag)
+        x_single_pvt = fac_pvt%solve(b_single, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_single_pvt, x_expected(:,1), REAL64_TOL) .or. &
             .not.fac_pvt%is_factored()) then
@@ -341,7 +341,7 @@ contains
 
         fac_multiple_in_place = qr_factorization(a)
         b_multiple_in_place = b_multiple
-        call fac_multiple_in_place%solve_multiple_rhs_in_place(b_multiple_in_place, flag)
+        call fac_multiple_in_place%solve_in_place(b_multiple_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_multiple_in_place, x_expected, REAL64_TOL)) then
             rst = .false.
@@ -350,7 +350,7 @@ contains
 
         fac_single_in_place = qr_factorization(a)
         b_single_in_place = b_single
-        call fac_single_in_place%solve_single_rhs_in_place(b_single_in_place, flag)
+        call fac_single_in_place%solve_in_place(b_single_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_single_in_place, x_expected(:,1), REAL64_TOL)) then
             rst = .false.
@@ -359,7 +359,7 @@ contains
 
         fac_multiple_pvt_in_place = qr_factorization(a, pvt = .true.)
         b_multiple_in_place = b_multiple
-        call fac_multiple_pvt_in_place%solve_multiple_rhs_in_place(b_multiple_in_place, flag)
+        call fac_multiple_pvt_in_place%solve_in_place(b_multiple_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_multiple_in_place, x_expected, REAL64_TOL)) then
             rst = .false.
@@ -368,7 +368,7 @@ contains
 
         fac_single_pvt_in_place = qr_factorization(a, pvt = .true.)
         b_single_in_place = b_single
-        call fac_single_pvt_in_place%solve_single_rhs_in_place(b_single_in_place, flag)
+        call fac_single_pvt_in_place%solve_in_place(b_single_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_single_in_place, x_expected(:,1), REAL64_TOL)) then
             rst = .false.
@@ -377,7 +377,7 @@ contains
 
         b_tall_in_place = matmul(a_tall, x_tall_expected)
         fac_tall_in_place = qr_factorization(a_tall)
-        call fac_tall_in_place%solve_multiple_rhs_in_place(b_tall_in_place, flag)
+        call fac_tall_in_place%solve_in_place(b_tall_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_tall_in_place(1:n,:), x_tall_expected, REAL64_TOL)) then
             rst = .false.
@@ -386,7 +386,7 @@ contains
 
         b_tall_in_place = matmul(a_tall, x_tall_expected)
         fac_tall_pvt_in_place = qr_factorization(a_tall, pvt = .true.)
-        call fac_tall_pvt_in_place%solve_multiple_rhs_in_place(b_tall_in_place, flag)
+        call fac_tall_pvt_in_place%solve_in_place(b_tall_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_tall_in_place(1:n,:), x_tall_expected, REAL64_TOL)) then
             rst = .false.
@@ -396,7 +396,7 @@ contains
         b_wide_in_place = 0.0d0
         b_wide_in_place(1:m_wide,:) = matmul(a_wide, x_wide_expected)
         fac_wide_pvt_in_place = qr_factorization(a_wide, pvt = .true.)
-        call fac_wide_pvt_in_place%solve_multiple_rhs_in_place(b_wide_in_place, flag)
+        call fac_wide_pvt_in_place%solve_in_place(b_wide_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_wide_in_place, x_wide_expected, REAL64_TOL)) then
             rst = .false.
@@ -405,7 +405,7 @@ contains
 
         b_wide_single_in_place = 0.0d0
         b_wide_single_in_place(1:m_wide) = matmul(a_wide, x_wide_expected(:,1))
-        call fac_wide_pvt_in_place%solve_single_rhs_in_place(b_wide_single_in_place, flag)
+        call fac_wide_pvt_in_place%solve_in_place(b_wide_single_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_wide_single_in_place, x_wide_expected(:,1), REAL64_TOL)) then
             rst = .false.
@@ -416,7 +416,7 @@ contains
         b_rank_deficient_in_place(1:m_wide,:) = &
             matmul(a_rank_deficient, x_rank_deficient_expected)
         fac_rank_deficient_pvt_in_place = qr_factorization(a_rank_deficient, pvt = .true.)
-        call fac_rank_deficient_pvt_in_place%solve_multiple_rhs_in_place(&
+        call fac_rank_deficient_pvt_in_place%solve_in_place(&
             b_rank_deficient_in_place, flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(b_rank_deficient_in_place, &
@@ -425,7 +425,7 @@ contains
             print '(A)', "Test Failed: QR Factorization Type Pivoted Rank-Deficient In-Place Solve"
         end if
 
-        x_tall_solved = fac_tall_in_place%solve_multiple_rhs(&
+        x_tall_solved = fac_tall_in_place%solve(&
             matmul(a_tall, x_tall_expected), flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_tall_solved, x_tall_expected, REAL64_TOL)) then
@@ -433,7 +433,7 @@ contains
             print '(A)', "Test Failed: QR Factorization Type Tall Multiple RHS Solve Shape"
         end if
 
-        x_wide_solved = fac_wide_pvt_in_place%solve_multiple_rhs(&
+        x_wide_solved = fac_wide_pvt_in_place%solve(&
             matmul(a_wide, x_wide_expected), flag)
         if (flag /= LA_NO_ERROR .or. &
             .not.is_mtx_equal(x_wide_solved, x_wide_expected, REAL64_TOL)) then

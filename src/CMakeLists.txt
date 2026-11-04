@@ -113,6 +113,7 @@ set(LINALG_SOURCES
     ${dir}/linalg_inverse.f90
     ${dir}/linalg_least_squares.f90
     ${dir}/linalg_types.f90
+    ${dir}/linalg_linear_operators.f90
 )
 list(APPEND LINALG_SOURCES ${QRUPDATE_SOURCES})
 list(APPEND LINALG_SOURCES ${SPARSEKIT_SOURCES})

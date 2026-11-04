@@ -428,6 +428,9 @@ program main
     rst = test_qr_factorization_type()
     if (.not.rst) flag = 127
 
+    rst = test_operator_eigen()
+    if (.not.rst) flag = 128
+
     ! End
     if (flag /= 0) stop flag
 end program

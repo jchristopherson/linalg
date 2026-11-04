@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_sparse
     !! Provides sparse matrix types, conversions, arithmetic, and iterative or direct solvers.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use sparskit
     use blas
     use linalg_errors
@@ -39,16 +39,16 @@ module linalg_sparse
 
 type :: csr_matrix
     !! A sparse matrix stored in compressed sparse row (CSR) format.
-    integer(int32), allocatable, dimension(:) :: row_indices
+    integer, allocatable, dimension(:) :: row_indices
         !! An M+1 element array containing the indices in V an JA at which the
         !! requested row starts.
-    integer(int32), allocatable, dimension(:) :: column_indices
+    integer, allocatable, dimension(:) :: column_indices
         !! An NNZ-element array, where NNZ is the number of non-zero values,
         !! containing the column indices of each value.
     real(real64), allocatable, dimension(:) :: values
         !! An NNZ-element array, where NNZ is the number of non-zero values,
         !! containing the non-zero values of the matrix.
-    integer(int32), private :: n = 0
+    integer, private :: n = 0
         !! The number of columns in the matrix.
 contains
     procedure, public :: get => csr_get_element
@@ -58,16 +58,16 @@ end type
 ! ------------------------------------------------------------------------------
 type :: msr_matrix
     !! A sparse matrix stored in modified sparse row format.
-    integer(int32), allocatable, dimension(:) :: indices
+    integer, allocatable, dimension(:) :: indices
         !! An NNZ-element array containing the index information.
     real(real64), allocatable, dimension(:) :: values
         !! An NNZ-element array containing the non-zero values from the
         !! matrix.  The first MIN(M,N) elements contain the diagonal.
-    integer(int32) :: m = 0
+    integer :: m = 0
         !! The number of rows in the matrix.
-    integer(int32) :: n = 0
+    integer :: n = 0
         !! The number of columns in the matrix.
-    integer(int32) :: nnz = 0
+    integer :: nnz = 0
         !! The number of nonzero values in the matrix.
 end type
 
@@ -138,15 +138,15 @@ function csr_get_element(this, i, j) result(rst)
     !! Retrieves the element at the specified row and column.
     class(csr_matrix), intent(in) :: this
         !! The CSR matrix object.
-    integer(int32), intent(in) :: i
+    integer, intent(in) :: i
         !! The row index.
-    integer(int32), intent(in) :: j
+    integer, intent(in) :: j
         !! The column index.
     real(real64) :: rst
         !! The value at the specified row and column.
 
     ! Local Variables
-    integer(int32) :: iadd
+    integer :: iadd
     logical :: sorted
 
     ! Initialization
@@ -173,9 +173,9 @@ pure function csr_size(x, dim) result(rst)
     !! Returns the size of the matrix along the specified dimension.
     class(csr_matrix), intent(in) :: x
         !! The CSR matrix object.
-    integer(int32), intent(in) :: dim
+    integer, intent(in) :: dim
         !! The dimension to return the size of.
-    integer(int32) :: rst
+    integer :: rst
         !! The size of the matrix along the specified dimension.
 
     ! Process
@@ -198,7 +198,7 @@ pure function nonzero_count_csr(x) result(rst)
     !! Returns the number of non-zero values in the matrix.
     class(csr_matrix), intent(in) :: x
         !! The CSR matrix object.
-    integer(int32) :: rst
+    integer :: rst
         !! The number of non-zero values in the matrix.
 
     ! Process
@@ -212,17 +212,17 @@ end function
 ! ------------------------------------------------------------------------------
 pure function create_empty_csr_matrix(m, n, nnz) result(rst)
     !! Creates an empty CSR matrix.
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the matrix.
-    integer(int32), intent(in) :: n
+    integer, intent(in) :: n
         !! The number of columns in the matrix.
-    integer(int32), intent(in) :: nnz
+    integer, intent(in) :: nnz
         !! The number of non-zero values in the matrix.
     type(csr_matrix) :: rst
         !! The empty CSR matrix.
 
     ! Local Variables
-    integer(int32) :: m1
+    integer :: m1
     
     ! Initialization
     m1 = m + 1
@@ -253,7 +253,7 @@ pure function dense_to_csr(a) result(rst)
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, nnz
+    integer :: i, j, k, m, n, nnz
     real(real64) :: t
     
     ! Initialization
@@ -291,11 +291,11 @@ end function
 ! ------------------------------------------------------------------------------
 pure function banded_to_csr(m, ml, mu, a) result(rst)
     !! Converts a banded matrix to a CSR matrix.
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the banded matrix.
-    integer(int32), intent(in) :: ml
+    integer, intent(in) :: ml
         !! The number of lower diagonals in the banded matrix.
-    integer(int32), intent(in) :: mu
+    integer, intent(in) :: mu
         !! The number of upper diagonals in the banded matrix.
     real(real64), intent(in), dimension(:,:) :: a
         !! The banded matrix to convert.
@@ -303,8 +303,8 @@ pure function banded_to_csr(m, ml, mu, a) result(rst)
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: n, nnz, lowd, lda, flag
-    integer(int32), allocatable, dimension(:) :: ia, ja
+    integer :: n, nnz, lowd, lda, flag
+    integer, allocatable, dimension(:) :: ia, ja
     real(real64), allocatable, dimension(:) :: v
     
     ! Initialization
@@ -344,7 +344,7 @@ pure function csr_to_dense(a) result(x)
         !! The dense matrix.
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, nnz
+    integer :: i, j, k, m, n, nnz
     
     ! Initialization
     m = size(a, 1)
@@ -370,7 +370,7 @@ pure function diag_to_csr(a) result(rst)
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: i, n, n1
+    integer :: i, n, n1
     
     ! Initialization
     n = size(a)
@@ -424,10 +424,10 @@ pure function csr_mtx_mtx_mult(a, b) result(rst)
         !! The resulting CSR matrix.
 
     ! Local Variables
-    integer(int32), parameter :: sym_mult = 0
-    integer(int32), parameter :: full_mult = 1
-    integer(int32) :: m, n, k, nnza, nnzb, nnzc, ierr
-    integer(int32), allocatable, dimension(:) :: ic, jc, iw
+    integer, parameter :: sym_mult = 0
+    integer, parameter :: full_mult = 1
+    integer :: m, n, k, nnza, nnzb, nnzc, ierr
+    integer, allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
     
     ! Initialization
@@ -485,7 +485,7 @@ pure function csr_mtx_vec_mult(a, b) result(rst)
         !! The resulting vector.
 
     ! Local Variables
-    integer(int32) :: i, k, k1, k2, n, p
+    integer :: i, k, k1, k2, n, p
     real(real64) :: t
 
     ! Initialization
@@ -523,10 +523,10 @@ pure function csr_mtx_add(a, b) result(rst)
         !! The resulting CSR matrix.
 
     ! Local Variables
-    integer(int32), parameter :: sym_add = 0
-    integer(int32), parameter :: full_add = 1
-    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr
-    integer(int32), allocatable, dimension(:) :: ic, jc, iw
+    integer, parameter :: sym_add = 0
+    integer, parameter :: full_add = 1
+    integer :: m, n, nnza, nnzb, nnzc, ierr
+    integer, allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
     
     ! Initialization
@@ -583,9 +583,9 @@ pure function csr_mtx_sub(a, b) result(rst)
         !! The resulting CSR matrix.
 
     ! Local Variables
-    integer(int32), parameter :: sym_add = 0
-    integer(int32) :: m, n, nnza, nnzb, nnzc, ierr
-    integer(int32), allocatable, dimension(:) :: ic, jc, iw
+    integer, parameter :: sym_add = 0
+    integer :: m, n, nnza, nnzb, nnzc, ierr
+    integer, allocatable, dimension(:) :: ic, jc, iw
     real(real64) :: dummy(1)
     
     ! Initialization
@@ -642,7 +642,7 @@ pure function csr_mtx_mult_scalar_1(a, b) result(rst)
         !! The resulting CSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz
+    integer :: m, n, nnz
     
     ! Initialization
     m = size(a, 1)
@@ -669,7 +669,7 @@ pure function csr_mtx_mult_scalar_2(a, b) result(rst)
         !! The resulting CSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz
+    integer :: m, n, nnz
     
     ! Initialization
     m = size(b, 1)
@@ -695,7 +695,7 @@ pure function csr_mtx_divide_scalar_1(a, b) result(rst)
     type(csr_matrix) :: rst
 
     ! Local Variables
-    integer(int32) :: m, n, nnz
+    integer :: m, n, nnz
     
     ! Initialization
     m = size(a, 1)
@@ -720,7 +720,7 @@ pure function csr_transpose(a) result(rst)
         !! The transposed CSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz
+    integer :: m, n, nnz
 
     ! Initialization
     m = size(a, 1)
@@ -742,8 +742,8 @@ pure function csr_extract_diagonal(a) result(diag)
         !! The diagonal values.
 
     ! Local Variables
-    integer(int32) :: m, n, mn, len
-    integer(int32), allocatable, dimension(:) :: idiag
+    integer :: m, n, mn, len
+    integer, allocatable, dimension(:) :: idiag
     
     ! Initialization
     m = size(a, 1)
@@ -764,7 +764,7 @@ pure function validate_csr_storage(a) result(flag)
     class(csr_matrix), intent(in) :: a
         !! Matrix to inspect without modification. Rows may be unsorted, but
         !! column indices within each row must be unique and in range.
-    integer(int32) :: flag
+    integer :: flag
         !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
         !! LA_INVALID_INPUT_ERROR for empty dimensions or nonfinite values;
         !! LA_MATRIX_FORMAT_ERROR for inconsistent lengths, pointers, or columns.
@@ -803,9 +803,9 @@ pure function validate_msr_lu(lu, ju) result(flag)
     class(msr_matrix), intent(in) :: lu
         !! Nonempty square factors with row pointers in INDICES(1:N+1),
         !! followed by lower entries and then upper entries within each row.
-    integer(int32), intent(in) :: ju(:)
+    integer, intent(in) :: ju(:)
         !! N pointers splitting each row into its strict lower and upper parts.
-    integer(int32) :: flag
+    integer :: flag
         !! LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
         !! LA_MATRIX_NOT_SQUARE_ERROR or LA_MATRIX_DIMENSION_ERROR for sizes;
         !! LA_INVALID_INPUT_ERROR for empty factors; LA_MATRIX_FORMAT_ERROR
@@ -865,8 +865,8 @@ pure function csr_solve_sparse_direct(a, b, droptol) result(x)
         !! Inputs are preserved; an explicitly detected breakdown yields NaNs.
 
     ! Local Variables
-    integer(int32) :: i, m, n, nnz, lfil, iwk, ierr
-    integer(int32), allocatable, dimension(:) :: jlu, ju, jw
+    integer :: i, m, n, nnz, lfil, iwk, ierr
+    integer, allocatable, dimension(:) :: jlu, ju, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt, nan
     type(msr_matrix) :: factors
@@ -969,9 +969,9 @@ pure function msr_size(x, dim) result(rst)
     !! Returns the size of the specified dimension of an MSR matrix.
     class(msr_matrix), intent(in) :: x
         !! The MSR matrix.
-    integer(int32), intent(in) :: dim
+    integer, intent(in) :: dim
         !! The dimension to return the size of.
-    integer(int32) :: rst
+    integer :: rst
         !! The size of the specified dimension.
 
     ! Process
@@ -990,7 +990,7 @@ pure function nonzero_count_msr(x) result(rst)
     !! Returns the number of non-zero elements in an MSR matrix.
     class(msr_matrix), intent(in) :: x
         !! The MSR matrix.
-    integer(int32) :: rst
+    integer :: rst
         !! The number of non-zero elements.
 
     ! Process
@@ -1000,17 +1000,17 @@ end function
 ! ------------------------------------------------------------------------------
 pure function create_empty_msr_matrix(m, n, nnz) result(rst)
     !! Creates an empty MSR matrix.
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the matrix.
-    integer(int32), intent(in) :: n
+    integer, intent(in) :: n
         !! The number of columns in the matrix.
-    integer(int32), intent(in) :: nnz
+    integer, intent(in) :: nnz
         !! The number of non-zero elements in the matrix.
     type(msr_matrix) :: rst
         !! The MSR matrix.
 
     ! Local Variables
-    integer(int32) :: nelem, mn
+    integer :: nelem, mn
     
     ! Input Checking
     if (m < 0) then
@@ -1042,8 +1042,8 @@ pure function csr_to_msr(a) result(rst)
         !! The MSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz
-    integer(int32), allocatable, dimension(:) :: iwork, jc, ic
+    integer :: m, n, nnz
+    integer, allocatable, dimension(:) :: iwork, jc, ic
     real(real64), allocatable, dimension(:) :: work, ac
     
     ! Initialization
@@ -1071,8 +1071,8 @@ pure function msr_to_csr(a) result(rst)
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: m, n, nnz, flag
-    integer(int32), allocatable, dimension(:) :: iwork
+    integer :: m, n, nnz, flag
+    integer, allocatable, dimension(:) :: iwork
     real(real64), allocatable, dimension(:) :: work
     
     ! Initialization
@@ -1116,7 +1116,7 @@ pure function msr_to_dense(a) result(x)
         !! The dense matrix.
 
     ! Local Variables
-    integer(int32) :: m, n
+    integer :: m, n
     type(csr_matrix) :: csr
     
     ! Initialization
@@ -1179,13 +1179,13 @@ end subroutine
 ! ------------------------------------------------------------------------------
 pure function create_csr_matrix(m, n, rows, cols, vals) result(rst)
     !! Creates a CSR matrix from the input data.
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the matrix.
-    integer(int32), intent(in) :: n
+    integer, intent(in) :: n
         !! The number of columns in the matrix.
-    integer(int32), intent(in), dimension(:) :: rows
+    integer, intent(in), dimension(:) :: rows
         !! The row indices.
-    integer(int32), intent(in), dimension(:) :: cols
+    integer, intent(in), dimension(:) :: cols
         !! The column indices.
     real(real64), intent(in), dimension(:) :: vals
         !! The values.
@@ -1193,8 +1193,8 @@ pure function create_csr_matrix(m, n, rows, cols, vals) result(rst)
         !! The CSR matrix.
 
     ! Local Variables
-    integer(int32) :: i, nnz
-    integer(int32), allocatable, dimension(:) :: ir
+    integer :: i, nnz
+    integer, allocatable, dimension(:) :: ir
     
     ! Initialization
     nnz = size(rows)
@@ -1240,18 +1240,18 @@ pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)
         !! Nonempty N-by-N coefficient matrix in valid CSR format.
     class(msr_matrix), intent(in) :: lu
         !! Prepared N-by-N ILUT preconditioner in MSR format.
-    integer(int32), intent(in) :: ju(:)
+    integer, intent(in) :: ju(:)
         !! N pointers to upper-factor rows in LU.
     real(real64), intent(in) :: b(:)
         !! N-element right-hand side, not modified.
-    integer(int32), intent(in), optional :: im
+    integer, intent(in), optional :: im
         !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50).
     real(real64), intent(in), optional :: tol
         !! Finite relative residual tolerance at least EPSILON; default
         !! SQRT(EPSILON). Success requires NORM2(B-A*X) <= TOL*NORM2(B).
-    integer(int32), intent(in), optional :: maxits
+    integer, intent(in), optional :: maxits
         !! Positive iteration budget, checked at restart boundaries; default 100.
-    integer(int32), intent(in), optional :: iout
+    integer, intent(in), optional :: iout
         !! Output unit for iteration logs; nonpositive suppresses logs, default 0.
     real(real64), allocatable :: x(:)
         !! Computed N-element solution of the original system A * X = B.
@@ -1267,23 +1267,23 @@ pure subroutine csr_pgmres_solve(a, lu, ju, b, x, im, tol, maxits, iout, flag)
         !! The nonempty N-by-N coefficient matrix in valid CSR format.
     class(msr_matrix), intent(in) :: lu
         !! Prepared N-by-N ILUT factors in MSR format, not modified.
-    integer(int32), intent(in), dimension(:) :: ju
+    integer, intent(in), dimension(:) :: ju
         !! N pointers to the starts of the upper-factor rows in LU.
     real(real64), intent(in), dimension(:) :: b
         !! N-element right-hand side, not modified. A zero vector yields zero.
-    integer(int32), intent(in), optional :: im
+    integer, intent(in), optional :: im
         !! Restart length in [1, MIN(N, 50)]; default MIN(N, 50). The upper
         !! bound is imposed by the bundled SPARSKIT implementation.
-    integer(int32), intent(in), optional :: maxits
+    integer, intent(in), optional :: maxits
         !! Positive iteration budget, default 100. SPARSKIT checks this budget
         !! at restart boundaries and may exceed it by up to IM-1 iterations.
-    integer(int32), intent(in), optional :: iout
+    integer, intent(in), optional :: iout
         !! Fortran output unit for iteration information. Nonpositive values
         !! suppress output; default zero.
     real(real64), intent(in), optional :: tol
         !! Finite relative residual tolerance, at least machine epsilon;
         !! default SQRT(EPSILON). Success requires NORM2(B-A*X) <= TOL*NORM2(B).
-    integer(int32), intent(out), optional :: flag
+    integer, intent(out), optional :: flag
         !! LA_NO_ERROR on success; LA_CONVERGENCE_ERROR if iteration or the
         !! true-residual check fails. Invalid dimensions return
         !! LA_MATRIX_DIMENSION_ERROR or LA_MATRIX_NOT_SQUARE_ERROR; invalid
@@ -1298,7 +1298,7 @@ pure subroutine csr_pgmres_solve(a, lu, ju, b, x, im, tol, maxits, iout, flag)
         !! unchanged; this does not assert reentrancy of external routines.
 
     ! Local Variables
-    integer(int32) :: n, ierr, io, mit, krylov
+    integer :: n, ierr, io, mit, krylov
     real(real64) :: eps
     real(real64), allocatable, dimension(:) :: bc
     real(real64), allocatable, dimension(:,:) :: vv

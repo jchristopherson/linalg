@@ -3,7 +3,7 @@
 
 ! A module containing routines to support testing of the sorting routines.
 module test_sort
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use fortran_test_helper
@@ -15,11 +15,11 @@ contains
 ! ------------------------------------------------------------------------------
 function test_dbl_ascend_sort() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer, parameter :: n = 200
 
     ! Local Variables
     logical :: rst, ascend
-    integer(int32) :: i, ind(n)
+    integer :: i, ind(n)
     real(real64) :: x1(n), x2(n)
 
     ! Initialization
@@ -59,11 +59,11 @@ end function
 ! ------------------------------------------------------------------------------
 function test_ascend_sort_cmplx() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer, parameter :: n = 200
 
     ! Local Variables
     logical :: rst, ascend
-    integer(int32) :: i, ind(n)
+    integer :: i, ind(n)
     complex(real64) :: x1(n), x2(n)
 
     ! Initialization
@@ -94,11 +94,11 @@ end function
 ! ------------------------------------------------------------------------------
 function test_dbl_descend_sort() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer, parameter :: n = 200
 
     ! Local Variables
     logical :: rst, ascend
-    integer(int32) :: i, ind(n)
+    integer :: i, ind(n)
     real(real64) :: x1(n), x2(n)
 
     ! Initialization
@@ -138,11 +138,11 @@ end function
 ! ------------------------------------------------------------------------------
 function test_descend_sort_cmplx() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
+    integer, parameter :: n = 200
 
     ! Local Variables
     logical :: rst, ascend
-    integer(int32) :: i, ind(n)
+    integer :: i, ind(n)
     complex(real64) :: x1(n), x2(n)
 
     ! Initialization
@@ -173,13 +173,13 @@ end function
 ! ------------------------------------------------------------------------------
 function test_int32_ascend_sort() result(rst)
     ! Parameters
-    integer(int32), parameter :: n = 200
-    integer(int32), parameter :: first = -10000
-    integer(int32), parameter :: last = 10000
+    integer, parameter :: n = 200
+    integer, parameter :: first = -10000
+    integer, parameter :: last = 10000
 
     ! Local Variables
     logical :: rst, ascend
-    integer(int32) :: i, ind(n), x1(n), x2(n), ri
+    integer :: i, ind(n), x1(n), x2(n), ri
     real(real64) :: rv
 
     ! Initialization

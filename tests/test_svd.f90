@@ -3,7 +3,7 @@
 
 ! Tests for SVD operations.
 module test_svd_ops
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use linalg_errors, only : LA_NO_ERROR, LA_NOT_INITIALIZED_ERROR, &
@@ -14,8 +14,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -44,8 +44,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
@@ -75,8 +75,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1
@@ -106,8 +106,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables
@@ -138,8 +138,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1, t1
@@ -169,8 +169,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -205,8 +205,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_factorization_type() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 6
-        integer(int32), parameter :: nrhs = 3
+        integer, parameter :: n = 6
+        integer, parameter :: nrhs = 3
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, t
@@ -216,7 +216,7 @@ contains
         real(real64), allocatable, dimension(:) :: s, x_single
         type(svd_factorization) :: fac, fac_form, fac_single, fac_multiple
         type(svd_factorization) :: fac_inplace
-        integer(int32) :: i, flag
+        integer :: i, flag
         logical :: rst
 
         ! Initialization
@@ -306,8 +306,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_factorization_skinny() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 8
-        integer(int32), parameter :: n = 5
+        integer, parameter :: m = 8
+        integer, parameter :: n = 5
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -318,7 +318,7 @@ contains
         real(real64), allocatable, dimension(:,:) :: u, vt, t
         real(real64), allocatable, dimension(:) :: s, x, x_wide, x_ref
         type(svd_factorization) :: fac_skinny, fac_full, fac_wide
-        integer(int32) :: i, flag
+        integer :: i, flag
         logical :: rst
 
         ! Initialization
@@ -410,7 +410,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_svd_factorization_errors() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 4
+        integer, parameter :: n = 4
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a_singular
@@ -418,7 +418,7 @@ contains
         real(real64), dimension(n - 1) :: b_bad
         real(real64), allocatable, dimension(:) :: x
         type(svd_factorization) :: empty, fac, fac_singular
-        integer(int32) :: flag, i
+        integer :: flag, i
         logical :: rst
 
         ! Initialization

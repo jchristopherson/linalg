@@ -4,13 +4,13 @@
 ! Example Source: 
 ! https://www.mathworks.com/help/matlab/ref/lu.html?s_tid=srchtitle
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
     ! Local Variables
     real(real64) :: a(3,3), b(3), x(3)
-    integer(int32) :: i
+    integer :: i
     type(lu_factorization) :: lu
 
     ! Build the 3-by-3 matrix A.

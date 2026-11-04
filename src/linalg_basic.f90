@@ -32,11 +32,11 @@ module linalg_basic
     public :: extract_lower_triangular
     public :: identity
 
-    integer(int32), parameter :: LA_NO_OPERATION = 0
+    integer, parameter :: LA_NO_OPERATION = 0
         !! Defines no operation should be performed on the matrix.
-    integer(int32), parameter :: LA_TRANSPOSE = 1
+    integer, parameter :: LA_TRANSPOSE = 1
         !! Defines a transpose operation.
-    integer(int32), parameter :: LA_HERMITIAN_TRANSPOSE = 2
+    integer, parameter :: LA_HERMITIAN_TRANSPOSE = 2
         !! Defines a Hermitian transpose operation for a complex-valued matrix.
 
     interface mtx_mult
@@ -177,7 +177,7 @@ pure subroutine mtx_mult_mtx(transa, transb, alpha, a, b, beta, c)
 
     ! Local Variables
     character :: ta, tb
-    integer(int32) :: m, n, k, lda, ldb, flag
+    integer :: m, n, k, lda, ldb, flag
 
     ! Initialization
     m = size(c, 1)
@@ -237,7 +237,7 @@ pure subroutine mtx_mult_vec(trans, alpha, a, b, beta, c)
 
     ! Local Variables
     character :: t
-    integer(int32) :: m, n, flag
+    integer :: m, n, flag
 
     ! Initialization
     m = size(a, 1)
@@ -274,7 +274,7 @@ end subroutine
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx !
 pure subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c)
     !! Performs the matrix operation \(C = \alpha A B + \beta C \).
-    integer(int32), intent(in) :: opa
+    integer, intent(in) :: opa
         !! An integer flag indicating the operation to perform on matrix \(A\).
         !! Possible options are:
         !!
@@ -283,7 +283,7 @@ pure subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c)
         !! - LA_TRANSPOSE: The transpose of matrix is used.
         !!
         !! - LA_HERMITIAN_TRANSPOSE: The Hermitian transpose of matrix is used.
-    integer(int32), intent(in) :: opb
+    integer, intent(in) :: opb
         !! An integer flag indicating the operation to perform on matrix \(B\).
         !! Possible options are:
         !!
@@ -309,7 +309,7 @@ pure subroutine cmtx_mult_mtx(opa, opb, alpha, a, b, beta, c)
 
     ! Local Variables
     character :: ta, tb
-    integer(int32) :: m, n, k, lda, ldb, flag
+    integer :: m, n, k, lda, ldb, flag
 
     ! Initialization
     m = size(c, 1)
@@ -362,7 +362,7 @@ end subroutine
 ! ------------------------------------------------------------------------------
 pure subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c)
     !! Performs the matrix-vector operation \(C = \alpha A B + \beta C \).
-    integer(int32), intent(in) :: opa
+    integer, intent(in) :: opa
         !! An integer flag indicating the operation to perform on matrix \(A\).
         !! Possible options are:
         !!
@@ -384,7 +384,7 @@ pure subroutine cmtx_mult_vec(opa, alpha, a, b, beta, c)
 
     ! Local Variables
     character :: t
-    integer(int32) :: m, n, flag
+    integer :: m, n, flag
 
     ! Initialization
     m = size(a, 1)
@@ -439,7 +439,7 @@ pure subroutine rank1_update_dbl(alpha, x, y, a)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: j, m, n
+    integer :: j, m, n
     real(real64) :: temp
 
     ! Initialization
@@ -479,7 +479,7 @@ pure subroutine rank1_update_cmplx(alpha, x, y, a)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: j, m, n
+    integer :: j, m, n
     complex(real64) :: temp
 
     ! Initialization
@@ -527,7 +527,7 @@ pure subroutine diag_mtx_mult_mtx(lside, trans, alpha, a, b, beta, c)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+    integer :: i, m, n, k, nrowb, ncolb, flag
     real(real64) :: temp
 
     ! Initialization
@@ -667,7 +667,7 @@ pure subroutine diag_mtx_mult_mtx2(lside, alpha, a, b)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, k
+    integer :: i, m, n, k
     real(real64) :: temp
 
     ! Initialization
@@ -723,7 +723,7 @@ pure subroutine diag_mtx_mult_mtx3(lside, trans, alpha, a, b, beta, c)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+    integer :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
 
     ! Initialization
@@ -851,7 +851,7 @@ pure subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c)
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
         !! A logical flag indicating if the diagonal matrix is on the left.
-    integer(int32), intent(in) :: opb
+    integer, intent(in) :: opb
         !! An integer flag indicating the operation to perform on matrix \(B\).
         !! Possible options are:
         !!
@@ -876,7 +876,7 @@ pure subroutine diag_mtx_mult_mtx4(lside, opb, alpha, a, b, beta, c)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+    integer :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
 
     ! Initialization
@@ -1026,7 +1026,7 @@ pure subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c)
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
         !! A logical flag indicating if the diagonal matrix is on the left.
-    integer(int32), intent(in) :: opb
+    integer, intent(in) :: opb
         !! An integer flag indicating the operation to perform on matrix \(B\).
         !! Possible options are:
         !!
@@ -1051,7 +1051,7 @@ pure subroutine diag_mtx_mult_mtx_cmplx(lside, opb, alpha, a, b, beta, c)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+    integer :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
 
     ! Initialization
@@ -1213,7 +1213,7 @@ pure subroutine diag_mtx_mult_mtx2_cmplx(lside, alpha, a, b)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k
+    integer :: i, m, n, k
     complex(real64) :: temp
 
     ! Initialization
@@ -1251,7 +1251,7 @@ pure subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c)
     !! \(C = \alpha op(B) A + \beta C \) where \(A\) is a diagonal matrix.
     logical, intent(in) :: lside
         !! A logical flag indicating if the diagonal matrix is on the left.
-    integer(int32), intent(in) :: opb
+    integer, intent(in) :: opb
         !! An integer flag indicating the operation to perform on matrix \(B\).
         !! Possible options are:
         !!
@@ -1276,7 +1276,7 @@ pure subroutine diag_mtx_mult_mtx_mix(lside, opb, alpha, a, b, beta, c)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k, nrowb, ncolb, flag
+    integer :: i, m, n, k, nrowb, ncolb, flag
     complex(real64) :: temp
 
     ! Initialization
@@ -1438,7 +1438,7 @@ pure subroutine diag_mtx_mult_mtx2_mix(lside, alpha, a, b)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, k
+    integer :: i, m, n, k
     complex(real64) :: temp
 
     ! Initialization
@@ -1480,7 +1480,7 @@ pure subroutine diag_mtx_sparse_mult(lside, alpha, a, b)
     class(csr_matrix), intent(inout) :: b
 
     ! Local Variables
-    integer(int32) :: ii, k, k1, k2, nrow
+    integer :: ii, k, k1, k2, nrow
     real(real64) :: scal
     
     ! Initialization
@@ -1544,7 +1544,7 @@ pure function trace_dbl(x) result(y)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn
+    integer :: i, m, n, mn
 
     ! Initialization
     y = zero
@@ -1570,7 +1570,7 @@ pure function trace_cmplx(x) result(y)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn
+    integer :: i, m, n, mn
 
     ! Initialization
     y = zero
@@ -1597,11 +1597,11 @@ pure function mtx_rank_dbl(a, tol) result(rnk)
         !! smallest value that causes an overflow if inverted, the tolerance
         !! reverts back to its default value, and the operation continues; 
         !! however, a warning message is issued.
-    integer(int32) :: rnk
+    integer :: rnk
         !! The rank of the matrix.
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, istat, lwork, flag
+    integer :: i, m, n, mn, istat, lwork, flag
     real(real64), allocatable, dimension(:) :: s, w
     real(real64), allocatable, dimension(:,:) :: ac
     real(real64) :: t, tref, smlnum
@@ -1618,7 +1618,7 @@ pure function mtx_rank_dbl(a, tol) result(rnk)
     ! Workspace Query
     call DGESVD('N', 'N', m, n, ac, m, dummy, dummy, m, dummy, n, temp, &
         -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
 
     ! Local Memory Allocation
     allocate(s(mn), w(lwork))
@@ -1668,7 +1668,7 @@ pure function mtx_rank_cmplx(a, tol) result(rnk)
         !! smallest value that causes an overflow if inverted, the tolerance
         !! reverts back to its default value, and the operation continues; 
         !! however, a warning message is issued.
-    integer(int32) :: rnk
+    integer :: rnk
         !! The rank of the matrix.
 
     ! External Function Interfaces
@@ -1681,7 +1681,7 @@ pure function mtx_rank_cmplx(a, tol) result(rnk)
     end interface
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, istat, lwork, flag, lrwork
+    integer :: i, m, n, mn, istat, lwork, flag, lrwork
     real(real64), allocatable, dimension(:) :: s, rw
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: ac
@@ -1701,7 +1701,7 @@ pure function mtx_rank_cmplx(a, tol) result(rnk)
     ! Workspace Query
     call ZGESVD('N', 'N', m, n, ac, m, dummy, cdummy, m, cdummy, n, temp, &
         -1, dummy, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
 
     ! Local Memory Allocation
     allocate(s(mn), rw(lrwork), w(lwork))
@@ -1753,10 +1753,10 @@ pure function det_dbl(a) result(x)
     real(real64), parameter :: p1 = 1.0d-1
 
     ! Local Variables
-    integer(int32) :: i, ep, n, flag
+    integer :: i, ep, n, flag
     real(real64) :: temp
     real(real64), allocatable, dimension(:,:) :: ac
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer, allocatable, dimension(:) :: ipvt
 
     ! Input Check
     if (size(a, 1) /= size(a, 2)) then
@@ -1819,10 +1819,10 @@ pure function det_cmplx(a) result(x)
     real(real64), parameter :: real_ten = 1.0d1
 
     ! Local Variables
-    integer(int32) :: i, ep, n, flag
+    integer :: i, ep, n, flag
     complex(real64) :: temp
     complex(real64), allocatable, dimension(:,:) :: ac
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer, allocatable, dimension(:) :: ipvt
 
     ! Input Check
     if (size(a, 1) /= size(a, 2)) then
@@ -1881,7 +1881,7 @@ pure subroutine swap_dbl(x, y)
         !! second array are copied to the first array.
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
     real(real64) :: temp
 
     ! Initialization
@@ -1911,7 +1911,7 @@ pure subroutine swap_cmplx(x, y)
         !! second array are copied to the first array.
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
     complex(real64) :: temp
 
     ! Initialization
@@ -2020,7 +2020,7 @@ pure subroutine tri_mtx_mult_dbl(upper, alpha, a, beta, b)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, k, n
+    integer :: i, j, k, n
     real(real64) :: temp
 
     ! Initialization
@@ -2112,7 +2112,7 @@ pure subroutine tri_mtx_mult_cmplx(upper, alpha, a, beta, b)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, k, n
+    integer :: i, j, k, n
     complex(real64) :: temp
 
     ! Initialization
@@ -2206,9 +2206,9 @@ pure subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
     !! A logical flag indicating whether to perform the operation
     !! \(y = \alpha A x + \beta y\) (FALSE) or \(y = \alpha A^T x + \beta y\)
     !! (TRUE).
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix \(A\).
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix \(A\).
     real(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply by.
@@ -2223,7 +2223,7 @@ pure subroutine band_mtx_vec_mult_dbl(trans, kl, ku, alpha, a, x, beta, &
         !! operation.
 
     ! Local Variables
-    integer(int32) :: m, n
+    integer :: m, n
     
     ! Initialization
     if (trans) then
@@ -2265,7 +2265,7 @@ pure subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
     !!    end do
     !! end do
     !! \endcode
-    integer(int32), intent(in) :: trans
+    integer, intent(in) :: trans
         !! An integer flag indicating the operation to perform on matrix \(A\).
         !! Possible options are:
         !!
@@ -2274,9 +2274,9 @@ pure subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
         !! - LA_TRANSPOSE: The transpose of matrix is used.
         !!
         !! - LA_HERMITIAN_TRANSPOSE: The Hermitian transpose of matrix is used.
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix \(A\).
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix \(A\).
     complex(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply by.
@@ -2293,7 +2293,7 @@ pure subroutine band_mtx_vec_mult_cmplx(trans, kl, ku, alpha, a, x, &
     ! Local Variables
     character :: op
     logical :: trns
-    integer(int32) :: m, n
+    integer :: m, n
     
     ! Initialization
     if (trans == LA_TRANSPOSE) then
@@ -2339,9 +2339,9 @@ pure subroutine band_to_full_mtx_dbl(kl, ku, b, f)
     !!    end do
     !! end do
     !! \endcode
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix.
     real(real64), intent(in), dimension(:,:) :: b
         !! The banded matrix to convert.
@@ -2352,7 +2352,7 @@ pure subroutine band_to_full_mtx_dbl(kl, ku, b, f)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, i1, i2
+    integer :: i, j, k, m, n, i1, i2
     
     ! Initialization
     m = size(f, 1)
@@ -2396,9 +2396,9 @@ pure subroutine band_to_full_mtx_cmplx(kl, ku, b, f)
     !!    end do
     !! end do
     !! \endcode
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix.
     complex(real64), intent(in), dimension(:,:) :: b
         !! The banded matrix to convert.
@@ -2409,7 +2409,7 @@ pure subroutine band_to_full_mtx_cmplx(kl, ku, b, f)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, i1, i2
+    integer :: i, j, k, m, n, i1, i2
     
     ! Initialization
     m = size(f, 1)
@@ -2457,11 +2457,11 @@ pure subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b)
     logical, intent(in) :: left
         !! A logical flag indicating whether to perform the operation
         !! \(A = \alpha A B\) (TRUE) or \(A = \alpha B A\) (FALSE).
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the banded matrix \(A\).
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix.
     real(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply by.
@@ -2474,7 +2474,7 @@ pure subroutine band_diag_mtx_mult_dbl(left, m, kl, ku, alpha, a, b)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, i1, i2, j, k, n
+    integer :: i, i1, i2, j, k, n
     real(real64) :: temp
     
     ! Initialization
@@ -2543,11 +2543,11 @@ pure subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b)
     logical, intent(in) :: left
         !! A logical flag indicating whether to perform the operation
         !! \(A = \alpha A B\) (TRUE) or \(A = \alpha B A\) (FALSE).
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the banded matrix \(A\).
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals in the banded matrix.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals in the banded matrix.
     complex(real64), intent(in) :: alpha
         !! The scalar \(\alpha\) to multiply by.
@@ -2560,7 +2560,7 @@ pure subroutine band_diag_mtx_mult_cmplx(left, m, kl, ku, alpha, a, b)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, i1, i2, j, k, n
+    integer :: i, i1, i2, j, k, n
     complex(real64) :: temp
     
     ! Initialization
@@ -2627,11 +2627,11 @@ pure function banded_to_dense_dbl(m, kl, ku, a) result(x)
     !!    end do
     !! end do
     !! \endcode
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The number of rows in the M-by-N dense matrix.
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals.  Must be at least 0.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
     real(real64), intent(in), dimension(:,:) :: a
         !! The (KL+KU+1)-by-N banded matrix.
@@ -2642,7 +2642,7 @@ pure function banded_to_dense_dbl(m, kl, ku, a) result(x)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, k, n, i1, i2
+    integer :: i, j, k, n, i1, i2
     
     ! Initialization
     n = size(a, 2)
@@ -2685,11 +2685,11 @@ pure function banded_to_dense_cmplx(m, kl, ku, a) result(x)
     !!    end do
     !! end do
     !! \endcode
-    integer(int32), intent(in) :: m
+    integer, intent(in) :: m
         !! The M-by-N dense matrix.
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals.  Must be at least 0.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The (KL+KU+1)-by-N banded matrix.
@@ -2700,7 +2700,7 @@ pure function banded_to_dense_cmplx(m, kl, ku, a) result(x)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, k, n, i1, i2
+    integer :: i, j, k, n, i1, i2
     
     ! Initialization
     n = size(a, 2)
@@ -2745,15 +2745,15 @@ pure function dense_to_banded_dbl(a, kl, ku) result(x)
     !! \endcode
     real(real64), intent(in), dimension(:,:) :: a
         !! The matrix to convert.
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals.  Must be at least 0.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
     real(real64), allocatable, dimension(:,:) :: x
         !! The (KL+KU+1)-by-N banded matrix.
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, mm, flag
+    integer :: i, j, k, m, n, mm, flag
     
     ! Initialization
     m = size(a, 1)
@@ -2795,15 +2795,15 @@ pure function dense_to_banded_cmplx(a, kl, ku) result(x)
     !! \endcode
     complex(real64), intent(in), dimension(:,:) :: a
         !! The matrix to convert.
-    integer(int32), intent(in) :: kl
+    integer, intent(in) :: kl
         !! The number of subdiagonals.  Must be at least 0.
-    integer(int32), intent(in) :: ku
+    integer, intent(in) :: ku
         !! The number of superdiagonals.  Must be at least 0.
     complex(real64), allocatable, dimension(:,:) :: x
         !! The (KL+KU+1)-by-N banded matrix.
 
     ! Local Variables
-    integer(int32) :: i, j, k, m, n, mm, flag
+    integer :: i, j, k, m, n, mm, flag
     
     ! Initialization
     m = size(a, 1)
@@ -2837,7 +2837,7 @@ pure function extract_diagonal_dbl(a) result(diag)
         !! The MIN(M, N) element array for the diagonal elements.
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn
+    integer :: i, m, n, mn
     
     ! Initialization
     m = size(a, 1)
@@ -2860,7 +2860,7 @@ pure function extract_diagonal_cmplx(a) result(diag)
         !! The MIN(M, N) element array for the diagonal elements.
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn
+    integer :: i, m, n, mn
     
     ! Initialization
     m = size(a, 1)
@@ -2883,7 +2883,7 @@ pure function extract_diagonal_csr(a) result(diag)
         !! The MIN(M, N) element array for the diagonal elements.
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn
+    integer :: i, m, n, mn
     
     ! Initialization
     m = size(a, 1)
@@ -2904,7 +2904,7 @@ pure function extract_upper_triangular_dbl(x) result(rst)
         !! The K-by-N upper triangular matrix where K = MIN(M, N).
 
     ! Local Variables
-    integer(int32) :: j, m, n, k, kj
+    integer :: j, m, n, k, kj
 
     ! Process
     m = size(x, 1)
@@ -2927,7 +2927,7 @@ pure function extract_upper_triangular_cmplx(x) result(rst)
         !! The K-by-N upper triangular matrix where K = MIN(M, N).
 
     ! Local Variables
-    integer(int32) :: j, m, n, k, kj
+    integer :: j, m, n, k, kj
 
     ! Process
     m = size(x, 1)
@@ -2950,7 +2950,7 @@ pure function extract_lower_triangular_dbl(x) result(rst)
         !! The M-by-K lower triangular matrix where K = MIN(M, N).
 
     ! Local Variables
-    integer(int32) :: j, m, n, k
+    integer :: j, m, n, k
 
     ! Process
     m = size(x, 1)
@@ -2972,7 +2972,7 @@ pure function extract_lower_triangular_cmplx(x) result(rst)
         !! The M-by-K lower triangular matrix where K = MIN(M, N).
 
     ! Local Variables
-    integer(int32) :: j, m, n, k
+    integer :: j, m, n, k
 
     ! Process
     m = size(x, 1)
@@ -2990,13 +2990,13 @@ end function
 ! ------------------------------------------------------------------------------
 pure function identity(n) result(rst)
     !! Constructs an N-by-N identity matrix.
-    integer(int32), intent(in) :: n
+    integer, intent(in) :: n
         !! The size of the matrix.
     real(real64), allocatable, dimension(:,:) :: rst
         !! The resulting matrix.
 
     ! Local Variables
-    integer(int32) :: i
+    integer :: i
 
     ! Process
     if (n < 1) return

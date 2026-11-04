@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_svd
     !! Provides singular value decompositions for dense real and complex matrices.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use blas
     use linalg_errors
@@ -120,7 +120,7 @@ pure subroutine svdf_update(this, a, skinny_u, skinny_v)
     ! Local Variables
     character :: jobu, jobvt
     integer :: m, n, mn
-    integer(int32) :: info, lwork
+    integer :: info, lwork
     real(real64), dimension(1) :: temp
 
     if (allocated(this%a)) deallocate(this%a)
@@ -148,7 +148,7 @@ pure subroutine svdf_update(this, a, skinny_u, skinny_v)
     ! intermediate results of the solvers.
     call DGESVD(jobu, jobvt, m, n, this%a, m, this%s, this%u, m, this%vt, &
         size(this%vt, 1), temp, -1, info)
-    lwork = max(int(temp(1), int32), int(mn, int32), 1_int32)
+    lwork = max(int(temp(1)), int(mn), 1_int32)
     allocate(this%workspace(lwork))
 end subroutine
 
@@ -193,7 +193,7 @@ subroutine svdf_factor(this, flag)
     ! Local Variables
     character :: jobu, jobvt
     integer :: m, n
-    integer(int32) :: info
+    integer :: info
     real(real64) :: tol
 
     ! Initialization
@@ -471,7 +471,7 @@ pure subroutine svd_dbl(a, s, u, vt)
 
     ! Local Variables
     character :: jobu, jobvt
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     real(real64), allocatable, target, dimension(:) :: w, sc
     real(real64), pointer, dimension(:) :: sptr
     real(real64), allocatable, dimension(:,:) :: ac
@@ -505,7 +505,7 @@ pure subroutine svd_dbl(a, s, u, vt)
     ! Workspace Query
     call DGESVD(jobu, jobvt, m, n, ac, m, temp, temp, m, temp, n, temp, -1, &
         flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DGESVD
@@ -551,7 +551,7 @@ pure subroutine svd_cmplx(a, s, u, vt)
 
     ! Local Variables
     character :: jobu, jobvt
-    integer(int32) :: m, n, mn, lwork, flag, lrwork
+    integer :: m, n, mn, lwork, flag, lrwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: ac
     complex(real64), dimension(1) :: temp
@@ -588,7 +588,7 @@ pure subroutine svd_cmplx(a, s, u, vt)
     ! Workspace Query
     call ZGESVD(jobu, jobvt, m, n, ac, m, rtemp, temp, m, temp, n, temp, -1, &
         rtemp, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), rw(lrwork))
 
     ! Call ZGESVD

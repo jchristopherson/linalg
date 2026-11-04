@@ -3,7 +3,7 @@
 
 ! Tests for QR factorization/solution operations.
 module test_qr
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use linalg_errors, only : LA_NO_ERROR
@@ -15,13 +15,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -51,13 +51,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -87,13 +87,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -123,14 +123,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
-        integer(int32) :: i, j
+        integer :: i, j
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -160,13 +160,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -196,13 +196,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -231,9 +231,9 @@ contains
 
 ! ------------------------------------------------------------------------------
     function test_qr_factorization_type() result(rst)
-        integer(int32), parameter :: n = 3
-        integer(int32), parameter :: m_tall = 4
-        integer(int32), parameter :: m_wide = 2
+        integer, parameter :: n = 3
+        integer, parameter :: m_tall = 4
+        integer, parameter :: m_wide = 2
         real(real64), dimension(n, n), parameter :: a = reshape([ &
             1.0d0, 2.0d0, 3.0d0, &
             2.0d0, 5.0d0, 7.0d0, &
@@ -280,7 +280,7 @@ contains
         real(real64), dimension(n, 2) :: b_wide_in_place
         real(real64), dimension(n) :: b_wide_single_in_place
         real(real64), dimension(n, 2) :: b_rank_deficient_in_place
-        integer(int32) :: flag
+        integer :: flag
         logical :: rst
 
         rst = .true.
@@ -448,8 +448,8 @@ contains
     ! LEFT SIDE
     function test_qr_mult() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -494,8 +494,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -541,8 +541,8 @@ contains
     ! OVERDETERMINED - LEFT
     function test_qr_mult_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -587,8 +587,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -634,8 +634,8 @@ contains
     ! UNDERDETERMINED - LEFT
     function test_qr_mult_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -680,8 +680,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -727,8 +727,8 @@ contains
     ! RIGHT SIDE
     function test_qr_mult_right() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -774,8 +774,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -822,8 +822,8 @@ contains
     ! OVERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -869,8 +869,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -917,8 +917,8 @@ contains
     ! UNDERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -964,8 +964,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1012,8 +1012,8 @@ contains
     ! VECTOR
     function test_qr_mult_vector() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1059,8 +1059,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_vector_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1108,9 +1108,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1154,8 +1154,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1199,9 +1199,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1245,8 +1245,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1290,9 +1290,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1301,7 +1301,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1338,8 +1338,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1348,7 +1348,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1385,9 +1385,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1396,7 +1396,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1433,8 +1433,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1443,7 +1443,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1480,18 +1480,18 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m, nrhs) :: b1, b2
         real(real64), allocatable, dimension(:) :: work
         real(real64) :: temp(1), rcond
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         real(real64), allocatable :: tau(:), qr(:,:), x2(:,:)
-        integer(int32) :: lwork, info, rnk
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1524,9 +1524,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1534,8 +1534,8 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau, x2
         real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1), rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1568,9 +1568,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1580,8 +1580,8 @@ contains
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1615,9 +1615,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1627,8 +1627,8 @@ contains
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1662,9 +1662,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1673,7 +1673,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1710,8 +1710,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1720,7 +1720,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1757,9 +1757,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 5
-        integer(int32), parameter :: n = 6
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 5
+        integer, parameter :: n = 6
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1768,7 +1768,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1805,15 +1805,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 5
-        integer(int32), parameter :: n = 6
+        integer, parameter :: m = 5
+        integer, parameter :: n = 6
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), dimension(m) :: b, ans
         complex(real64), dimension(n) :: x
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1839,9 +1839,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1849,7 +1849,7 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau
         real(real64), allocatable, dimension(:,:) :: qr, x2
         real(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1879,9 +1879,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1889,7 +1889,7 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau, x2
         real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1919,9 +1919,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1929,7 +1929,7 @@ contains
         complex(real64), allocatable, dimension(:) :: work, tau
         complex(real64), allocatable, dimension(:,:) :: qr, x2
         complex(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1959,9 +1959,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1969,7 +1969,7 @@ contains
         complex(real64), allocatable, dimension(:) :: work, tau, x2
         complex(real64), allocatable, dimension(:,:) :: qr
         complex(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -2001,8 +2001,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_update_1() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -2037,8 +2037,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_update_1_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables

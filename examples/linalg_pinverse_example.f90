@@ -8,7 +8,7 @@ program example
 
     ! Variables
     real(real64) :: a(3,2), ai(2,3), c(2,2)
-    integer(int32) :: i
+    integer :: i
 
     ! Create the 3-by-2 matrix A
     !     | 1   0 |

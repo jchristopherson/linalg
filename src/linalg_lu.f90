@@ -67,7 +67,7 @@ module linalg_lu
             !! Owned copy of the original coefficient matrix.
         type(msr_matrix), private :: lu
             !! Cached incomplete factors, with inverse upper diagonal.
-        integer(int32), private, allocatable :: ju(:)
+        integer, private, allocatable :: ju(:)
             !! Pointers to the starts of the upper-factor rows in LU.
         logical, private :: initialized = .false.
             !! Whether UPDATE or the constructor has stored a matrix.
@@ -411,7 +411,7 @@ subroutine sluf_get_factored_form(this, lu, ju, flag)
     type(msr_matrix), intent(out) :: lu
         !! Owned copy of the incomplete MSR factors, including inverse U
         !! diagonal. Reset to an empty matrix on error.
-    integer(int32), intent(out), allocatable :: ju(:)
+    integer, intent(out), allocatable :: ju(:)
         !! Owned copy of the N upper-row pointers; unallocated on error.
     integer, intent(out), optional :: flag
         !! FACTOR's status; LA_NO_ERROR on success. Omit to use ERROR STOP.
@@ -858,7 +858,7 @@ pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
     !! singular matrix, the output matrices are populated with NaN's.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
-    integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
+    integer, intent(out), allocatable, optional, target, dimension(:) :: ipvt
         !! An N-element array used to track row-pivot operations.  The 
         !! array stored pivot information such that row I is interchanged with 
         !! row IPVT(I).
@@ -874,9 +874,9 @@ pure subroutine lu_factor_dbl(a, ipvt, lu, l, u, p)
 
     ! Local Variables
     logical :: buildlu
-    integer(int32) :: n, flag
-    integer(int32), allocatable, target, dimension(:) :: ic
-    integer(int32), pointer, dimension(:) :: iptr
+    integer :: n, flag
+    integer, allocatable, target, dimension(:) :: ic
+    integer, pointer, dimension(:) :: iptr
     real(real64) :: nan
     real(real64), allocatable, target, dimension(:,:) :: ac, lc, uc, pc
     real(real64), pointer, dimension(:,:) :: aptr, lptr, uptr, pptr
@@ -961,7 +961,7 @@ pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
     !! singular matrix, the output matrices are populated with NaN's.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N matrix to factor.
-    integer(int32), intent(out), allocatable, optional, target, dimension(:) :: ipvt
+    integer, intent(out), allocatable, optional, target, dimension(:) :: ipvt
         !! An N-element array used to track row-pivot operations.  The 
         !! array stored pivot information such that row I is interchanged with 
         !! row IPVT(I).
@@ -977,9 +977,9 @@ pure subroutine lu_factor_cmplx(a, ipvt, lu, l, u, p)
 
     ! Local Variables
     logical :: buildlu
-    integer(int32) :: n, flag
-    integer(int32), allocatable, target, dimension(:) :: ic
-    integer(int32), pointer, dimension(:) :: iptr
+    integer :: n, flag
+    integer, allocatable, target, dimension(:) :: ic
+    integer, pointer, dimension(:) :: iptr
     real(real64), allocatable, target, dimension(:,:) :: pc
     real(real64), pointer, dimension(:,:) :: pptr
     real(real64) :: nan
@@ -1068,7 +1068,7 @@ pure function validate_csr_factor_input(a) result(flag)
     class(csr_matrix), intent(in) :: a
         !! Matrix to inspect without modification. Rows may be unsorted, but
         !! column indices within each row must be unique and in range.
-    integer(int32) :: flag
+    integer :: flag
         !! LA_NO_ERROR for valid nonempty square storage; otherwise
         !! LA_NOT_INITIALIZED_ERROR, LA_MATRIX_NOT_SQUARE_ERROR,
         !! LA_INVALID_INPUT_ERROR, LA_MATRIX_FORMAT_ERROR, or
@@ -1101,12 +1101,12 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol, flag)
     type(msr_matrix), intent(out) :: lu
         !! Combined incomplete factors in MSR format, with inverse U diagonal.
         !! Not usable when FLAG reports an error.
-    integer(int32), intent(out), dimension(:) :: ju
+    integer, intent(out), dimension(:) :: ju
         !! Caller-owned N-element array receiving upper-factor row pointers.
     real(real64), intent(in), optional :: droptol
         !! Finite nonnegative ILUT drop tolerance; default SQRT(EPSILON).
         !! Zero disables threshold dropping, but the per-row fill cap remains.
-    integer(int32), intent(out), optional :: flag
+    integer, intent(out), optional :: flag
         !! LA_NO_ERROR on success. Validation returns the statuses documented
         !! by VALIDATE_CSR_FACTOR_INPUT; incorrect JU size returns
         !! LA_MATRIX_DIMENSION_ERROR. ILUT breakdown returns
@@ -1115,8 +1115,8 @@ pure subroutine csr_lu_factor(a, lu, ju, droptol, flag)
         !! errors use ERROR STOP; a zero pivot retains the legacy NaN output.
 
     ! Local Variables
-    integer(int32) :: i, m, n, nn, nnz, lfil, iwk, ierr
-    integer(int32), allocatable, dimension(:) :: jlu, jw
+    integer :: i, m, n, nn, nnz, lfil, iwk, ierr
+    integer, allocatable, dimension(:) :: jlu, jw
     real(real64), allocatable, dimension(:) :: alu, w
     real(real64) :: dt, nan
     
@@ -1237,7 +1237,7 @@ pure subroutine form_lu_all(lu, ipvt, u, p)
     real(real64), intent(inout), dimension(:,:) :: lu
         !! On input, the N-by-N matrix as output by lu_factor.  On output, the 
         !! N-by-N lower triangular matrix L.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     real(real64), intent(out), dimension(:,:) :: u
         !! An N-by-N matrix where the U matrix will be written.
@@ -1245,7 +1245,7 @@ pure subroutine form_lu_all(lu, ipvt, u, p)
         !! An N-by-N matrix where the row permutation matrix will be written.
 
     ! Local Variables
-    integer(int32) :: j, jp, n
+    integer :: j, jp, n
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -1293,7 +1293,7 @@ pure subroutine form_lu_all_cmplx(lu, ipvt, u, p)
     complex(real64), intent(inout), dimension(:,:) :: lu
         !! On input, the N-by-N matrix as output by lu_factor.  On output, the 
         !! N-by-N lower triangular matrix L.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     complex(real64), intent(out), dimension(:,:) :: u
         !! An N-by-N matrix where the U matrix will be written.
@@ -1301,7 +1301,7 @@ pure subroutine form_lu_all_cmplx(lu, ipvt, u, p)
         !! An N-by-N matrix where the row permutation matrix will be written.
 
     ! Local Variables
-    integer(int32) :: j, jp, n
+    integer :: j, jp, n
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -1354,7 +1354,7 @@ pure subroutine form_lu_only(lu, u)
         !! An N-by-N matrix where the U matrix will be written.
 
     ! Local Variables
-    integer(int32) :: j, n
+    integer :: j, n
 
     ! Parameters
     real(real64), parameter :: zero = 0.0d0
@@ -1393,7 +1393,7 @@ pure subroutine form_lu_only_cmplx(lu, u)
         !! An N-by-N matrix where the U matrix will be written.
 
     ! Local Variables
-    integer(int32) :: j, n
+    integer :: j, n
 
     ! Parameters
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -1426,7 +1426,7 @@ pure function solve_lu_mtx(a, ipvt, b) result(x)
     !! Solves a system of LU-factored equations.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N LU factored matrix as output by lu_factor.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     real(real64), intent(in), dimension(:,:) :: b
         !! The N-by-NRHS right-hand-side matrix.
@@ -1434,7 +1434,7 @@ pure function solve_lu_mtx(a, ipvt, b) result(x)
         !! The N-by-NRHS solution matrix.
 
     ! Local Variables
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -1461,7 +1461,7 @@ pure function solve_lu_mtx_cmplx(a, ipvt, b) result(x)
     !! Solves a system of LU-factored equations.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N LU factored matrix as output by lu_factor.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     complex(real64), intent(in), dimension(:,:) :: b
         !! The N-by-NRHS right-hand-side matrix.
@@ -1469,7 +1469,7 @@ pure function solve_lu_mtx_cmplx(a, ipvt, b) result(x)
         !! The N-by-NRHS solution matrix.
 
     ! Local Variables
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -1496,7 +1496,7 @@ pure function solve_lu_vec(a, ipvt, b) result(x)
     !! Solves a system of LU-factored equations.
     real(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N LU factored matrix as output by lu_factor.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     real(real64), intent(in), dimension(:) :: b
         !! The N-element right-hand-side array.
@@ -1504,7 +1504,7 @@ pure function solve_lu_vec(a, ipvt, b) result(x)
         !! The N-element solution array.
 
     ! Local Variables
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)
@@ -1530,7 +1530,7 @@ pure function solve_lu_vec_cmplx(a, ipvt, b) result(x)
     !! Solves a system of LU-factored equations.
     complex(real64), intent(in), dimension(:,:) :: a
         !! The N-by-N LU factored matrix as output by lu_factor.
-    integer(int32), intent(in), dimension(:) :: ipvt
+    integer, intent(in), dimension(:) :: ipvt
         !! The N-element pivot array as output by lu_factor.
     complex(real64), intent(in), dimension(:) :: b
         !! The N-element right-hand-side array.
@@ -1538,7 +1538,7 @@ pure function solve_lu_vec_cmplx(a, ipvt, b) result(x)
         !! The N-element solution array.
 
     ! Local Variables
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)
@@ -1567,7 +1567,7 @@ pure function csr_lu_solve(lu, ju, b) result(x)
     !! Malformed factors use ERROR STOP; singular/nonfinite factors yield NaNs.
     class(msr_matrix), intent(in) :: lu
         !! Nonempty square MSR factors, with inverse U pivots on the diagonal.
-    integer(int32), intent(in), dimension(:) :: ju
+    integer, intent(in), dimension(:) :: ju
         !! N pointers splitting each row into strict lower and upper entries.
     real(real64), intent(in), dimension(:) :: b
         !! Finite N-element right-hand side, not modified.
@@ -1576,7 +1576,7 @@ pure function csr_lu_solve(lu, ju, b) result(x)
         !! yield NaNs, preserving legacy propagation. No GMRES refinement occurs.
 
     ! Local Variables
-    integer(int32) :: m, n, info
+    integer :: m, n, info
     
     ! Initialization
     m = size(lu, 1)

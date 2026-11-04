@@ -823,7 +823,7 @@ pure subroutine qr_factor_no_pivot(a, tau, qr, q, r)
 
     ! Local Variables
     logical :: buildqr
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     real(real64), dimension(1) :: temp
     real(real64), allocatable, target, dimension(:) :: w, tc
     real(real64), allocatable, target, dimension(:,:) :: ac, qc, rc
@@ -852,7 +852,7 @@ pure subroutine qr_factor_no_pivot(a, tau, qr, q, r)
 
     ! Workspace Query
     call DGEQRF(m, n, temp, m, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DGEQRF
@@ -906,7 +906,7 @@ pure subroutine qr_factor_no_pivot_cmplx(a, tau, qr, q, r)
 
     ! Local Variables
     logical :: buildqr
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     complex(real64), dimension(1) :: temp
     complex(real64), allocatable, target, dimension(:) :: w, tc
     complex(real64), allocatable, target, dimension(:,:) :: ac, qc, rc
@@ -935,7 +935,7 @@ pure subroutine qr_factor_no_pivot_cmplx(a, tau, qr, q, r)
     
     ! Workspace Query
     call ZGEQRF(m, n, temp, m, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZGEQRF
@@ -974,7 +974,7 @@ pure subroutine qr_factor_pivot(a, jpvt, tau, qr, q, r, p)
     !! such that \(A P = Q R\).
     real(real64), intent(in), dimension(:,:) :: a
         !! The M-by-N matrix to factor.
-    integer(int32), intent(inout), dimension(:) :: jpvt
+    integer, intent(inout), dimension(:) :: jpvt
         !! On input, an N-element array that if JPVT(I) .ne. 0, the I-th column 
         !! of A is permuted to the front of A * P; if JPVT(I) = 0, the I-th 
         !! column of A is a free column.  On output, if JPVT(I) = K, then the 
@@ -997,7 +997,7 @@ pure subroutine qr_factor_pivot(a, jpvt, tau, qr, q, r, p)
 
     ! Local Variables
     logical :: buildqr
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     real(real64), dimension(1) :: temp
     real(real64), allocatable, target, dimension(:) :: w, tc
     real(real64), allocatable, target, dimension(:,:) :: ac, qc, rc, pc
@@ -1031,7 +1031,7 @@ pure subroutine qr_factor_pivot(a, jpvt, tau, qr, q, r, p)
 
     ! Workspace Query
     call DGEQP3(m, n, temp, m, jpvt, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DGEQP3
@@ -1081,7 +1081,7 @@ pure subroutine qr_factor_pivot_cmplx(a, jpvt, tau, qr, q, r, p)
     !! such that \(A P = Q R\).
     complex(real64), intent(in), dimension(:,:) :: a
         !! The M-by-N matrix to factor.
-    integer(int32), intent(inout), dimension(:) :: jpvt
+    integer, intent(inout), dimension(:) :: jpvt
         !! On input, an N-element array that if JPVT(I) .ne. 0, the I-th column 
         !! of A is permuted to the front of A * P; if JPVT(I) = 0, the I-th 
         !! column of A is a free column.  On output, if JPVT(I) = K, then the 
@@ -1104,7 +1104,7 @@ pure subroutine qr_factor_pivot_cmplx(a, jpvt, tau, qr, q, r, p)
 
     ! Local Variables
     logical :: buildqr
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     complex(real64), dimension(1) :: temp
     real(real64), dimension(1) :: rtemp
     complex(real64), allocatable, target, dimension(:) :: w, tc
@@ -1140,7 +1140,7 @@ pure subroutine qr_factor_pivot_cmplx(a, jpvt, tau, qr, q, r, p)
 
     ! Workspace Query
     call ZGEQP3(m, n, temp, m, jpvt, temp, temp, -1, rtemp, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), rw(2 * n))
 
     ! Call ZGEQP3
@@ -1208,7 +1208,7 @@ pure subroutine form_qr_no_pivot(r, tau, q)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: j, m, n, mn, qcol, flag, lwork
+    integer :: j, m, n, mn, qcol, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -1231,7 +1231,7 @@ pure subroutine form_qr_no_pivot(r, tau, q)
 
     ! Workspace Query
     call DORGQR(m, qcol, mn, q, m, tau, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Copy the sub-diagonal portion of R to Q, and then zero out the
@@ -1269,7 +1269,7 @@ pure subroutine form_qr_no_pivot_cmplx(r, tau, q)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: j, m, n, mn, qcol, flag, lwork
+    integer :: j, m, n, mn, qcol, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -1292,7 +1292,7 @@ pure subroutine form_qr_no_pivot_cmplx(r, tau, q)
 
     ! Workspace Query
     call ZUNGQR(m, qcol, mn, q, m, tau, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Copy the sub-diagonal portion of R to Q, and then zero out the
@@ -1319,7 +1319,7 @@ pure subroutine form_qr_pivot(r, tau, pvt, q, p)
     real(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of each 
         !! elementary reflector defined in \(R\).
-    integer(int32), intent(in), dimension(:) :: pvt
+    integer, intent(in), dimension(:) :: pvt
         !! An N-element column pivot array as returned by the QR factorization.
     real(real64), intent(out), dimension(:,:) :: q
         !! An M-by-M matrix where the full orthogonal matrix \(Q\) will be
@@ -1335,7 +1335,7 @@ pure subroutine form_qr_pivot(r, tau, pvt, q, p)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: j, jp, m, n, mn
+    integer :: j, jp, m, n, mn
 
     ! Initialization
     m = size(r, 1)
@@ -1371,7 +1371,7 @@ pure subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p)
     complex(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of each 
         !! elementary reflector defined in \(R\).
-    integer(int32), intent(in), dimension(:) :: pvt
+    integer, intent(in), dimension(:) :: pvt
         !! An N-element column pivot array as returned by the QR factorization.
     complex(real64), intent(out), dimension(:,:) :: q
         !! An M-by-M matrix where the full orthogonal matrix \(Q\) will be
@@ -1387,7 +1387,7 @@ pure subroutine form_qr_pivot_cmplx(r, tau, pvt, q, p)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: j, jp, m, n, mn, flag
+    integer :: j, jp, m, n, mn, flag
 
     ! Initialization
     m = size(r, 1)
@@ -1437,7 +1437,7 @@ pure function mult_qr_mtx(lside, trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, nrowa, flag, lwork
+    integer :: m, n, k, nrowa, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -1474,7 +1474,7 @@ pure function mult_qr_mtx(lside, trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call DORMQR(side, t, m, n, k, a, nrowa, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMQR
@@ -1508,7 +1508,7 @@ pure function mult_qr_mtx_cmplx(lside, trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, nrowa, flag, lwork
+    integer :: m, n, k, nrowa, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -1545,7 +1545,7 @@ pure function mult_qr_mtx_cmplx(lside, trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call ZUNMQR(side, t, m, n, k, a, nrowa, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMQR
@@ -1575,7 +1575,7 @@ pure function mult_qr_vec(trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, nrowa, flag, lwork
+    integer :: m, k, nrowa, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -1599,7 +1599,7 @@ pure function mult_qr_vec(trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call DORMQR(side, t, m, 1, k, a, nrowa, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMQR
@@ -1630,7 +1630,7 @@ pure function mult_qr_vec_cmplx(trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, nrowa, flag, lwork
+    integer :: m, k, nrowa, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -1654,7 +1654,7 @@ pure function mult_qr_vec_cmplx(trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call ZUNMQR(side, t, m, 1, k, a, nrowa, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMQR
@@ -1679,7 +1679,7 @@ pure subroutine qr_rank1_update_dbl(q, r, u, v)
 
     ! Local Variables
     logical :: full
-    integer(int32) :: m, n, k, lwork
+    integer :: m, n, k, lwork
     real(real64), allocatable, dimension(:) :: w, uc, vc
 
     ! Initialization
@@ -1735,7 +1735,7 @@ pure subroutine qr_rank1_update_cmplx(q, r, u, v)
 
     ! Local Variables
     logical :: full
-    integer(int32) :: m, n, k, lwork, lrwork
+    integer :: m, n, k, lwork, lrwork
     complex(real64), allocatable, dimension(:) :: w, uc, vc
     real(real64), allocatable, dimension(:) :: rw
 
@@ -1791,7 +1791,7 @@ pure function solve_qr_no_pivot_mtx(a, tau, b) result(x)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k
+    integer :: m, n, nrhs, k
     real(real64), allocatable, dimension(:,:) :: qtb
 
     ! Initialization
@@ -1837,7 +1837,7 @@ pure function solve_qr_no_pivot_mtx_cmplx(a, tau, b) result(x)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k
+    integer :: m, n, nrhs, k
     complex(real64), allocatable, dimension(:,:) :: qtb
 
     ! Initialization
@@ -1880,7 +1880,7 @@ pure function solve_qr_no_pivot_vec(a, tau, b) result(x)
         !! The N-element solution vector.
 
     ! Local Variables
-    integer(int32) :: m, n, k
+    integer :: m, n, k
     real(real64), allocatable, dimension(:) :: qtb
 
     ! Initialization
@@ -1921,7 +1921,7 @@ pure function solve_qr_no_pivot_vec_cmplx(a, tau, b) result(x)
         !! The N-element solution vector.
 
     ! Local Variables
-    integer(int32) :: m, n, k
+    integer :: m, n, k
     complex(real64), allocatable, dimension(:) :: qtb
 
     ! Initialization
@@ -1955,7 +1955,7 @@ pure function solve_qr_pivot_mtx(a, tau, jpvt, b) result(x)
     real(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by qr_factor.
-    integer(int32), intent(in), dimension(:) :: jpvt
+    integer, intent(in), dimension(:) :: jpvt
         !! An N-element array, as output by qr_factor, used to track the 
         !! column pivots.
     real(real64), intent(in), dimension(:,:) :: b
@@ -1964,13 +1964,13 @@ pure function solve_qr_pivot_mtx(a, tau, jpvt, b) result(x)
         !! The N-by-NRHS solution matrix.
 
     ! Parameters
-    integer(int32), parameter :: imin = 2
-    integer(int32), parameter :: imax = 1
+    integer, parameter :: imin = 2
+    integer, parameter :: imax = 1
     real(real64), parameter :: zero = 0.0d0
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
+    integer :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
         rnk, maxmn
     real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
     real(real64), allocatable, dimension(:) :: w, t2
@@ -2073,7 +2073,7 @@ pure function solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b) result(x)
     complex(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by qr_factor.
-    integer(int32), intent(in), dimension(:) :: jpvt
+    integer, intent(in), dimension(:) :: jpvt
         !! An N-element array, as output by qr_factor, used to track the 
         !! column pivots.
     complex(real64), intent(in), dimension(:,:) :: b
@@ -2082,13 +2082,13 @@ pure function solve_qr_pivot_mtx_cmplx(a, tau, jpvt, b) result(x)
         !! The N-by-NRHS solution matrix.
 
     ! Parameters
-    integer(int32), parameter :: imin = 2
-    integer(int32), parameter :: imax = 1
+    integer, parameter :: imin = 2
+    integer, parameter :: imax = 1
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
+    integer :: i, j, m, n, mn, nrhs, lwork, ismin, ismax, &
         rnk, maxmn
     real(real64) :: rcond, smax, smin, smaxpr, sminpr
     complex(real64) :: s1, c1, s2, c2
@@ -2192,7 +2192,7 @@ pure function solve_qr_pivot_vec(a, tau, jpvt, b) result(x)
     real(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by qr_factor.
-    integer(int32), intent(in), dimension(:) :: jpvt
+    integer, intent(in), dimension(:) :: jpvt
         !! An N-element array, as output by qr_factor, used to track the 
         !! column pivots.
     real(real64), intent(in), dimension(:) :: b
@@ -2201,13 +2201,13 @@ pure function solve_qr_pivot_vec(a, tau, jpvt, b) result(x)
         !! The N-element solution vector.
 
     ! Parameters
-    integer(int32), parameter :: imin = 2
-    integer(int32), parameter :: imax = 1
+    integer, parameter :: imin = 2
+    integer, parameter :: imax = 1
     real(real64), parameter :: zero = 0.0d0
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn
+    integer :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn
     real(real64) :: rcond, smax, smin, smaxpr, sminpr, s1, c1, s2, c2
     real(real64), allocatable, dimension(:) :: w, t2, qtb
     real(real64), allocatable, dimension(:,:) :: rz
@@ -2306,7 +2306,7 @@ pure function solve_qr_pivot_vec_cmplx(a, tau, jpvt, b) result(x)
     complex(real64), intent(in), dimension(:) :: tau
         !! A MIN(M, N)-element array containing the scalar factors of the 
         !! elementary reflectors as returned by qr_factor.
-    integer(int32), intent(in), dimension(:) :: jpvt
+    integer, intent(in), dimension(:) :: jpvt
         !! An N-element array, as output by qr_factor, used to track the 
         !! column pivots.
     complex(real64), intent(in), dimension(:) :: b
@@ -2315,13 +2315,13 @@ pure function solve_qr_pivot_vec_cmplx(a, tau, jpvt, b) result(x)
         !! The N-element solution vector.
 
     ! Parameters
-    integer(int32), parameter :: imin = 2
-    integer(int32), parameter :: imax = 1
+    integer, parameter :: imin = 2
+    integer, parameter :: imax = 1
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn
+    integer :: i, m, n, mn, lwork, ismin, ismax, rnk, maxmn
     real(real64) :: rcond, smax, smin, smaxpr, sminpr
     complex(real64) :: s1, c1, s2, c2
     complex(real64), allocatable, dimension(:) :: w, t2, qtb

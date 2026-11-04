@@ -200,7 +200,7 @@ function test_gmres_sparse_adapters() result(rst)
     type(iterative_solver_info) :: details
     real(real64) :: matrix(order,order), expected(order), rhs(order), product(order)
     real(real64), allocatable :: solution(:), legacy_solution(:)
-    integer(int32) :: upper_rows(order)
+    integer :: upper_rows(order)
     integer :: index, flag
 
     rst = .true.
@@ -248,11 +248,11 @@ function test_csr_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32), parameter :: m = 4
-    integer(int32), parameter :: n = 6
-    integer(int32), parameter :: nnz = 8
+    integer, parameter :: m = 4
+    integer, parameter :: n = 6
+    integer, parameter :: nnz = 8
     real(real64) :: dense(m, n), v(nnz), check(m, n)
-    integer(int32) :: ja(nnz), ia(m + 1), rows(nnz), cols(nnz)
+    integer :: ja(nnz), ia(m + 1), rows(nnz), cols(nnz)
     type(csr_matrix) :: sparse
 
     ! Initialization
@@ -683,7 +683,7 @@ function test_csr_sparse_direct_solve_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32), allocatable :: ipiv(:)
+    integer, allocatable :: ipiv(:)
     real(real64) :: a(4, 4), b(4), x(4), ans(4)
     real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: sa
@@ -747,7 +747,7 @@ subroutine csr_solver_fixture(csr, factors, upper_rows, rhs)
         !! Matrix A = L*U, with rows [2,1,-2], [4,5,0], and [-2,8,19].
     type(msr_matrix), intent(out) :: factors
         !! Combined L/U factors with inverse upper pivots in MSR storage.
-    integer(int32), intent(out) :: upper_rows(3)
+    integer, intent(out) :: upper_rows(3)
         !! Pointers separating each row's lower and upper entries.
     real(real64), intent(out) :: rhs(3)
         !! A*[1,2,3], yielding [-2,14,71].
@@ -774,7 +774,7 @@ function test_csr_solver_validation() result(rst)
         !! True if every solution, residual, storage check, and status is correct.
     type(csr_matrix) :: csr, invalid_csr, scalar, uninitialized_csr
     type(msr_matrix) :: factors, invalid_factors, uninitialized_factors
-    integer(int32) :: upper_rows(3), invalid_rows(3), scalar_rows(1), flag
+    integer :: upper_rows(3), invalid_rows(3), scalar_rows(1), flag
     real(real64) :: rhs(3), saved_rhs(3), nonfinite_rhs(3), nan, infinity
     real(real64), allocatable :: solution(:), function_solution(:)
 
@@ -912,7 +912,7 @@ subroutine run_csr_solver_error_case(case_name)
     type(msr_matrix) :: factors
     type(csr_operator) :: op
     type(ilu_preconditioner) :: preconditioner
-    integer(int32) :: upper_rows(3)
+    integer :: upper_rows(3)
     real(real64) :: rhs(3)
     real(real64), allocatable :: solution(:)
 
@@ -951,8 +951,8 @@ function test_diag_to_csr_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32), parameter :: n = 20
-    integer(int32) :: i
+    integer, parameter :: n = 20
+    integer :: i
     real(real64) :: d(n), diag(n,n), dense(n,n)
     type(csr_matrix) :: sd
 
@@ -979,10 +979,10 @@ function test_banded_to_csr_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32), parameter :: kl = 4
-    integer(int32), parameter :: ku = 5
-    integer(int32), parameter :: m = 15
-    integer(int32), parameter :: n = 15
+    integer, parameter :: kl = 4
+    integer, parameter :: ku = 5
+    integer, parameter :: m = 15
+    integer, parameter :: n = 15
     real(real64) :: banded(kl+ku+1,n), dense(m,n), check(m,n)
     type(csr_matrix) :: sparse
 
@@ -1010,8 +1010,8 @@ function test_extract_diagonal_csr_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32), parameter :: n = 100
-    integer(int32) :: i
+    integer, parameter :: n = 100
+    integer :: i
     real(real64) :: diag(n), ans(n), dense(n,n), densediag(n)
     type(csr_matrix) :: sparse
 
@@ -1079,8 +1079,8 @@ function test_csr_lu_factor_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32) :: i, ju(4)
-    integer(int32), allocatable :: ipiv(:)
+    integer :: i, ju(4)
+    integer, allocatable :: ipiv(:)
     real(real64) :: dense(4, 4), check(4, 4), x(4), b(4), xd(4)
     real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: sparse
@@ -1131,8 +1131,8 @@ function test_pgmres_1() result(rst)
     logical :: rst
 
     ! Local Variables
-    integer(int32) :: ju(4)
-    integer(int32), allocatable :: ipiv(:)
+    integer :: ju(4)
+    integer, allocatable :: ipiv(:)
     real(real64) :: dense(4, 4), m(4, 4), b(4), bc(4), x(4), xd(4)
     real(real64), allocatable :: dlu(:,:)
     type(csr_matrix) :: a, am
@@ -1178,12 +1178,12 @@ function test_csr_eigen_symm_1() result(rst)
     logical :: rst
 
     ! Parameters
-    integer(int32), parameter :: n = 50
-    integer(int32), parameter :: k = 4
+    integer, parameter :: n = 50
+    integer, parameter :: k = 4
     real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
-    integer(int32) :: i
+    integer :: i
     real(real64) :: dense(n, n)
     real(real64), allocatable :: vals(:), vecs(:,:), dvals(:), r(:)
     type(csr_matrix) :: a
@@ -1228,12 +1228,12 @@ function test_csr_eigen_asymm_1() result(rst)
     logical :: rst
 
     ! Parameters
-    integer(int32), parameter :: n = 50
-    integer(int32), parameter :: k = 4
+    integer, parameter :: n = 50
+    integer, parameter :: k = 4
     real(real64), parameter :: tol = 1.0d-8
 
     ! Local Variables
-    integer(int32) :: i
+    integer :: i
     real(real64) :: dense(n, n)
     complex(real64), allocatable :: vals(:), vecs(:,:), dvals(:), r(:)
     complex(real64) :: cvec(n)
@@ -1280,12 +1280,12 @@ function test_csr_eigen_gen_symm_1() result(rst)
     logical :: rst
 
     ! Parameters
-    integer(int32), parameter :: n = 30
-    integer(int32), parameter :: k = 3
+    integer, parameter :: n = 30
+    integer, parameter :: k = 3
     real(real64), parameter :: tol = 1.0d-6
 
     ! Local Variables
-    integer(int32) :: i
+    integer :: i
     real(real64) :: da(n, n), db(n, n)
     real(real64), allocatable :: vals(:), vecs(:,:), beta(:), dvals(:), r(:)
     complex(real64), allocatable :: alpha(:)
@@ -1337,12 +1337,12 @@ function test_csr_eigen_gen_asymm_1() result(rst)
     logical :: rst
 
     ! Parameters
-    integer(int32), parameter :: n = 30
-    integer(int32), parameter :: k = 3
+    integer, parameter :: n = 30
+    integer, parameter :: k = 3
     real(real64), parameter :: tol = 1.0d-6
 
     ! Local Variables
-    integer(int32) :: i
+    integer :: i
     real(real64) :: da(n, n), db(n, n)
     real(real64), allocatable :: beta(:)
     complex(real64), allocatable :: vals(:), vecs(:,:), alpha(:), dvals(:), r(:)

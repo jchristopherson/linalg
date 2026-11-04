@@ -3,7 +3,7 @@
 
 ! Tests the LU factorization routines
 module test_lu
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use linalg_errors, only : LA_NO_ERROR, LA_MATRIX_NOT_SQUARE_ERROR, &
@@ -17,7 +17,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lu_factor() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 75
+        integer, parameter :: n = 75
 
         ! Local Variables
         real(real64), dimension(n, n) :: a
@@ -41,13 +41,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lu_solve() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 75
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: n = 75
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(n, n) :: a
         real(real64), dimension(n, nrhs) :: b, x
-        integer(int32), allocatable :: ipvt(:)
+        integer, allocatable :: ipvt(:)
         real(real64), allocatable :: lu(:,:)
         logical :: rst
 
@@ -72,7 +72,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lu_factor_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 75
+        integer, parameter :: n = 75
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a
@@ -97,14 +97,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lu_solve_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 75
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: n = 75
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a
         complex(real64), dimension(n, nrhs) :: b, x
-        integer(int32) :: i, j
-        integer(int32), allocatable :: ipvt(:)
+        integer :: i, j
+        integer, allocatable :: ipvt(:)
         complex(real64), allocatable :: lu(:,:)
         logical :: rst
 
@@ -128,7 +128,7 @@ contains
 
 ! ------------------------------------------------------------------------------
     function test_lu_factorization_type() result(rst)
-        integer(int32), parameter :: n = 3
+        integer, parameter :: n = 3
         real(real64), dimension(n, n), parameter :: a = reshape([ &
             0.0d0, 1.0d0, 0.0d0, &
             2.0d0, 0.0d0, 1.0d0, &
@@ -145,7 +145,7 @@ contains
         real(real64), dimension(n, 2) :: b_multiple
         real(real64), dimension(n) :: b_single
         real(real64) :: det
-        integer(int32) :: flag
+        integer :: flag
         logical :: rst
 
         rst = .true.
@@ -248,7 +248,7 @@ contains
         real(real64), allocatable :: solution(:), solutions(:,:)
         type(csr_matrix) :: csr, malformed
         type(msr_matrix) :: factors
-        integer(int32), allocatable :: upper_rows(:)
+        integer, allocatable :: upper_rows(:)
         type(sparse_lu_factorization) :: fac, lazy, invalid, limited, scalar
         integer :: index, flag
 

@@ -1,7 +1,7 @@
 ! test_rz.f90
 ! SPDX-License-Identifier: MIT
 module test_rz
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use fortran_test_helper
@@ -10,8 +10,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_rz_factor() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 10
-        integer(int32), parameter :: n = 15
+        integer, parameter :: m = 10
+        integer, parameter :: n = 15
 
         ! Local Variables
         real(real64) :: a(m, n)
@@ -46,8 +46,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_rz_factor_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 10
-        integer(int32), parameter :: n = 15
+        integer, parameter :: m = 10
+        integer, parameter :: n = 15
 
         ! Local Variables
         complex(real64) :: a(m, n)

@@ -3,7 +3,7 @@
 
 ! Tests the eigenvalue/eigenvector routines
 module test_eigen
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use linalg
     use test_core
     use fortran_test_helper
@@ -214,7 +214,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_symm() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, x, y
@@ -243,14 +243,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_asymm() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(n, n) :: a
         complex(real64), dimension(n, n) :: vmtx, x, y
         complex(real64), allocatable, dimension(:) :: vals, vals1
         complex(real64), allocatable, dimension(:,:) :: vecs
-        integer(int32) :: i
+        integer :: i
         logical :: rst
 
         ! Initialization
@@ -285,13 +285,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_asymm_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a, vmtx, x, y
         complex(real64), allocatable, dimension(:) :: vals, vals1
         complex(real64), allocatable, dimension(:,:) :: vecs
-        integer(int32) :: i
+        integer :: i
         logical :: rst
 
         ! Initialization
@@ -319,7 +319,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_eigen_gen() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, b

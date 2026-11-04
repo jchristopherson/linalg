@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_rz
     !! Provides RZ factorization and multiplication by its orthogonal or unitary factor.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use linalg_errors
     use lapack
     implicit none
@@ -41,7 +41,7 @@ pure subroutine rz_factor_dbl(a, tau, rz)
         !! \(Z\) as a product of M elementary reflectors.
 
     ! Local Variables
-    integer(int32) :: m, n, lwork, flag
+    integer :: m, n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -53,7 +53,7 @@ pure subroutine rz_factor_dbl(a, tau, rz)
 
     ! Workspace Query
     call DTZRZF(m, n, temp, m, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DTZRZF
@@ -83,7 +83,7 @@ pure subroutine rz_factor_cmplx(a, tau, rz)
         !! \(Z\) as a product of M elementary reflectors.
 
     ! Local Variables
-    integer(int32) :: m, n, lwork, flag
+    integer :: m, n, lwork, flag
     complex(real64), allocatable, target, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -95,7 +95,7 @@ pure subroutine rz_factor_cmplx(a, tau, rz)
 
     ! Workspace Query
     call ZTZRZF(m, n, rz, m, tau, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZTZRZF
@@ -112,7 +112,7 @@ pure function mult_rz_mtx(lside, trans, l, a, tau, c) result(cz)
     logical, intent(in) :: trans
         !! Set to true if \(op(Z) = Z^{T}\); else, set to false if 
         !! \(op(Z) = Z\).
-    integer(int32), intent(in) :: l
+    integer, intent(in) :: l
         !! The number of columns in matrix \(A\) containing the meaningful part 
         !! of the Householder vectors.  If lside is true, \(M \ge L \ge 0\); 
         !! else, if lside is false, \(N \ge L \ge 0\).
@@ -132,7 +132,7 @@ pure function mult_rz_mtx(lside, trans, l, a, tau, c) result(cz)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, lwork, flag, lda
+    integer :: m, n, k, lwork, flag, lda
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -179,7 +179,7 @@ pure function mult_rz_mtx(lside, trans, l, a, tau, c) result(cz)
 
     ! Workspace Query
     call DORMRZ(side, t, m, n, k, l, a, lda, tau, cz, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMRZ
@@ -196,7 +196,7 @@ pure function mult_rz_mtx_cmplx(lside, trans, l, a, tau, c) result(cz)
     logical, intent(in) :: trans
         !! Set to true if \(op(Z) = Z^{T}\); else, set to false if 
         !! \(op(Z) = Z\).
-    integer(int32), intent(in) :: l
+    integer, intent(in) :: l
         !! The number of columns in matrix \(A\) containing the meaningful part 
         !! of the Householder vectors.  If lside is true, \(M \ge L \ge 0\); 
         !! else, if lside is false, \(N \ge L \ge 0\).
@@ -216,7 +216,7 @@ pure function mult_rz_mtx_cmplx(lside, trans, l, a, tau, c) result(cz)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, lwork, flag, lda
+    integer :: m, n, k, lwork, flag, lda
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -263,7 +263,7 @@ pure function mult_rz_mtx_cmplx(lside, trans, l, a, tau, c) result(cz)
 
     ! Workspace Query
     call ZUNMRZ(side, t, m, n, k, l, a, lda, tau, cz, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMRZ
@@ -277,7 +277,7 @@ pure function mult_rz_vec(trans, l, a, tau, c) result(cz)
     logical, intent(in) :: trans
         !! Set to true if \(op(Z) = Z^{T}\); else, set to false if 
         !! \(op(Z) = Z\).
-    integer(int32), intent(in) :: l
+    integer, intent(in) :: l
         !! The number of columns in matrix \(A\) containing the meaningful part 
         !! of the Householder vectors.
     real(real64), intent(in), dimension(:,:) :: a
@@ -293,7 +293,7 @@ pure function mult_rz_vec(trans, l, a, tau, c) result(cz)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, lwork, flag, lda
+    integer :: m, k, lwork, flag, lda
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -325,7 +325,7 @@ pure function mult_rz_vec(trans, l, a, tau, c) result(cz)
 
     ! Workspace Query
     call DORMRZ(side, t, m, 1, k, l, a, lda, tau, cz, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMRZ
@@ -339,7 +339,7 @@ pure function mult_rz_vec_cmplx(trans, l, a, tau, c) result(cz)
     logical, intent(in) :: trans
         !! Set to true if \(op(Z) = Z^{T}\); else, set to false if 
         !! \(op(Z) = Z\).
-    integer(int32), intent(in) :: l
+    integer, intent(in) :: l
         !! The number of columns in matrix \(A\) containing the meaningful part 
         !! of the Householder vectors.
     complex(real64), intent(in), dimension(:,:) :: a
@@ -356,7 +356,7 @@ pure function mult_rz_vec_cmplx(trans, l, a, tau, c) result(cz)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, k, lwork, flag, lda
+    integer :: m, k, lwork, flag, lda
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -388,7 +388,7 @@ pure function mult_rz_vec_cmplx(trans, l, a, tau, c) result(cz)
 
     ! Workspace Query
     call ZUNMRZ(side, t, m, 1, k, l, a, lda, tau, cz, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMRZ

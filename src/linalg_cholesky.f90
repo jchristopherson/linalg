@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_cholesky
     !! Provides Cholesky factorization, updates, downdates, and solvers.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use linalg_errors
     use lapack
     use qrupdate
@@ -422,7 +422,7 @@ pure function cholesky_factor_dbl(a, upper) result(rst)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: i, n, flag
+    integer :: i, n, flag
     real(real64) :: nan
 
     ! Initialization
@@ -486,7 +486,7 @@ pure function cholesky_factor_cmplx(a, upper) result(rst)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: i, n, flag
+    integer :: i, n, flag
     real(real64) :: nan
     complex(real64) :: cnan
 
@@ -544,7 +544,7 @@ pure subroutine cholesky_rank1_update_dbl(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork
+    integer :: n, lwork
     real(real64), allocatable, dimension(:) :: w
 
     ! Initialization
@@ -577,7 +577,7 @@ pure subroutine cholesky_rank1_update_cmplx(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork
+    integer :: n, lwork
     real(real64), allocatable, dimension(:) :: w
 
     ! Initialization
@@ -612,7 +612,7 @@ pure subroutine cholesky_rank1_downdate_dbl(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
+    integer :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64) :: nan
 
@@ -654,7 +654,7 @@ pure subroutine cholesky_rank1_downdate_cmplx(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
+    integer :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64) :: nan
     complex(real64) :: cnan
@@ -700,7 +700,7 @@ pure function solve_cholesky_mtx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -739,7 +739,7 @@ pure function solve_cholesky_mtx_cmplx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -779,7 +779,7 @@ pure function solve_cholesky_vec(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)
@@ -818,7 +818,7 @@ pure function solve_cholesky_vec_cmplx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)

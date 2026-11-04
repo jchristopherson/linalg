@@ -3,7 +3,6 @@
 
 ! A testing application.
 program main
-    use iso_fortran_env, only : int32
     use test_qr
     use test_svd_ops
     use test_mtx_inverse
@@ -18,7 +17,7 @@ program main
 
     ! Local Variables
     logical :: rst
-    integer(int32) :: flag
+    integer :: flag
     character(len = 64) :: validation_case
 
     ! Initialization

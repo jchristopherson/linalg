@@ -7,14 +7,14 @@
 ! This is a repeat of the LU factorization example, but using QR factorization
 ! instead.
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
     ! Local Variables
     real(real64) :: a(3,3), b(3), x(3)
     real(real64), allocatable :: tau(:), qr(:,:)
-    integer(int32) :: i, pvt(3)
+    integer :: i, pvt(3)
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |

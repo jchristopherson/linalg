@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_inverse
     !! Provides matrix inverse and Moore-Penrose pseudoinverse routines.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use blas
     use linalg_errors
@@ -32,8 +32,8 @@ pure function mtx_inverse_dbl(a) result(rst)
         !! The N-by-N inverted matrix.
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer :: n, lwork, flag
+    integer, allocatable, dimension(:) :: ipvt
     real(real64) :: nan
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
@@ -76,8 +76,8 @@ pure function mtx_inverse_cmplx(a) result(rst)
     complex(real64), allocatable, dimension(:,:) :: rst
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer :: n, lwork, flag
+    integer, allocatable, dimension(:) :: ipvt
     real(real64) :: nan
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
@@ -130,7 +130,7 @@ pure function mtx_pinverse_dbl(a, tol) result(ainv)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, flag
+    integer :: i, m, n, mn, lwork, flag
     real(real64), allocatable, dimension(:,:) :: u, vt, ac
     real(real64), allocatable, dimension(:) :: w, s
     real(real64), dimension(1) :: temp
@@ -202,7 +202,7 @@ pure function mtx_pinverse_cmplx(a, tol) result(ainv)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, flag, lrwork
+    integer :: i, m, n, mn, lwork, flag, lrwork
     real(real64), allocatable, dimension(:) :: rw, s
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: u, vt, ac

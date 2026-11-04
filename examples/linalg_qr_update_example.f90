@@ -9,7 +9,7 @@ program example
     ! Variables
     real(real64) :: a(3,3), u(3), v(3), q(3,3), qu(3,3)
     real(real64), allocatable :: tau(:), r(:,:), ru(:,:)
-    integer(int32) :: i
+    integer :: i
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |

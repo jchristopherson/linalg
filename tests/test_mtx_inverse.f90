@@ -3,7 +3,7 @@
 
 ! Tests matrix inversion routines
 module test_mtx_inverse
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
     use fortran_test_helper
@@ -14,9 +14,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -46,15 +46,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 80
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 80
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), dimension(n, m) :: ainv
         real(real64), dimension(n, n) :: identity, check
         logical :: rst
-        integer(int32) :: i
+        integer :: i
 
         ! Initialization
         rst = .true.
@@ -79,7 +79,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_inv() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(n, n) :: a, a1, ainv
@@ -105,9 +105,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -137,8 +137,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 80
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 80
+        integer, parameter :: n = 60
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -149,7 +149,7 @@ contains
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(n, n) :: identity, check
         logical :: rst
-        integer(int32) :: i
+        integer :: i
 
         ! Initialization
         rst = .true.
@@ -174,8 +174,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_pinv_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 80
+        integer, parameter :: m = 60
+        integer, parameter :: n = 80
 
         ! Parameters
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
@@ -186,7 +186,7 @@ contains
         complex(real64), dimension(n, m) :: ainv
         complex(real64), dimension(m, m) :: identity, check
         logical :: rst
-        integer(int32) :: i
+        integer :: i
 
         ! Initialization
         rst = .true.
@@ -211,7 +211,7 @@ contains
 ! ------------------------------------------------------------------------------
     function test_inv_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         complex(real64), dimension(n, n) :: a, ainv, a1

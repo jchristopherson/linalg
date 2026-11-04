@@ -32,7 +32,7 @@ module linalg_iterative_solvers
         !! Constructor copies factors and pointers; applications use local output.
         type(msr_matrix), private :: factors
             !! Owned combined triangular factors with inverse U pivots.
-        integer(int32), allocatable, private :: upper_rows(:)
+        integer, allocatable, private :: upper_rows(:)
             !! Owned pointers separating strict lower and upper entries.
     contains
         procedure :: size => ilu_op_size
@@ -119,7 +119,7 @@ pure function ilu_op_init(lu, ju) result(rst)
     !! during APPLY. Factors can come from LU_FACTOR or GET_FACTORED_FORM.
     class(msr_matrix), intent(in) :: lu
         !! Nonempty finite square MSR factors, with inverse upper pivots.
-    integer(int32), intent(in) :: ju(:)
+    integer, intent(in) :: ju(:)
         !! N pointers to the upper parts of the factor rows.
     type(ilu_preconditioner) :: rst
         !! New fixed approximate-inverse operator owning independent copies.
@@ -210,7 +210,7 @@ subroutine gmres_solve(a, b, x, preconditioner, tol, atol, im, maxits, x0, flag,
         !! Diagnostics, reset and populated even when a supplied FLAG reports
         !! failure. Counts include only callbacks that were actually performed.
     type(iterative_solver_info) :: details
-    integer(int32) :: ipar(16)
+    integer :: ipar(16)
     integer :: order, restart, budget, status, allocation_status
     integer :: input_start, output_start, backend_products
     integer(int64) :: basis, workspace_length
@@ -291,7 +291,7 @@ subroutine gmres_solve(a, b, x, preconditioner, tol, atol, im, maxits, x0, flag,
     ipar(2) = 0
     if (present(preconditioner)) ipar(2) = 2
     ipar(3) = 2
-    ipar(4) = int(workspace_length, int32)
+    ipar(4) = int(workspace_length)
     ipar(5) = restart
     ipar(6) = budget
     fpar(1) = relative_tol

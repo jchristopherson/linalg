@@ -2,13 +2,13 @@
 ! SPDX-License-Identifier: MIT
 
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
     ! Variables
     real(real64) :: a(3,3), u(3), au(3,3), r(3,3), ru(3,3)
-    integer(int32) :: i
+    integer :: i
 
     ! Build the 3-by-3 positive-definite matrix A.
     !     | 4   12   -16 |

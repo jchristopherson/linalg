@@ -14,8 +14,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_factor() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64) :: a(m, n)
@@ -39,8 +39,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_factor_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64) :: a(m, n)
@@ -64,8 +64,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_factor_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
 
         ! Local Variables
         complex(real64) :: a(m, n)
@@ -89,8 +89,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_factor_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64) :: a(m, n)
@@ -116,8 +116,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
@@ -193,8 +193,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64) :: a(m, n), c1(n, n), c2(n, n), ans(n, n), c3(n), &
@@ -270,8 +270,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -320,8 +320,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_cmplx_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -370,8 +370,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_right() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
 
         ! Local Variables
         logical :: rst
@@ -416,8 +416,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_right_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 50
+        integer, parameter :: n = 50
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
@@ -451,8 +451,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_right_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         logical :: rst
@@ -497,8 +497,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_lq_mult_right_cmplx_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
         complex(real64), parameter :: zero = (0.0d0, 0.0d0)
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 

@@ -3,13 +3,13 @@
 
 ! Example Source: https://en.wikipedia.org/wiki/Overdetermined_system
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
     ! Local Variables
     real(real64) :: a(3,2), b(3), x(2)
-    integer(int32) :: i
+    integer :: i
 
     ! Build the 3-by-2 matrix A
     !     | 2   1 |

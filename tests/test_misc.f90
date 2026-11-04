@@ -3,7 +3,7 @@
 
 ! Tests miscellaneous routines.
 module test_misc
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use linalg
     use test_core
     use fortran_test_helper
@@ -14,14 +14,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_diagonal_mtx_mult() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 30
-        integer(int32), parameter :: n = 30
-        integer(int32), parameter :: k = 30
+        integer, parameter :: m = 30
+        integer, parameter :: n = 30
+        integer, parameter :: k = 30
         real(real64), parameter :: alpha = 1.0d0
         real(real64), parameter :: beta = 0.25d0
 
         ! Local Variables
-        integer(int32) :: i
+        integer :: i
         real(real64), dimension(m, n) :: c1, ans1
         real(real64), dimension(k, n) :: b1, b2, ans2
         real(real64), dimension(m, k) :: d1
@@ -72,14 +72,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_diagonal_mtx_mult_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 30
-        integer(int32), parameter :: n = 30
-        integer(int32), parameter :: k = 30
+        integer, parameter :: m = 30
+        integer, parameter :: n = 30
+        integer, parameter :: k = 30
         complex(real64), parameter :: alpha = (1.0d0, 0.0d0)
         complex(real64), parameter :: beta = (0.25d0, 0.0d0)
 
         ! Local Variables
-        integer(int32) :: i
+        integer :: i
         complex(real64), dimension(m, n) :: c1, ans1
         complex(real64), dimension(k, n) :: b1, b2, ans2
         complex(real64), dimension(m, k) :: d1
@@ -132,8 +132,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_rank1_update() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 20
+        integer, parameter :: m = 50
+        integer, parameter :: n = 20
         real(real64), parameter :: alpha = 0.5d0
 
         ! Local Variables
@@ -166,8 +166,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_rank1_update_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 20
+        integer, parameter :: m = 50
+        integer, parameter :: n = 20
         complex(real64), parameter :: alpha = (0.5d0, 0.0d0)
 
         ! Local Variables
@@ -226,13 +226,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_1() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
         real(real64), parameter :: alpha = 1.5d0
         real(real64), parameter :: beta = -3.0d0
 
         ! Local Variables
         logical :: check, rst
-        integer(int32) :: j
+        integer :: j
         real(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
@@ -265,13 +265,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_1_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
         complex(real64), parameter :: alpha = (1.5d0, 0.0d0)
         complex(real64), parameter :: beta = (-3.0d0, 0.0d0)
 
         ! Local Variables
         logical :: check, rst
-        integer(int32) :: j
+        integer :: j
         complex(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
@@ -304,13 +304,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_2() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
         real(real64), parameter :: alpha = 1.5d0
         real(real64), parameter :: beta = -3.0d0
 
         ! Local Variables
         logical :: check, rst
-        integer(int32) :: j
+        integer :: j
         real(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
@@ -343,13 +343,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_tri_mtx_mult_2_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: n = 100
+        integer, parameter :: n = 100
         complex(real64), parameter :: alpha = (1.5d0, 0.0d0)
         complex(real64), parameter :: beta = (-3.0d0, 0.0d0)
 
         ! Local Variables
         logical :: check, rst
-        integer(int32) :: j
+        integer :: j
         complex(real64) :: a(n,n), b(n,n), bans(n,n)
 
         ! Initialization
@@ -388,9 +388,9 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 20
-        integer(int32), parameter :: k = 30
+        integer, parameter :: m = 50
+        integer, parameter :: n = 20
+        integer, parameter :: k = 30
         real(real64), parameter :: alpha = 1.0d0
         real(real64), parameter :: beta = 0.0d0
         real(real64) :: a(m, k), b(n, k), c(m, n), ans(m, n)
@@ -418,9 +418,9 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 20
-        integer(int32), parameter :: k = 30
+        integer, parameter :: m = 50
+        integer, parameter :: n = 20
+        integer, parameter :: k = 30
         complex(real64), parameter :: alpha = (1.0d0, 0.0d0)
         complex(real64), parameter :: beta = (0.0d0, 0.0d0)
         complex(real64) :: a(m, k), b(n, k), c(m, n), ans(m, n)
@@ -453,10 +453,10 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: n = 200
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: n = 200
+        integer, parameter :: nrhs = 20
         real(real64), parameter :: alpha = 1.0d0
-        integer(int32) :: j
+        integer :: j
         real(real64) :: a(n,n), b1(n,nrhs), x1(n,nrhs), check1(n,nrhs)
 
         ! Initialization - upper triangular systems
@@ -486,8 +486,8 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: n = 200
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: n = 200
+        integer, parameter :: nrhs = 20
         complex(real64), parameter :: alpha = (1.0d0, 0.0d0)
         complex(real64) :: a(n,n), b1(n,nrhs), x1(n,nrhs), check1(n,nrhs)
         real(real64) :: ar(n, n), ai(n, n)
@@ -517,11 +517,11 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: kl = 3
-        integer(int32), parameter :: ku = 4
-        integer(int32), parameter :: mb = kl + ku + 1
-        integer(int32), parameter :: m = 52
-        integer(int32), parameter :: n = 50
+        integer, parameter :: kl = 3
+        integer, parameter :: ku = 4
+        integer, parameter :: mb = kl + ku + 1
+        integer, parameter :: m = 52
+        integer, parameter :: n = 50
         real(real64) :: alpha, beta, a(mb,n), af(m,n), x1(n), y1(m), ans1(m)
         real(real64) :: x2(m), y2(n), ans2(n)
         
@@ -561,11 +561,11 @@ contains
         logical :: rst
 
         ! Local Variables
-        integer(int32), parameter :: kl = 3
-        integer(int32), parameter :: ku = 4
-        integer(int32), parameter :: mb = kl + ku + 1
-        integer(int32), parameter :: m = 52
-        integer(int32), parameter :: n = 50
+        integer, parameter :: kl = 3
+        integer, parameter :: ku = 4
+        integer, parameter :: mb = kl + ku + 1
+        integer, parameter :: m = 52
+        integer, parameter :: n = 50
         complex(real64) :: alpha, beta, a(mb,n), af(m,n), x1(n), y1(m), ans1(m)
         complex(real64) :: x2(m), y2(n), ans2(n), ans3(n)
         real(real64) :: ar(mb,n), ai(mb,n), mr(m), mi(m), nr(n), ni(n)
@@ -621,11 +621,11 @@ contains
         logical :: rst
 
         ! Variables
-        integer(int32), parameter :: n = 50
-        integer(int32), parameter :: kl = 3
-        integer(int32), parameter :: ku = 4
-        integer(int32), parameter :: mb = kl + ku + 1
-        integer(int32) :: i
+        integer, parameter :: n = 50
+        integer, parameter :: kl = 3
+        integer, parameter :: ku = 4
+        integer, parameter :: mb = kl + ku + 1
+        integer :: i
         real(real64) :: alpha, a(mb,n), af(n, n), d(n), df(n, n), a2(mb, n), &
             ans1(n, n), ans2(n, n), a1f(n, n), a2f(n, n)
 
@@ -666,11 +666,11 @@ contains
         logical :: rst
 
         ! Variables
-        integer(int32), parameter :: n = 50
-        integer(int32), parameter :: kl = 3
-        integer(int32), parameter :: ku = 4
-        integer(int32), parameter :: mb = kl + ku + 1
-        integer(int32) :: i
+        integer, parameter :: n = 50
+        integer, parameter :: kl = 3
+        integer, parameter :: ku = 4
+        integer, parameter :: mb = kl + ku + 1
+        integer :: i
         complex(real64) :: alpha, a(mb,n), af(n, n), d(n), df(n, n), &
             a2(mb, n), ans1(n, n), ans2(n, n), a1f(n, n), a2f(n, n)
         real(real64) :: alphar, alphai, ar(mb,n), ai(mb,n), dr(n), di(n)

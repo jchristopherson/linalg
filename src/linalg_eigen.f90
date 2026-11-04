@@ -6,7 +6,7 @@ module linalg_eigen
     !! and real matrix-free operators. ARPACK workspaces are local to each
     !! call, but concurrent solves additionally require a reentrant ARPACK
     !! implementation; read-only callbacks alone do not ensure reentrancy.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use arpack
     use linalg_errors
@@ -36,7 +36,7 @@ module linalg_eigen
             !! Coefficients of B or A - SIGMA * B.
         type(msr_matrix) :: lu
             !! Incomplete LU factors of MATRIX.
-        integer(int32), allocatable :: ju(:)
+        integer, allocatable :: ju(:)
             !! Row pointers used by the incomplete LU triangular solves.
     contains
         procedure :: size => csr_solver_size
@@ -144,7 +144,7 @@ subroutine eigen_sparse_gen_symm(a, b, k, vals, vecs, sigma, which, ncv, &
         !! The N-by-N symmetric matrix A; borrowed only during this call.
     class(csr_matrix), intent(in), target :: b
         !! The N-by-N symmetric positive definite matrix B.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! Number of requested eigenvalues, with 1 <= K < N.
     real(real64), intent(out), allocatable :: vals(:)
         !! Computed eigenvalues, allocated to the number converged.
@@ -156,9 +156,9 @@ subroutine eigen_sparse_gen_symm(a, b, k, vals, vecs, sigma, which, ncv, &
     character(len = 2), intent(in), optional :: which
         !! Selection: 'LA', 'SA', 'LM', 'SM', or 'BE'; default 'LM'. With
         !! SIGMA present, selection applies to the transformed spectrum.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! Basis size: K < NCV <= N; default MIN(N, MAX(2*K+1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! Positive iteration limit; default 300.
     real(real64), intent(in), optional :: tol
         !! Convergence tolerance; nonpositive values use machine precision.
@@ -181,7 +181,7 @@ subroutine eigen_sparse_gen_asymm(a, b, k, vals, vecs, sigma, which, ncv, &
     class(csr_matrix), intent(in), target :: b
         !! Symmetric B: positive definite in regular mode, positive
         !! semi-definite in shift-invert mode.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! Number of requested eigenvalues, with 1 <= K < N-1.
     complex(real64), intent(out), allocatable :: vals(:)
         !! Computed eigenvalues, allocated to the number converged. A complete
@@ -194,9 +194,9 @@ subroutine eigen_sparse_gen_asymm(a, b, k, vals, vecs, sigma, which, ncv, &
     character(len = 2), intent(in), optional :: which
         !! Selection: 'LM', 'SM', 'LR', 'SR', 'LI', or 'SI'; default 'LM'.
         !! With SIGMA present, selection applies to the transformed spectrum.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! Basis size: K+2 <= NCV <= N; default MIN(N, MAX(2*K+1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! Positive iteration limit; default 300.
     real(real64), intent(in), optional :: tol
         !! Convergence tolerance; nonpositive values use machine precision.
@@ -215,7 +215,7 @@ subroutine eigen_sparse_symm(a, k, vals, vecs, which, ncv, maxiter, tol)
     !! Computes selected eigenpairs of a symmetric CSR matrix using ARPACK.
     class(csr_matrix), intent(in), target :: a
         !! The N-by-N symmetric matrix; borrowed only during this call.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! Number of requested eigenvalues, with 1 <= K < N.
     real(real64), intent(out), allocatable :: vals(:)
         !! Computed eigenvalues, allocated to the number converged.
@@ -223,9 +223,9 @@ subroutine eigen_sparse_symm(a, k, vals, vecs, which, ncv, maxiter, tol)
         !! Optional N-by-SIZE(VALS) eigenvectors, one per column.
     character(len = 2), intent(in), optional :: which
         !! Selection: 'LA', 'SA', 'LM', 'SM', or 'BE'; default 'LM'.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! Basis size: K < NCV <= N; default MIN(N, MAX(2*K+1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! Positive iteration limit; default 300.
     real(real64), intent(in), optional :: tol
         !! Convergence tolerance; nonpositive values use machine precision.
@@ -240,7 +240,7 @@ subroutine eigen_sparse_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)
     !! Computes selected eigenpairs of a nonsymmetric real CSR matrix.
     class(csr_matrix), intent(in), target :: a
         !! The N-by-N real matrix; borrowed only during this call.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! Number of requested eigenvalues, with 1 <= K < N-1.
     complex(real64), intent(out), allocatable :: vals(:)
         !! Computed eigenvalues, allocated to the number converged. A complete
@@ -249,9 +249,9 @@ subroutine eigen_sparse_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)
         !! Optional N-by-SIZE(VALS) right eigenvectors, one per column.
     character(len = 2), intent(in), optional :: which
         !! Selection: 'LM', 'SM', 'LR', 'SR', 'LI', or 'SI'; default 'LM'.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! Basis size: K+2 <= NCV <= N; default MIN(N, MAX(2*K+1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! Positive iteration limit; default 300.
     real(real64), intent(in), optional :: tol
         !! Convergence tolerance; nonpositive values use machine precision.
@@ -279,7 +279,7 @@ pure subroutine eigen_symm(a, vals, vecs)
 
     ! Local Variables
     character :: jobz
-    integer(int32) :: n, flag, lwork
+    integer :: n, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), allocatable, dimension(:,:) :: ac
     real(real64), dimension(1) :: temp
@@ -300,7 +300,7 @@ pure subroutine eigen_symm(a, vals, vecs)
 
     ! Workspace Query
     call DSYEV(jobz, 'L', n, temp, n, vals, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Process
@@ -336,7 +336,7 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     
     ! Local Variables
     character :: jobvl, jobvr
-    integer(int32) :: n, flag, lwork
+    integer :: n, flag, lwork
     real(real64), dimension(1) :: dummy, temp
     real(real64), allocatable, dimension(:) :: w, wr, wi
     real(real64), allocatable, dimension(:,:) :: ac, vr, vl
@@ -363,7 +363,7 @@ pure subroutine eigen_asymm(a, vals, rvecs, lvecs)
     ! Workspace Query
     call DGEEV(jobvl, jobvr, n, dummy, n, dummy, dummy, dummy, n, &
         dummy, n, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), wr(n), wi(n))
 
     ! Process
@@ -427,7 +427,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
 
     ! Local Variables
     character :: jobvl, jobvr
-    integer(int32) :: i, n, flag, lwork
+    integer :: i, n, flag, lwork
     real(real64) :: eps, p, q
     real(real64), dimension(1) :: temp
     real(real64), dimension(1,1) :: dummy
@@ -460,7 +460,7 @@ pure subroutine eigen_gen(a, b, alpha, beta, rvecs, lvecs)
     ! Workspace Query
     call DGGEV(jobvl, jobvr, n, dummy, n, dummy, n, temp, temp, temp, dummy, n, &
         dummy, n, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), ar(n), ai(n))
 
     ! Process
@@ -550,7 +550,7 @@ pure subroutine eigen_cmplx(a, vals, rvecs, lvecs)
 
     ! Local Variables
     character :: jobvl, jobvr
-    integer(int32) :: n, flag, lwork, lrwork
+    integer :: n, flag, lwork, lrwork
     real(real64) :: rdummy(1)
     complex(real64) :: temp(1), dummy(1)
     complex(real64), allocatable, dimension(:) :: w
@@ -580,7 +580,7 @@ pure subroutine eigen_cmplx(a, vals, rvecs, lvecs)
     ! Workspace Query
     call ZGEEV(jobvl, jobvr, n, dummy, n, dummy, dummy, n, dummy, n, temp, &
         -1, rdummy, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), rw(lrwork))
 
     ! Process
@@ -619,7 +619,7 @@ subroutine eigen_operator_symm(a, k, vals, vecs, which, ncv, maxiter, tol)
     class(linear_operator), intent(in) :: a
         !! The N-by-N operator, assumed symmetric by the caller. APPLY must
         !! assign its caller-owned output without modifying the operator.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! The number of eigenvalues to compute.  This value must be greater
         !! than zero, but less than N.
     real(real64), intent(out), allocatable, dimension(:) :: vals
@@ -641,11 +641,11 @@ subroutine eigen_operator_symm(a, k, vals, vecs, which, ncv, maxiter, tol)
         !!  - 'SM': The K eigenvalues of smallest magnitude.
         !!
         !!  - 'BE': K eigenvalues taken from both ends of the spectrum.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! An optional parameter controlling the number of Lanczos basis
         !! vectors to utilize.  This value must be greater than k, but no
         !! greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! An optional parameter controlling the maximum number of iterations
         !! allowed.  The default is 300.
     real(real64), intent(in), optional :: tol
@@ -656,8 +656,8 @@ subroutine eigen_operator_symm(a, k, vals, vecs, which, ncv, maxiter, tol)
     ! Local Variables
     character(len = 1), parameter :: bmat = 'I'
     character(len = 2) :: w
-    integer(int32) :: n, nc, ni, nev, lworkl, ido, info, nconv
-    integer(int32) :: iparam(11), ipntr(11)
+    integer :: n, nc, ni, nev, lworkl, ido, info, nconv
+    integer :: iparam(11), ipntr(11)
     real(real64) :: t
     real(real64), allocatable, dimension(:) :: resid, workd, workl, d
     real(real64), allocatable, dimension(:,:) :: v, z
@@ -737,7 +737,7 @@ subroutine eigen_operator_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)
     class(linear_operator), intent(in) :: a
         !! The N-by-N real operator. APPLY must assign its caller-owned output
         !! without modifying the operator. Symmetry is not required.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! The number of eigenvalues to compute.  This value must be greater
         !! than zero, but less than N - 1.
     complex(real64), intent(out), allocatable, dimension(:) :: vals
@@ -762,11 +762,11 @@ subroutine eigen_operator_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)
         !!  - 'LI': The K eigenvalues of largest imaginary part.
         !!
         !!  - 'SI': The K eigenvalues of smallest imaginary part.
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! An optional parameter controlling the number of Arnoldi basis
         !! vectors to utilize.  This value must be at least k + 2, but no
         !! greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! An optional parameter controlling the maximum number of iterations
         !! allowed.  The default is 300.
     real(real64), intent(in), optional :: tol
@@ -777,8 +777,8 @@ subroutine eigen_operator_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)
     ! Local Variables
     character(len = 1), parameter :: bmat = 'I'
     character(len = 2) :: w
-    integer(int32) :: n, nc, ni, nev, lworkl, ido, info, nconv
-    integer(int32) :: iparam(11), ipntr(14)
+    integer :: n, nc, ni, nev, lworkl, ido, info, nconv
+    integer :: iparam(11), ipntr(14)
     real(real64) :: t
     real(real64), allocatable, dimension(:) :: resid, workd, workl, workev, &
         dr, di
@@ -869,7 +869,7 @@ subroutine eigen_operator_gen_symm(a, b, solver, k, vals, vecs, sigma, which, nc
         !! Prepared solver for B, or A - SIGMA * B when SIGMA is supplied.
         !! Its coefficients must match this problem, and inner solves must
         !! be accurate enough to preserve the outer Lanczos iteration.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! The number of eigenvalues to compute.  This value must be greater
         !! than zero, but less than N.
     real(real64), intent(out), allocatable, dimension(:) :: vals
@@ -891,11 +891,11 @@ subroutine eigen_operator_gen_symm(a, b, solver, k, vals, vecs, sigma, which, nc
         !! and 'BE'.  Note that when a shift is supplied, the selection applies
         !! to the transformed spectrum such that 'LM' returns the eigenvalues
         !! nearest to \(\sigma\).
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! An optional parameter controlling the number of Lanczos basis
         !! vectors to utilize.  This value must be greater than k, but no
         !! greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! An optional parameter controlling the maximum number of iterations
         !! allowed.  The default is 300.
     real(real64), intent(in), optional :: tol
@@ -906,8 +906,8 @@ subroutine eigen_operator_gen_symm(a, b, solver, k, vals, vecs, sigma, which, nc
     ! Local Variables
     character(len = 1), parameter :: bmat = 'G'
     character(len = 2) :: w
-    integer(int32) :: n, nc, ni, nev, lworkl, ido, info, nconv, mode, i1, i2, i3
-    integer(int32) :: iparam(11), ipntr(11)
+    integer :: n, nc, ni, nev, lworkl, ido, info, nconv, mode, i1, i2, i3
+    integer :: iparam(11), ipntr(11)
     real(real64) :: t, s
     real(real64), allocatable, dimension(:) :: resid, workd, workl, d, y
     real(real64), allocatable, dimension(:,:) :: v, z
@@ -1020,7 +1020,7 @@ subroutine eigen_operator_gen_asymm(a, b, solver, k, vals, vecs, sigma, which, n
         !! Prepared solver for B, or A - SIGMA * B when SIGMA is supplied.
         !! Its coefficients must match this problem, and inner solves must
         !! be accurate enough for the outer Arnoldi iteration.
-    integer(int32), intent(in) :: k
+    integer, intent(in) :: k
         !! The number of eigenvalues to compute.  This value must be greater
         !! than zero, but less than N - 1.
     complex(real64), intent(out), allocatable, dimension(:) :: vals
@@ -1043,11 +1043,11 @@ subroutine eigen_operator_gen_asymm(a, b, solver, k, vals, vecs, sigma, which, n
         !! 'LI', and 'SI'.  Note that when a shift is supplied, the selection
         !! applies to the transformed spectrum such that 'LM' returns the
         !! eigenvalues nearest to \(\sigma\).
-    integer(int32), intent(in), optional :: ncv
+    integer, intent(in), optional :: ncv
         !! An optional parameter controlling the number of Arnoldi basis
         !! vectors to utilize.  This value must be at least k + 2, but no
         !! greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).
-    integer(int32), intent(in), optional :: maxiter
+    integer, intent(in), optional :: maxiter
         !! An optional parameter controlling the maximum number of iterations
         !! allowed.  The default is 300.
     real(real64), intent(in), optional :: tol
@@ -1058,8 +1058,8 @@ subroutine eigen_operator_gen_asymm(a, b, solver, k, vals, vecs, sigma, which, n
     ! Local Variables
     character(len = 1), parameter :: bmat = 'G'
     character(len = 2) :: w
-    integer(int32) :: n, nc, ni, nev, lworkl, ido, info, nconv, mode, i1, i2, i3
-    integer(int32) :: iparam(11), ipntr(14)
+    integer :: n, nc, ni, nev, lworkl, ido, info, nconv, mode, i1, i2, i3
+    integer :: iparam(11), ipntr(14)
     real(real64) :: t, s
     real(real64), allocatable, dimension(:) :: resid, workd, workl, workev, &
         dr, di, y
@@ -1178,7 +1178,7 @@ pure subroutine extract_eigenvectors(wr, wi, v, vecs, vals, conjgvals)
         !! conjugate-pair eigenvalues; else, false to use the direct inputs.
 
     ! Local Variables
-    integer(int32) :: j, jp1, n
+    integer :: j, jp1, n
     real(real64) :: eps
     logical :: cv
 

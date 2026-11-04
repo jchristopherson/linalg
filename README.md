@@ -46,7 +46,7 @@ program example
 
     ! Local Variables
     real(real64) :: a(3,3), b(3), x(3)
-    integer(int32) :: i
+    integer :: i
     type(lu_factorization) :: lu
 
     ! Build the 3-by-3 matrix A.
@@ -96,7 +96,7 @@ program example
 
     ! Local Variables
     real(real64) :: a(3,2), b(3), x(2)
-    integer(int32) :: i
+    integer :: i
 
     ! Build the 3-by-2 matrix A
     !     | 2   1 |
@@ -163,7 +163,7 @@ program example
     real(dp), parameter :: k4 = 5.0d6
 
     ! Local Variables
-    integer(int32) :: i, j
+    integer :: i, j
     real(real64) :: m(3,3), k(3,3), natFreq(3)
     complex(real64), allocatable :: vals(:), modeShapes(:,:)
 
@@ -292,7 +292,7 @@ program operator_solution_example
     type(csr_operator) :: op
     type(ilu_preconditioner) :: preconditioner
     type(iterative_solver_info) :: details
-    integer(int32) :: upper_rows(3)
+    integer :: upper_rows(3)
     integer :: status
     real(real64) :: rhs(3)
     real(real64), allocatable :: solution(:)

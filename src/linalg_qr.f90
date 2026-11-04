@@ -11,6 +11,7 @@ module linalg_qr
     use blas
     use qrupdate
     use linalg_types
+    use linalg_basic, only : identity
     implicit none
     private
     public :: qr_factorization
@@ -60,10 +61,18 @@ module linalg_qr
         procedure, public :: solve_single_rhs_in_place => qrf_solve_single_rhs_in_place
             !! Solves the factored system with a single right-hand-side vector.
         procedure, private :: qrf_multiply_mtx
+            !! Multiplies the Q matrix with another matrix without explicitly
+            !! forming the full Q matrix.
         procedure, private :: qrf_multiply_vec
+            !! Multiplies the Q matrix with a vector without explicitly
+            !! forming the full Q matrix.
         generic, public :: q_multiply => qrf_multiply_mtx, qrf_multiply_vec
             !! Multiplies a matrix or a vector with the orthogonal matrix 
             !! \(Q\) or its transpose.
+        procedure, private :: estimate_rank => qrf_estimate_rank
+            !! Estimates the rank of the pivoted triangular factor.
+        procedure, public :: get_factored_form => qrf_get_factored_matrices
+            !! Gets the factored matrices.
     end type
 
     interface qr_factorization
@@ -377,7 +386,7 @@ subroutine qrf_solve_multiple_rhs_in_place(this, b, flag)
     lwork = size(this%workspace)
     block_size = min(nrhs, lwork)
     if (this%use_pivoting) then
-        call qrf_estimate_rank(this, rank)
+        call this%estimate_rank(rank)
     else
         rank = n
     end if
@@ -492,7 +501,7 @@ subroutine qrf_solve_single_rhs_in_place(this, b, flag)
     mn = min(m, n)
     lwork = size(this%workspace)
     if (this%use_pivoting) then
-        call qrf_estimate_rank(this, rank)
+        call this%estimate_rank(rank)
     else
         rank = n
     end if
@@ -724,14 +733,53 @@ function qrf_multiply_vec(this, trans, c, flag) result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+subroutine qrf_get_factored_matrices(this, q, r, p, flag)
+    !! Forms the full M-by-M orthogonal matrix \(Q\), the upper triangular
+    !! matrix \(R\), and if pivoting was used, the pivot matrix \(P\), where
+    !! either \(A = Q R\) or \(A P = Q R\).
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(out), allocatable, dimension(:,:) :: q
+        !! The M-by-M matrix \(Q\).
+    real(real64), intent(out), allocatable, dimension(:,:) :: r
+        !! The M-by-N matrix \(R\).
+    real(real64), intent(out), optional, allocatable, dimension(:,:) :: p
+        !! The N-by-N column pivot tracking matrix \(P\)
+    integer, intent(out), optional :: flag
+        !! An error flag.
 
-! ------------------------------------------------------------------------------
+    ! Local Variables
+    integer :: m, n, info
 
-! ------------------------------------------------------------------------------
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
 
-! ------------------------------------------------------------------------------
+    ! Ensure the matrix has been factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
 
-! ------------------------------------------------------------------------------
+    ! Form the matrices
+    allocate(q(m, m))
+    allocate(r(m, n), source = this%a)
+    if (present(p)) then
+        if (this%use_pivoting) then
+            allocate(p(n, n))
+            call form_qr(r, this%tau, this%pivot, q, p)
+        else
+            ! P is requested, but no pivoting was utilized
+            p = identity(n)
+            call form_qr(r, this%tau, q)
+        end if
+    else
+        call form_qr(r, this%tau, q)
+    end if
+end subroutine
 
 ! ******************************************************************************
 ! PROCEDURAL INTERFACE

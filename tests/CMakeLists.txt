@@ -54,6 +54,9 @@ foreach(validation_case IN ITEMS
     csr_lu_bad_pointer
     csr_gmres_bad_restart
     csr_gmres_bad_storage
+    operator_gmres_bad_restart
+    csr_operator_bad_storage
+    ilu_operator_bad_pointer
 )
     add_test(
         NAME ${validation_case}

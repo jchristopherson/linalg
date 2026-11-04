@@ -5,8 +5,243 @@ module test_sparse
     use linalg
     use fortran_test_helper
     implicit none
+    private :: stencil_test_operator
+
+    type, extends(linear_operator) :: stencil_test_operator
+        !! Matrix-free nonsymmetric three-diagonal stencil for solver tests.
+        real(real64), allocatable :: diagonal(:)
+            !! Diagonal coefficients; allocation determines the row count.
+        real(real64) :: lower = -1.0d0
+            !! Constant coefficient immediately below the diagonal.
+        real(real64) :: upper = -0.5d0
+            !! Constant coefficient immediately above the diagonal.
+        integer :: extra_columns = 0
+            !! Added column extent, used only to test shape rejection.
+        logical :: invalid_output = .false.
+            !! If true, APPLY deliberately emits NaNs to test callback checks.
+    contains
+        procedure :: size => stencil_test_size
+            !! Queries row/column counts without materializing the matrix.
+        procedure :: apply => stencil_test_apply
+            !! Applies the stencil to caller-owned vector storage.
+    end type
 
 contains
+pure function stencil_test_size(this, dim) result(rst)
+    !! Queries dimensions of the test stencil.
+    class(stencil_test_operator), intent(in) :: this
+        !! Operator whose diagonal determines the row count.
+    integer, intent(in) :: dim
+        !! Dimension: 1 for rows, 2 for columns; otherwise returns zero.
+    integer :: rst
+        !! Requested extent, or zero when no diagonal has been allocated.
+    rst = 0
+    if (.not.allocated(this%diagonal)) return
+    if (dim == 1) rst = size(this%diagonal)
+    if (dim == 2) rst = size(this%diagonal) + this%extra_columns
+end function
+
+subroutine stencil_test_apply(this, x, y)
+    !! Applies a three-diagonal stencil without assembled matrix storage.
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
+    class(stencil_test_operator), intent(in) :: this
+        !! Fixed stencil coefficients and optional deliberate-failure switch.
+    real(real64), intent(in) :: x(:)
+        !! Input vector with THIS%SIZE(2) elements; must not overlap Y.
+    real(real64), intent(out) :: y(:)
+        !! Caller-owned product with THIS%SIZE(1) elements.
+    integer :: order
+    if (this%invalid_output) then
+        y = ieee_value(0.0d0, ieee_quiet_nan)
+        return
+    end if
+    order = size(this%diagonal)
+    y = this%diagonal * x
+    y(:order-1) = y(:order-1) + this%upper * x(2:)
+    y(2:) = y(2:) + this%lower * x(:order-1)
+end subroutine
+
+function test_operator_gmres() result(rst)
+    !! Tests matrix-free SPARSKIT communication, fixed right preconditioning,
+    !! restarts, guesses, true residuals, input guards, breakdown, and budgets.
+    use linalg_errors
+    use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
+    logical :: rst
+        !! True when all solutions, diagnostics, and expected failures agree.
+    integer, parameter :: order = 12
+    type(stencil_test_operator) :: op, preconditioner, invalid, scalar, large
+    type(iterative_solver_info) :: details
+    real(real64) :: matrix(order,order), expected(order), rhs(order), nan
+    real(real64) :: product(order), invalid_rhs(order)
+    real(real64), allocatable :: solution(:), large_rhs(:)
+    integer :: index, flag
+
+    rst = .true.
+    nan = ieee_value(0.0d0, ieee_quiet_nan)
+    op%diagonal = [(4.0d0 + real(index, real64)/10.0d0, index = 1, order)]
+    matrix = 0.0d0
+    do index = 1, order
+        matrix(index,index) = op%diagonal(index)
+        if (index < order) then
+            matrix(index,index+1) = op%upper
+            matrix(index+1,index) = op%lower
+        end if
+    end do
+    expected = [(real(index, real64)/3.0d0, index = 1, order)]
+    rhs = matmul(matrix, expected)
+    call gmres_solve(op, rhs, solution, tol = 1.0d-11, im = 4, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = assert(solution, expected, tol = 1.0d-8) .and. rst
+    rst = details%residual_norm <= details%target_residual .and. rst
+    rst = details%matvecs > 2 .and. details%preconditioner_applications == 0 .and. rst
+    rst = assert(details%residual_norm, norm2(rhs-matmul(matrix, solution)), &
+        tol = 1.0d-12) .and. rst
+
+    preconditioner%diagonal = 1.0d0 / op%diagonal
+    preconditioner%lower = 0.0d0
+    preconditioner%upper = 0.0d0
+    call gmres_solve(op, rhs, solution, preconditioner = preconditioner, &
+        tol = 1.0d-11, im = 4, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = details%preconditioner_applications > 0 .and. rst
+    rst = assert(solution, expected, tol = 1.0d-8) .and. rst
+    call gmres_solve(op, rhs, solution, x0 = expected, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = details%matvecs == 2 .and. rst
+    rst = assert(solution, expected, tol = 1.0d-12) .and. rst
+    call gmres_solve(op, rhs, solution, tol = 0.0d0, atol = 1.0d-9, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%residual_norm <= 1.0d-9 .and. rst
+    call gmres_solve(op, 0.0d0 * rhs, solution, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. all(solution == 0.0d0) .and. rst
+    rst = details%converged .and. details%residual_norm == 0.0d0 .and. rst
+
+    scalar%diagonal = [2.0d0]
+    call gmres_solve(scalar, [6.0d0], solution, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = assert(solution, [3.0d0], tol = 1.0d-12) .and. rst
+    call gmres_solve(op, rhs, solution, im = 2, maxits = 2, &
+        tol = 1.0d-12, flag = flag, info = details)
+    rst = flag == LA_CONVERGENCE_ERROR .and. .not.details%converged .and. rst
+    rst = allocated(solution) .and. details%status == flag .and. rst
+    invalid = op
+    invalid%diagonal = 0.0d0
+    invalid%lower = 0.0d0
+    invalid%upper = 0.0d0
+    call gmres_solve(invalid, rhs, solution, flag = flag, info = details)
+    rst = flag == LA_CONVERGENCE_ERROR .and. .not.details%converged .and. rst
+
+    call gmres_solve(op, rhs(:order-1), solution, flag = flag)
+    rst = flag == LA_MATRIX_DIMENSION_ERROR .and. .not.allocated(solution) .and. rst
+    invalid = op
+    invalid%extra_columns = 1
+    call gmres_solve(invalid, rhs, solution, flag = flag)
+    rst = flag == LA_MATRIX_NOT_SQUARE_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, preconditioner = invalid, flag = flag)
+    rst = flag == LA_MATRIX_DIMENSION_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, x0 = expected(:order-1), flag = flag)
+    rst = flag == LA_MATRIX_DIMENSION_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, im = 1, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, maxits = 0, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, tol = -1.0d0, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, tol = 1.0d0, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, tol = 0.0d0, atol = 0.0d0, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, atol = -1.0d0, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, tol = nan, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    invalid_rhs = rhs
+    invalid_rhs(1) = nan
+    call gmres_solve(op, invalid_rhs, solution, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    call gmres_solve(op, rhs, solution, x0 = invalid_rhs, flag = flag)
+    rst = flag == LA_INVALID_INPUT_ERROR .and. .not.allocated(solution) .and. rst
+    invalid = op
+    invalid%invalid_output = .true.
+    call gmres_solve(invalid, rhs, solution, flag = flag, info = details)
+    rst = flag == LA_INVALID_OPERATION_ERROR .and. .not.details%converged .and. rst
+    call gmres_solve(op, rhs, solution, preconditioner = invalid, flag = flag, info = details)
+    rst = flag == LA_INVALID_OPERATION_ERROR .and. .not.details%converged .and. rst
+    call gmres_solve(op, rhs, solution, tol = 1.0d-11)
+    rst = assert(solution, expected, tol = 1.0d-8) .and. rst
+    call op%apply(expected, product)
+    rst = assert(product, rhs) .and. rst
+
+    allocate(large%diagonal(50000), large_rhs(50000), source = 1.0d0)
+    call gmres_solve(large, large_rhs, solution, im = 50000, flag = flag, info = details)
+    rst = flag == LA_OUT_OF_MEMORY_ERROR .and. .not.allocated(solution) .and. rst
+    rst = details%matvecs == 0 .and. .not.details%converged .and. rst
+    large%lower = 0.0d0
+    large%upper = 0.0d0
+    large%diagonal = large%diagonal(:64)
+    call gmres_solve(large, large_rhs(:64), solution, im = 64, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = all(abs(solution - 1.0d0) < 1.0d-10) .and. rst
+    if (.not.rst) print '(A)', 'Test Failed: Matrix-Free Reverse-Communication GMRES'
+end function
+
+! ------------------------------------------------------------------------------
+function test_gmres_sparse_adapters() result(rst)
+    !! Verifies owned adapter storage, fixed ILUT application, hybrid matrix-free
+    !! solves, and agreement with the unchanged CSR GMRES entry point.
+    use linalg_errors, only : LA_NO_ERROR
+    logical :: rst
+        !! True if adapter products, solutions, ownership, and diagnostics agree.
+    integer, parameter :: order = 8
+    type(csr_matrix) :: csr
+    type(msr_matrix) :: factors
+    type(csr_operator) :: op
+    type(ilu_preconditioner) :: preconditioner
+    type(stencil_test_operator) :: stencil
+    type(iterative_solver_info) :: details
+    real(real64) :: matrix(order,order), expected(order), rhs(order), product(order)
+    real(real64), allocatable :: solution(:), legacy_solution(:)
+    integer(int32) :: upper_rows(order)
+    integer :: index, flag
+
+    rst = .true.
+    matrix = 0.0d0
+    stencil%diagonal = [(4.0d0 + real(index, real64)/10.0d0, index = 1, order)]
+    do index = 1, order
+        matrix(index,index) = stencil%diagonal(index)
+        if (index < order) then
+            matrix(index,index+1) = stencil%upper
+            matrix(index+1,index) = stencil%lower
+        end if
+    end do
+    expected = [(real(index, real64)/3.0d0, index = 1, order)]
+    rhs = matmul(matrix, expected)
+    csr = dense_to_csr(matrix)
+    op = csr_operator(csr)
+    call lu_factor(csr, factors, upper_rows, droptol = 1.0d0)
+    preconditioner = ilu_preconditioner(factors, upper_rows)
+    call preconditioner%apply(rhs, product)
+    rst = assert(product, solve_lu(factors, upper_rows, rhs), tol = 1.0d-12) .and. rst
+    legacy_solution = pgmres_solver(csr, factors, upper_rows, rhs, tol = 1.0d-11)
+
+    csr%values = 0.0d0
+    factors%values = 0.0d0
+    upper_rows = 1
+    call op%apply(expected, product)
+    rst = assert(product, rhs) .and. rst
+    rst = op%size(1) == order .and. preconditioner%size(2) == order .and. rst
+    call gmres_solve(op, rhs, solution, preconditioner = preconditioner, &
+        tol = 1.0d-11, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = details%preconditioner_applications > 0 .and. rst
+    rst = assert(solution, legacy_solution, tol = 1.0d-8) .and. rst
+    rst = assert(solution, expected, tol = 1.0d-8) .and. rst
+    call gmres_solve(stencil, rhs, solution, preconditioner = preconditioner, &
+        tol = 1.0d-11, flag = flag, info = details)
+    rst = flag == LA_NO_ERROR .and. details%converged .and. rst
+    rst = assert(solution, expected, tol = 1.0d-8) .and. rst
+    if (.not.rst) print '(A)', 'Test Failed: GMRES Sparse Operator Adapters'
+end function
+
 ! ------------------------------------------------------------------------------
 function test_csr_1() result(rst)
     ! Arguments
@@ -675,6 +910,8 @@ subroutine run_csr_solver_error_case(case_name)
         !! Registered invalid-input case name; an unknown name simply returns.
     type(csr_matrix) :: csr
     type(msr_matrix) :: factors
+    type(csr_operator) :: op
+    type(ilu_preconditioner) :: preconditioner
     integer(int32) :: upper_rows(3)
     real(real64) :: rhs(3)
     real(real64), allocatable :: solution(:)
@@ -696,6 +933,15 @@ subroutine run_csr_solver_error_case(case_name)
     case ('csr_gmres_bad_storage')
         factors%indices(5) = 1
         solution = pgmres_solver(csr, factors, upper_rows, rhs)
+    case ('operator_gmres_bad_restart')
+        op = csr_operator(csr)
+        call gmres_solve(op, rhs, solution, im = 1)
+    case ('csr_operator_bad_storage')
+        csr%row_indices(1) = 0
+        op = csr_operator(csr)
+    case ('ilu_operator_bad_pointer')
+        upper_rows(2) = 100
+        preconditioner = ilu_preconditioner(factors, upper_rows)
     end select
 end subroutine
 

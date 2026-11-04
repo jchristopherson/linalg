@@ -446,6 +446,12 @@ program main
     rst = test_csr_solver_validation()
     if (.not.rst) flag = 131
 
+    rst = test_operator_gmres()
+    if (.not.rst) flag = 132
+
+    rst = test_gmres_sparse_adapters()
+    if (.not.rst) flag = 133
+
     ! End
     if (flag /= 0) stop flag
 end program

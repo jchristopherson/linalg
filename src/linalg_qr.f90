@@ -36,7 +36,11 @@ module linalg_qr
             !! True if column pivoting should be used; else, false.
         integer, private, allocatable, dimension(:) :: pivot
             !! The column pivot tracking array.
-        real(real64), allocatable, dimension(:) :: workspace
+        real(real64), private, allocatable, dimension(:,:) :: solve_matrix
+            !! Scratch matrix for the RZ factorization used by pivoted solves.
+        real(real64), private, allocatable, dimension(:) :: solve_tau
+            !! Reflector coefficients for the scratch RZ factorization.
+        real(real64), private, allocatable, dimension(:) :: workspace
             !! Workspace array that is large enough for the factorization,
             !! multiplication, or solve calls.  This one workspace can be used
             !! for all operations
@@ -50,6 +54,10 @@ module linalg_qr
         procedure, public :: solve_multiple_rhs => qrf_solve_multiple_rhs
             !! Solves the factored system with multiple right-hand-side vectors.
         procedure, public :: solve_single_rhs => qrf_solve_single_rhs
+            !! Solves the factored system with a single right-hand-side vector.
+        procedure, public :: solve_multiple_rhs_in_place => qrf_solve_multiple_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors in place.
+        procedure, public :: solve_single_rhs_in_place => qrf_solve_single_rhs_in_place
             !! Solves the factored system with a single right-hand-side vector.
         procedure, private :: qrf_multiply_mtx
         procedure, private :: qrf_multiply_vec
@@ -130,11 +138,13 @@ pure function qrf_init(a, pvt) result(rst)
 
     if (rst%use_pivoting) then
         call DGEQP3(m, n, dummy, m, idummy, dummy, w, -1, info)
-        allocate(rst%pivot(n))
+        allocate(rst%pivot(n), source = 0)
+        allocate(rst%solve_matrix(max(1, m), n), source = 0.0d0)
+        allocate(rst%solve_tau(mn))
     else
         call DGEQRF(m, n, dummy, m, dummy, w, -1, info)
     end if
-    lwork = int(w(1))
+    lwork = max(int(w(1)), 2 * max(m, n) + 1)
     allocate(rst%workspace(lwork))
 end function
 
@@ -204,10 +214,8 @@ end subroutine
 function qrf_solve_multiple_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining multiple right-hand-side vectors.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  For underdetermined systems,
-    !! pivoting must be utilized; else, an LA_INVALID_OPERATION_ERROR is
-    !! returned.
+    !! The solution has N rows.  Underdetermined systems require column
+    !! pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.
     class(qr_factorization), intent(inout) :: this
         !! The [[qr_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: b
@@ -216,6 +224,7 @@ function qrf_solve_multiple_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:,:) :: rst
         !! The solution matrix.
+    real(real64), allocatable, dimension(:,:) :: rhs_work
 
     ! Local Variables
     integer :: m, n, nrhs, info
@@ -242,31 +251,27 @@ function qrf_solve_multiple_rhs(this, b, flag) result(rst)
         end if
     end if
 
-    ! Ensure the matrix is factored
-    if (.not.this%is_factored()) then
-        call this%factor(flag = info)
-        if (info /= LA_NO_ERROR) then
-            if (present(flag)) flag = info
-            return
-        end if
-    end if
-
     ! Process
-    if (this%use_pivoting) then
-        rst = solve_qr(this%a, this%tau, this%pivot, b)
+    if (m >= n) then
+        allocate(rhs_work(m, nrhs), source = b)
     else
-        rst = solve_qr(this%a, this%tau, b)
+        allocate(rhs_work(n, nrhs), source = 0.0d0)
+        rhs_work(1:m,:) = b
     end if
+    call this%solve_multiple_rhs_in_place(rhs_work, info)
+    if (info /= LA_NO_ERROR) then
+        if (present(flag)) flag = info
+        return
+    end if
+    allocate(rst(n, nrhs), source = rhs_work(1:n,:))
 end function
 
 ! ------------------------------------------------------------------------------
 function qrf_solve_single_rhs(this, b, flag) result(rst)
     !! Solves the linear system \(A X = B \) where \(B\)
-    !! is a matrix defining a single right-hand-side vector.
-    !! The encapsulated matrix must be square; else, an 
-    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.  For underdetermined systems,
-    !! pivoting must be utilized; else, an LA_INVALID_OPERATION_ERROR is
-    !! returned.
+    !! is a single right-hand-side vector.
+    !! The solution has N elements.  Underdetermined systems require column
+    !! pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.
     class(qr_factorization), intent(inout) :: this
         !! The [[qr_factorization]] object.
     real(real64), intent(in), dimension(:) :: b
@@ -275,6 +280,7 @@ function qrf_solve_single_rhs(this, b, flag) result(rst)
         !! An error flag.
     real(real64), allocatable, dimension(:) :: rst
         !! The solution vector.
+    real(real64), allocatable, dimension(:) :: rhs_work
 
     ! Local Variables
     integer :: m, n, info
@@ -300,6 +306,62 @@ function qrf_solve_single_rhs(this, b, flag) result(rst)
         end if
     end if
 
+    ! Process
+    if (m >= n) then
+        allocate(rhs_work(m), source = b)
+    else
+        allocate(rhs_work(n), source = 0.0d0)
+        rhs_work(1:m) = b
+    end if
+    call this%solve_single_rhs_in_place(rhs_work, info)
+    if (info /= LA_NO_ERROR) then
+        if (present(flag)) flag = info
+        return
+    end if
+    allocate(rst(n), source = rhs_work(1:n))
+end function
+
+! ------------------------------------------------------------------------------
+subroutine qrf_solve_multiple_rhs_in_place(this, b, flag)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    !! The solution is returned in the first N rows of B, which must have
+    !! MAX(M,N) rows.  Underdetermined systems require column pivoting.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(inout), dimension(:,:) :: b
+        !! On input, the M-by-NRHS right-hand side occupies the first M rows.
+        !! On output, the N-by-NRHS solution occupies the first N rows.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: m, n, nrhs, mn, info, lwork, block_size, first, last, rank
+    integer :: i, j, ldrz
+    real(real64), parameter :: one = 1.0d0
+
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
+    nrhs = size(b, 2)
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! Validation
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%use_pivoting) then
+        if (m < n) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    end if
+    if (size(b, 1) /= max(m, n)) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
     ! Ensure the matrix is factored
     if (.not.this%is_factored()) then
         call this%factor(flag = info)
@@ -310,12 +372,229 @@ function qrf_solve_single_rhs(this, b, flag) result(rst)
     end if
 
     ! Process
+    if (n == 0 .or. nrhs == 0) return
+    mn = min(m, n)
+    lwork = size(this%workspace)
+    block_size = min(nrhs, lwork)
     if (this%use_pivoting) then
-        rst = solve_qr(this%a, this%tau, this%pivot, b)
+        call qrf_estimate_rank(this, rank)
     else
-        rst = solve_qr(this%a, this%tau, b)
+        rank = n
     end if
-end function
+    if (rank == 0) then
+        b = 0.0d0
+        return
+    end if
+
+    ! Apply Q^T to each RHS block.  The block width is bounded by the stored
+    ! workspace, so the in-place solve never allocates a temporary work array.
+    do first = 1, nrhs, block_size
+        last = min(nrhs, first + block_size - 1)
+        call DORMQR('L', 'T', m, last - first + 1, mn, this%a, m, this%tau, &
+            b(:,first:last), size(b,1), this%workspace, lwork, info)
+        if (info /= 0) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    end do
+
+    if (this%use_pivoting .and. rank < n) then
+        ! RZ-factor the numerical-rank portion of R.  Clear the lower triangle
+        ! because it contains the QR reflectors, not entries of R.
+        ldrz = size(this%solve_matrix, 1)
+        this%solve_matrix(1:rank,1:n) = this%a(1:rank,1:n)
+        do j = 1, min(rank, n)
+            if (j < rank) this%solve_matrix(j+1:rank,j) = 0.0d0
+        end do
+        call DTZRZF(rank, n, this%solve_matrix, ldrz, this%solve_tau, &
+            this%workspace, lwork, info)
+        if (info /= 0) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+        call DTRSM('L', 'U', 'N', 'N', rank, nrhs, one, this%solve_matrix, &
+            ldrz, b, size(b,1))
+        b(rank+1:n,:) = 0.0d0
+        do first = 1, nrhs, block_size
+            last = min(nrhs, first + block_size - 1)
+            call DORMRZ('L', 'T', n, last - first + 1, rank, n - rank, &
+                this%solve_matrix, ldrz, this%solve_tau, b(:,first:last), &
+                size(b,1), this%workspace, lwork, info)
+            if (info /= 0) then
+                if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+                return
+            end if
+        end do
+    else
+        call DTRSM('L', 'U', 'N', 'N', n, nrhs, one, this%a, m, b, size(b,1))
+    end if
+
+    if (this%use_pivoting) then
+        do j = 1, nrhs
+            this%workspace(1:n) = b(1:n,j)
+            do i = 1, n
+                b(this%pivot(i),j) = this%workspace(i)
+            end do
+        end do
+    end if
+end subroutine
+
+! ------------------------------------------------------------------------------
+subroutine qrf_solve_single_rhs_in_place(this, b, flag)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    !! The solution is returned in the first N elements of B, which must have
+    !! MAX(M,N) elements.  Underdetermined systems require column pivoting.
+    class(qr_factorization), intent(inout) :: this
+        !! The [[qr_factorization]] object.
+    real(real64), intent(inout), dimension(:) :: b
+        !! On input, the M-element right-hand side.  On output, the N-element
+        !! solution occupies the first N elements.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: m, n, mn, info, lwork, rank, i, ldrz
+    real(real64), parameter :: one = 1.0d0
+
+    ! Initialization
+    m = this%size(1)
+    n = this%size(2)
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! Validation
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%use_pivoting) then
+        if (m < n) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    end if
+    if (size(b) /= max(m, n)) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
+    ! Ensure the matrix is factored
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    if (n == 0) return
+    mn = min(m, n)
+    lwork = size(this%workspace)
+    if (this%use_pivoting) then
+        call qrf_estimate_rank(this, rank)
+    else
+        rank = n
+    end if
+    if (rank == 0) then
+        b = 0.0d0
+        return
+    end if
+
+    call DORMQR('L', 'T', m, 1, mn, this%a, m, this%tau, b, size(b), &
+        this%workspace, lwork, info)
+    if (info /= 0) then
+        if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+        return
+    end if
+
+    if (this%use_pivoting .and. rank < n) then
+        ldrz = size(this%solve_matrix, 1)
+        this%solve_matrix(1:rank,1:n) = this%a(1:rank,1:n)
+        do i = 1, min(rank, n)
+            if (i < rank) this%solve_matrix(i+1:rank,i) = 0.0d0
+        end do
+        call DTZRZF(rank, n, this%solve_matrix, ldrz, this%solve_tau, &
+            this%workspace, lwork, info)
+        if (info /= 0) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+        call DTRSV('U', 'N', 'N', rank, this%solve_matrix, ldrz, b, 1)
+        b(rank+1:n) = 0.0d0
+        call DORMRZ('L', 'T', n, 1, rank, n - rank, this%solve_matrix, &
+            ldrz, this%solve_tau, b, size(b), this%workspace, lwork, info)
+        if (info /= 0) then
+            if (present(flag)) flag = LA_INVALID_OPERATION_ERROR
+            return
+        end if
+    else
+        call DTRSV('U', 'N', 'N', n, this%a, m, b, 1)
+    end if
+
+    if (this%use_pivoting) then
+        this%workspace(1:n) = b(1:n)
+        do i = 1, n
+            b(this%pivot(i)) = this%workspace(i)
+        end do
+    end if
+end subroutine
+
+! ------------------------------------------------------------------------------
+subroutine qrf_estimate_rank(this, rank)
+    !! Estimates the numerical rank of the pivoted triangular factor using the
+    !! incremental condition estimator used by the direct pivoted QR solvers.
+    class(qr_factorization), intent(inout) :: this
+        !! The factored QR object whose workspace is used for temporary vectors.
+    integer, intent(out) :: rank
+        !! Estimated numerical rank.
+
+    ! Parameters
+    integer, parameter :: imin = 2
+    integer, parameter :: imax = 1
+    real(real64), parameter :: zero = 0.0d0
+    real(real64), parameter :: one = 1.0d0
+
+    ! Local Variables
+    integer :: m, n, mn, ismin, ismax, i
+    real(real64) :: rcond, smax, smin, smax_next, smin_next
+    real(real64) :: s_min, c_min, s_max, c_max
+
+    m = size(this%a, 1)
+    n = size(this%a, 2)
+    mn = min(m, n)
+    rank = 0
+    if (mn == 0) return
+
+    ismin = 1
+    ismax = mn + 1
+    rcond = epsilon(one)
+    smax = abs(this%a(1,1))
+    smin = smax
+    if (smax == zero) return
+
+    rank = 1
+    this%workspace(ismin) = one
+    this%workspace(ismax) = one
+    do while (rank < mn)
+        i = rank + 1
+        call DLAIC1(imin, rank, this%workspace(ismin:ismin+rank-1), smin, &
+            this%a(1:rank,i), this%a(i,i), smin_next, s_min, c_min)
+        call DLAIC1(imax, rank, this%workspace(ismax:ismax+rank-1), smax, &
+            this%a(1:rank,i), this%a(i,i), smax_next, s_max, c_max)
+        if (smax_next * rcond > smin_next) exit
+
+        this%workspace(ismin:ismin+rank-1) = &
+            s_min * this%workspace(ismin:ismin+rank-1)
+        this%workspace(ismax:ismax+rank-1) = &
+            s_max * this%workspace(ismax:ismax+rank-1)
+        this%workspace(ismin+rank) = c_min
+        this%workspace(ismax+rank) = c_max
+        smin = smin_next
+        smax = smax_next
+        rank = rank + 1
+    end do
+end subroutine
 
 ! ------------------------------------------------------------------------------
 function qrf_multiply_mtx(this, lside, trans, c, flag) result(rst)

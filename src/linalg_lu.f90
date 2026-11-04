@@ -37,6 +37,10 @@ module linalg_lu
             !! Solves the factored system with multiple right-hand-side vectors.
         procedure, public :: solve_single_rhs => luf_solve_single_rhs
             !! Solves the factored system with a single right-hand-side vector.
+        procedure, public :: solve_multiple_rhs_in_place => luf_solve_multiple_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors.
+        procedure, public :: solve_single_rhs_in_place => luf_solve_single_rhs_in_place
+            !! Solves the factored system with a single right-hand-side vector.
         procedure, public :: get_factored_form => luf_get_factored_matrices
             !! Gets the factored matrices.
         procedure, public :: determinant => luf_det
@@ -170,6 +174,60 @@ function luf_solve_multiple_rhs(this, b, flag) result(rst)
     ! Local Variables
     integer :: n, nrhs, info
 
+    ! Initialization
+    n = this%size(1)
+    nrhs = size(b, 2)
+    if (present(flag)) flag = LA_NO_ERROR
+    
+    ! Solve
+    allocate(rst(n, nrhs), source = b)
+    call this%solve_in_place(rst, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+function luf_solve_single_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(in), dimension(:) :: b
+        !! The right-hand-side vector.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The solution vector.
+
+    ! Local Variables
+    integer :: n, info
+
+    ! Initialization
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    
+    ! Solve
+    allocate(rst(n), source = b)
+    call this%solve_in_place(rst, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine luf_solve_multiple_rhs_in_place(this, b, flag)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(lu_factorization), intent(inout) :: this
+        !! The [[lu_factorization]] object.
+    real(real64), intent(inout), dimension(:,:) :: b
+        !! On input, the right-hand-side matrix \(B\).  On output, the solution
+        !! matrix \(X\).
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: n, nrhs, info
+
     ! Validation
     n = this%size(1)
     nrhs = size(b, 2)
@@ -197,24 +255,21 @@ function luf_solve_multiple_rhs(this, b, flag) result(rst)
     end if
 
     ! Solve
-    allocate(rst(n, nrhs), source = b)
-    call DGETRS("N", n, nrhs, this%a, n, this%pivot, rst, n, info)
-end function
+    call DGETRS("N", n, nrhs, this%a, n, this%pivot, b, n, info)
+end subroutine
 
 ! ------------------------------------------------------------------------------
-function luf_solve_single_rhs(this, b, flag) result(rst)
+subroutine luf_solve_single_rhs_in_place(this, b, flag)
     !! Solves the linear system \(A X = B \) where \(B\)
     !! is a matrix defining a single right-hand-side vector.
     !! The encapsulated matrix must be square; else, an 
     !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
     class(lu_factorization), intent(inout) :: this
         !! The [[lu_factorization]] object.
-    real(real64), intent(in), dimension(:) :: b
+    real(real64), intent(inout), dimension(:) :: b
         !! The right-hand-side vector.
     integer, intent(out), optional :: flag
         !! An error flag.
-    real(real64), allocatable, dimension(:) :: rst
-        !! The solution vector.
 
     ! Local Variables
     integer :: n, info
@@ -245,9 +300,8 @@ function luf_solve_single_rhs(this, b, flag) result(rst)
     end if
 
     ! Solve
-    allocate(rst(n), source = b)
-    call DGETRS("N", n, 1, this%a, n, this%pivot, rst, n, info)
-end function
+    call DGETRS("N", n, 1, this%a, n, this%pivot, b, n, info)
+end subroutine
 
 ! ------------------------------------------------------------------------------
 subroutine luf_get_factored_matrices(this, l, u, p, flag)

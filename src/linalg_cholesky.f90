@@ -176,39 +176,16 @@ function cf_solve_multiple_rhs(this, b, flag) result(rst)
         !! The solution matrix.
 
     ! Local Variables
-    character :: uplo
-    integer :: n, nrhs, info
+    integer :: n, nrhs
 
-    ! Validation
+    ! Initialization
     n = this%size(1)
     nrhs = size(b, 2)
     if (present(flag)) flag = LA_NO_ERROR
-    if (.not.allocated(this%a)) then
-        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
-        return
-    end if
-    if (size(b, 1) /= n) then
-        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
-        return
-    end if
-
-    ! If the matrix is not factored, be sure to factor
-    if (.not.this%is_factored()) then
-        call this%factor(flag = info)
-        if (info /= LA_NO_ERROR) then
-            if (present(flag)) flag = info
-            return
-        end if
-    end if
-
-    ! Solve
-    if (this%is_upper()) then
-        uplo = "U"
-    else
-        uplo = "L"
-    end if
+    
+    ! Process
     allocate(rst(n, nrhs), source = b)
-    call DPOTRS(uplo, n, nrhs, this%a, n, rst, n, info)
+    call this%solve_in_place(rst, flag = flag)
 end function
 
 ! ------------------------------------------------------------------------------
@@ -227,38 +204,15 @@ function cf_solve_single_rhs(this, b, flag) result(rst)
         !! The solution vector.
 
     ! Local Variables
-    character :: uplo
-    integer :: n, info
+    integer :: n
 
-    ! Validation
+    ! Initialization
     n = this%size(1)
     if (present(flag)) flag = LA_NO_ERROR
-    if (.not.allocated(this%a)) then
-        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
-        return
-    end if
-    if (size(b) /= n) then
-        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
-        return
-    end if
-
-    ! If the matrix is not factored, be sure to factor
-    if (.not.this%is_factored()) then
-        call this%factor(flag = info)
-        if (info /= LA_NO_ERROR) then
-            if (present(flag)) flag = info
-            return
-        end if
-    end if
-
-    ! Solve
-    if (this%is_upper()) then
-        uplo = "U"
-    else
-        uplo = "L"
-    end if
+    
+    ! Process
     allocate(rst(n), source = b)
-    call DPOTRS(uplo, n, 1, this%a, n, rst, n, info)
+    call this%solve_in_place(rst, flag = flag)
 end function
 
 ! ------------------------------------------------------------------------------

@@ -20,6 +20,16 @@ module linalg_types
             !! Solves the factored system with a single right-hand-side vector.
         generic, public :: solve => solve_multiple_rhs, solve_single_rhs
             !! Solves the factored system.
+        procedure(matrix_solve_multiple_rhs_in_place), deferred, public, pass :: solve_multiple_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors 
+            !! where the right-hand-side argument as a container for the result.
+        procedure(matrix_solve_single_rhs_in_place), deferred, public, pass :: solve_single_rhs_in_place
+            !! Solves the factored system with a single right-hand-side vector
+            !! where the right-hand-side argument as a container for the result.
+        generic, public :: solve_in_place => solve_multiple_rhs_in_place, &
+            solve_single_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors 
+            !! where the right-hand-side argument as a container for the result.
     end type
 
     abstract interface
@@ -81,6 +91,34 @@ module linalg_types
             real(real64), allocatable, dimension(:) :: rst
                 !! The solution vector.
         end function
+
+        subroutine matrix_solve_multiple_rhs_in_place(this, b, flag)
+            !! Solves the linear system \(A X = B \) where \(B\)
+            !! is a matrix defining multiple right-hand-side vectors.
+            use iso_fortran_env, only : real64
+            import matrix_factorization
+            class(matrix_factorization), intent(inout) :: this
+                !! The [[matrix_factorization]] object.
+            real(real64), intent(inout), dimension(:,:) :: b
+                !! On input, the right-hand-side matrix.  On output, the
+                !! solution matrix.
+            integer, intent(out), optional :: flag
+                !! An error flag.
+        end subroutine
+
+        subroutine matrix_solve_single_rhs_in_place(this, b, flag)
+            !! Solves the linear system \(A X = B \) where \(B\)
+            !! is a matrix defining a single right-hand-side vector.
+            use iso_fortran_env, only : real64
+            import matrix_factorization
+            class(matrix_factorization), intent(inout) :: this
+                !! The [[matrix_factorization]] object.
+            real(real64), intent(inout), dimension(:) :: b
+                !! On input, the right-hand-side vector.  On output, the 
+                !! solution vector.
+            integer, intent(out), optional :: flag
+                !! An error flag.
+        end subroutine
     end interface
 
     interface size

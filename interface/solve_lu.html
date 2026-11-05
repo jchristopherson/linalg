@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="<p> 0.0% of total for procedures.</p>Including implementation: 105 statements,  0.3% of total for procedures.">7 statements</a>
+                 title="<p> 0.0% of total for procedures.</p>Including implementation: 113 statements,  0.3% of total for procedures.">7 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -173,7 +173,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~55"></span>
+              <span class="anchor" id="variable-a~219"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -188,8 +188,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~7"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~9"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -203,7 +203,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~27"></span>
+              <span class="anchor" id="variable-b~116"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -247,7 +247,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~56"></span>
+              <span class="anchor" id="variable-a~220"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -262,8 +262,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~8"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~10"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -277,7 +277,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~28"></span>
+              <span class="anchor" id="variable-b~117"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -321,7 +321,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~57"></span>
+              <span class="anchor" id="variable-a~221"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -336,8 +336,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~9"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~11"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -351,7 +351,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~29"></span>
+              <span class="anchor" id="variable-b~118"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -395,7 +395,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~58"></span>
+              <span class="anchor" id="variable-a~222"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -410,8 +410,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~10"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~12"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -425,7 +425,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~30"></span>
+              <span class="anchor" id="variable-b~119"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -454,7 +454,10 @@
     <div class="card-header codesum"><span class="anchor" id="proc-csr_lu_solve"></span> <h3>private pure function csr_lu_solve(lu, ju, b) result(x)  
 </h3></div>
     <div class="card-body">
-        <p>Solves a linear system using an LU decomposition.</p>
+        <p>Applies the combined triangular factors with SPARSKIT LUSOL. If the
+factors came from ILUT, this solves the incomplete-factor system only;
+use PGMRES_SOLVE or SPARSE_LU_FACTORIZATION for the original CSR system.
+Malformed factors use ERROR STOP; singular/nonfinite factors yield NaNs.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -469,7 +472,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~10"></span>
+              <span class="anchor" id="variable-lu~15"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -479,13 +482,13 @@
             <td>::</td>
             <td><strong>lu</strong></td>
             <td>
-                <p>The LU matrix.</p>
+                <p>Nonempty square MSR factors, with inverse U pivots on the diagonal.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ju~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ju~16"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -494,12 +497,12 @@
             <td>::</td>
             <td><strong>ju</strong></td>
             <td>
-                <p>The row tracking array.</p>
+                <p>N pointers splitting each row into strict lower and upper entries.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~31"></span>
+              <span class="anchor" id="variable-b~120"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -509,7 +512,7 @@
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>The right-hand side.</p>
+                <p>Finite N-element right-hand side, not modified.</p>
             </td>
         </tr>
     </tbody>
@@ -519,7 +522,8 @@
     Return Value
     <small>real(kind=real64), allocatable, dimension(:)</small>
     </h4>
-    <p>The solution.</p>
+    <p>N-element solution of the factor system. Singular/nonfinite factors
+yield NaNs, preserving legacy propagation. No GMRES refinement occurs.</p>
 
     </div>
   </div>
@@ -538,7 +542,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

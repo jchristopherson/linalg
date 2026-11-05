@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 7.4% of total for modules and submodules.">609 statements</a>
+                 title=" 6.9% of total for modules and submodules.">711 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -143,20 +143,24 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Provides eigenvalue and eigenvector computations for dense and sparse matrices.</p>
+      <p>Provides eigenpair computations for dense matrices, sparse matrices,
+and real matrix-free operators. ARPACK workspaces are local to each
+call, but concurrent solves additionally require a reentrant ARPACK
+implementation; read-only callbacks alone do not ensure reentrancy.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='linalg_linear_operators.html'>linalg_linear_operators</a></li>
                   <li class="list-inline-item"><a href='arpack.html'>arpack</a></li>
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='linalg_sparse.html'>linalg_sparse</a></li>
                   <li class="list-inline-item"><a href='linalg_lu.html'>linalg_lu</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
         </ul>
@@ -178,7 +182,13 @@
       </h3>
     </div>
       <div class="card-body">
-        <p>An interface to the eigenvalue and eigenvector routines.</p>
+        <p>An interface to the eigenvalue and eigenvector routines.
+Real operator outputs select symmetric Lanczos iteration; complex
+outputs select nonsymmetric Arnoldi iteration. Symmetry is a caller
+assertion and is not checked by applying the operator.
+Generalized operator calls require a LINEAR_SOLVER for B, or for
+A - SIGMA * B when a shift is supplied. These routines retain the
+library's ERROR STOP behavior for invalid input or nonconvergence.</p>
       </div>
     <ul class="list-group">
           <li class="list-group-item">
@@ -203,7 +213,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a"></span>
+              <span class="anchor" id="variable-a~191"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -218,7 +228,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals"></span>
+              <span class="anchor" id="variable-vals~8"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -234,7 +244,7 @@ ascending order.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs"></span>
+              <span class="anchor" id="variable-vecs~7"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -276,7 +286,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~2"></span>
+              <span class="anchor" id="variable-a~192"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -292,7 +302,7 @@ contents of this matrix are overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~2"></span>
+              <span class="anchor" id="variable-vals~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -364,7 +374,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~3"></span>
+              <span class="anchor" id="variable-a~193"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -379,7 +389,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b"></span>
+              <span class="anchor" id="variable-b~100"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -394,7 +404,7 @@ the eigenvalue problem: <script type="math/tex">A X = \lambda B X</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha"></span>
+              <span class="anchor" id="variable-alpha~25"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -415,7 +425,7 @@ with the NORM(<script type="math/tex">A</script>).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta"></span>
+              <span class="anchor" id="variable-beta~17"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -491,7 +501,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~4"></span>
+              <span class="anchor" id="variable-a~194"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -506,7 +516,7 @@ by solving the eigenvalue problem <script type="math/tex">A \vec{v} = \lambda \v
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~3"></span>
+              <span class="anchor" id="variable-vals~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -562,9 +572,650 @@ left eigenvectors (one per column).</p>
     private  subroutine eigen_sparse_symm(a, k, vals, vecs, which, ncv, maxiter, tol)  
 
     </h3>
+  <p>Computes selected eigenpairs of a symmetric CSR matrix using ARPACK.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~189"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N symmetric matrix; borrowed only during this call.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~70"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>Number of requested eigenvalues, with 1 &lt;= K &lt; N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~6"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong>(:)</td>
+            <td>
+                <p>Computed eigenvalues, allocated to the number converged.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~5"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong>(:,:)</td>
+            <td>
+                <p>Optional N-by-SIZE(VALS) eigenvectors, one per column.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~3"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>Selection: 'LA', 'SA', 'LM', 'SM', or 'BE'; default 'LM'.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~3"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>Basis size: K &lt; NCV &lt;= N; default MIN(N, MAX(2*K+1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~3"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>Positive iteration limit; default 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~12"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Convergence tolerance; nonpositive values use machine precision.
+Default zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine eigen_sparse_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)  
+
+    </h3>
+  <p>Computes selected eigenpairs of a nonsymmetric real CSR matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~190"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N real matrix; borrowed only during this call.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~71"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>Number of requested eigenvalues, with 1 &lt;= K &lt; N-1.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~7"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong>(:)</td>
+            <td>
+                <p>Computed eigenvalues, allocated to the number converged. A complete
+conjugate pair may produce K+1 values; ordering is not guaranteed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~6"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong>(:,:)</td>
+            <td>
+                <p>Optional N-by-SIZE(VALS) right eigenvectors, one per column.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~4"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>Selection: 'LM', 'SM', 'LR', 'SR', 'LI', or 'SI'; default 'LM'.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~4"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>Basis size: K+2 &lt;= NCV &lt;= N; default MIN(N, MAX(2*K+1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~4"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>Positive iteration limit; default 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~13"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Convergence tolerance; nonpositive values use machine precision.
+Default zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine eigen_sparse_gen_symm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+
+    </h3>
+  <p>Computes selected generalized eigenpairs of symmetric CSR matrices.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~187"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N symmetric matrix A; borrowed only during this call.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~98"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The N-by-N symmetric positive definite matrix B.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~68"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>Number of requested eigenvalues, with 1 &lt;= K &lt; N.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~4"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong>(:)</td>
+            <td>
+                <p>Computed eigenvalues, allocated to the number converged.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong>(:,:)</td>
+            <td>
+                <p>Optional N-by-SIZE(VALS) eigenvectors, one per column.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong></td>
+            <td>
+                <p>Shift for (A - SIGMA * B)<strong>(-1) * B; must give a nonsingular
+shifted system. Without a shift, the operator is B</strong>(-1) * A.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>SIGMA present, selection applies to the transformed spectrum.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>Basis size: K &lt; NCV &lt;= N; default MIN(N, MAX(2*K+1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>Positive iteration limit; default 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~10"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Convergence tolerance; nonpositive values use machine precision.
+Default zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine eigen_sparse_gen_asymm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+
+    </h3>
+  <p>Computes selected generalized eigenpairs of nonsymmetric CSR matrices.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~188"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N real matrix A; borrowed only during this call.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~99"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              target
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>Symmetric B: positive definite in regular mode, positive
+semi-definite in shift-invert mode.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~69"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+                <p>Number of requested eigenvalues, with 1 &lt;= K &lt; N-1.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vals~5"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vals</strong>(:)</td>
+            <td>
+                <p>Computed eigenvalues, allocated to the number converged. A complete
+conjugate pair may produce K+1 values; ordering is not guaranteed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vecs~4"></span>
+              complex(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td>optional,</td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>vecs</strong>(:,:)</td>
+            <td>
+                <p>Optional N-by-SIZE(VALS) right eigenvectors, one per column.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sigma~3"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sigma</strong></td>
+            <td>
+                <p>Real shift for (A - SIGMA * B)<strong>(-1) * B; the shifted system must
+be nonsingular. Without a shift, the operator is B</strong>(-1) * A.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-which~2"></span>
+              character(len=2),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>which</strong></td>
+            <td>
+                <p>With SIGMA present, selection applies to the transformed spectrum.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncv~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncv</strong></td>
+            <td>
+                <p>Basis size: K+2 &lt;= NCV &lt;= N; default MIN(N, MAX(2*K+1, 20)).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxiter~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxiter</strong></td>
+            <td>
+                <p>Positive iteration limit; default 300.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~11"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Convergence tolerance; nonpositive values use machine precision.
+Default zero.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          </li>
+          <li class="list-group-item">
+                <h3>
+    private  subroutine eigen_operator_symm(a, k, vals, vecs, which, ncv, maxiter, tol)  
+
+    </h3>
   <p>Computes the k largest, or smallest, eigenvalues, and optionally the
-corresponding eigenvectors, of a sparse matrix stored in compressed
-sparse row (CSR) format by solving the eigenvalue problem 
+corresponding eigenvectors, of a matrix-free operator by solving
+the eigenvalue problem
 <script type="math/tex">A \vec{v} = \lambda \vec{v}</script> when <script type="math/tex">A</script> is a symmetric matrix.  The
 calculations are performed by way of the implicitly restarted Lanczos
 iteration provided by ARPACK.</p>
@@ -582,8 +1233,8 @@ iteration provided by ARPACK.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~5"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-a~195"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -592,13 +1243,14 @@ iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The N-by-N symmetric CSR matrix on which to operate.</p>
+                <p>The N-by-N operator, assumed symmetric by the caller. APPLY must
+assign its caller-owned output without modifying the operator.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-k~72"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -613,7 +1265,7 @@ than zero, but less than N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~4"></span>
+              <span class="anchor" id="variable-vals~11"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -623,12 +1275,12 @@ than zero, but less than N.</p>
             <td>::</td>
             <td><strong>vals</strong></td>
             <td>
-                <p>A K-element array containing the requested eigenvalues.</p>
+                <p>Computed eigenvalues, allocated to the number converged.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~2"></span>
+              <span class="anchor" id="variable-vecs~8"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -638,14 +1290,14 @@ than zero, but less than N.</p>
             <td>::</td>
             <td><strong>vecs</strong></td>
             <td>
-                <p>If present, the eigenvectors will be computed and this N-by-K matrix
+                <p>If present, eigenvectors are computed in this N-by-SIZE(VALS) matrix
 will contain the eigenvectors (one per column) corresponding to each
 eigenvalue in vals.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-which"></span>
+              <span class="anchor" id="variable-which~5"></span>
               character(len=2),
             </td>
 <td>intent(in),</td>
@@ -678,8 +1330,8 @@ default is 'LM'.  The available options are as follows.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncv"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ncv~5"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -695,8 +1347,8 @@ greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maxiter"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-maxiter~5"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -711,7 +1363,7 @@ allowed.  The default is 300.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol"></span>
+              <span class="anchor" id="variable-tol~14"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -733,12 +1385,12 @@ is zero.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine eigen_sparse_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)  
+    private  subroutine eigen_operator_asymm(a, k, vals, vecs, which, ncv, maxiter, tol)  
 
     </h3>
   <p>Computes the k largest, or smallest, eigenvalues, and optionally the
-corresponding eigenvectors, of a sparse matrix stored in compressed
-sparse row (CSR) format by solving the eigenvalue problem 
+corresponding eigenvectors, of a matrix-free operator by solving
+the eigenvalue problem
 <script type="math/tex">A \vec{v} = \lambda \vec{v}</script> when <script type="math/tex">A</script> is square, but not 
 necessarily symmetric.  The calculations are performed by way of the
 implicitly restarted Arnoldi iteration provided by ARPACK.</p>
@@ -756,8 +1408,8 @@ implicitly restarted Arnoldi iteration provided by ARPACK.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~6"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-a~196"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -766,13 +1418,14 @@ implicitly restarted Arnoldi iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The N-by-N CSR matrix on which to operate.</p>
+                <p>The N-by-N real operator. APPLY must assign its caller-owned output
+without modifying the operator. Symmetry is not required.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-k~73"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -787,7 +1440,7 @@ than zero, but less than N - 1.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~5"></span>
+              <span class="anchor" id="variable-vals~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -797,13 +1450,13 @@ than zero, but less than N - 1.</p>
             <td>::</td>
             <td><strong>vals</strong></td>
             <td>
-                <p>A K-element array containing the requested eigenvalues.  The
-eigenvalues are not sorted.</p>
+                <p>Computed eigenvalues, allocated to the number converged. A complete
+conjugate pair may produce K+1 values; ordering is not guaranteed.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~3"></span>
+              <span class="anchor" id="variable-vecs~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -813,14 +1466,14 @@ eigenvalues are not sorted.</p>
             <td>::</td>
             <td><strong>vecs</strong></td>
             <td>
-                <p>If present, the right eigenvectors will be computed and this N-by-K
+                <p>If present, right eigenvectors are computed in this N-by-SIZE(VALS)
 matrix will contain the eigenvectors (one per column) corresponding
 to each eigenvalue in vals.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-which~2"></span>
+              <span class="anchor" id="variable-which~6"></span>
               character(len=2),
             </td>
 <td>intent(in),</td>
@@ -856,8 +1509,8 @@ default is 'LM'.  The available options are as follows.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncv~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ncv~6"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -873,8 +1526,8 @@ greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maxiter~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-maxiter~6"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -889,7 +1542,7 @@ allowed.  The default is 300.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~2"></span>
+              <span class="anchor" id="variable-tol~15"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -911,12 +1564,11 @@ is zero.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine eigen_sparse_gen_symm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+    private  subroutine eigen_operator_gen_symm(a, b, solver, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
 
     </h3>
   <p>Computes k eigenvalues, and optionally the corresponding eigenvectors,
-of a pair of sparse matrices stored in compressed sparse row (CSR)
-format by solving the generalized eigenvalue problem
+of a pair of matrix-free operators by solving the generalized problem
 <script type="math/tex">A \vec{v} = \lambda B \vec{v}</script> when <script type="math/tex">A</script> is symmetric and <script type="math/tex">B</script> is
 symmetric positive definite.  The calculations are performed by way of
 the implicitly restarted Lanczos iteration provided by ARPACK.</p>
@@ -934,8 +1586,8 @@ the implicitly restarted Lanczos iteration provided by ARPACK.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~7"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-a~197"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -944,13 +1596,13 @@ the implicitly restarted Lanczos iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The N-by-N symmetric CSR matrix <script type="math/tex">A</script>.</p>
+                <p>The N-by-N operator A, assumed symmetric by the caller.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~2"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-b~101"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -959,13 +1611,30 @@ the implicitly restarted Lanczos iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>The N-by-N symmetric positive definite CSR matrix <script type="math/tex">B</script>.</p>
+                <p>The N-by-N operator B, assumed symmetric positive definite.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-solver~4"></span>
+              class(<a href='..\type\linear_solver.html'>linear_solver</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>solver</strong></td>
+            <td>
+                <p>Prepared solver for B, or A - SIGMA * B when SIGMA is supplied.
+Its coefficients must match this problem, and inner solves must
+be accurate enough to preserve the outer Lanczos iteration.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~74"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -980,7 +1649,7 @@ than zero, but less than N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~6"></span>
+              <span class="anchor" id="variable-vals~13"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -990,12 +1659,12 @@ than zero, but less than N.</p>
             <td>::</td>
             <td><strong>vals</strong></td>
             <td>
-                <p>A K-element array containing the requested eigenvalues.</p>
+                <p>Computed eigenvalues, allocated to the number converged.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~4"></span>
+              <span class="anchor" id="variable-vecs~10"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1005,14 +1674,14 @@ than zero, but less than N.</p>
             <td>::</td>
             <td><strong>vecs</strong></td>
             <td>
-                <p>If present, the eigenvectors will be computed and this N-by-K matrix
+                <p>If present, eigenvectors are computed in this N-by-SIZE(VALS) matrix
 will contain the eigenvectors (one per column) corresponding to each
 eigenvalue in vals.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-sigma"></span>
+              <span class="anchor" id="variable-sigma~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1032,7 +1701,7 @@ matrix must be factorable.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-which~3"></span>
+              <span class="anchor" id="variable-which~7"></span>
               character(len=2),
             </td>
 <td>intent(in),</td>
@@ -1051,8 +1720,8 @@ nearest to <script type="math/tex">\sigma</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncv~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ncv~7"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1068,8 +1737,8 @@ greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maxiter~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-maxiter~7"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1084,7 +1753,7 @@ allowed.  The default is 300.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~3"></span>
+              <span class="anchor" id="variable-tol~16"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1106,14 +1775,14 @@ is zero.</p>
           </li>
           <li class="list-group-item">
                 <h3>
-    private  subroutine eigen_sparse_gen_asymm(a, b, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
+    private  subroutine eigen_operator_gen_asymm(a, b, solver, k, vals, vecs, sigma, which, ncv, maxiter, tol)  
 
     </h3>
   <p>Computes k eigenvalues, and optionally the corresponding eigenvectors,
-of a pair of sparse matrices stored in compressed sparse row (CSR)
-format by solving the generalized eigenvalue problem
+of a pair of matrix-free operators by solving the generalized problem
 <script type="math/tex">A \vec{v} = \lambda B \vec{v}</script> when <script type="math/tex">A</script> is square, but not
-necessarily symmetric, and <script type="math/tex">B</script> is symmetric positive semi-definite.
+necessarily symmetric, and <script type="math/tex">B</script> is symmetric positive definite in
+regular mode, or positive semi-definite in shift-invert mode.
 The calculations are performed by way of the implicitly restarted
 Arnoldi iteration provided by ARPACK.</p>
 
@@ -1130,8 +1799,8 @@ Arnoldi iteration provided by ARPACK.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~8"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-a~198"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1140,13 +1809,13 @@ Arnoldi iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The N-by-N CSR matrix <script type="math/tex">A</script>.</p>
+                <p>The N-by-N real operator A.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~3"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-b~102"></span>
+              class(<a href='..\type\linear_operator.html'>linear_operator</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1155,13 +1824,31 @@ Arnoldi iteration provided by ARPACK.</p>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>The N-by-N symmetric positive semi-definite CSR matrix <script type="math/tex">B</script>.</p>
+                <p>Symmetric B: positive definite in regular mode, positive
+semi-definite in shift-invert mode.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-solver~5"></span>
+              class(<a href='..\type\linear_solver.html'>linear_solver</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>solver</strong></td>
+            <td>
+                <p>Prepared solver for B, or A - SIGMA * B when SIGMA is supplied.
+Its coefficients must match this problem, and inner solves must
+be accurate enough for the outer Arnoldi iteration.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~75"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1176,7 +1863,7 @@ than zero, but less than N - 1.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~7"></span>
+              <span class="anchor" id="variable-vals~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1186,13 +1873,13 @@ than zero, but less than N - 1.</p>
             <td>::</td>
             <td><strong>vals</strong></td>
             <td>
-                <p>A K-element array containing the requested eigenvalues.  The
-eigenvalues are not sorted.</p>
+                <p>Computed eigenvalues, allocated to the number converged. A complete
+conjugate pair may produce K+1 values; ordering is not guaranteed.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vecs~5"></span>
+              <span class="anchor" id="variable-vecs~11"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1202,14 +1889,14 @@ eigenvalues are not sorted.</p>
             <td>::</td>
             <td><strong>vecs</strong></td>
             <td>
-                <p>If present, the right eigenvectors will be computed and this N-by-K
+                <p>If present, right eigenvectors are computed in this N-by-SIZE(VALS)
 matrix will contain the eigenvectors (one per column) corresponding
 to each eigenvalue in vals.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-sigma~2"></span>
+              <span class="anchor" id="variable-sigma~5"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1229,7 +1916,7 @@ as the shifted matrix must be factorable.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-which~4"></span>
+              <span class="anchor" id="variable-which~8"></span>
               character(len=2),
             </td>
 <td>intent(in),</td>
@@ -1248,8 +1935,8 @@ eigenvalues nearest to <script type="math/tex">\sigma</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncv~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ncv~8"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1265,8 +1952,8 @@ greater than N.  The default is MIN(N, MAX(2 * k + 1, 20)).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maxiter~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-maxiter~8"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1281,7 +1968,7 @@ allowed.  The default is 300.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~4"></span>
+              <span class="anchor" id="variable-tol~17"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1328,7 +2015,7 @@ is zero.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

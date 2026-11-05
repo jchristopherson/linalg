@@ -1,78 +1,64 @@
+<!-- -*- mode: jinja2 -*- -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-   <meta name="description" content="LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.">
+      <meta name="description" content="LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.">
     <meta name="author" content="Jason Christopherson" >
     <link rel="icon" href="../favicon.png">
 
     <title>svd_factorization &ndash; LINALG </title>
 
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="../css/pygments.css" rel="stylesheet">
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/local.css" rel="stylesheet">
-    <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
-    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="../js/svg-pan-zoom.min.js"></script>
-
   </head>
 
   <body>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
           <a class="navbar-brand" href="../index.html">LINALG </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown hidden-xs visible-sm visible-md hidden-lg">
-              <a href="#" class="dropdown-toggle"
-              data-toggle="dropdown" role="button"
-              aria-haspopup="true"
-     aria-expanded="false">Contents <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="../lists/files.html">Source Files</a></li>
-            <li><a href="../lists/modules.html">Modules</a></li>
-            <li><a href="../lists/procedures.html">Procedures</a></li>
-                   <li><a href="../lists/types.html">Derived Types</a></li>
-       
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
             </ul>
-        
-            </li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/files.html">Source Files</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/modules.html">Modules</a></li>
-<li class="visible-xs hidden-sm visible-lg"><a href="../lists/procedures.html">Procedures</a></li>
-                             <li class="visible-xs hidden-sm visible-lg"><a href="../lists/types.html">Derived Types</a></li>
-          </ul>
-        <form action="../search.html" class="navbar-form navbar-right" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
         </div>
-<!--
-        <button type="submit" class="btn btn-default">Submit</button>
--->
-        </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="container">
   <div class="row">
@@ -80,33 +66,37 @@
       <small>Derived Type</small>
       
     </h1>
-      <div class="row" id="info-bar">
-    <div class="col-lg-12">
-      <div class="well well-sm">
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
 
-          <li id="statements"><i class="fa fa-list-ol"></i>
-            <a data-toggle="tooltip"
-               data-placement="bottom" data-html="true"
-               title="<p>13.2% of total for derived types.</p>Including implementation: 266 statements, 13.3% of total for derived types.">21 statements</a>
-          </li>
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title="<p>13.2% of total for derived types.</p>Including implementation: 192 statements, 13.8% of total for derived types.">24 statements</a>
+            </li>
 
-            <li id="source-file">
+            <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
               <a href="../src/linalg_svd.f90"> Source File</a>
             </li>
         </ul>
-        <ol class="breadcrumb in-well text-right">
-              <li><a href='../sourcefile/linalg_svd.f90.html'>linalg_svd.f90</a></li>
-              <li><a href='../module/linalg_svd.html'>linalg_svd</a></li>
-          <li class="active">svd_factorization</li>
-        </ol>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_svd.f90.html'>linalg_svd.f90</a></li>
+                <li class="breadcrumb-item"><a href='..\module\linalg_svd.html'>linalg_svd</a></li>
+            <li class="breadcrumb-item active" aria-current="page">svd_factorization</li>
+          </ol>
+        </nav>
       </div>
     </div>
   </div>
   <script>
     $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
     })
   </script>
 
@@ -119,14 +109,13 @@
   
   
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#cons-0">Constructor</a>
-        </h3>
-      </div>
-      <div id="cons-0" class="panel-collapse collapse">
-        <div class="list-group">
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#cons-0"
+         aria-expanded="false" aria-controls="cons-0">
+         <h4 class="card-header bg-primary text-white">Constructor</h4>
+      </a>
+      <div id="cons-0" class="collapse">
+        <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/svd_factorization.html#interface-svd_factorization">svd_factorization</a>
         </div>
       </div>
@@ -145,29 +134,29 @@
   
   
   
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#boundprocs-0">Type-Bound Procedures</a>
-        </h3>
-      </div>
-      <div id="boundprocs-0" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-factor~6">factor</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-get_factored_form~5">get_factored_form</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-is_factored~6">is_factored</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-size~12">size</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve~8">solve</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_in_place~6">solve_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs~6">solve_multiple_rhs</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs_in_place~6">solve_multiple_rhs_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs~6">solve_single_rhs</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs_in_place~6">solve_single_rhs_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-update~5">update</a>
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#boundprocs-0"
+         aria-expanded="false" aria-controls="boundprocs-0">
+         <h4 class="card-header bg-primary text-white">Type-Bound Procedures</h4>
+      </a>
+      <div id="boundprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-factor~3">factor</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-get_factored_form~2">get_factored_form</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-is_factored~3">is_factored</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-size~3">size</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve~5">solve</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_in_place~3">solve_in_place</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs~3">solve_multiple_rhs</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs_in_place~3">solve_multiple_rhs_in_place</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs~3">solve_single_rhs</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs_in_place~3">solve_single_rhs_in_place</a>
+            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-update~2">update</a>
         </div>
       </div>
     </div>
 
+  
   
 
 
@@ -176,7 +165,8 @@
     </div>
     
     <div class="col-md-9" id='text'>
-      <h2>type, public, extends(<a href='../type/matrix_factorization.html'>matrix_factorization</a>) :: svd_factorization</h2>
+      <h2>
+        type, public, extends(<a href='matrix_factorization.html'>matrix_factorization</a>) :: svd_factorization</h2>
     <p>A container for the singular value decomposition of a matrix and
 associated operations.  The decomposition is <script type="math/tex">A = U \Sigma V^T</script>.
 The solvers compute the minimum-norm least-squares solution
@@ -185,73 +175,13 @@ The solvers compute the minimum-norm least-squares solution
 are treated as zero.  Any matrix shape is supported.</p>
     <br>
 
-    <section class="visible-xs visible-sm hidden-md">
-        <h3>Contents</h3>
-  
-  
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#cons-1">Constructor</a>
-        </h3>
-      </div>
-      <div id="cons-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../type/svd_factorization.html#interface-svd_factorization">svd_factorization</a>
-        </div>
-      </div>
-    </div>
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-      <div class="panel panel-primary">
-      <div class="panel-heading text-left">
-        <h3 class="panel-title">
-          <a data-toggle="collapse" href="#boundprocs-1">Type-Bound Procedures</a>
-        </h3>
-      </div>
-      <div id="boundprocs-1" class="panel-collapse collapse">
-        <div class="list-group">
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-factor~6">factor</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-get_factored_form~5">get_factored_form</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-is_factored~6">is_factored</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-size~12">size</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve~8">solve</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_in_place~6">solve_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs~6">solve_multiple_rhs</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_multiple_rhs_in_place~6">solve_multiple_rhs_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs~6">solve_single_rhs</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-solve_single_rhs_in_place~6">solve_single_rhs_in_place</a>
-            <a class="list-group-item" href="../type/svd_factorization.html#boundprocedure-update~5">update</a>
-        </div>
-      </div>
-    </div>
-
-  
-
-
-    </section>
-    <br class="visible-xs visible-sm hidden-md">
-
     
       <section>
         <h2>Constructor</h2>
-            <div class="panel panel-default">
-    <div class="panel-heading codesum">
+            <div class="card">
+    <div class="card-header bg-light codesum">
       <span class="anchor" id="interface-svd_factorization"></span>
-      <h3>public        interface <a href='../interface/svd_factorization.html'>svd_factorization</a> 
+      <h3>public        interface <a href='..\interface\svd_factorization.html'>svd_factorization</a> 
       </h3>
     </div>
     <ul class="list-group">
@@ -260,22 +190,22 @@ are treated as zero.  Any matrix shape is supported.</p>
     private pure function svdf_init(a, skinny_u, skinny_v) result(rst)  
 
     </h3>
-  <p>Initializes a new [[svd_factorization]] object.</p>
+  <p>Initializes a new <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-a~110"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -290,7 +220,7 @@ are treated as zero.  Any matrix shape is supported.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-skinny_u~2"></span>
               logical,
             </td>
 <td>intent(in),</td>
@@ -307,7 +237,7 @@ matrix is computed.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" ></span>
+              <span class="anchor" id="variable-skinny_v~2"></span>
               logical,
             </td>
 <td>intent(in),</td>
@@ -327,9 +257,9 @@ matrix is computed.</p>
 
     <h4>
     Return Value
-    <small>type(<a href='../type/svd_factorization.html'>svd_factorization</a>)</small>
+    <small>type(<a href='svd_factorization.html'>svd_factorization</a>)</small>
     </h4>
-    <p>The new [[svd_factorization]] object.</p>
+    <p>The new <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
 
           </li>
     </ul>
@@ -341,10 +271,17 @@ matrix is computed.</p>
 
       <section>
         <h2>Type-Bound Procedures</h2>
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-factor~6"></span><h3>procedure, public :: <strong>factor</strong>  => svdf_factor         
-    </h3></div>
-      <div class="panel-body">
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-factor~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>factor</strong> => svdf_factor
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Factors the matrix.</p>
       </div>
@@ -353,6 +290,7 @@ matrix is computed.</p>
                   <h3>
     private  subroutine svdf_factor(this, flag)  
 </h3>
+
   <p>Factors the matrix using the LAPACK routine DGESVD.  If the matrix is
 already factored, this routine does nothing.  Note that the stored
 matrix is destroyed by the factorization.</p>
@@ -361,17 +299,17 @@ matrix is destroyed by the factorization.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -380,7 +318,7 @@ matrix is destroyed by the factorization.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -408,10 +346,18 @@ converge; or LA_INVALID_INPUT_ERROR for an invalid argument.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-get_factored_form~5"></span><h3>procedure, public :: <strong>get_factored_form</strong>  => svdf_get_factored_form         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-get_factored_form~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>get_factored_form</strong> => svdf_get_factored_form
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Gets the factored matrices <script type="math/tex">U</script>, <script type="math/tex">\Sigma</script>, and <script type="math/tex">V^T</script>.</p>
       </div>
@@ -420,6 +366,7 @@ converge; or LA_INVALID_INPUT_ERROR for an invalid argument.</p>
                   <h3>
     private  subroutine svdf_get_factored_form(this, u, s, vt, flag)  
 </h3>
+
   <p>Gets the factored matrices <script type="math/tex">U</script>, <script type="math/tex">\Sigma</script>, and <script type="math/tex">V^T</script> such that
 <script type="math/tex">A = U \Sigma V^T</script>.  If the matrix has not been factored, this
 routine factors it.</p>
@@ -428,17 +375,17 @@ routine factors it.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -447,7 +394,7 @@ routine factors it.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -518,10 +465,18 @@ routine factors it.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-is_factored~6"></span><h3>procedure, public :: <strong>is_factored</strong>  => svdf_is_factored         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-is_factored~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>is_factored</strong> => svdf_is_factored
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Checks to see if the matrix has been factored.</p>
       </div>
@@ -530,23 +485,24 @@ routine factors it.</p>
                   <h3>
     private pure function svdf_is_factored(this) result(rst)  
 </h3>
+
   <p>Gets a value querying whether the matrix has been factored.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -555,7 +511,7 @@ routine factors it.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
     </tbody>
@@ -571,10 +527,18 @@ routine factors it.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-size~12"></span><h3>procedure, public :: <strong>size</strong>  => svdf_size         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-size~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>size</strong> => svdf_size
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Gets the size of the matrix.</p>
       </div>
@@ -583,23 +547,24 @@ routine factors it.</p>
                   <h3>
     private pure function svdf_size(this, dim) result(rst)  
 </h3>
+
   <p>Retrieves the size of the requested matrix dimension.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -608,7 +573,7 @@ routine factors it.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -639,18 +604,23 @@ routine factors it.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve~8"></span><h3>generic, public :: <strong>solve</strong>  => <a href='../type/qr_factorization.html#boundprocedure-solve_multiple_rhs~2'>solve_multiple_rhs</a>, <a href='../type/qr_factorization.html#boundprocedure-solve_single_rhs~2'>solve_single_rhs</a>         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve~5"></span>
+      <h3>
+          generic, public ::
+  <strong>solve</strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a>
         
-        <p>Solves the factored system.</p>
-      </div>
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  function qrf_solve_multiple_rhs(this, b, flag) result(rst)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
 is a matrix defining multiple right-hand-side vectors.
 The solution has N rows.  Underdetermined systems require column
@@ -660,17 +630,17 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/qr_factorization.html'>qr_factorization</a>),
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -679,7 +649,7 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/qr_factorization.html">qr_factorization</a> object.</p>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -726,6 +696,7 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
                   <h3>
     private  function qrf_solve_single_rhs(this, b, flag) result(rst)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
 is a single right-hand-side vector.
 The solution has N elements.  Underdetermined systems require column
@@ -735,17 +706,17 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/qr_factorization.html'>qr_factorization</a>),
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -754,7 +725,7 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/qr_factorization.html">qr_factorization</a> object.</p>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -800,19 +771,23 @@ pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve_in_place~6"></span><h3>generic, public :: <strong>solve_in_place</strong>  => <a href='../type/qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~2'>solve_multiple_rhs_in_place</a>, <a href='../type/qr_factorization.html#boundprocedure-solve_single_rhs_in_place~2'>solve_single_rhs_in_place</a>         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_in_place~3"></span>
+      <h3>
+          generic, public ::
+  <strong>solve_in_place</strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a>
         
-        <p>Solves the factored system with multiple right-hand-side vectors 
-where the right-hand-side argument as a container for the result.</p>
-      </div>
+      </h3>
+    </div>
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
     private  subroutine qrf_solve_multiple_rhs_in_place(this, b, flag)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
 is a matrix defining multiple right-hand-side vectors.
 The solution is returned in the first N rows of B, which must have
@@ -822,17 +797,17 @@ MAX(M,N) rows.  Underdetermined systems require column pivoting.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/qr_factorization.html'>qr_factorization</a>),
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -841,7 +816,7 @@ MAX(M,N) rows.  Underdetermined systems require column pivoting.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/qr_factorization.html">qr_factorization</a> object.</p>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -884,6 +859,7 @@ On output, the N-by-NRHS solution occupies the first N rows.</p>
                   <h3>
     private  subroutine qrf_solve_single_rhs_in_place(this, b, flag)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
 is a matrix defining a single right-hand-side vector.
 The solution is returned in the first N elements of B, which must have
@@ -893,17 +869,17 @@ MAX(M,N) elements.  Underdetermined systems require column pivoting.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/qr_factorization.html'>qr_factorization</a>),
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -912,7 +888,7 @@ MAX(M,N) elements.  Underdetermined systems require column pivoting.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/qr_factorization.html">qr_factorization</a> object.</p>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -954,10 +930,18 @@ solution occupies the first N elements.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve_multiple_rhs~6"></span><h3>procedure, public :: <strong>solve_multiple_rhs</strong>  => svdf_solve_multiple_rhs         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_multiple_rhs~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_multiple_rhs</strong> => svdf_solve_multiple_rhs
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Solves the factored system with multiple right-hand-side vectors.</p>
       </div>
@@ -966,6 +950,7 @@ solution occupies the first N elements.</p>
                   <h3>
     private  function svdf_solve_multiple_rhs(this, b, flag) result(rst)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script> is a matrix defining
 multiple right-hand-side vectors.  The solution is the minimum-norm
 least-squares solution computed with the Moore-Penrose pseudo-inverse.
@@ -975,17 +960,17 @@ The number of rows in <script type="math/tex">B</script> must equal the number o
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -994,7 +979,7 @@ The number of rows in <script type="math/tex">B</script> must equal the number o
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -1040,10 +1025,18 @@ The number of rows in <script type="math/tex">B</script> must equal the number o
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve_multiple_rhs_in_place~6"></span><h3>procedure, public :: <strong>solve_multiple_rhs_in_place</strong>  => svdf_solve_multiple_rhs_in_place         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_multiple_rhs_in_place~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_multiple_rhs_in_place</strong> => svdf_solve_multiple_rhs_in_place
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Solves the factored system with multiple right-hand-side vectors.</p>
       </div>
@@ -1052,6 +1045,7 @@ The number of rows in <script type="math/tex">B</script> must equal the number o
                   <h3>
     private  subroutine svdf_solve_multiple_rhs_in_place(this, b, flag)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script> is a matrix defining
 multiple right-hand-side vectors.  The solution is the minimum-norm
 least-squares solution computed with the Moore-Penrose pseudo-inverse.
@@ -1064,17 +1058,17 @@ matrix has already been factored.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1083,7 +1077,7 @@ matrix has already been factored.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -1125,10 +1119,18 @@ matrix <script type="math/tex">X</script>.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve_single_rhs~6"></span><h3>procedure, public :: <strong>solve_single_rhs</strong>  => svdf_solve_single_rhs         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_single_rhs~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_single_rhs</strong> => svdf_solve_single_rhs
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Solves the factored system with a single right-hand-side vector.</p>
       </div>
@@ -1137,6 +1139,7 @@ matrix <script type="math/tex">X</script>.</p>
                   <h3>
     private  function svdf_solve_single_rhs(this, b, flag) result(rst)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A x = b </script> where <script type="math/tex">b</script> is a vector defining
 a single right-hand-side.  The solution is the minimum-norm
 least-squares solution computed with the Moore-Penrose pseudo-inverse.
@@ -1146,17 +1149,17 @@ The number of entries in <script type="math/tex">b</script> must equal the numbe
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1165,7 +1168,7 @@ The number of entries in <script type="math/tex">b</script> must equal the numbe
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -1211,10 +1214,18 @@ The number of entries in <script type="math/tex">b</script> must equal the numbe
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-solve_single_rhs_in_place~6"></span><h3>procedure, public :: <strong>solve_single_rhs_in_place</strong>  => svdf_solve_single_rhs_in_place         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_single_rhs_in_place~3"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_single_rhs_in_place</strong> => svdf_solve_single_rhs_in_place
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Solves the factored system with a single right-hand-side vector.</p>
       </div>
@@ -1223,6 +1234,7 @@ The number of entries in <script type="math/tex">b</script> must equal the numbe
                   <h3>
     private  subroutine svdf_solve_single_rhs_in_place(this, b, flag)  
 </h3>
+
   <p>Solves the linear system <script type="math/tex">A x = b </script> where <script type="math/tex">b</script> is a vector defining
 a single right-hand-side.  The solution is the minimum-norm
 least-squares solution computed with the Moore-Penrose pseudo-inverse.
@@ -1235,17 +1247,17 @@ when the matrix has already been factored.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1254,7 +1266,7 @@ when the matrix has already been factored.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -1296,10 +1308,18 @@ vector.</p>
     </ul>
   </div>
 
-            <div class="panel panel-default">
-    <div class="panel-heading codesum"><span class="anchor" id="boundprocedure-update~5"></span><h3>procedure, public :: <strong>update</strong>  => svdf_update         
-    </h3></div>
-      <div class="panel-body">
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-update~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>update</strong> => svdf_update
+        
+      </h3>
+    </div>
+      <div class="card-body">
         
         <p>Updates the object with a new matrix.</p>
       </div>
@@ -1308,7 +1328,8 @@ vector.</p>
                   <h3>
     private pure subroutine svdf_update(this, a, skinny_u, skinny_v)  
 </h3>
-  <p>Updates the <a href="../type/svd_factorization.html">svd_factorization</a> object with a new matrix.  All
+
+  <p>Updates the <a href="..\type\svd_factorization.html">svd_factorization</a> object with a new matrix.  All
 memory required for the factorization and the solvers is allocated
 here.  The matrix is only stored, not factored; therefore a call to
 factor is still required.  Any existing factorization is destroyed by
@@ -1318,17 +1339,17 @@ this routine.</p>
       <table class="table table-striped varlist">
     <thead>
       <tr>
-        <th>Type</th>
-<th>Intent</th><th>Optional</th>        <th>Attributes</th>
-        <th></th>
-        <th>Name</th>
-        <th></th>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
               <span class="anchor" ></span>
-              class(<a href='../type/svd_factorization.html'>svd_factorization</a>),
+              class(<a href='svd_factorization.html'>svd_factorization</a>),
             </td>
 <td>intent(inout)</td>
               <td></td>            <td>
@@ -1337,7 +1358,7 @@ this routine.</p>
             <td>::</td>
             <td><strong>this</strong></td>
             <td>
-                <p>The <a href="../type/svd_factorization.html">svd_factorization</a> object.</p>
+                <p>The <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
             </td>
         </tr>
         <tr>
@@ -1397,56 +1418,52 @@ matrix is computed.</p>
     </ul>
   </div>
 
+          </div>
       </section>
 
     
     </div>
   </div>
 
-    <hr>    
+      <hr>
     </div> <!-- /container -->
     <footer>
       <div class="container">
-      <div class="row">
-        <div class="col-xs-6 col-md-6"><p>LINALG was developed by Jason Christopherson<br>&copy; 2026 
+        <div class="row justify-content-between">
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2026 
 </p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-05 06:48              </p>
+          </div>
         </div>
-        <div class="col-xs-6 col-md-6">
-          <p class="text-right">
-            Documentation generated by 
-            <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-11-05 12:47            </p>
-        </div>
-      </div>
-      <br>
-      </div> <!-- /container -->    
+        <br>
+      </div> <!-- /container -->
     </footer>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+    <!-- Bootstrap core JavaScript -->
     <!-- Placed at the end of the document so the pages load faster -->
-<!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
--->
-    <script src="../js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../js/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
 
     <!-- MathJax JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
-        jax: ['input/TeX','input/MathML','output/HTML-CSS'],
-        extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
-      });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script src="../tipuesearch/tipuesearch_content.js"></script>
-    <script src="../tipuesearch/tipuesearch_set.js"></script>
-    <script src="../tipuesearch/tipuesearch.js"></script>
-    
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
   </body>
 </html>

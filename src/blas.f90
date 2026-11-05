@@ -1,3 +1,5 @@
+! blas.f90
+! SPDX-License-Identifier: MIT
 module blas
     !! A module providing explicit interfaces to BLAS routines.
     !! These declarations expose the core dense linear algebra kernels used by
@@ -9,22 +11,22 @@ module blas
     interface
         pure subroutine DGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
             !! Computes C = alpha * op(A) * op(B) + beta * C for real matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: transa
                 !! Operation on the first matrix factor.
             character, intent(in) :: transb
                 !! Operation on the second matrix factor.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows of the product matrix.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns of the product matrix.
-            integer(int32), intent(in) :: k
+            integer, intent(in) :: k
                 !! Number of columns of A and rows of B.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: ldb
+            integer, intent(in) :: ldb
                 !! Leading dimension of B.
-            integer(int32), intent(in) :: ldc
+            integer, intent(in) :: ldc
                 !! Leading dimension of C.
             real(real64), intent(in) :: alpha
                 !! Scalar multiplier for the matrix product.
@@ -40,18 +42,18 @@ module blas
 
         pure subroutine DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
             !! Computes y = alpha * op(A) * x + beta * y for real matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: trans
                 !! Matrix operation to apply to A.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the matrix operand.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the matrix operand.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride for the x vector.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride for the y vector.
             real(real64), intent(in) :: alpha
                 !! Scalar multiplier for A*x.
@@ -67,22 +69,22 @@ module blas
 
         pure subroutine ZGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
             !! Computes C = alpha * op(A) * op(B) + beta * C for complex matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: transa
                 !! Operation on the first matrix factor.
             character, intent(in) :: transb
                 !! Operation on the second matrix factor.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows of the product matrix.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns of the product matrix.
-            integer(int32), intent(in) :: k
+            integer, intent(in) :: k
                 !! Number of columns of A and rows of B.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: ldb
+            integer, intent(in) :: ldb
                 !! Leading dimension of B.
-            integer(int32), intent(in) :: ldc
+            integer, intent(in) :: ldc
                 !! Leading dimension of C.
             complex(real64), intent(in) :: alpha
                 !! Scalar multiplier for the matrix product.
@@ -98,18 +100,18 @@ module blas
 
         pure subroutine ZGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
             !! Computes y = alpha * op(A) * x + beta * y for complex matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: trans
                 !! Matrix operation to apply to A.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the matrix operand.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the matrix operand.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride for the x vector.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride for the y vector.
             complex(real64), intent(in) :: alpha
                 !! Scalar multiplier for A*x.
@@ -125,7 +127,7 @@ module blas
 
         pure subroutine DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
             !! Solves a triangular system with one right-hand side in real arithmetic.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: side
                 !! Whether the triangular matrix is on the left or right.
             character, intent(in) :: uplo
@@ -134,13 +136,13 @@ module blas
                 !! Whether A is transposed or conjugate-transposed.
             character, intent(in) :: diag
                 !! Whether A is unit triangular.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows of B.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns of B.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: ldb
+            integer, intent(in) :: ldb
                 !! Leading dimension of B.
             real(real64), intent(in) :: alpha
                 !! Scalar multiplier for the solution.
@@ -152,7 +154,7 @@ module blas
 
         pure subroutine ZTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
             !! Solves a triangular system with one right-hand side in complex arithmetic.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: side
                 !! Whether the triangular matrix is on the left or right.
             character, intent(in) :: uplo
@@ -161,13 +163,13 @@ module blas
                 !! Whether A is transposed or conjugate-transposed.
             character, intent(in) :: diag
                 !! Whether A is unit triangular.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows of B.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns of B.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: ldb
+            integer, intent(in) :: ldb
                 !! Leading dimension of B.
             complex(real64), intent(in) :: alpha
                 !! Scalar multiplier for the solution.
@@ -179,18 +181,18 @@ module blas
 
         pure subroutine DTRSV(uplo, trans, diag, n, a, lda, x, incx)
             !! Solves a triangular system with a single real vector.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: uplo
                 !! Which triangle of A is referenced.
             character, intent(in) :: trans
                 !! Whether A is transposed.
             character, intent(in) :: diag
                 !! Whether A is unit triangular.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Length of the vector.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the x vector.
             real(real64), intent(in) :: a(lda,*)
                 !! Triangular matrix factor.
@@ -200,18 +202,18 @@ module blas
 
         pure subroutine ZTRSV(uplo, trans, diag, n, a, lda, x, incx)
             !! Solves a triangular system with a single complex vector.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: uplo
                 !! Which triangle of A is referenced.
             character, intent(in) :: trans
                 !! Whether A is transposed.
             character, intent(in) :: diag
                 !! Whether A is unit triangular.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Length of the vector.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the x vector.
             complex(real64), intent(in) :: a(lda,*)
                 !! Triangular matrix factor.
@@ -221,10 +223,10 @@ module blas
 
         pure subroutine DSCAL(n, da, dx, incx)
             !! Scales a real vector by a real scalar.
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n
+            use iso_fortran_env, only : real64
+            integer, intent(in) :: n
                 !! Length of the vector.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the vector.
             real(real64), intent(in) :: da
                 !! Scalar used to scale the vector.
@@ -234,10 +236,10 @@ module blas
 
         pure subroutine ZSCAL(n, za, zx, incx)
             !! Scales a complex vector by a complex scalar.
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n
+            use iso_fortran_env, only : real64
+            integer, intent(in) :: n
                 !! Length of the vector.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the vector.
             complex(real64), intent(in) :: za
                 !! Complex scalar used to scale the vector.
@@ -247,10 +249,10 @@ module blas
 
         pure subroutine ZDSCAL(n, da, zx, incx)
             !! Scales a complex vector by a real scalar.
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n
+            use iso_fortran_env, only : real64
+            integer, intent(in) :: n
                 !! Length of the vector.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the vector.
             real(real64), intent(in) :: da
                 !! Real scalar used to scale the entries.
@@ -260,22 +262,22 @@ module blas
 
         pure subroutine DGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy)
             !! Computes a banded matrix-vector product for real matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: trans
                 !! Matrix operation to apply to A.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the result.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the matrix.
-            integer(int32), intent(in) :: kl
+            integer, intent(in) :: kl
                 !! Number of sub-diagonals in the band.
-            integer(int32), intent(in) :: ku
+            integer, intent(in) :: ku
                 !! Number of super-diagonals in the band.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the x vector.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride in the y vector.
             real(real64), intent(in) :: alpha
                 !! Scalar multiplier for the matrix product.
@@ -291,22 +293,22 @@ module blas
 
         pure subroutine ZGBMV(trans, m, n, kl, ku, alpha, a, lda, x, incx, beta, y, incy)
             !! Computes a banded matrix-vector product for complex matrices.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
             character, intent(in) :: trans
                 !! Matrix operation to apply to A.
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the result.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the matrix.
-            integer(int32), intent(in) :: kl
+            integer, intent(in) :: kl
                 !! Number of sub-diagonals in the band.
-            integer(int32), intent(in) :: ku
+            integer, intent(in) :: ku
                 !! Number of super-diagonals in the band.
-            integer(int32), intent(in) :: lda
+            integer, intent(in) :: lda
                 !! Leading dimension of A.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in the x vector.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride in the y vector.
             complex(real64), intent(in) :: alpha
                 !! Scalar multiplier for the matrix product.
@@ -322,12 +324,12 @@ module blas
 
         pure function DDOT(n, dx, incx, dy, incy) result(rst)
             !! Computes the dot product of two real vectors.
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n
+            use iso_fortran_env, only : real64
+            integer, intent(in) :: n
                 !! Length of the vectors.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in dx.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride in dy.
             real(real64), intent(in) :: dx(*)
                 !! First vector operand.
@@ -339,12 +341,12 @@ module blas
 
         pure subroutine DSWAP(n, dx, incx, dy, incy)
             !! Swaps two real vectors.
-            use iso_fortran_env, only : int32, real64
-            integer(int32), intent(in) :: n
+            use iso_fortran_env, only : real64
+            integer, intent(in) :: n
                 !! Length of the vectors.
-            integer(int32), intent(in) :: incx
+            integer, intent(in) :: incx
                 !! Stride in dx.
-            integer(int32), intent(in) :: incy
+            integer, intent(in) :: incy
                 !! Stride in dy.
             real(real64), intent(inout) :: dx(*)
                 !! First vector to swap.

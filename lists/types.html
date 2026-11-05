@@ -70,16 +70,105 @@
 			 <tr><th>Type</th><th>Location</th><th>Extends</th><th>Description</th></tr>
 			 </thead><tbody>
 			   <tr>
+                 <td><a href='..\type\cholesky_factorization.html'>cholesky_factorization</a></td>
+                 <td><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></td>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><p>A container for Cholesky factorization of a matrix and associated
+operations.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\type\csr_matrix.html'>csr_matrix</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
                  <td>None</td>
                  <td><p>A sparse matrix stored in compressed sparse row (CSR) format.</p></td>
                </tr>
 			   <tr>
+                 <td><a href='..\type\csr_operator.html'>csr_operator</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td><a href='..\type\linear_operator.html'>linear_operator</a></td>
+                 <td><p>Read-only operator owning a validated CSR copy. Construction copies
+storage once; subsequent applications neither copy nor densify A.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\ilu_preconditioner.html'>ilu_preconditioner</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td><a href='..\type\linear_operator.html'>linear_operator</a></td>
+                 <td><p>Fixed approximate inverse backed by prepared ILUT triangular factors.
+This applies M**(-1), not the original matrix or a full GMRES solve.
+Constructor copies factors and pointers; applications use local output.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\iterative_solver_info.html'>iterative_solver_info</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td>None</td>
+                 <td><p>Diagnostics for one solve, reset at entry and returned on all paths.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\linear_operator.html'>linear_operator</a></td>
+                 <td><a href='..\module\linalg_linear_operators.html'>linalg_linear_operators</a></td>
+                 <td>None</td>
+                 <td><p>Defines a real-valued, possibly rectangular matrix-free operator.
+Concurrent applications require read-only operator data and separate
+output and scratch storage for each call. INTENT(IN) alone does not
+guarantee thread safety for pointer targets or external libraries.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\linear_solver.html'>linear_solver</a></td>
+                 <td><a href='..\module\linalg_linear_operators.html'>linalg_linear_operators</a></td>
+                 <td>None</td>
+                 <td><p>Defines a prepared solver for a square real-valued system.
+Preparation and factorization take place outside SOLVE. Each call
+must own its scratch storage to permit concurrent applications.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\lu_factorization.html'>lu_factorization</a></td>
+                 <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><p>A container for LU factorization of a matrix and associated 
+operations.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><a href='..\module\linalg_types.html'>linalg_types</a></td>
+                 <td>None</td>
+                 <td><p>Defines a matrix factorization container.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\type\msr_matrix.html'>msr_matrix</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
                  <td>None</td>
                  <td><p>A sparse matrix stored in modified sparse row format.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\qr_factorization.html'>qr_factorization</a></td>
+                 <td><a href='..\module\linalg_qr.html'>linalg_qr</a></td>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><p>A container for QR factorization of a matrix and associated
+operations.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\sparse_lu_factorization.html'>sparse_lu_factorization</a></td>
+                 <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><p>Owns a real CSR system and an ILUT preconditioner. SOLVE and
+SOLVE_IN_PLACE solve the original A * X = B using restarted GMRES;
+they do not merely apply the incomplete factors. This is an
+iterative solver, not a pivoted sparse direct LU factorization.
+FACTOR prepares the preconditioner explicitly, or solves prepare
+it lazily. UPDATE invalidates it. No dense matrix copy is formed.
+Errors return through optional FLAG arguments; if omitted, errors
+terminate with ERROR STOP. No inverse or determinant is provided.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\type\svd_factorization.html'>svd_factorization</a></td>
+                 <td><a href='..\module\linalg_svd.html'>linalg_svd</a></td>
+                 <td><a href='..\type\matrix_factorization.html'>matrix_factorization</a></td>
+                 <td><p>A container for the singular value decomposition of a matrix and
+associated operations.  The decomposition is <script type="math/tex">A = U \Sigma V^T</script>.
+The solvers compute the minimum-norm least-squares solution
+<script type="math/tex">X = A^+ B</script> using the Moore-Penrose pseudo-inverse
+<script type="math/tex">A^+ = V \Sigma^+ U^T</script>, where singular values below a tolerance
+are treated as zero.  Any matrix shape is supported.</p></td>
                </tr>
 			 </tbody></table>
              
@@ -97,7 +186,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

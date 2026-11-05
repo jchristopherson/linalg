@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 8.3% of total for modules and submodules.">686 statements</a>
+                 title=" 7.7% of total for modules and submodules.">796 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -127,8 +127,9 @@
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-operator%28%2B%29">operator(+)</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-operator%28-%29">operator(-)</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-operator%28SLASH%29">operator(/)</a>
+            <a class="list-group-item" href="../module/linalg_sparse.html#interface-pgmres_solve">pgmres_solve</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-pgmres_solver">pgmres_solver</a>
-            <a class="list-group-item" href="../module/linalg_sparse.html#interface-size">size</a>
+            <a class="list-group-item" href="../module/linalg_sparse.html#interface-size~2">size</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-sparse_direct_solve">sparse_direct_solve</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#interface-transpose">transpose</a>
         </div>
@@ -167,6 +168,8 @@
             <a class="list-group-item" href="../module/linalg_sparse.html#proc-diag_to_csr">diag_to_csr</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#proc-msr_to_csr">msr_to_csr</a>
             <a class="list-group-item" href="../module/linalg_sparse.html#proc-msr_to_dense">msr_to_dense</a>
+            <a class="list-group-item" href="../module/linalg_sparse.html#proc-validate_csr_storage">validate_csr_storage</a>
+            <a class="list-group-item" href="../module/linalg_sparse.html#proc-validate_msr_lu">validate_msr_lu</a>
         </div>
       </div>
     </div>
@@ -193,11 +196,11 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='blas.html'>blas</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
                   <li class="list-inline-item"><a href='sparskit.html'>sparskit</a></li>
+                  <li class="list-inline-item"><a href='blas.html'>blas</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
         </ul>
@@ -567,7 +570,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~183"></span>
+              <span class="anchor" id="variable-a~71"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -582,7 +585,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~81"></span>
+              <span class="anchor" id="variable-b~22"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -625,7 +628,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~184"></span>
+              <span class="anchor" id="variable-a~72"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -640,7 +643,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~82"></span>
+              <span class="anchor" id="variable-b~23"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -693,7 +696,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~86"></span>
+              <span class="anchor" id="variable-x~7"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -711,7 +714,7 @@
 
     <h4>
     Return Value
-    <small>integer(kind=int32)</small>
+    <small>integer</small>
     </h4>
     <p>The number of non-zero values in the matrix.</p>
 
@@ -736,7 +739,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~90"></span>
+              <span class="anchor" id="variable-x~11"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -754,7 +757,7 @@
 
     <h4>
     Return Value
-    <small>integer(kind=int32)</small>
+    <small>integer</small>
     </h4>
     <p>The number of non-zero elements.</p>
 
@@ -789,7 +792,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~187"></span>
+              <span class="anchor" id="variable-a~75"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -804,7 +807,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~85"></span>
+              <span class="anchor" id="variable-b~26"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -847,7 +850,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~188"></span>
+              <span class="anchor" id="variable-a~76"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -862,7 +865,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~86"></span>
+              <span class="anchor" id="variable-b~27"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -915,7 +918,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~185"></span>
+              <span class="anchor" id="variable-a~73"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -930,7 +933,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~83"></span>
+              <span class="anchor" id="variable-b~24"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -983,7 +986,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~186"></span>
+              <span class="anchor" id="variable-a~74"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -998,7 +1001,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~84"></span>
+              <span class="anchor" id="variable-b~25"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1051,7 +1054,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~189"></span>
+              <span class="anchor" id="variable-a~77"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1066,7 +1069,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~87"></span>
+              <span class="anchor" id="variable-b~28"></span>
               real(kind=real64),
             </td>
 <td>intent(in)</td>
@@ -1094,17 +1097,22 @@
 
               <div class="card">
     <div class="card-header bg-light codesum">
-      <span class="anchor" id="interface-pgmres_solver"></span>
-      <h3>public        interface <a href='..\interface\pgmres_solver.html'>pgmres_solver</a> 
+      <span class="anchor" id="interface-pgmres_solve"></span>
+      <h3>public        interface <a href='..\interface\pgmres_solve.html'>pgmres_solve</a> 
       </h3>
     </div>
+      <div class="card-body">
+        <p>Solves a CSR system with optional nonterminating status reporting.</p>
+      </div>
     <ul class="list-group">
           <li class="list-group-item">
                 <h3>
-    private pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)  
+    private pure subroutine csr_pgmres_solve(a, lu, ju, b, x, im, tol, maxits, iout, flag)  
 
     </h3>
-  <p>Solves a linear system using the PGMRES method.</p>
+  <p>Solves A * X = B using right-preconditioned restarted GMRES, starting
+from zero. The incomplete factors are only a preconditioner; convergence
+is checked using the true residual of the original CSR system.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1119,7 +1127,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~197"></span>
+              <span class="anchor" id="variable-a~87"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1129,12 +1137,12 @@
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The matrix.</p>
+                <p>The nonempty N-by-N coefficient matrix in valid CSR format.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~11"></span>
+              <span class="anchor" id="variable-lu~3"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1144,13 +1152,13 @@
             <td>::</td>
             <td><strong>lu</strong></td>
             <td>
-                <p>The LU factored matrix.</p>
+                <p>Prepared N-by-N ILUT factors in MSR format, not modified.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ju~12"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ju~10"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1159,12 +1167,12 @@
             <td>::</td>
             <td><strong>ju</strong></td>
             <td>
-                <p>The row tracking array.</p>
+                <p>N pointers to the starts of the upper-factor rows in LU.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~89"></span>
+              <span class="anchor" id="variable-b~31"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1174,13 +1182,30 @@
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>The right-hand side.</p>
+                <p>N-element right-hand side, not modified. A zero vector yields zero.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-im~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-x~14"></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>x</strong></td>
+            <td>
+                <p>N-element solution on success, or final iterate on nonconvergence.
+Unallocated on input errors. Call-local workspace leaves A and LU
+unchanged; this does not assert reentrancy of external routines.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-im~3"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1189,12 +1214,13 @@
             <td>::</td>
             <td><strong>im</strong></td>
             <td>
-                <p>The Krylov subspace size.</p>
+                <p>Restart length in [1, MIN(N, 50)]; default MIN(N, 50). The upper
+bound is imposed by the bundled SPARSKIT implementation.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~14"></span>
+              <span class="anchor" id="variable-tol~3"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1204,13 +1230,14 @@
             <td>::</td>
             <td><strong>tol</strong></td>
             <td>
-                <p>The convergence tolerance.</p>
+                <p>Finite relative residual tolerance, at least machine epsilon;
+default SQRT(EPSILON). Success requires NORM2(B-A<em>X) &lt;= TOL</em>NORM2(B).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-maxits~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-maxits~3"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1219,13 +1246,14 @@
             <td>::</td>
             <td><strong>maxits</strong></td>
             <td>
-                <p>The maximum number of iterations.</p>
+                <p>Positive iteration budget, default 100. SPARSKIT checks this budget
+at restart boundaries and may exceed it by up to IM-1 iterations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iout~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-iout~3"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td>optional</td>            <td>
@@ -1234,17 +1262,35 @@
             <td>::</td>
             <td><strong>iout</strong></td>
             <td>
-                <p>The output level.</p>
+                <p>Fortran output unit for iteration information. Nonpositive values
+suppress output; default zero.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flag~16"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>LA_NO_ERROR on success; LA_CONVERGENCE_ERROR if iteration or the
+true-residual check fails. Invalid dimensions return
+LA_MATRIX_DIMENSION_ERROR or LA_MATRIX_NOT_SQUARE_ERROR; invalid
+controls or nonfinite CSR values/B return LA_INVALID_INPUT_ERROR.
+Missing storage returns LA_NOT_INITIALIZED_ERROR; malformed CSR or
+MSR pointers/columns return LA_MATRIX_FORMAT_ERROR; singular or
+nonfinite factors return LA_SINGULAR_MATRIX_ERROR. If omitted,
+errors terminate with ERROR STOP, preserving the existing API.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
-    <h4>
-    Return Value
-    <small>real(kind=real64), allocatable, dimension(:)</small>
-    </h4>
-    <p>The solution.</p>
 
           </li>
     </ul>
@@ -1252,8 +1298,168 @@
 
               <div class="card">
     <div class="card-header bg-light codesum">
-      <span class="anchor" id="interface-size"></span>
-      <h3>public        interface <a href='..\interface\size.html'>size</a> 
+      <span class="anchor" id="interface-pgmres_solver"></span>
+      <h3>public        interface <a href='..\interface\pgmres_solver.html'>pgmres_solver</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private pure function csr_pgmres_solver(a, lu, ju, b, im, tol, maxits, iout) result(x)  
+
+    </h3>
+  <p>Function form of <a href="..\interface\pgmres_solve.html">pgmres_solve</a>, retaining the existing pure API.
+Invalid inputs and failure of the true-residual test use ERROR STOP.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~86"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>Nonempty N-by-N coefficient matrix in valid CSR format.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lu~2"></span>
+              class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lu</strong></td>
+            <td>
+                <p>Prepared N-by-N ILUT preconditioner in MSR format.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ju~9"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ju</strong>(:)</td>
+            <td>
+                <p>N pointers to upper-factor rows in LU.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~30"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(:)</td>
+            <td>
+                <p>N-element right-hand side, not modified.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-im~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>im</strong></td>
+            <td>
+                <p>Restart length in [1, MIN(N, 50)]; default MIN(N, 50).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol~2"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Finite relative residual tolerance at least EPSILON; default
+SQRT(EPSILON). Success requires NORM2(B-A<em>X) &lt;= TOL</em>NORM2(B).</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxits~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>maxits</strong></td>
+            <td>
+                <p>Positive iteration budget, checked at restart boundaries; default 100.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iout~2"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iout</strong></td>
+            <td>
+                <p>Output unit for iteration logs; nonpositive suppresses logs, default 0.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, (:)</small>
+    </h4>
+    <p>Computed N-element solution of the original system A * X = B.</p>
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-size~2"></span>
+      <h3>public        interface <a href='..\interface\size~2.html'>size</a> 
       </h3>
     </div>
     <ul class="list-group">
@@ -1277,7 +1483,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~85"></span>
+              <span class="anchor" id="variable-x~6"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1292,8 +1498,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dim"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-dim~3"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1310,7 +1516,7 @@
 
     <h4>
     Return Value
-    <small>integer(kind=int32)</small>
+    <small>integer</small>
     </h4>
     <p>The size of the matrix along the specified dimension.</p>
 
@@ -1335,7 +1541,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~89"></span>
+              <span class="anchor" id="variable-x~10"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1350,8 +1556,8 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dim~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-dim~4"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1368,7 +1574,7 @@
 
     <h4>
     Return Value
-    <small>integer(kind=int32)</small>
+    <small>integer</small>
     </h4>
     <p>The size of the specified dimension.</p>
 
@@ -1388,8 +1594,10 @@
     private pure function csr_solve_sparse_direct(a, b, droptol) result(x)  
 
     </h3>
-  <p>Solves a linear system using a direct method.  In the event of a
-singular matrix, the solution is populated with NaN's.</p>
+  <p>Legacy convenience entry point for solving the original CSR system.
+ILUT builds a preconditioner and GMRES refines the full-system solution;
+despite the historical name, this is not a pivoted sparse direct solver.
+Detected ILUT breakdown yields NaNs; nonconvergence uses ERROR STOP.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1404,7 +1612,7 @@ singular matrix, the solution is populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~192"></span>
+              <span class="anchor" id="variable-a~81"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1414,12 +1622,12 @@ singular matrix, the solution is populated with NaN's.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The matrix.</p>
+                <p>Nonempty N-by-N real coefficient matrix in valid CSR format.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~88"></span>
+              <span class="anchor" id="variable-b~29"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1429,12 +1637,12 @@ singular matrix, the solution is populated with NaN's.</p>
             <td>::</td>
             <td><strong>b</strong></td>
             <td>
-                <p>The right-hand side.</p>
+                <p>N-element right-hand side, not modified.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-droptol~5"></span>
+              <span class="anchor" id="variable-droptol~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1444,7 +1652,10 @@ singular matrix, the solution is populated with NaN's.</p>
             <td>::</td>
             <td><strong>droptol</strong></td>
             <td>
-                <p>The drop tolerance for the ILUT factorization.</p>
+                <p>Finite nonnegative ILUT drop threshold; default SQRT(EPSILON).
+Controls the preconditioner, not final accuracy. GMRES uses its
+default relative residual tolerance SQRT(EPSILON), restart length
+MIN(N,50), and iteration budget 100. Use PGMRES_SOLVE for controls.</p>
             </td>
         </tr>
     </tbody>
@@ -1454,7 +1665,8 @@ singular matrix, the solution is populated with NaN's.</p>
     Return Value
     <small>real(kind=real64), allocatable, dimension(:)</small>
     </h4>
-    <p>The solution.</p>
+    <p>N-element solution of A * X = B to the GMRES residual tolerance.
+Inputs are preserved; an explicitly detected breakdown yields NaNs.</p>
 
           </li>
     </ul>
@@ -1487,7 +1699,7 @@ singular matrix, the solution is populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~190"></span>
+              <span class="anchor" id="variable-a~78"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -1545,7 +1757,7 @@ singular matrix, the solution is populated with NaN's.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-column_indices"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -1563,7 +1775,7 @@ containing the column indices of each value.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-row_indices"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -1646,7 +1858,7 @@ containing the non-zero values of the matrix.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-indices"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -1662,8 +1874,8 @@ containing the non-zero values of the matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~135"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-m~36"></span>
+              integer,
             </td>
               <td>public</td>
             <td>
@@ -1679,8 +1891,8 @@ containing the non-zero values of the matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~219"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-n~62"></span>
+              integer,
             </td>
               <td>public</td>
             <td>
@@ -1696,8 +1908,8 @@ containing the non-zero values of the matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nnz~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-nnz~2"></span>
+              integer,
             </td>
               <td>public</td>
             <td>
@@ -1763,8 +1975,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~138"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-m~39"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1779,7 +1991,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-ml~2"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1794,7 +2006,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-mu~2"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1808,7 +2020,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~180"></span>
+              <span class="anchor" id="variable-a~68"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1853,8 +2065,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~153"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-m~54"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1868,8 +2080,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~239"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-n~82"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1883,8 +2095,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-rows"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-rows~2"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1899,7 +2111,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-cols"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -1913,7 +2125,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vals~11"></span>
+              <span class="anchor" id="variable-vals"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1958,8 +2170,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~136"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-m~37"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1973,8 +2185,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~220"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-n~63"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -1988,8 +2200,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nnz~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-nnz~3"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -2033,8 +2245,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-m~149"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-m~50"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -2048,8 +2260,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~235"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-n~78"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -2063,8 +2275,8 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nnz~13"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-nnz~12"></span>
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -2108,7 +2320,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~181"></span>
+              <span class="anchor" id="variable-a~69"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -2153,7 +2365,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~193"></span>
+              <span class="anchor" id="variable-a~82"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -2198,7 +2410,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~179"></span>
+              <span class="anchor" id="variable-a~67"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2243,7 +2455,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~195"></span>
+              <span class="anchor" id="variable-a~84"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2288,7 +2500,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~182"></span>
+              <span class="anchor" id="variable-a~70"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2333,7 +2545,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~194"></span>
+              <span class="anchor" id="variable-a~83"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -2378,7 +2590,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~196"></span>
+              <span class="anchor" id="variable-a~85"></span>
               class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -2399,6 +2611,123 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
     <small>real(kind=real64), allocatable, dimension(:,:)</small>
     </h4>
     <p>The dense matrix.</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-validate_csr_storage"></span> <h3>public pure function <a href='..\proc\validate_csr_storage.html'>validate_csr_storage</a>(a) result(flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Validates nonempty finite CSR storage before raw-array solver calls.
+Rectangular matrices and zero rows are accepted by this storage check;
+individual solvers impose their own square-system requirements.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~80"></span>
+              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>Matrix to inspect without modification. Rows may be unsorted, but
+column indices within each row must be unique and in range.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer</small>
+    </h4>
+    <p>LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
+LA_INVALID_INPUT_ERROR for empty dimensions or nonfinite values;
+LA_MATRIX_FORMAT_ERROR for inconsistent lengths, pointers, or columns.</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-validate_msr_lu"></span> <h3>public pure function <a href='..\proc\validate_msr_lu.html'>validate_msr_lu</a>(lu, ju) result(flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Validates the combined MSR triangular factors consumed by LUSOL.
+The diagonal contains inverse U pivots, not the original U diagonal.
+The unused value at N+1 and unused trailing capacity are not inspected.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lu"></span>
+              class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lu</strong></td>
+            <td>
+<p>Nonempty square factors with row pointers in INDICES(1:N+1),
+followed by lower entries and then upper entries within each row.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ju~7"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ju</strong>(:)</td>
+            <td>
+<p>N pointers splitting each row into its strict lower and upper parts.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer</small>
+    </h4>
+    <p>LA_NO_ERROR on success; LA_NOT_INITIALIZED_ERROR for missing arrays;
+LA_MATRIX_NOT_SQUARE_ERROR or LA_MATRIX_DIMENSION_ERROR for sizes;
+LA_INVALID_INPUT_ERROR for empty factors; LA_MATRIX_FORMAT_ERROR
+for invalid pointers or nontriangular columns; or
+LA_SINGULAR_MATRIX_ERROR for zero inverse pivots/nonfinite factors.</p>
 
     </div>
   </div>
@@ -2424,7 +2753,7 @@ matrix.  The first MIN(M,N) elements contain the diagonal.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

@@ -1,6 +1,8 @@
+! linalg_lq.f90
+! SPDX-License-Identifier: MIT
 module linalg_lq
     !! Provides LQ factorization, factor formation, multiplication, and solvers.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use linalg_errors
     use linalg_tri
@@ -58,7 +60,7 @@ pure subroutine lq_factor_no_pivot(a, tau, lq, l, q)
 
     ! Local Variables
     logical :: buildlq
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     real(real64), dimension(1) :: temp
     real(real64), allocatable, target, dimension(:) :: w, tc
     real(real64), allocatable, target, dimension(:,:) :: ac, lc, qc
@@ -87,7 +89,7 @@ pure subroutine lq_factor_no_pivot(a, tau, lq, l, q)
 
     ! Workspace Query
     call DGELQF(m, n, temp, m, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DGELQF
@@ -145,7 +147,7 @@ pure subroutine lq_factor_no_pivot_cmplx(a, tau, lq, l, q)
 
     ! Local Variables
     logical :: buildlq
-    integer(int32) :: m, n, mn, lwork, flag
+    integer :: m, n, mn, lwork, flag
     complex(real64), dimension(1) :: temp
     complex(real64), allocatable, target, dimension(:) :: w, tc
     complex(real64), allocatable, target, dimension(:,:) :: ac, lc, qc
@@ -174,7 +176,7 @@ pure subroutine lq_factor_no_pivot_cmplx(a, tau, lq, l, q)
 
     ! Workspace Query
     call ZGELQF(m, n, temp, m, temp, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZGELQF
@@ -232,7 +234,7 @@ pure subroutine form_lq_no_pivot(l, tau, q)
     real(real64), parameter :: zero = 0.0d0
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, k, flag, lwork
+    integer :: i, j, m, n, mn, k, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
     
@@ -254,7 +256,7 @@ pure subroutine form_lq_no_pivot(l, tau, q)
 
     ! Workspace Query
     call DORGLQ(n, n, mn, temp, n, tau, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Copy the upper triangular portion of L to Q, and then zero it out in L
@@ -291,7 +293,7 @@ pure subroutine form_lq_no_pivot_cmplx(l, tau, q)
     complex(real64), parameter :: zero = (0.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, j, m, n, mn, k, flag, lwork
+    integer :: i, j, m, n, mn, k, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -313,7 +315,7 @@ pure subroutine form_lq_no_pivot_cmplx(l, tau, q)
 
     ! Workspace Query
     call ZUNGLQ(n, n, mn, temp, n, tau, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Copy the upper triangular portion of L to Q, and then zero it out in L
@@ -351,7 +353,7 @@ pure function mult_lq_mtx(lside, trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, ncola, flag, lwork
+    integer :: m, n, k, ncola, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -380,7 +382,7 @@ pure function mult_lq_mtx(lside, trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMLQ
@@ -411,7 +413,7 @@ pure function mult_lq_mtx_cmplx(lside, trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, ncola, flag, lwork
+    integer :: m, n, k, ncola, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -440,7 +442,7 @@ pure function mult_lq_mtx_cmplx(lside, trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMLQ
@@ -469,7 +471,7 @@ pure function mult_lq_vec(trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, istat, flag, lwork
+    integer :: m, n, k, istat, flag, lwork
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
 
@@ -492,7 +494,7 @@ pure function mult_lq_vec(trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call DORMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call DORMLQ
@@ -521,7 +523,7 @@ pure function mult_lq_vec_cmplx(trans, a, tau, c) result(qc)
 
     ! Local Variables
     character :: side, t
-    integer(int32) :: m, n, k, flag, lwork
+    integer :: m, n, k, flag, lwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
 
@@ -544,7 +546,7 @@ pure function mult_lq_vec_cmplx(trans, a, tau, c) result(qc)
 
     ! Workspace Query
     call ZUNMLQ(side, t, m, n, k, a, k, tau, qc, m, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Call ZUNMLQ
@@ -570,7 +572,7 @@ pure function solve_lq_mtx(a, tau, b) result(x)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k
+    integer :: m, n, nrhs, k
 
     ! Initialization
     m = size(a, 1)
@@ -616,7 +618,7 @@ pure function solve_lq_mtx_cmplx(a, tau, b) result(x)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, k
+    integer :: m, n, nrhs, k
 
     ! Initialization
     m = size(a, 1)
@@ -661,7 +663,7 @@ pure function solve_lq_vec(a, tau, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, k
+    integer :: m, n, k
 
     ! Initialization
     m = size(a, 1)
@@ -693,7 +695,7 @@ pure function solve_lq_vec_cmplx(a, tau, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, k
+    integer :: m, n, k
 
     ! Initialization
     m = size(a, 1)

@@ -36,26 +36,18 @@ jobs:
             shared: true
           - os: windows-latest
             compiler: gcc
-            version: 'msys2'
+            version: '15'
             shared: false
           - os: windows-latest
             compiler: gcc
-            version: 'msys2'
+            version: '15'
             shared: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Fortran toolchain
-        if: runner.os != 'Windows'
-        uses: fortran-lang/setup-fortran@v1
-        id: setup-fortran
-        with:
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-
-      - name: Set up MSYS2 toolchain and BLAS/LAPACK (Windows)
+      - name: Set up MSYS2 libraries (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         id: msys2
@@ -63,7 +55,6 @@ jobs:
           msystem: MINGW64
           update: true
           install: >-
-            mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-openblas
             mingw-w64-x86_64-arpack
 
@@ -73,7 +64,14 @@ jobs:
         run: |
           Add-Content $env:GITHUB_PATH "${{ steps.msys2.outputs.msys2-location }}\mingw64\bin"
 
-      - name: Provide BLAS/LAPACK linker aliases (Windows)
+      - name: Set up Fortran toolchain
+        uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+
+      - name: Provide BLAS/LAPACK/ARPACK linker aliases (Windows)
         if: runner.os == 'Windows'
         shell: bash
         env:
@@ -81,6 +79,7 @@ jobs:
         run: |
           LIB_DIR="$MSYS2_LOCATION/mingw64/lib"
           OPENBLAS_LIB=""
+          ARPACK_LIB=""
           for CANDIDATE in "$LIB_DIR/libopenblas.dll.a" "$LIB_DIR/libopenblas.a"; do
             if [[ -f "$CANDIDATE" ]]; then
               OPENBLAS_LIB="$CANDIDATE"
@@ -94,17 +93,31 @@ jobs:
             exit 1
           fi
 
-          ALIAS_DIR="$RUNNER_TEMP/blas-lapack-alias"
+          for CANDIDATE in "$LIB_DIR/libarpack.dll.a" "$LIB_DIR/libarpack.a"; do
+            if [[ -f "$CANDIDATE" ]]; then
+              ARPACK_LIB="$CANDIDATE"
+              break
+            fi
+          done
+
+          if [[ -z "$ARPACK_LIB" ]]; then
+            echo "Unable to locate ARPACK library in $LIB_DIR"
+            ls -la "$LIB_DIR"/libarpack* || true
+            exit 1
+          fi
+
+          ALIAS_DIR="$RUNNER_TEMP/blas-lapack-arpack-alias"
           mkdir -p "$ALIAS_DIR"
           cp "$OPENBLAS_LIB" "$ALIAS_DIR/libblas.a"
           cp "$OPENBLAS_LIB" "$ALIAS_DIR/liblapack.a"
+          cp "$ARPACK_LIB" "$ALIAS_DIR/libarpack.a"
           echo "LIBRARY_PATH=$ALIAS_DIR${LIBRARY_PATH:+:$LIBRARY_PATH}" >> "$GITHUB_ENV"
 
       - name: Show compiler version
         shell: bash
         env:
-          FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
-          CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
         run: |
           "$FC" --version
 
@@ -123,10 +136,10 @@ jobs:
       - name: Build LINALG
         shell: bash
         env:
-          FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
-          CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
-          FPM_FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
-          FPM_CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FC: ${{ steps.setup-fortran.outputs.fc }}
+          FPM_CC: ${{ steps.setup-fortran.outputs.cc }}
           SHARED: ${{ matrix.shared }}
         run: |
           FLAGS=""
@@ -146,10 +159,10 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
-          CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
-          FPM_FC: ${{ runner.os == 'Windows' && 'gfortran' || steps.setup-fortran.outputs.fc }}
-          FPM_CC: ${{ runner.os == 'Windows' && 'gcc' || steps.setup-fortran.outputs.cc }}
+          FC: ${{ steps.setup-fortran.outputs.fc }}
+          CC: ${{ steps.setup-fortran.outputs.cc }}
+          FPM_FC: ${{ steps.setup-fortran.outputs.fc }}
+          FPM_CC: ${{ steps.setup-fortran.outputs.cc }}
           SHARED: ${{ matrix.shared }}
         run: |
           FLAGS=""

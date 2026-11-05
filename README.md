@@ -130,7 +130,7 @@ natFreq = sqrt(real(vals)) / (2.0d0 * pi)
 ```
 
 ## Sparse Matrix Example
-The following example solves a sparse system of equations using a direct solver.  The solution is compared to the solution of the same system of equations but in dense format for comparison.
+The following example solves a sparse system of equations.  In the full example the solution is compared to the solution of the same system of equations but in dense format.
 
 Full example: [examples/linalg_sparse_example.f90](examples/linalg_sparse_example.f90).
 

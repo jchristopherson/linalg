@@ -4,6 +4,7 @@ set(linalg_test_sources
     test_core.f90
     test_qr.f90
     test_svd.f90
+    test_least_squares.f90
     test_cholesky.f90
     test_eigen.f90
     test_mtx_inverse.f90
@@ -64,6 +65,23 @@ foreach(validation_case IN ITEMS
         COMMAND $<TARGET_FILE:linalg_test> ${validation_case}
     )
     set_tests_properties(${validation_case} PROPERTIES WILL_FAIL TRUE)
+endforeach()
+
+foreach(test_case IN ITEMS
+    basic_utility_edges
+    pseudoinverse_edge_cases
+    complex_rank_deficient_pseudoinverse
+    zero_matrix_pseudoinverse
+    least_squares_shapes
+    least_squares_rank_deficient
+    rz_square
+    sort_index_edges
+)
+    add_test(
+        NAME ${test_case}
+        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        COMMAND $<TARGET_FILE:linalg_test> ${test_case}
+    )
 endforeach()
 
 if (${BUILD_SHARED_LIBS} AND WIN32)

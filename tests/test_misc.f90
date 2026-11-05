@@ -713,4 +713,105 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_basic_utility_edges() result(rst)
+        real(real64) :: a(3,4), expected(3,4), x(2), y(2)
+        real(real64) :: pivoted(2,2), tri(3,2), upper_expected(2,2)
+        real(real64) :: lower_expected(3,2)
+        real(real64), allocatable :: band(:,:), dense(:,:), upper(:,:), lower(:,:)
+        complex(real64) :: ac(3,4), cx(2), cy(2), ctri(3,2)
+        complex(real64), allocatable :: cband(:,:), cdense(:,:)
+        logical :: rst
+
+        rst = .true.
+        a = reshape([1.0_real64, 2.0_real64, 0.0_real64, &
+            3.0_real64, 4.0_real64, 5.0_real64, &
+            0.0_real64, 6.0_real64, 7.0_real64, &
+            0.0_real64, 0.0_real64, 8.0_real64], [3,4])
+        if (trace(a) /= 12.0_real64) then
+            rst = .false.
+            print *, "trace real", trace(a)
+        end if
+        ac = cmplx(a, -a, kind = real64)
+        if (trace(ac) /= cmplx(12.0_real64, -12.0_real64, kind = real64)) then
+            rst = .false.
+            print *, "trace complex", trace(ac)
+        end if
+
+        pivoted = reshape([0.0_real64, 2.0_real64, 1.0_real64, 3.0_real64], [2,2])
+        if (det(pivoted) /= -2.0_real64) then
+            rst = .false.
+            print *, "det real"
+        end if
+        if (det(cmplx(pivoted, 0.0_real64, kind = real64)) /= &
+            cmplx(-2.0_real64, 0.0_real64, kind = real64)) then
+            rst = .false.
+            print *, "det complex"
+        end if
+
+        x = [2.0_real64, -4.0_real64]
+        y = [7.0_real64, 9.0_real64]
+        call swap(x, y)
+        if (.not.assert(x, [7.0_real64, 9.0_real64], tol = REAL64_TOL) .or. &
+            .not.assert(y, [2.0_real64, -4.0_real64], tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "swap real"
+        end if
+        cx = [(1.0_real64, 2.0_real64), (3.0_real64, 4.0_real64)]
+        cy = [(5.0_real64, 6.0_real64), (7.0_real64, 8.0_real64)]
+        call swap(cx, cy)
+        if (.not.assert(cx, [(5.0_real64, 6.0_real64), (7.0_real64, 8.0_real64)], &
+            tol = REAL64_TOL) .or. .not.assert(cy, &
+            [(1.0_real64, 2.0_real64), (3.0_real64, 4.0_real64)], &
+            tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "swap complex"
+        end if
+
+        x = [4.0_real64, -8.0_real64]
+        call recip_mult_array(4.0_real64, x)
+        if (.not.assert(x, [1.0_real64, -2.0_real64], tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "recip mult"
+        end if
+
+        band = dense_to_banded(a, 1, 1)
+        dense = banded_to_dense(3, 1, 1, band)
+        if (.not.assert(dense, a, tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "band real"
+        end if
+        ac = cmplx(a, -a, kind = real64)
+        cband = dense_to_banded(ac, 1, 1)
+        cdense = banded_to_dense(3, 1, 1, cband)
+        if (.not.assert(cdense, ac, tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "band complex"
+        end if
+
+        tri = reshape([1.0_real64, 2.0_real64, 3.0_real64, &
+            4.0_real64, 5.0_real64, 6.0_real64], [3,2])
+        upper_expected = reshape([1.0_real64, 0.0_real64, &
+            4.0_real64, 5.0_real64], [2,2])
+        lower_expected = reshape([1.0_real64, 2.0_real64, 3.0_real64, &
+            0.0_real64, 5.0_real64, 6.0_real64], [3,2])
+        upper = extract_upper_triangular(tri)
+        lower = extract_lower_triangular(tri)
+        if (.not.assert(upper, upper_expected, tol = REAL64_TOL) .or. &
+            .not.assert(lower, lower_expected, tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "tri real"
+        end if
+        ctri = cmplx(tri, -tri, kind = real64)
+        if (.not.assert(extract_upper_triangular(ctri), &
+            cmplx(upper_expected, -upper_expected, kind = real64), tol = REAL64_TOL) .or. &
+            .not.assert(extract_lower_triangular(ctri), &
+            cmplx(lower_expected, -lower_expected, kind = real64), tol = REAL64_TOL)) then
+            rst = .false.
+            print *, "tri complex"
+        end if
+
+        if (.not.rst) print '(A)', "Test Failed: Basic Utility Edge Cases"
+    end function
+
+! ------------------------------------------------------------------------------
 end module

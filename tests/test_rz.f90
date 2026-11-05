@@ -80,4 +80,32 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
+    function test_rz_square() result(rst)
+        integer, parameter :: n = 3
+        real(real64) :: a(n,n)
+        complex(real64) :: ac(n,n)
+        real(real64), allocatable :: tau(:), rz(:,:), r(:,:), reconstructed(:,:)
+        complex(real64), allocatable :: ctau(:), crz(:,:), cr(:,:), &
+            creconstructed(:,:)
+        logical :: rst
+
+        rst = .true.
+        a = reshape([2.0_real64, 0.0_real64, 0.0_real64, &
+            -1.0_real64, 3.0_real64, 0.0_real64, &
+            4.0_real64, 5.0_real64, 6.0_real64], [n,n])
+        call rz_factor(a, tau, rz)
+        r = extract_upper_triangular(rz)
+        reconstructed = mult_rz(.false., .false., 0, rz, tau, r)
+        if (.not.assert(reconstructed, a, tol = REAL64_TOL)) rst = .false.
+
+        ac = cmplx(a, -0.5_real64 * a, kind = real64)
+        call rz_factor(ac, ctau, crz)
+        cr = extract_upper_triangular(crz)
+        creconstructed = mult_rz(.false., .false., 0, crz, ctau, cr)
+        if (.not.assert(creconstructed, ac, tol = REAL64_TOL)) rst = .false.
+
+        if (.not.rst) print '(A)', "Test Failed: Square RZ Factorization"
+    end function
+
+! ------------------------------------------------------------------------------
 end module

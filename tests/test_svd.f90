@@ -200,6 +200,153 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_svd_optional_outputs() result(rst)
+        integer, parameter :: m = 3, n = 2
+        real(real64), parameter :: zero = 0.0_real64
+        real(real64) :: a(m,n), expected(n)
+        complex(real64) :: ac(m,n)
+        real(real64), allocatable :: s(:)
+        real(real64), allocatable :: u(:,:), vt(:,:)
+        complex(real64), allocatable :: uc(:,:), vtc(:,:)
+        logical :: rst
+
+        rst = .true.
+        a = reshape([3.0_real64, zero, zero, zero, 2.0_real64, zero], [m,n])
+        ac = cmplx(a, 0.0_real64, kind = real64)
+        ac(1,1) = cmplx(0.0_real64, 3.0_real64, kind = real64)
+        expected = [3.0_real64, 2.0_real64]
+
+        ! Exercise each optional-output combination of the real interface.
+        call svd(a)
+        call svd(a, s = s)
+        if (.not.assert(s, expected, tol = REAL64_TOL)) rst = .false.
+        call svd(a, u = u)
+        if (any(shape(u) /= [m,m])) rst = .false.
+        call svd(a, vt = vt)
+        if (any(shape(vt) /= [n,n])) rst = .false.
+        call svd(a, s = s, u = u)
+        if (.not.assert(s, expected, tol = REAL64_TOL) .or. &
+            any(shape(u) /= [m,m])) rst = .false.
+        call svd(a, s = s, vt = vt)
+        if (.not.assert(s, expected, tol = REAL64_TOL) .or. &
+            any(shape(vt) /= [n,n])) rst = .false.
+        call svd(a, u = u, vt = vt)
+        if (any(shape(u) /= [m,m]) .or. any(shape(vt) /= [n,n])) rst = .false.
+
+        ! Exercise the same optional-output branches for the complex interface.
+        call svd(ac)
+        call svd(ac, s = s)
+        if (.not.assert(s, expected, tol = REAL64_TOL)) rst = .false.
+        call svd(ac, u = uc)
+        if (any(shape(uc) /= [m,m])) rst = .false.
+        call svd(ac, vt = vtc)
+        if (any(shape(vtc) /= [n,n])) rst = .false.
+        call svd(ac, s = s, u = uc)
+        if (.not.assert(s, expected, tol = REAL64_TOL) .or. &
+            any(shape(uc) /= [m,m])) rst = .false.
+        call svd(ac, s = s, vt = vtc)
+        if (.not.assert(s, expected, tol = REAL64_TOL) .or. &
+            any(shape(vtc) /= [n,n])) rst = .false.
+        call svd(ac, u = uc, vt = vtc)
+        if (any(shape(uc) /= [m,m]) .or. any(shape(vtc) /= [n,n])) rst = .false.
+
+        if (.not.rst) print '(A)', "Test Failed: SVD Optional Outputs"
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_svd_complex_invariants() result(rst)
+        integer, parameter :: m = 3, n = 2
+        complex(real64), parameter :: zero = (0.0_real64, 0.0_real64)
+        complex(real64) :: a(m,n), reconstructed(m,n)
+        complex(real64), allocatable :: u(:,:), vt(:,:), scaled(:,:)
+        real(real64), allocatable :: s(:)
+        real(real64) :: expected(n)
+        logical :: rst
+
+        rst = .true.
+        a = zero
+        a(1,1) = (0.0_real64, 3.0_real64)
+        a(2,2) = (2.0_real64, 0.0_real64)
+        expected = [3.0_real64, 2.0_real64]
+        call svd(a, s = s, u = u, vt = vt)
+
+        if (.not.assert(s, expected, tol = REAL64_TOL)) rst = .false.
+        if (.not.all(s(1:n-1) >= s(2:n))) rst = .false.
+        scaled = u(:,1:n)
+        scaled(:,1) = scaled(:,1) * s(1)
+        scaled(:,2) = scaled(:,2) * s(2)
+        reconstructed = matmul(scaled, vt)
+        if (.not.assert(a, reconstructed, tol = REAL64_TOL)) rst = .false.
+        if (.not.check_complex_orthogonality(u, vt)) rst = .false.
+
+        if (.not.rst) print '(A)', "Test Failed: Complex SVD Invariants"
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_svd_edge_cases() result(rst)
+        integer, parameter :: n = 3
+        real(real64) :: a(n,n), b(n), expected(n)
+        real(real64), allocatable :: s(:), u(:,:), vt(:,:), x(:)
+        type(svd_factorization) :: fac
+        integer :: flag
+        logical :: rst
+
+        rst = .true.
+        a = 0.0_real64
+        a(1,1) = 4.0_real64
+        a(2,2) = 2.0_real64
+        call svd(a, s = s, u = u, vt = vt)
+        expected = [4.0_real64, 2.0_real64, 0.0_real64]
+        if (.not.assert(s, expected, tol = REAL64_TOL)) rst = .false.
+        if (.not.check_real_orthogonality(u, vt)) rst = .false.
+
+        b = [1.0_real64, 2.0_real64, 7.0_real64]
+        fac = svd_factorization(a)
+        x = fac%solve(b, flag)
+        expected = [0.25_real64, 1.0_real64, 0.0_real64]
+        if (flag /= LA_NO_ERROR .or. &
+            .not.assert(x, expected, tol = REAL64_TOL)) rst = .false.
+
+        ! Values below the documented relative rank threshold are discarded.
+        a = 0.0_real64
+        a(1,1) = 1.0_real64
+        a(2,2) = epsilon(1.0_real64)
+        fac = svd_factorization(a)
+        b = 1.0_real64
+        x = fac%solve(b, flag)
+        expected = [1.0_real64, 0.0_real64, 0.0_real64]
+        if (flag /= LA_NO_ERROR .or. &
+            .not.assert(x, expected, tol = REAL64_TOL)) rst = .false.
+
+        ! A nonempty all-zero matrix has a zero minimum-norm solution.
+        a = 0.0_real64
+        fac = svd_factorization(a)
+        x = fac%solve(b, flag)
+        if (flag /= LA_NO_ERROR .or. any(x /= 0.0_real64)) rst = .false.
+
+        if (.not.rst) print '(A)', "Test Failed: SVD Edge Cases"
+    end function
+
+! ------------------------------------------------------------------------------
+    function test_svd_skinny_flag_combinations() result(rst)
+        real(real64) :: tall(4,2), wide(2,4)
+        logical :: rst, skinny_u, skinny_v
+        integer :: i
+
+        rst = .true.
+        tall = reshape([1.0_real64, 2.0_real64, 3.0_real64, 4.0_real64, &
+            2.0_real64, -1.0_real64, 0.5_real64, 3.0_real64], [4,2])
+        wide = transpose(tall)
+        do i = 0, 3
+            skinny_u = mod(i, 2) == 1
+            skinny_v = i >= 2
+            call check_svd_factorization_shape(tall, skinny_u, skinny_v, rst)
+            call check_svd_factorization_shape(wide, skinny_u, skinny_v, rst)
+        end do
+        if (.not.rst) print '(A)', "Test Failed: SVD Skinny Flag Combinations"
+    end function
+
 ! ******************************************************************************
 ! SVD FACTORIZATION TYPE TESTS
 ! ------------------------------------------------------------------------------
@@ -480,4 +627,75 @@ contains
     end function
 
 ! ------------------------------------------------------------------------------
-end module
+    subroutine check_svd_factorization_shape(a, skinny_u, skinny_v, passed)
+        real(real64), intent(in) :: a(:,:)
+        logical, intent(in) :: skinny_u, skinny_v
+        logical, intent(inout) :: passed
+        type(svd_factorization) :: fac
+        real(real64), allocatable :: u(:,:), vt(:,:), s(:), scaled(:,:)
+        integer :: m, n, mn, flag, i
+
+        m = size(a, 1)
+        n = size(a, 2)
+        mn = min(m, n)
+        fac = svd_factorization(a, skinny_u = skinny_u, skinny_v = skinny_v)
+        call fac%get_factored_form(u, s, vt, flag)
+        if (flag /= LA_NO_ERROR) then
+            passed = .false.
+            return
+        end if
+        if (.not.allocated(u) .or. .not.allocated(s) .or. .not.allocated(vt)) then
+            passed = .false.
+            return
+        end if
+        if (any(shape(u) /= [m, merge(mn, m, skinny_u)]) .or. &
+            any(shape(vt) /= [merge(mn, n, skinny_v), n]) .or. size(s) /= mn) then
+            passed = .false.
+            return
+        end if
+
+        scaled = u(:,1:mn)
+        do i = 1, mn
+            scaled(:,i) = scaled(:,i) * s(i)
+        end do
+        if (.not.assert(a, matmul(scaled, vt(1:mn,:)), tol = REAL64_TOL)) passed = .false.
+        if (.not.all(s(1:mn-1) >= s(2:mn))) passed = .false.
+        if (.not.check_real_orthogonality(u(:,1:mn), vt(1:mn,:))) passed = .false.
+    end subroutine
+
+    ! ------------------------------------------------------------------------------
+    function check_real_orthogonality(u, vt) result(passed)
+        real(real64), intent(in) :: u(:,:), vt(:,:)
+        real(real64) :: gram(size(u,2),size(u,2)), identity(size(u,2),size(u,2))
+        logical :: passed
+        integer :: i
+
+        identity = 0.0_real64
+        do i = 1, size(identity,1)
+            identity(i,i) = 1.0_real64
+        end do
+        gram = matmul(transpose(u), u)
+        passed = assert(gram, identity, tol = REAL64_TOL)
+        gram = matmul(vt, transpose(vt))
+        passed = passed .and. assert(gram, identity, tol = REAL64_TOL)
+    end function
+
+    ! ------------------------------------------------------------------------------
+    function check_complex_orthogonality(u, vt) result(passed)
+        complex(real64), intent(in) :: u(:,:), vt(:,:)
+        complex(real64) :: gram(size(u,2),size(u,2)), identity(size(u,2),size(u,2))
+        logical :: passed
+        integer :: i
+
+        identity = (0.0_real64, 0.0_real64)
+        do i = 1, size(identity,1)
+            identity(i,i) = (1.0_real64, 0.0_real64)
+        end do
+        gram = matmul(transpose(conjg(u)), u)
+        passed = assert(gram, identity, tol = REAL64_TOL)
+        gram = matmul(vt, transpose(conjg(vt)))
+        passed = passed .and. assert(gram, identity, tol = REAL64_TOL)
+    end function
+
+    ! ------------------------------------------------------------------------------
+    end module

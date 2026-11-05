@@ -282,6 +282,7 @@ pure function solve_least_squares_mtx_pvt(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m, nrhs), source = b)
         call DGELSY(m, n, nrhs, ac, m, bc, m, iw, rc, rnk, w, lwork, flag)
+        x = bc(1:n,:)
     end if
 end function
 
@@ -324,7 +325,7 @@ pure function solve_least_squares_mtx_pvt_cmplx(a, b) result(x)
     call ZGELSY(m, n, nrhs, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, &
         rtemp, flag)
     lwork = int(temp(1))
-    allocate(w(lwork), rw(lwork), x(n, nrhs))
+    allocate(w(lwork), rw(lrwork), x(n, nrhs))
     allocate(iw(n), source = 0)
 
     ! Process
@@ -389,7 +390,7 @@ pure function solve_least_squares_vec_pvt(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call DGELSY(m, n, 1, ac, m, bc, m, iw, rc, rnk, w, lwork, flag)
-        x = b(1:n)
+        x = bc(1:n)
     end if
 end function
 
@@ -432,7 +433,7 @@ pure function solve_least_squares_vec_pvt_cmplx(a, b) result(x)
     call ZGELSY(m, n, 1, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, rtemp, &
         flag)
     lwork = int(temp(1))
-    allocate(w(lwork), x(n))
+    allocate(w(lwork), rw(lrwork), x(n))
     allocate(iw(n), source = 0)
 
     ! Process
@@ -444,7 +445,7 @@ pure function solve_least_squares_vec_pvt_cmplx(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call ZGELSY(m, n, 1, ac, m, bc, m, iw, rc, rnk, w, lwork, rw, flag)
-        x = b(1:n)
+        x = bc(1:n)
     end if
 end function
 
@@ -496,6 +497,7 @@ pure function solve_least_squares_mtx_svd(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m, nrhs), source = b)
         call DGELSS(m, n, nrhs, ac, m, bc, m, s, rc, rnk, w, lwork, flag)
+        x = bc(1:n,:)
     end if
     if (flag > 0) then
         error stop LA_CONVERGENCE_ERROR
@@ -541,7 +543,7 @@ pure function solve_least_squares_mtx_svd_cmplx(a, b) result(x)
     call ZGELSS(m, n, nrhs, temp, m, temp, maxmn, rtemp, rc, rnk, temp, -1, &
         rtemp, flag)
     lwork = int(temp(1))
-    allocate(w(lwork), s(mn), x(n, nrhs))
+    allocate(w(lwork), rw(lrwork), s(mn), x(n, nrhs))
 
     ! Process
     if (m <= n) then
@@ -604,7 +606,7 @@ pure function solve_least_squares_vec_svd(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call DGELSS(m, n, 1, ac, m, bc, m, s, rc, rnk, w, lwork, flag)
-        x = bc(1:m)
+        x = bc(1:n)
     end if
     if (flag > 0) then
         error stop LA_CONVERGENCE_ERROR
@@ -649,7 +651,7 @@ pure function solve_least_squares_vec_svd_cmplx(a, b) result(x)
     call ZGELSS(m, n, 1, temp, m, temp, maxmn, rtemp, rc, rnk, temp, -1, &
         rtemp, flag)
     lwork = int(temp(1))
-    allocate(w(lwork), s(mn), x(n))
+    allocate(w(lwork), rw(lrwork), s(mn), x(n))
 
     ! Process
     if (m <= n) then

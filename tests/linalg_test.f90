@@ -5,6 +5,7 @@
 program main
     use test_qr
     use test_svd_ops
+    use test_least_squares
     use test_mtx_inverse
     use test_cholesky
     use test_eigen
@@ -24,7 +25,28 @@ program main
     flag = 0
     if (command_argument_count() > 0) then
         call get_command_argument(1, validation_case)
-        call run_csr_solver_error_case(trim(validation_case))
+        select case (trim(validation_case))
+        case ("basic_utility_edges")
+            rst = test_basic_utility_edges()
+        case ("pseudoinverse_edge_cases")
+            rst = test_pseudoinverse_edge_cases()
+        case ("complex_rank_deficient_pseudoinverse")
+            rst = test_complex_rank_deficient_pseudoinverse()
+        case ("zero_matrix_pseudoinverse")
+            rst = test_zero_matrix_pseudoinverse()
+        case ("least_squares_shapes")
+            rst = test_least_squares_shapes()
+        case ("least_squares_rank_deficient")
+            rst = test_least_squares_rank_deficient()
+        case ("rz_square")
+            rst = test_rz_square()
+        case ("sort_index_edges")
+            rst = test_sort_index_edges()
+        case default
+            call run_csr_solver_error_case(trim(validation_case))
+            stop 0
+        end select
+        if (.not.rst) stop 1
         stop 0
     end if
 
@@ -67,6 +89,9 @@ program main
 
     rst = test_tri_mtx_solve_1_cmplx()
     if (.not.rst) flag = 13
+
+    rst = test_basic_utility_edges()
+    if (.not.rst) flag = 145
     
     ! LU Factorization Tests
     rst = test_lu_factor()
@@ -152,7 +177,7 @@ program main
     rst = test_qr_solve_pivot()
     if (.not.rst) flag = 40
 
-    rst = test_qr_solve_no_pivot_cmplx()
+    rst = test_qr_solve_pivot_cmplx()
     if (.not.rst) flag = 41
 
     rst = test_qr_solve_pivot_od()
@@ -368,6 +393,9 @@ program main
     rst = test_int32_ascend_sort()
     if (.not.rst) flag = 107
 
+    rst = test_sort_index_edges()
+    if (.not.rst) flag = 146
+
     ! V1.8.8 Additions
     rst = test_qr_solve_no_pivot_vec()
     if (.not.rst) flag = 108
@@ -411,6 +439,9 @@ program main
 
     rst = test_rz_factor_cmplx()
     if (.not.rst) flag = 121
+
+    rst = test_rz_square()
+    if (.not.rst) flag = 144
 
     ! ARPACK-Based Sparse Eigen Solvers
     rst = test_csr_eigen_symm_1()
@@ -459,6 +490,27 @@ program main
 
     rst = test_svd_factorization_errors()
     if (.not.rst) flag = 136
+
+    rst = test_svd_optional_outputs()
+    if (.not.rst) flag = 137
+
+    rst = test_svd_complex_invariants()
+    if (.not.rst) flag = 138
+
+    rst = test_svd_edge_cases()
+    if (.not.rst) flag = 139
+
+    rst = test_svd_skinny_flag_combinations()
+    if (.not.rst) flag = 140
+
+    rst = test_pseudoinverse_edge_cases()
+    if (.not.rst) flag = 141
+
+    rst = test_least_squares_shapes()
+    if (.not.rst) flag = 142
+
+    rst = test_least_squares_rank_deficient()
+    if (.not.rst) flag = 143
 
     ! End
     if (flag /= 0) stop flag

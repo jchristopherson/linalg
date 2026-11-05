@@ -216,4 +216,60 @@ function test_int32_ascend_sort() result(rst)
 end function
 
 ! ------------------------------------------------------------------------------
+function test_sort_index_edges() result(rst)
+    real(real64) :: original(6), values(6)
+    complex(real64) :: coriginal(6), cvalues(6)
+    integer :: indices(6), i, direction
+    logical :: seen(6), ascend, rst
+
+    rst = .true.
+    original = [3.0_real64, 1.0_real64, 2.0_real64, &
+        1.0_real64, -1.0_real64, 3.0_real64]
+    coriginal = [(3.0_real64, 1.0_real64), (1.0_real64, -2.0_real64), &
+        (2.0_real64, 0.5_real64), (1.0_real64, 4.0_real64), &
+        (-1.0_real64, 0.0_real64), (3.0_real64, -1.0_real64)]
+
+    do direction = 1, 2
+        ascend = direction == 1
+        values = original
+        indices = [(i, i = 1, size(indices))]
+        call sort(values, indices, ascend)
+        seen = .false.
+        do i = 1, size(values)
+            if (indices(i) < 1 .or. indices(i) > size(original)) then
+                rst = .false.
+                cycle
+            end if
+            if (seen(indices(i)) .or. values(i) /= original(indices(i))) rst = .false.
+            seen(indices(i)) = .true.
+            if (i > 1) then
+                if ((ascend .and. values(i) < values(i-1)) .or. &
+                    (.not.ascend .and. values(i) > values(i-1))) rst = .false.
+            end if
+        end do
+        if (.not.all(seen)) rst = .false.
+
+        cvalues = coriginal
+        indices = [(i, i = 1, size(indices))]
+        call sort(cvalues, indices, ascend)
+        seen = .false.
+        do i = 1, size(cvalues)
+            if (indices(i) < 1 .or. indices(i) > size(coriginal)) then
+                rst = .false.
+                cycle
+            end if
+            if (seen(indices(i)) .or. cvalues(i) /= coriginal(indices(i))) rst = .false.
+            seen(indices(i)) = .true.
+            if (i > 1) then
+                if ((ascend .and. real(cvalues(i)) < real(cvalues(i-1))) .or. &
+                    (.not.ascend .and. real(cvalues(i)) > real(cvalues(i-1)))) rst = .false.
+            end if
+        end do
+        if (.not.all(seen)) rst = .false.
+    end do
+
+    if (.not.rst) print '(A)', "Test Failed: Sorting Indices with Duplicate Values"
+end function
+
+! ------------------------------------------------------------------------------
 end module

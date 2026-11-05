@@ -68,7 +68,7 @@ module linalg_svd
     end type
 
     interface svd_factorization
-        module procedure :: svd_init
+        module procedure :: svdf_init
     end interface
 
     interface svd
@@ -79,7 +79,7 @@ contains
 ! ******************************************************************************
 ! SVD_FACTORIZATION INTERFACE
 ! ------------------------------------------------------------------------------
-pure function svd_init(a, skinny_u, skinny_v) result(rst)
+pure function svdf_init(a, skinny_u, skinny_v) result(rst)
     !! Initializes a new [[svd_factorization]] object.
     real(real64), intent(in), dimension(:,:) :: a
         !! The M-by-N matrix to factor.
@@ -148,7 +148,7 @@ pure subroutine svdf_update(this, a, skinny_u, skinny_v)
     ! intermediate results of the solvers.
     call DGESVD(jobu, jobvt, m, n, this%a, m, this%s, this%u, m, this%vt, &
         size(this%vt, 1), temp, -1, info)
-    lwork = max(int(temp(1)), int(mn), 1_int32)
+    lwork = max(int(temp(1)), int(mn))
     allocate(this%workspace(lwork))
 end subroutine
 

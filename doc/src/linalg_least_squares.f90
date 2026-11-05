@@ -1,6 +1,8 @@
+! linalg_least_squares.f90
+! SPDX-License-Identifier: MIT
 module linalg_least_squares
     !! Provides dense least-squares solvers for full-rank and rank-deficient systems.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use linalg_errors
     implicit none
@@ -42,7 +44,7 @@ pure function solve_least_squares_mtx(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, nrhs, lwork, flag
+    integer :: m, n, maxmn, nrhs, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64), allocatable, dimension(:,:) :: ac, bc
     real(real64), dimension(1) :: temp
@@ -61,7 +63,7 @@ pure function solve_least_squares_mtx(a, b) result(x)
 
     ! Workspace Query
     call DGELS('N', m, n, nrhs, temp, m, temp, maxmn, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Process
@@ -93,7 +95,7 @@ pure function solve_least_squares_mtx_cmplx(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, nrhs, lwork, flag
+    integer :: m, n, maxmn, nrhs, lwork, flag
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: ac, bc
     complex(real64), dimension(1) :: temp
@@ -112,7 +114,7 @@ pure function solve_least_squares_mtx_cmplx(a, b) result(x)
 
     ! Workspace Query
     call ZGELS('N', m, n, nrhs, temp, m, temp, maxmn, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Process
@@ -144,7 +146,7 @@ pure function solve_least_squares_vec(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, lwork, flag
+    integer :: m, n, maxmn, lwork, flag
     real(real64), allocatable, dimension(:) :: w, bc
     real(real64), allocatable, dimension(:,:) :: ac
     real(real64), dimension(1) :: temp
@@ -162,7 +164,7 @@ pure function solve_least_squares_vec(a, b) result(x)
 
     ! Workspace Query
     call DGELS('N', m, n, 1, temp, m, temp, maxmn, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Process
@@ -194,7 +196,7 @@ pure function solve_least_squares_vec_cmplx(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, lwork, flag
+    integer :: m, n, maxmn, lwork, flag
     complex(real64), allocatable, dimension(:) :: w, bc
     complex(real64), allocatable, dimension(:,:) :: ac
     complex(real64), dimension(1) :: temp
@@ -212,7 +214,7 @@ pure function solve_least_squares_vec_cmplx(a, b) result(x)
 
     ! Workspace Query
     call ZGELS('N', m, n, 1, temp, m, temp, maxmn, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork))
 
     ! Process
@@ -244,12 +246,12 @@ pure function solve_least_squares_mtx_pvt(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, nrhs, lwork, flag, rnk
+    integer :: m, n, maxmn, nrhs, lwork, flag, rnk
     real(real64), allocatable, dimension(:) :: w
-    integer(int32), allocatable, dimension(:) :: iw
+    integer, allocatable, dimension(:) :: iw
     real(real64), allocatable, dimension(:,:) :: ac, bc
     real(real64), dimension(1) :: temp
-    integer(int32), dimension(1) :: itemp
+    integer, dimension(1) :: itemp
     real(real64) :: rc
 
     ! Initialization
@@ -267,7 +269,7 @@ pure function solve_least_squares_mtx_pvt(a, b) result(x)
 
     ! Workspace Query
     call DGELSY(m, n, nrhs, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), x(n, nrhs))
     allocate(iw(n), source = 0)
 
@@ -280,6 +282,7 @@ pure function solve_least_squares_mtx_pvt(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m, nrhs), source = b)
         call DGELSY(m, n, nrhs, ac, m, bc, m, iw, rc, rnk, w, lwork, flag)
+        x = bc(1:n,:)
     end if
 end function
 
@@ -295,13 +298,13 @@ pure function solve_least_squares_mtx_pvt_cmplx(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, nrhs, lwork, flag, rnk, lrwork
+    integer :: m, n, maxmn, nrhs, lwork, flag, rnk, lrwork
     complex(real64), allocatable, dimension(:) :: w
     real(real64), allocatable, dimension(:) :: rw
-    integer(int32), allocatable, dimension(:) :: iw
+    integer, allocatable, dimension(:) :: iw
     complex(real64), dimension(1) :: temp
     real(real64), dimension(1) :: rtemp
-    integer(int32), dimension(1) :: itemp
+    integer, dimension(1) :: itemp
     real(real64) :: rc
     complex(real64), allocatable, dimension(:,:) :: ac, bc
 
@@ -321,8 +324,8 @@ pure function solve_least_squares_mtx_pvt_cmplx(a, b) result(x)
     ! Workspace Query
     call ZGELSY(m, n, nrhs, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, &
         rtemp, flag)
-    lwork = int(temp(1), int32)
-    allocate(w(lwork), rw(lwork), x(n, nrhs))
+    lwork = int(temp(1))
+    allocate(w(lwork), rw(lrwork), x(n, nrhs))
     allocate(iw(n), source = 0)
 
     ! Process
@@ -351,11 +354,11 @@ pure function solve_least_squares_vec_pvt(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, lwork, flag, rnk
+    integer :: m, n, maxmn, lwork, flag, rnk
     real(real64), allocatable, dimension(:) :: w, bc
-    integer(int32), allocatable, dimension(:) :: iw
+    integer, allocatable, dimension(:) :: iw
     real(real64), dimension(1) :: temp
-    integer(int32), dimension(1) :: itemp
+    integer, dimension(1) :: itemp
     real(real64) :: rc
     real(real64), allocatable, dimension(:,:) :: ac
 
@@ -374,7 +377,7 @@ pure function solve_least_squares_vec_pvt(a, b) result(x)
 
     ! Workspace Query
     call DGELSY(m, n, 1, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), x(n))
     allocate(iw(n), source = 0)
 
@@ -387,7 +390,7 @@ pure function solve_least_squares_vec_pvt(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call DGELSY(m, n, 1, ac, m, bc, m, iw, rc, rnk, w, lwork, flag)
-        x = b(1:n)
+        x = bc(1:n)
     end if
 end function
 
@@ -403,13 +406,13 @@ pure function solve_least_squares_vec_pvt_cmplx(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, maxmn, lwork, lrwork, flag, rnk
+    integer :: m, n, maxmn, lwork, lrwork, flag, rnk
     complex(real64), allocatable, dimension(:) :: w, bc
     real(real64), allocatable, dimension(:) :: rw
-    integer(int32), allocatable, dimension(:) :: iw
+    integer, allocatable, dimension(:) :: iw
     complex(real64), dimension(1) :: temp
     real(real64), dimension(1) :: rtemp
-    integer(int32), dimension(1) :: itemp
+    integer, dimension(1) :: itemp
     real(real64) :: rc
     complex(real64), allocatable, dimension(:,:) :: ac
 
@@ -429,8 +432,8 @@ pure function solve_least_squares_vec_pvt_cmplx(a, b) result(x)
     ! Workspace Query
     call ZGELSY(m, n, 1, temp, m, temp, maxmn, itemp, rc, rnk, temp, -1, rtemp, &
         flag)
-    lwork = int(temp(1), int32)
-    allocate(w(lwork), x(n))
+    lwork = int(temp(1))
+    allocate(w(lwork), rw(lrwork), x(n))
     allocate(iw(n), source = 0)
 
     ! Process
@@ -442,7 +445,7 @@ pure function solve_least_squares_vec_pvt_cmplx(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call ZGELSY(m, n, 1, ac, m, bc, m, iw, rc, rnk, w, lwork, rw, flag)
-        x = b(1:n)
+        x = bc(1:n)
     end if
 end function
 
@@ -458,7 +461,7 @@ pure function solve_least_squares_mtx_svd(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, mn, maxmn, flag, lwork, rnk
+    integer :: m, n, nrhs, mn, maxmn, flag, lwork, rnk
     real(real64), allocatable, dimension(:) :: w, s
     real(real64), dimension(1) :: temp
     real(real64) :: rc
@@ -482,7 +485,7 @@ pure function solve_least_squares_mtx_svd(a, b) result(x)
     ! Workspace Query
     call DGELSS(m, n, nrhs, temp, m, temp, maxmn, temp, rc, rnk, temp, -1, &
         flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), s(mn), x(n, nrhs))
 
     ! Process
@@ -494,6 +497,7 @@ pure function solve_least_squares_mtx_svd(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m, nrhs), source = b)
         call DGELSS(m, n, nrhs, ac, m, bc, m, s, rc, rnk, w, lwork, flag)
+        x = bc(1:n,:)
     end if
     if (flag > 0) then
         error stop LA_CONVERGENCE_ERROR
@@ -512,7 +516,7 @@ pure function solve_least_squares_mtx_svd_cmplx(a, b) result(x)
         !! The N-by-NRHS matrix \(X\).
 
     ! Local Variables
-    integer(int32) :: m, n, nrhs, mn, maxmn, flag, lwork, rnk, lrwork
+    integer :: m, n, nrhs, mn, maxmn, flag, lwork, rnk, lrwork
     complex(real64), allocatable, target, dimension(:) :: w
     real(real64), allocatable, target, dimension(:) :: rw, s
     complex(real64), dimension(1) :: temp
@@ -538,8 +542,8 @@ pure function solve_least_squares_mtx_svd_cmplx(a, b) result(x)
     ! Workspace Query
     call ZGELSS(m, n, nrhs, temp, m, temp, maxmn, rtemp, rc, rnk, temp, -1, &
         rtemp, flag)
-    lwork = int(temp(1), int32)
-    allocate(w(lwork), s(mn), x(n, nrhs))
+    lwork = int(temp(1))
+    allocate(w(lwork), rw(lrwork), s(mn), x(n, nrhs))
 
     ! Process
     if (m <= n) then
@@ -569,7 +573,7 @@ pure function solve_least_squares_vec_svd(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, mn, maxmn, flag, lwork, rnk
+    integer :: m, n, mn, maxmn, flag, lwork, rnk
     real(real64), allocatable, target, dimension(:) :: w, s, bc
     real(real64), dimension(1) :: temp
     real(real64) :: rc
@@ -590,7 +594,7 @@ pure function solve_least_squares_vec_svd(a, b) result(x)
 
     ! Workspace Query
     call DGELSS(m, n, 1, temp, m, temp, maxmn, temp, rc, rnk, temp, -1, flag)
-    lwork = int(temp(1), int32)
+    lwork = int(temp(1))
     allocate(w(lwork), s(mn), x(n))
 
     ! Process
@@ -602,7 +606,7 @@ pure function solve_least_squares_vec_svd(a, b) result(x)
         ! Create a copy of B
         allocate(bc(m), source = b)
         call DGELSS(m, n, 1, ac, m, bc, m, s, rc, rnk, w, lwork, flag)
-        x = bc(1:m)
+        x = bc(1:n)
     end if
     if (flag > 0) then
         error stop LA_CONVERGENCE_ERROR
@@ -621,7 +625,7 @@ pure function solve_least_squares_vec_svd_cmplx(a, b) result(x)
         !! The N-element vector \(\vec{x}\).
 
     ! Local Variables
-    integer(int32) :: m, n, mn, maxmn, flag, lwork, rnk, lrwork
+    integer :: m, n, mn, maxmn, flag, lwork, rnk, lrwork
     real(real64), allocatable, dimension(:) :: rw, s
     complex(real64), allocatable, dimension(:) :: w, bc
     complex(real64), dimension(1) :: temp
@@ -646,8 +650,8 @@ pure function solve_least_squares_vec_svd_cmplx(a, b) result(x)
     ! Workspace Query
     call ZGELSS(m, n, 1, temp, m, temp, maxmn, rtemp, rc, rnk, temp, -1, &
         rtemp, flag)
-    lwork = int(temp(1), int32)
-    allocate(w(lwork), s(mn), x(n))
+    lwork = int(temp(1))
+    allocate(w(lwork), rw(lrwork), s(mn), x(n))
 
     ! Process
     if (m <= n) then

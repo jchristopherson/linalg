@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 1.4% of total for modules and submodules.">116 statements</a>
+                 title=" 3.6% of total for modules and submodules.">369 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -121,12 +121,24 @@
       <div id="inters-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/linalg_svd.html#interface-svd">svd</a>
+            <a class="list-group-item" href="../module/linalg_svd.html#interface-svd_factorization">svd_factorization</a>
         </div>
       </div>
     </div>
 
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/linalg_svd.html#type-svd_factorization">svd_factorization</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -150,9 +162,11 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='blas.html'>blas</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='linalg_types.html'>linalg_types</a></li>
               </ul>
             </li>
         </ul>
@@ -197,7 +211,7 @@ is an N-by-N orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~149"></span>
+              <span class="anchor" id="variable-a~112"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -228,7 +242,7 @@ in descending order.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~13"></span>
+              <span class="anchor" id="variable-u~15"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -288,7 +302,7 @@ is an N-by-N orthogonal matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~150"></span>
+              <span class="anchor" id="variable-a~113"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -319,7 +333,7 @@ in descending order.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~14"></span>
+              <span class="anchor" id="variable-u~16"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -359,10 +373,202 @@ matrix <script type="math/tex">V</script> contains the right singular vectors.</
     </ul>
   </div>
 
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-svd_factorization"></span>
+      <h3>public        interface <a href='..\interface\svd_factorization.html'>svd_factorization</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private pure function svdf_init(a, skinny_u, skinny_v) result(rst)  
+
+    </h3>
+  <p>Initializes a new <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~110"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The M-by-N matrix to factor.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-skinny_u~2"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>skinny_u</strong></td>
+            <td>
+                <p>True if the skinny version of <script type="math/tex">U</script> should be computed; else, false
+to compute the full <script type="math/tex">U</script>.  The default is false such that the full
+matrix is computed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-skinny_v~2"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>skinny_v</strong></td>
+            <td>
+                <p>True if the skinny version of <script type="math/tex">V</script> should be computed; else, false
+to compute the full <script type="math/tex">V</script>.  The default is false such that the full
+matrix is computed.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='..\type\svd_factorization.html'>svd_factorization</a>)</small>
+    </h4>
+    <p>The new <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p>
+
+          </li>
+    </ul>
+  </div>
+
         </section>
         <br>
 
 
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-svd_factorization"></span>
+      <h3>
+        type, public, extends(<a href='..\type\matrix_factorization.html'>matrix_factorization</a>)&nbsp;::&nbsp;
+        <a href='..\type\svd_factorization.html'>svd_factorization</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>A container for the singular value decomposition of a matrix and
+associated operations.  The decomposition is <script type="math/tex">A = U \Sigma V^T</script>.
+The solvers compute the minimum-norm least-squares solution
+<script type="math/tex">X = A^+ B</script> using the Moore-Penrose pseudo-inverse
+<script type="math/tex">A^+ = V \Sigma^+ U^T</script>, where singular values below a tolerance
+are treated as zero.  Any matrix shape is supported.</p>
+
+
+        <h4>Constructor</h4>
+          
+        <table class="table table-striped varlist">
+          <tbody>
+                <tr>
+                  <td>
+                        private
+
+                    pure
+                    function
+                    <strong>svdf_init</strong>
+                    (a, skinny_u, skinny_v)
+                  </td>
+                  <td><p>Initializes a new <a href="..\type\svd_factorization.html">svd_factorization</a> object.</p></td>
+                </tr>
+          </tbody>
+        </table>
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-factor~3'>factor</a></strong> => svdf_factor</td>
+                <td>..\..\<p>Factors the matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-get_factored_form~2'>get_factored_form</a></strong> => svdf_get_factored_form</td>
+                <td>..\..\<p>Gets the factored matrices <script type="math\tex">U<\script>, <script type="math\tex">\Sigma<\script>, and <script type="math\tex">V^T<\script>.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-is_factored~3'>is_factored</a></strong> => svdf_is_factored</td>
+                <td>..\..\<p>Checks to see if the matrix has been factored.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-size~3'>size</a></strong> => svdf_size</td>
+                <td>..\..\<p>Gets the size of the matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve~5'>solve</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a></td>
+                <td>..\..\<p>Solves the factored system.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve_in_place~3'>solve_in_place</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a></td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors 
+where the right-hand-side argument as a container for the result.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve_multiple_rhs~3'>solve_multiple_rhs</a></strong> => svdf_solve_multiple_rhs</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve_multiple_rhs_in_place~3'>solve_multiple_rhs_in_place</a></strong> => svdf_solve_multiple_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve_single_rhs~3'>solve_single_rhs</a></strong> => svdf_solve_single_rhs</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-solve_single_rhs_in_place~3'>solve_single_rhs_in_place</a></strong> => svdf_solve_single_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\svd_factorization.html#boundprocedure-update~2'>update</a></strong> => svdf_update</td>
+                <td>..\..\<p>Updates the object with a new matrix.<\p></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -383,7 +589,7 @@ matrix <script type="math/tex">V</script> contains the right singular vectors.</
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 3.3% of total for modules and submodules.">270 statements</a>
+                 title=" 4.6% of total for modules and submodules.">475 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -121,6 +121,7 @@
       <div id="inters-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/linalg_cholesky.html#interface-cholesky_factor">cholesky_factor</a>
+            <a class="list-group-item" href="../module/linalg_cholesky.html#interface-cholesky_factorization">cholesky_factorization</a>
             <a class="list-group-item" href="../module/linalg_cholesky.html#interface-cholesky_rank1_downdate">cholesky_rank1_downdate</a>
             <a class="list-group-item" href="../module/linalg_cholesky.html#interface-cholesky_rank1_update">cholesky_rank1_update</a>
             <a class="list-group-item" href="../module/linalg_cholesky.html#interface-solve_cholesky">solve_cholesky</a>
@@ -129,7 +130,18 @@
     </div>
 
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/linalg_cholesky.html#type-cholesky_factorization">cholesky_factorization</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -153,11 +165,12 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
                   <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
+                  <li class="list-inline-item"><a href='qrupdate.html'>qrupdate</a></li>
                   <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='qrupdate.html'>qrupdate</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/ieee_arithmetic'>ieee_arithmetic</a></li>
+                  <li class="list-inline-item"><a href='linalg_types.html'>linalg_types</a></li>
               </ul>
             </li>
         </ul>
@@ -200,7 +213,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~173"></span>
+              <span class="anchor" id="variable-a~103"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -215,7 +228,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~7"></span>
+              <span class="anchor" id="variable-upper~4"></span>
               logical,
             </td>
 <td>intent(in),</td>
@@ -263,7 +276,7 @@ matrix.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~174"></span>
+              <span class="anchor" id="variable-a~104"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -278,7 +291,7 @@ matrix.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~8"></span>
+              <span class="anchor" id="variable-upper~5"></span>
               logical,
             </td>
 <td>intent(in),</td>
@@ -303,6 +316,92 @@ as <script type="math/tex">A = L L^H</script> (set to false).  The default is tr
     </h4>
     <p>The factored matrix.  If the input matrix is not positive-definite,
 the return matrix is populated with NaN's.</p>
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-cholesky_factorization"></span>
+      <h3>public        interface <a href='..\interface\cholesky_factorization.html'>cholesky_factorization</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  function cf_init(a, upper, flag) result(rst)  
+
+    </h3>
+  <p>Initializes a new <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~101"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N matrix <script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-upper~2"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>upper</strong></td>
+            <td>
+                <p>Set to true if the upper factorization is to be computed 
+(<script type="math/tex">A = U^T U</script>); else, set to false to compute the lower 
+factorization (<script type="math/tex">A = L L^T</script>).  The default is true such that
+the upper factorization is computed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flag~29"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='..\type\cholesky_factorization.html'>cholesky_factorization</a>)</small>
+    </h4>
+    <p>The new <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
 
           </li>
     </ul>
@@ -338,7 +437,7 @@ is not positive definite, the matrix is returned filled with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~19"></span>
+              <span class="anchor" id="variable-r~10"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -354,7 +453,7 @@ updated matrix <script type="math/tex">R_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~23"></span>
+              <span class="anchor" id="variable-u~11"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -396,7 +495,7 @@ is not positive definite, the matrix is returned filled with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~20"></span>
+              <span class="anchor" id="variable-r~11"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -412,7 +511,7 @@ updated matrix <script type="math/tex">R_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~24"></span>
+              <span class="anchor" id="variable-u~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -462,7 +561,7 @@ such that <script type="math/tex">A_1 = A + \vec{u} \vec{u}^T</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~17"></span>
+              <span class="anchor" id="variable-r~8"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -478,7 +577,7 @@ updated matrix <script type="math/tex">R_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~21"></span>
+              <span class="anchor" id="variable-u~9"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -518,7 +617,7 @@ such that <script type="math/tex">A_1 = A + \vec{u} \vec{u}^H</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~18"></span>
+              <span class="anchor" id="variable-r~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -534,7 +633,7 @@ updated matrix <script type="math/tex">R_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~22"></span>
+              <span class="anchor" id="variable-u~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -584,7 +683,7 @@ sines used to transform <script type="math/tex">R</script> to <script type="math
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~9"></span>
+              <span class="anchor" id="variable-upper~6"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -600,7 +699,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~175"></span>
+              <span class="anchor" id="variable-a~105"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -615,7 +714,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~77"></span>
+              <span class="anchor" id="variable-b~48"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -659,7 +758,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~10"></span>
+              <span class="anchor" id="variable-upper~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -675,7 +774,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~176"></span>
+              <span class="anchor" id="variable-a~106"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -690,7 +789,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~78"></span>
+              <span class="anchor" id="variable-b~49"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -735,7 +834,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~11"></span>
+              <span class="anchor" id="variable-upper~8"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -751,7 +850,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~177"></span>
+              <span class="anchor" id="variable-a~107"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -766,7 +865,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~79"></span>
+              <span class="anchor" id="variable-b~50"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -811,7 +910,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-upper~12"></span>
+              <span class="anchor" id="variable-upper~9"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -827,7 +926,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~178"></span>
+              <span class="anchor" id="variable-a~108"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -842,7 +941,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~80"></span>
+              <span class="anchor" id="variable-b~51"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -872,6 +971,112 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
         <br>
 
 
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-cholesky_factorization"></span>
+      <h3>
+        type, public, extends(<a href='..\type\matrix_factorization.html'>matrix_factorization</a>)&nbsp;::&nbsp;
+        <a href='..\type\cholesky_factorization.html'>cholesky_factorization</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>A container for Cholesky factorization of a matrix and associated
+operations.</p>
+
+
+        <h4>Constructor</h4>
+          
+        <table class="table table-striped varlist">
+          <tbody>
+                <tr>
+                  <td>
+                        private
+
+                    
+                    function
+                    <strong>cf_init</strong>
+                    (a, upper, flag)
+                  </td>
+                  <td><p>Initializes a new <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p></td>
+                </tr>
+          </tbody>
+        </table>
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-factor~2'>factor</a></strong> => cf_factor</td>
+                <td>..\..\<p>Factors the matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-get_factored_form'>get_factored_form</a></strong> => cf_get_factored_matrix</td>
+                <td>..\..\<p>Gets the factored matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-is_factored~2'>is_factored</a></strong> => cf_is_factored</td>
+                <td>..\..\<p>Checks to see if the matrix has been factored.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-is_upper'>is_upper</a></strong> => cf_is_upper</td>
+                <td>..\..\<p>Gets the type of Cholesky factorization.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-size~2'>size</a></strong> => cf_size</td>
+                <td>..\..\<p>Gets the size of the factored matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve~4'>solve</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a></td>
+                <td>..\..\<p>Solves the factored system.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve_in_place~2'>solve_in_place</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a></td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors 
+where the right-hand-side argument as a container for the result.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve_multiple_rhs~2'>solve_multiple_rhs</a></strong> => cf_solve_multiple_rhs</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve_multiple_rhs_in_place~2'>solve_multiple_rhs_in_place</a></strong> => cf_solve_multiple_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve_single_rhs~2'>solve_single_rhs</a></strong> => cf_solve_single_rhs</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-solve_single_rhs_in_place~2'>solve_single_rhs_in_place</a></strong> => cf_solve_single_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\cholesky_factorization.html#boundprocedure-update'>update</a></strong> => cf_update</td>
+                <td>..\..\<p>Updates the factorization.<\p></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -892,7 +1097,7 @@ to false if <script type="math/tex">A</script> is factored such that <script typ
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

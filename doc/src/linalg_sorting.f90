@@ -1,8 +1,9 @@
 ! linalg_sorting.f90
+! SPDX-License-Identifier: MIT
 
 module linalg_sorting
     !! Provides sorting routines for real and complex arrays.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use linalg_errors
     implicit none
@@ -35,7 +36,7 @@ pure subroutine sort_dbl_array(x, ascend)
 
     ! Local Variables
     character :: id
-    integer(int32) :: n, info
+    integer :: n, info
 
     ! Initialization
     if (present(ascend)) then
@@ -58,7 +59,7 @@ pure subroutine sort_dbl_array_ind(x, ind, ascend)
     !! Sorts an array.
     real(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: ind
         !! An array, the same size as x, that is sorted along with x.  This is
         !! often useful as a tracking array.
     logical, intent(in), optional :: ascend
@@ -66,7 +67,7 @@ pure subroutine sort_dbl_array_ind(x, ind, ascend)
         !! sorted in an ascending order (default), or a descending order.
 
     ! Local Variables
-    integer(int32) :: n
+    integer :: n
     logical :: dir
 
     ! Initialization
@@ -115,7 +116,7 @@ pure subroutine sort_cmplx_array_ind(x, ind, ascend)
     !! Sorts an array.
     complex(real64), intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: ind
         !! An array, the same size as x, that is sorted along with x.  This is
         !! often useful as a tracking array.
     logical, intent(in), optional :: ascend
@@ -123,7 +124,7 @@ pure subroutine sort_cmplx_array_ind(x, ind, ascend)
         !! sorted in an ascending order (default), or a descending order.
 
     ! Local Variables
-    integer(int32) :: n
+    integer :: n
     logical :: dir
 
     ! Initialization
@@ -159,9 +160,9 @@ pure subroutine sort_eigen_cmplx(vals, vecs, ascend)
         !! sorted in an ascending order (default), or a descending order.
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
     logical :: dir
-    integer(int32), allocatable, dimension(:) :: ind
+    integer, allocatable, dimension(:) :: ind
 
     ! Initialization
     if (present(ascend)) then
@@ -205,9 +206,9 @@ pure subroutine sort_eigen_dbl(vals, vecs, ascend)
         !! sorted in an ascending order (default), or a descending order.
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
     logical :: dir
-    integer(int32), allocatable, dimension(:) :: ind
+    integer, allocatable, dimension(:) :: ind
 
     ! Initialization
     if (present(ascend)) then
@@ -239,7 +240,7 @@ end subroutine
 ! ------------------------------------------------------------------------------
 pure subroutine sort_int32_array(x, ascend)
     !! Sorts an array.
-    integer(int32), intent(inout), dimension(:) :: x
+    integer, intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
     logical, intent(in), optional :: ascend
         !! An optional input that, if specified, controls if the array is 
@@ -262,9 +263,9 @@ end subroutine
 ! ------------------------------------------------------------------------------
 pure subroutine sort_int32_array_ind(x, ind, ascend)
     !! Sorts an array.
-    integer(int32), intent(inout), dimension(:) :: x
+    integer, intent(inout), dimension(:) :: x
         !! On input, the array to sort.  On output, the sorted array.
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: ind
         !! An array, the same size as x, that is sorted along with x.  This is
         !! often useful as a tracking array.
     logical, intent(in), optional :: ascend
@@ -272,7 +273,7 @@ pure subroutine sort_int32_array_ind(x, ind, ascend)
         !! sorted in an ascending order (default), or a descending order.
 
     ! Local Variables
-    integer(int32) :: n
+    integer :: n
     logical :: dir
 
     ! Initialization
@@ -313,10 +314,10 @@ pure recursive subroutine qsort_dbl_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
     real(real64), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: ind
 
     ! Local Variables
-    integer(int32) :: iq
+    integer :: iq
 
     ! Process
     if (size(x) > 1) then
@@ -346,11 +347,11 @@ pure subroutine dbl_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
     real(real64), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
-    integer(int32), intent(out) :: marker
+    integer, intent(inout), dimension(:) :: ind
+    integer, intent(out) :: marker
 
     ! Local Variables
-    integer(int32) :: i, j, itemp
+    integer :: i, j, itemp
     real(real64) :: temp, pivot
 
     ! Process
@@ -441,7 +442,7 @@ pure recursive subroutine qsort_cmplx(ascend, x)
     complex(real64), intent(inout), dimension(:) :: x
 
     ! Local Variables
-    integer(int32) :: iq
+    integer :: iq
 
     ! Process
     if (size(x) > 1) then
@@ -472,10 +473,10 @@ pure subroutine cmplx_partition(ascend, x, marker)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
-    integer(int32), intent(out) :: marker
+    integer, intent(out) :: marker
 
     ! Local Variables
-    integer(int32) :: i, j
+    integer :: i, j
     complex(real64) :: temp
     real(real64) :: pivot
 
@@ -560,10 +561,10 @@ pure recursive subroutine qsort_cmplx_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: ind
 
     ! Local Variables
-    integer(int32) :: iq
+    integer :: iq
 
     ! Process
     if (size(x) > 1) then
@@ -597,11 +598,11 @@ pure subroutine cmplx_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
     complex(real64), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
-    integer(int32), intent(out) :: marker
+    integer, intent(inout), dimension(:) :: ind
+    integer, intent(out) :: marker
 
     ! Local Variables
-    integer(int32) :: i, j, itemp
+    integer :: i, j, itemp
     complex(real64) :: temp
     real(real64) :: pivot
 
@@ -686,10 +687,10 @@ end subroutine
 pure recursive subroutine qsort_int32(ascend, x)
     ! Arguments
     logical, intent(in) :: ascend
-    integer(int32), intent(inout), dimension(:) :: x
+    integer, intent(inout), dimension(:) :: x
 
     ! Local Variables
-    integer(int32) :: iq
+    integer :: iq
 
     ! Process
     if (size(x) > 1) then
@@ -715,11 +716,11 @@ end subroutine
 pure subroutine int32_partition(ascend, x, marker)
     ! Arguments
     logical, intent(in) :: ascend
-    integer(int32), intent(inout), dimension(:) :: x
-    integer(int32), intent(out) :: marker
+    integer, intent(inout), dimension(:) :: x
+    integer, intent(out) :: marker
 
     ! Local Variables
-    integer(int32) :: i, j, temp, pivot
+    integer :: i, j, temp, pivot
 
     ! Process
     pivot = x(1)
@@ -797,11 +798,11 @@ end subroutine
 pure recursive subroutine qsort_int32_ind(ascend, x, ind)
     ! Arguments
     logical, intent(in) :: ascend
-    integer(int32), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
+    integer, intent(inout), dimension(:) :: x
+    integer, intent(inout), dimension(:) :: ind
 
     ! Local Variables
-    integer(int32) :: iq
+    integer :: iq
 
     ! Process
     if (size(x) > 1) then
@@ -830,12 +831,12 @@ end subroutine
 pure subroutine int32_partition_ind(ascend, x, ind, marker)
     ! Arguments
     logical, intent(in) :: ascend
-    integer(int32), intent(inout), dimension(:) :: x
-    integer(int32), intent(inout), dimension(:) :: ind
-    integer(int32), intent(out) :: marker
+    integer, intent(inout), dimension(:) :: x
+    integer, intent(inout), dimension(:) :: ind
+    integer, intent(out) :: marker
 
     ! Local Variables
-    integer(int32) :: i, j, itemp, temp, pivot
+    integer :: i, j, itemp, temp, pivot
 
     ! Process
     pivot = x(1)

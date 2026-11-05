@@ -1,3 +1,5 @@
+! qrupdate.f90
+! SPDX-License-Identifier: MIT
 module qrupdate
     !! A module providing explicit interfaces for the QRUPDATE library.
     !! The routines support rank-one updates and downdates for QR
@@ -7,17 +9,17 @@ module qrupdate
     interface
         pure subroutine DQR1UP(m, n, k, q, ldq, r, ldr, u, v, w)
             !! Performs a real QR update by appending one column and one row to the factorization.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the factorization.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the factorization.
-            integer(int32), intent(in) :: k
+            integer, intent(in) :: k
                 !! Rank-one update dimension.
-            integer(int32), intent(in) :: ldq
+            integer, intent(in) :: ldq
                 !! Leading dimension of Q.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             real(real64), intent(inout) :: q(ldq,*)
                 !! Orthogonal factor updated in place.
@@ -33,17 +35,17 @@ module qrupdate
 
         pure subroutine ZQR1UP(m, n, k, q, ldq, r, ldr, u, v, w, rw)
             !! Performs a complex QR update by appending one column and one row to the factorization.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: m
+            integer, intent(in) :: m
                 !! Number of rows in the factorization.
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Number of columns in the factorization.
-            integer(int32), intent(in) :: k
+            integer, intent(in) :: k
                 !! Rank-one update dimension.
-            integer(int32), intent(in) :: ldq
+            integer, intent(in) :: ldq
                 !! Leading dimension of Q.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             complex(real64), intent(inout) :: q(ldq,*)
                 !! Orthogonal factor updated in place.
@@ -61,11 +63,11 @@ module qrupdate
 
         pure subroutine DCH1UP(n, r, ldr, u, w)
             !! Updates a real Cholesky factorization by a rank-one matrix.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Order of the Cholesky factor.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             real(real64), intent(inout) :: r(ldr,*)
                 !! Cholesky factor updated in place.
@@ -77,11 +79,11 @@ module qrupdate
 
         pure subroutine ZCH1UP(n, r, ldr, u, w)
             !! Updates a complex Cholesky factorization by a rank-one matrix.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Order of the Cholesky factor.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             complex(real64), intent(inout) :: r(ldr,*)
                 !! Cholesky factor updated in place.
@@ -93,11 +95,11 @@ module qrupdate
 
         pure subroutine DCH1DN(n, r, ldr, u, w, info)
             !! Downdates a real Cholesky factorization by a rank-one matrix.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Order of the Cholesky factor.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             real(real64), intent(inout) :: r(ldr,*)
                 !! Cholesky factor updated in place.
@@ -105,17 +107,17 @@ module qrupdate
                 !! Rank-one downdate vector.
             real(real64), intent(out) :: w(*)
                 !! Work array for the downdate.
-            integer(int32), intent(out) :: info
+            integer, intent(out) :: info
                 !! Status flag for the downdate.
         end subroutine
 
         pure subroutine ZCH1DN(n, r, ldr, u, rw, info)
             !! Downdates a complex Cholesky factorization by a rank-one matrix.
-            use iso_fortran_env, only : int32, real64
+            use iso_fortran_env, only : real64
 
-            integer(int32), intent(in) :: n
+            integer, intent(in) :: n
                 !! Order of the Cholesky factor.
-            integer(int32), intent(in) :: ldr
+            integer, intent(in) :: ldr
                 !! Leading dimension of R.
             complex(real64), intent(inout) :: r(ldr,*)
                 !! Cholesky factor updated in place.
@@ -123,7 +125,7 @@ module qrupdate
                 !! Rank-one downdate vector.
             real(real64), intent(out) :: rw(*)
                 !! Real workspace for the downdate.
-            integer(int32), intent(out) :: info
+            integer, intent(out) :: info
                 !! Status flag for the downdate.
         end subroutine
     end interface

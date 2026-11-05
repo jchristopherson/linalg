@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="<p> 0.0% of total for procedures.</p>Including implementation: 211 statements,  0.6% of total for procedures.">5 statements</a>
+                 title="<p> 0.0% of total for procedures.</p>Including implementation: 238 statements,  0.7% of total for procedures.">5 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -172,7 +172,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~52"></span>
+              <span class="anchor" id="variable-a~215"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -187,8 +187,8 @@ singular matrix, the output matrices are populated with NaN's.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~5"></span>
+              integer,
             </td>
 <td>intent(out),</td>
               <td>optional,</td>            <td>
@@ -204,7 +204,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~3"></span>
+              <span class="anchor" id="variable-lu~8"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -220,7 +220,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~5"></span>
+              <span class="anchor" id="variable-l~12"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -235,7 +235,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u"></span>
+              <span class="anchor" id="variable-u~22"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -250,7 +250,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~2"></span>
+              <span class="anchor" id="variable-p~10"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -290,7 +290,7 @@ singular matrix, the output matrices are populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~53"></span>
+              <span class="anchor" id="variable-a~216"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -305,8 +305,8 @@ singular matrix, the output matrices are populated with NaN's.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ipvt~4"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ipvt~6"></span>
+              integer,
             </td>
 <td>intent(out),</td>
               <td>optional,</td>            <td>
@@ -322,7 +322,7 @@ row IPVT(I).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~4"></span>
+              <span class="anchor" id="variable-lu~9"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -338,7 +338,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~6"></span>
+              <span class="anchor" id="variable-l~13"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -353,7 +353,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~2"></span>
+              <span class="anchor" id="variable-u~23"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -368,7 +368,7 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~3"></span>
+              <span class="anchor" id="variable-p~11"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -389,11 +389,12 @@ diagonal elements of <script type="math/tex">L</script> are not stored.</p>
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-csr_lu_factor"></span> <h3>private pure subroutine csr_lu_factor(a, lu, ju, droptol)  
+    <div class="card-header codesum"><span class="anchor" id="proc-csr_lu_factor"></span> <h3>private pure subroutine csr_lu_factor(a, lu, ju, droptol, flag)  
 </h3></div>
     <div class="card-body">
-        <p>Factors a matrix using an LU decomposition.  In the event of a singular
-matrix, the output matrix is populated with NaN's.</p>
+        <p>Builds incomplete LU factors using SPARSKIT ILUT. These approximate
+factors are intended for preconditioning, not an exact direct solve.
+A detected zero pivot retains the legacy NaN-valued factor output.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -408,7 +409,7 @@ matrix, the output matrix is populated with NaN's.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~54"></span>
+              <span class="anchor" id="variable-a~218"></span>
               class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
             </td>
 <td>intent(in)</td>
@@ -418,12 +419,13 @@ matrix, the output matrix is populated with NaN's.</p>
             <td>::</td>
             <td><strong>a</strong></td>
             <td>
-                <p>The matrix to factor.</p>
+                <p>Nonempty square CSR matrix, copied into neither dense storage nor A.
+Storage must be valid with unique column indices within each row.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lu~5"></span>
+              <span class="anchor" id="variable-lu~10"></span>
               type(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
             </td>
 <td>intent(out)</td>
@@ -433,13 +435,14 @@ matrix, the output matrix is populated with NaN's.</p>
             <td>::</td>
             <td><strong>lu</strong></td>
             <td>
-                <p>The LU matrix.</p>
+                <p>Combined incomplete factors in MSR format, with inverse U diagonal.
+Not usable when FLAG reports an error.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ju~3"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-ju~15"></span>
+              integer,
             </td>
 <td>intent(out),</td>
               <td></td>            <td>
@@ -448,12 +451,12 @@ matrix, the output matrix is populated with NaN's.</p>
             <td>::</td>
             <td><strong>ju</strong></td>
             <td>
-                <p>The row tracking array.</p>
+                <p>Caller-owned N-element array receiving upper-factor row pointers.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-droptol"></span>
+              <span class="anchor" id="variable-droptol~7"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -463,7 +466,28 @@ matrix, the output matrix is populated with NaN's.</p>
             <td>::</td>
             <td><strong>droptol</strong></td>
             <td>
-                <p>The drop tolerance for the ILUT factorization.</p>
+                <p>Finite nonnegative ILUT drop tolerance; default SQRT(EPSILON).
+Zero disables threshold dropping, but the per-row fill cap remains.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flag~125"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>LA_NO_ERROR on success. Validation returns the statuses documented
+by VALIDATE_CSR_FACTOR_INPUT; incorrect JU size returns
+LA_MATRIX_DIMENSION_ERROR. ILUT breakdown returns
+LA_SINGULAR_MATRIX_ERROR, LA_MATRIX_FORMAT_ERROR, or
+LA_INVALID_OPERATION_ERROR. When omitted, validation and format
+errors use ERROR STOP; a zero pivot retains the legacy NaN output.</p>
             </td>
         </tr>
     </tbody>
@@ -487,7 +511,7 @@ matrix, the output matrix is populated with NaN's.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

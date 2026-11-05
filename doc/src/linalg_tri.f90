@@ -1,3 +1,5 @@
+! linalg_tri.f90
+! SPDX-License-Identifier: MIT
 module linalg_tri
     !! Provides solvers for triangular systems of linear equations.
     use iso_fortran_env
@@ -42,7 +44,7 @@ pure function solve_tri_mtx(lside, upper, trans, nounit, alpha, a, b) result(x)
 
     ! Local Variables
     character :: side, uplo, transa, diag
-    integer(int32) :: m, n, nrowa
+    integer :: m, n, nrowa
 
     ! Initialization
     m = size(b, 1)
@@ -108,7 +110,7 @@ pure function solve_tri_mtx_cmplx(lside, upper, trans, nounit, alpha, a, b) resu
 
     ! Local Variables
     character :: side, uplo, transa, diag
-    integer(int32) :: m, n, nrowa
+    integer :: m, n, nrowa
 
     ! Initialization
     m = size(b, 1)
@@ -170,7 +172,7 @@ pure function solve_tri_vec(upper, trans, nounit, a, b) result(x)
 
     ! Local Variables
     character :: uplo, t, diag
-    integer(int32) :: n
+    integer :: n
 
     ! Initialization
     n = size(a, 1)
@@ -227,7 +229,7 @@ pure function solve_tri_vec_cmplx(upper, trans, nounit, a, b) result(x)
 
     ! Local Variables
     character :: uplo, t, diag
-    integer(int32) :: n
+    integer :: n
 
     ! Initialization
     n = size(a, 1)

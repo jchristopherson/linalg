@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="12.5% of total for modules and submodules.">1031 statements</a>
+                 title="14.7% of total for modules and submodules.">1514 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -123,6 +123,7 @@
             <a class="list-group-item" href="../module/linalg_qr.html#interface-form_qr">form_qr</a>
             <a class="list-group-item" href="../module/linalg_qr.html#interface-mult_qr">mult_qr</a>
             <a class="list-group-item" href="../module/linalg_qr.html#interface-qr_factor">qr_factor</a>
+            <a class="list-group-item" href="../module/linalg_qr.html#interface-qr_factorization">qr_factorization</a>
             <a class="list-group-item" href="../module/linalg_qr.html#interface-qr_rank1_update">qr_rank1_update</a>
             <a class="list-group-item" href="../module/linalg_qr.html#interface-solve_qr">solve_qr</a>
         </div>
@@ -130,7 +131,18 @@
     </div>
 
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/linalg_qr.html#type-qr_factorization">qr_factorization</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -147,20 +159,23 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Provides QR factorization, updates, factor formation, and least-squares solvers.</p>
+      <p>Provides QR factorization, updates, factor formation, and least-squares 
+solvers.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
                   <li class="list-inline-item"><a href='linalg_rz.html'>linalg_rz</a></li>
+                  <li class="list-inline-item"><a href='linalg_types.html'>linalg_types</a></li>
                   <li class="list-inline-item"><a href='linalg_tri.html'>linalg_tri</a></li>
-                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='linalg_basic.html'>linalg_basic</a></li>
+                  <li class="list-inline-item"><a href='lapack.html'>lapack</a></li>
                   <li class="list-inline-item"><a href='blas.html'>blas</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
                   <li class="list-inline-item"><a href='qrupdate.html'>qrupdate</a></li>
+                  <li class="list-inline-item"><a href='linalg_errors.html'>linalg_errors</a></li>
               </ul>
             </li>
         </ul>
@@ -203,7 +218,7 @@ reflectors returned by the base QR factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~5"></span>
+              <span class="anchor" id="variable-r~18"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -222,7 +237,7 @@ such that the remaining matrix is simply the M-by-N matrix <script type="math/te
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~29"></span>
+              <span class="anchor" id="variable-tau~42"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -238,7 +253,7 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~7"></span>
+              <span class="anchor" id="variable-q~13"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -281,7 +296,7 @@ reflectors returned by the base QR factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~6"></span>
+              <span class="anchor" id="variable-r~19"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -300,7 +315,7 @@ such that the remaining matrix is simply the M-by-N matrix <script type="math/te
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~30"></span>
+              <span class="anchor" id="variable-tau~43"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -316,7 +331,7 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~8"></span>
+              <span class="anchor" id="variable-q~14"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -359,7 +374,7 @@ reflectors returned by the base QR factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~7"></span>
+              <span class="anchor" id="variable-r~20"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -378,7 +393,7 @@ such that the remaining matrix is simply the M-by-N matrix <script type="math/te
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~31"></span>
+              <span class="anchor" id="variable-tau~44"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -394,8 +409,8 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pvt"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-pvt~3"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -409,7 +424,7 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~9"></span>
+              <span class="anchor" id="variable-q~15"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -428,7 +443,7 @@ and therefore only return the useful submatrix <script type="math/tex">Q_1</scri
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~9"></span>
+              <span class="anchor" id="variable-p~6"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -467,7 +482,7 @@ reflectors returned by the base QR factorization algorithm.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~8"></span>
+              <span class="anchor" id="variable-r~21"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -486,7 +501,7 @@ such that the remaining matrix is simply the M-by-N matrix <script type="math/te
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~32"></span>
+              <span class="anchor" id="variable-tau~45"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -502,8 +517,8 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pvt~2"></span>
-              integer(kind=int32),
+              <span class="anchor" id="variable-pvt~4"></span>
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -517,7 +532,7 @@ elementary reflector defined in <script type="math/tex">R</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~10"></span>
+              <span class="anchor" id="variable-q~16"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -536,7 +551,7 @@ and therefore only return the useful submatrix <script type="math/tex">Q_1</scri
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~10"></span>
+              <span class="anchor" id="variable-p~7"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -585,7 +600,7 @@ factorization such that <script type="math/tex">C = op(Q) C</script> or <script 
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~14"></span>
+              <span class="anchor" id="variable-lside~6"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -601,7 +616,7 @@ false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^T
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~24"></span>
+              <span class="anchor" id="variable-trans~21"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -616,7 +631,7 @@ false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^T
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~111"></span>
+              <span class="anchor" id="variable-a~131"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -634,7 +649,7 @@ N &gt;= K &gt;= 0.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~33"></span>
+              <span class="anchor" id="variable-tau~46"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -650,7 +665,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~25"></span>
+              <span class="anchor" id="variable-c~23"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -694,7 +709,7 @@ factorization such that <script type="math/tex">C = op(Q) C</script> or <script 
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-lside~15"></span>
+              <span class="anchor" id="variable-lside~7"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -710,7 +725,7 @@ false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^H
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~25"></span>
+              <span class="anchor" id="variable-trans~22"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -725,7 +740,7 @@ false to apply <script type="math/tex">Q</script> or <script type="math/tex">Q^H
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~112"></span>
+              <span class="anchor" id="variable-a~132"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -743,7 +758,7 @@ N &gt;= K &gt;= 0.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~34"></span>
+              <span class="anchor" id="variable-tau~47"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -759,7 +774,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~26"></span>
+              <span class="anchor" id="variable-c~24"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -803,7 +818,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~26"></span>
+              <span class="anchor" id="variable-trans~23"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -818,7 +833,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~113"></span>
+              <span class="anchor" id="variable-a~133"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -834,7 +849,7 @@ output from the QR factorization.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~35"></span>
+              <span class="anchor" id="variable-tau~48"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -850,7 +865,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~27"></span>
+              <span class="anchor" id="variable-c~25"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -895,7 +910,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-trans~27"></span>
+              <span class="anchor" id="variable-trans~24"></span>
               logical,
             </td>
 <td>intent(in)</td>
@@ -910,7 +925,7 @@ factorization such that <script type="math/tex">\vec{c} = op(Q) \vec{c}</script>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~114"></span>
+              <span class="anchor" id="variable-a~134"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -927,7 +942,7 @@ are restored on exit.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~36"></span>
+              <span class="anchor" id="variable-tau~49"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -943,7 +958,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-c~28"></span>
+              <span class="anchor" id="variable-c~26"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -997,7 +1012,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~107"></span>
+              <span class="anchor" id="variable-a~127"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1012,7 +1027,7 @@ reflector defined in<script type="math/tex">A</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~25"></span>
+              <span class="anchor" id="variable-tau~38"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1047,7 +1062,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~3"></span>
+              <span class="anchor" id="variable-q~9"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1062,7 +1077,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r"></span>
+              <span class="anchor" id="variable-r~14"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1100,7 +1115,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~108"></span>
+              <span class="anchor" id="variable-a~128"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1115,7 +1130,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~26"></span>
+              <span class="anchor" id="variable-tau~39"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1150,7 +1165,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~4"></span>
+              <span class="anchor" id="variable-q~10"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1165,7 +1180,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~2"></span>
+              <span class="anchor" id="variable-r~15"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1204,7 +1219,7 @@ such that <script type="math/tex">A P = Q R</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~109"></span>
+              <span class="anchor" id="variable-a~129"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1220,7 +1235,7 @@ such that <script type="math/tex">A P = Q R</script>.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~5"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(inout),</td>
               <td></td>            <td>
@@ -1237,7 +1252,7 @@ I-th column of A * P was the K-th column of A.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~27"></span>
+              <span class="anchor" id="variable-tau~40"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1272,7 +1287,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~5"></span>
+              <span class="anchor" id="variable-q~11"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1287,7 +1302,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~3"></span>
+              <span class="anchor" id="variable-r~16"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1302,7 +1317,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~7"></span>
+              <span class="anchor" id="variable-p~4"></span>
               real(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1341,7 +1356,7 @@ such that <script type="math/tex">A P = Q R</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~110"></span>
+              <span class="anchor" id="variable-a~130"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1357,7 +1372,7 @@ such that <script type="math/tex">A P = Q R</script>.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~6"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(inout),</td>
               <td></td>            <td>
@@ -1374,7 +1389,7 @@ I-th column of A * P was the K-th column of A.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~28"></span>
+              <span class="anchor" id="variable-tau~41"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1409,7 +1424,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~6"></span>
+              <span class="anchor" id="variable-q~12"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1424,7 +1439,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~4"></span>
+              <span class="anchor" id="variable-r~17"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1439,7 +1454,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~8"></span>
+              <span class="anchor" id="variable-p~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(out),</td>
@@ -1455,6 +1470,76 @@ diagonal, along with the array tau, represent the orthogonal matrix
     </tbody>
   </table>
 
+
+          </li>
+    </ul>
+  </div>
+
+              <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-qr_factorization"></span>
+      <h3>public        interface <a href='..\interface\qr_factorization.html'>qr_factorization</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  function qrf_init(a, pvt) result(rst)  
+
+    </h3>
+  <p>Initializes a new <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~125"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The matrix to factor.  A copy of this matrix is made and stored by 
+this object; therefore, this matrix is not altered.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pvt"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pvt</strong></td>
+            <td>
+                <p>An optional parameter that, if set to true, enables column pivoting.
+The default is false such that no column pivoting will be utilized.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='..\type\qr_factorization.html'>qr_factorization</a>)</small>
+    </h4>
+    <p>The new <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
 
           </li>
     </ul>
@@ -1489,7 +1574,7 @@ diagonal, along with the array tau, represent the orthogonal matrix
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~11"></span>
+              <span class="anchor" id="variable-q~17"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1505,7 +1590,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~9"></span>
+              <span class="anchor" id="variable-r~22"></span>
               real(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1521,7 +1606,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~11"></span>
+              <span class="anchor" id="variable-u~17"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1536,7 +1621,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~6"></span>
+              <span class="anchor" id="variable-v~4"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1576,7 +1661,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~12"></span>
+              <span class="anchor" id="variable-q~18"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1592,7 +1677,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-r~10"></span>
+              <span class="anchor" id="variable-r~23"></span>
               complex(kind=real64),
             </td>
 <td>intent(inout),</td>
@@ -1608,7 +1693,7 @@ the updated matrix <script type="math/tex">Q_1</script>.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~12"></span>
+              <span class="anchor" id="variable-u~18"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1624,7 +1709,7 @@ original content of the array is overwritten.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~7"></span>
+              <span class="anchor" id="variable-v~5"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1674,7 +1759,7 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~115"></span>
+              <span class="anchor" id="variable-a~135"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1689,7 +1774,7 @@ greater than or equal to N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~37"></span>
+              <span class="anchor" id="variable-tau~50"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1705,7 +1790,7 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~46"></span>
+              <span class="anchor" id="variable-b~65"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1749,7 +1834,7 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~116"></span>
+              <span class="anchor" id="variable-a~136"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1764,7 +1849,7 @@ greater than or equal to N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~38"></span>
+              <span class="anchor" id="variable-tau~51"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1780,7 +1865,7 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~47"></span>
+              <span class="anchor" id="variable-b~66"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1824,7 +1909,7 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~117"></span>
+              <span class="anchor" id="variable-a~137"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1839,7 +1924,7 @@ greater than or equal to N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~39"></span>
+              <span class="anchor" id="variable-tau~52"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1855,7 +1940,7 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~48"></span>
+              <span class="anchor" id="variable-b~67"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1899,7 +1984,7 @@ greater than or equal to N.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~118"></span>
+              <span class="anchor" id="variable-a~138"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1914,7 +1999,7 @@ greater than or equal to N.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~40"></span>
+              <span class="anchor" id="variable-tau~53"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1930,7 +2015,7 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~49"></span>
+              <span class="anchor" id="variable-b~68"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1973,7 +2058,7 @@ elementary reflectors as returned by qr_factor.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~119"></span>
+              <span class="anchor" id="variable-a~139"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -1988,7 +2073,7 @@ elementary reflectors as returned by qr_factor.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~41"></span>
+              <span class="anchor" id="variable-tau~54"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2005,7 +2090,7 @@ elementary reflectors as returned by qr_factor.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~7"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -2020,7 +2105,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~50"></span>
+              <span class="anchor" id="variable-b~69"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2063,7 +2148,7 @@ column pivots.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~120"></span>
+              <span class="anchor" id="variable-a~140"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2078,7 +2163,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~42"></span>
+              <span class="anchor" id="variable-tau~55"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2095,7 +2180,7 @@ elementary reflectors as returned by qr_factor.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~8"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -2110,7 +2195,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~51"></span>
+              <span class="anchor" id="variable-b~70"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2153,7 +2238,7 @@ column pivots.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~121"></span>
+              <span class="anchor" id="variable-a~141"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2168,7 +2253,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~43"></span>
+              <span class="anchor" id="variable-tau~56"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2185,7 +2270,7 @@ elementary reflectors as returned by qr_factor.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~9"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -2200,7 +2285,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~52"></span>
+              <span class="anchor" id="variable-b~71"></span>
               real(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2243,7 +2328,7 @@ column pivots.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~122"></span>
+              <span class="anchor" id="variable-a~142"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2258,7 +2343,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~44"></span>
+              <span class="anchor" id="variable-tau~57"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2275,7 +2360,7 @@ elementary reflectors as returned by qr_factor.</p>
         <tr>
             <td>
               <span class="anchor" id="variable-jpvt~10"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in),</td>
               <td></td>            <td>
@@ -2290,7 +2375,7 @@ column pivots.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~53"></span>
+              <span class="anchor" id="variable-b~72"></span>
               complex(kind=real64),
             </td>
 <td>intent(in),</td>
@@ -2320,6 +2405,113 @@ column pivots.</p>
         <br>
 
 
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-qr_factorization"></span>
+      <h3>
+        type, public, extends(<a href='..\type\matrix_factorization.html'>matrix_factorization</a>)&nbsp;::&nbsp;
+        <a href='..\type\qr_factorization.html'>qr_factorization</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>A container for QR factorization of a matrix and associated
+operations.</p>
+
+
+        <h4>Constructor</h4>
+          
+        <table class="table table-striped varlist">
+          <tbody>
+                <tr>
+                  <td>
+                        private
+
+                    
+                    function
+                    <strong>qrf_init</strong>
+                    (a, pvt)
+                  </td>
+                  <td><p>Initializes a new <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p></td>
+                </tr>
+          </tbody>
+        </table>
+
+
+        <h4>Type-Bound Procedures</h4>
+        <table class="table table-striped varlist">
+          <tbody>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-factor~4'>factor</a></strong> => qrf_factor</td>
+                <td>..\..\<p>Factors the matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-get_factored_form~3'>get_factored_form</a></strong> => qrf_get_factored_matrices</td>
+                <td>..\..\<p>Gets the factored matrices.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-is_factored~4'>is_factored</a></strong> => qrf_is_factored</td>
+                <td>..\..\<p>Checks to see if the matrix has been factored.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-q_multiply'>q_multiply</a></strong> => qrf_multiply_mtx, qrf_multiply_vec</td>
+                <td>..\..\<p>Multiplies a matrix or a vector with the orthogonal matrix 
+<script type="math\tex">Q<\script> or its transpose.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-size~4'>size</a></strong> => qrf_size</td>
+                <td>..\..\<p>Gets the size of the factored matrix.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve~6'>solve</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a></td>
+                <td>..\..\<p>Solves the factored system.<\p></td>
+              </tr>
+              <tr>
+                <td>  generic, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve_in_place~4'>solve_in_place</a></strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a></td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors 
+where the right-hand-side argument as a container for the result.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a></strong> => qrf_solve_multiple_rhs</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a></strong> => qrf_solve_multiple_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with multiple right-hand-side vectors in place.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a></strong> => qrf_solve_single_rhs</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a></strong> => qrf_solve_single_rhs_in_place</td>
+                <td>..\..\<p>Solves the factored system with a single right-hand-side vector.<\p></td>
+              </tr>
+              <tr>
+                <td>  procedure, public ::
+  <strong><a href='..\type\qr_factorization.html#boundprocedure-update~3'>update</a></strong> => qrf_update</td>
+                <td>..\..\<p>Updates the factorization.<\p></td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+
+        </section>
+        <br>
 
 
 
@@ -2340,7 +2532,7 @@ column pivots.</p>
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

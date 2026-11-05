@@ -1,16 +1,53 @@
+! linalg_cholesky.f90
+! SPDX-License-Identifier: MIT
 module linalg_cholesky
     !! Provides Cholesky factorization, updates, downdates, and solvers.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use linalg_errors
     use lapack
     use qrupdate
+    use linalg_types
     use ieee_arithmetic, only : ieee_value, ieee_quiet_nan
     implicit none
     private
+    public :: cholesky_factorization
     public :: cholesky_factor
     public :: cholesky_rank1_update
     public :: cholesky_rank1_downdate
     public :: solve_cholesky
+
+    type, extends(matrix_factorization) :: cholesky_factorization
+        !! A container for Cholesky factorization of a matrix and associated
+        !! operations.
+        real(real64), private, allocatable, dimension(:,:) :: a
+        logical, private :: factored = .false.
+        logical, private :: upper = .true.
+    contains
+        procedure, public :: is_factored => cf_is_factored
+            !! Checks to see if the matrix has been factored.
+        procedure, public :: size => cf_size
+            !! Gets the size of the factored matrix.
+        procedure, public :: factor => cf_factor
+            !! Factors the matrix.
+        procedure, public :: solve_multiple_rhs => cf_solve_multiple_rhs
+            !! Solves the factored system with multiple right-hand-side vectors.
+        procedure, public :: solve_single_rhs => cf_solve_single_rhs
+            !! Solves the factored system with a single right-hand-side vector.
+        procedure, public :: solve_multiple_rhs_in_place => cf_solve_multiple_rhs_in_place
+            !! Solves the factored system with multiple right-hand-side vectors.
+        procedure, public :: solve_single_rhs_in_place => cf_solve_single_rhs_in_place
+            !! Solves the factored system with a single right-hand-side vector.
+        procedure, public :: is_upper => cf_is_upper
+            !! Gets the type of Cholesky factorization.
+        procedure, public :: get_factored_form => cf_get_factored_matrix
+            !! Gets the factored matrix.
+        procedure, public :: update => cf_update
+            !! Updates the factorization.
+    end type
+
+    interface cholesky_factorization
+        module procedure :: cf_init
+    end interface
 
     interface cholesky_factor
         module procedure :: cholesky_factor_dbl
@@ -34,6 +71,337 @@ module linalg_cholesky
         module procedure :: solve_cholesky_vec_cmplx
     end interface
 contains
+! ******************************************************************************
+! CHOLESKY_FACTORIZATION MEMBERS
+! ------------------------------------------------------------------------------
+function cf_init(a, upper, flag) result(rst)
+    !! Initializes a new [[cholesky_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The N-by-N matrix \(A\).
+    logical, intent(in), optional :: upper
+        !! Set to true if the upper factorization is to be computed 
+        !! (\(A = U^T U\)); else, set to false to compute the lower 
+        !! factorization (\(A = L L^T\)).  The default is true such that
+        !! the upper factorization is computed.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    type(cholesky_factorization) :: rst
+        !! The new [[cholesky_factorization]] object.
+
+    call rst%update(a, upper = upper, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine cf_update(this, a, upper, flag)
+    !! Updates the [[cholesky_factorization]] object with a new matrix.  The matrix
+    !! is only stored, not factored; therefore a call to factor is still 
+    !! required.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: a
+        !! The matrix to factor.  A copy of this matrix is made and stored by
+        !! the object; therefore, this matrix is not altered.  Also, any
+        !! existing factorization is destroyed by this routine.
+    logical, intent(in), optional :: upper
+        !! Set to true if the upper factorization is to be computed 
+        !! (\(A = U^T U\)); else, set to false to compute the lower 
+        !! factorization (\(A = L L^T\)).  The default is true such that
+        !! the upper factorization is computed.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: n
+
+    ! Validation
+    n = size(a, 1)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (size(a, 2) /= n) then
+        if (present(flag)) flag = LA_MATRIX_NOT_SQUARE_ERROR
+        return
+    end if
+
+    ! Process
+    allocate(this%a(n, n), source = a)
+    this%factored = .false.
+    this%upper = .true.
+    if (present(upper)) this%upper = upper
+end subroutine
+
+! ------------------------------------------------------------------------------
+pure function cf_is_factored(this) result(rst)
+    !! Gets a value querying whether the matrix has been factored.
+    class(cholesky_factorization), intent(in) :: this
+        !! The [[cholesky_factorization]] object.
+    logical :: rst
+        !! True if the matrix has been factored; else, false.
+    rst = this%factored
+end function
+
+! ------------------------------------------------------------------------------
+pure function cf_size(this, dim) result(rst)
+    !! Retrieves the size of the requested matrix dimension.
+    class(cholesky_factorization), intent(in) :: this
+        !! The [[cholesky_factorization]] object.
+    integer, intent(in) :: dim
+        !! The dimension to query.
+    integer :: rst
+        !! The requested dimension size.
+    if (allocated(this%a)) then
+        rst = size(this%a, dim)
+    else
+        rst = 0
+    end if
+end function
+
+! ------------------------------------------------------------------------------
+subroutine cf_factor(this, flag)
+    !! Factors the matrix.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    character :: uplo
+    integer :: n, info
+
+    if (present(flag)) flag = LA_NO_ERROR
+
+    ! If not allocated, return with an error
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+
+    ! If factored, do nothing
+    if (this%is_factored()) return
+
+    ! Factor the matrix
+    n = this%size(1)
+    if (this%is_upper()) then
+        uplo = "U"
+    else
+        uplo = "L"
+    end if
+    call DPOTRF(uplo, n, this%a, n, info)
+    if (info > 0) then
+        if (present(flag)) flag = LA_POSITIVE_DEFINITE_ERROR
+    else
+        this%factored = .true.
+    end if
+end subroutine
+
+! ------------------------------------------------------------------------------
+function cf_solve_multiple_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(in), dimension(:,:) :: b
+        !! The right-hand-side matrix.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The solution matrix.
+
+    ! Local Variables
+    integer :: n, nrhs
+
+    ! Initialization
+    n = this%size(1)
+    nrhs = size(b, 2)
+    if (present(flag)) flag = LA_NO_ERROR
+    
+    ! Process
+    allocate(rst(n, nrhs), source = b)
+    call this%solve_in_place(rst, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+function cf_solve_single_rhs(this, b, flag) result(rst)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(in), dimension(:) :: b
+        !! The right-hand-side vector.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:) :: rst
+        !! The solution vector.
+
+    ! Local Variables
+    integer :: n
+
+    ! Initialization
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    
+    ! Process
+    allocate(rst(n), source = b)
+    call this%solve_in_place(rst, flag = flag)
+end function
+
+! ------------------------------------------------------------------------------
+subroutine cf_solve_multiple_rhs_in_place(this, b, flag)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining multiple right-hand-side vectors.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(inout), dimension(:,:) :: b
+        !! On input, the right-hand-side matrix \(B\).  On output, the solution
+        !! matrix \(X\).
+    integer, intent(out), optional :: flag
+        !! An error flag.
+    real(real64), allocatable, dimension(:,:) :: rst
+        !! The solution matrix.
+
+    ! Local Variables
+    character :: uplo
+    integer :: n, nrhs, info
+
+    ! Validation
+    n = this%size(1)
+    nrhs = size(b, 2)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (size(b, 1) /= n) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
+    ! If the matrix is not factored, be sure to factor
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Solve
+    if (this%is_upper()) then
+        uplo = "U"
+    else
+        uplo = "L"
+    end if
+    call DPOTRS(uplo, n, nrhs, this%a, n, b, n, info)
+end subroutine
+
+! ------------------------------------------------------------------------------
+subroutine cf_solve_single_rhs_in_place(this, b, flag)
+    !! Solves the linear system \(A X = B \) where \(B\)
+    !! is a matrix defining a single right-hand-side vector.
+    !! The encapsulated matrix must be square; else, an 
+    !! LA_MATRIX_NOT_SQUARE_ERROR is returned.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(inout), dimension(:) :: b
+        !! On input, the right-hand-side vector \(B\).  On output, the solution
+        !! vector \(X\).
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    character :: uplo
+    integer :: n, info
+
+    ! Validation
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (size(b) /= n) then
+        if (present(flag)) flag = LA_MATRIX_DIMENSION_ERROR
+        return
+    end if
+
+    ! If the matrix is not factored, be sure to factor
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Solve
+    if (this%is_upper()) then
+        uplo = "U"
+    else
+        uplo = "L"
+    end if
+    call DPOTRS(uplo, n, 1, this%a, n, b, n, info)
+end subroutine
+
+! ------------------------------------------------------------------------------
+pure function cf_is_upper(this) result(rst)
+    !! Gets the type of Cholesky factorization.
+    class(cholesky_factorization), intent(in) :: this
+        !! The [[cholesky_factorization]] object.
+    logical :: rst
+        !! Returns true if the upper factorization is stored; else, false if 
+        !! the lower factorization is stored.
+    rst = this%upper
+end function
+
+! ------------------------------------------------------------------------------
+subroutine cf_get_factored_matrix(this, r, flag)
+    !! Returns the factored matrix, either upper or lower.
+    class(cholesky_factorization), intent(inout) :: this
+        !! The [[cholesky_factorization]] object.
+    real(real64), intent(out), allocatable, dimension(:,:) :: r
+        !! The factored matrix.
+    integer, intent(out), optional :: flag
+        !! An error flag.
+
+    ! Local Variables
+    integer :: j, n, info
+
+    ! Validation
+    n = this%size(1)
+    if (present(flag)) flag = LA_NO_ERROR
+    if (.not.allocated(this%a)) then
+        if (present(flag)) flag = LA_NOT_INITIALIZED_ERROR
+        return
+    end if
+    if (.not.this%is_factored()) then
+        call this%factor(flag = info)
+        if (info /= LA_NO_ERROR) then
+            if (present(flag)) flag = info
+            return
+        end if
+    end if
+
+    ! Process
+    allocate(r(n, n))
+    if (this%is_upper()) then
+        do j = 1, n
+            r(1:j,j) = this%a(1:j,j)
+            r(j+1:,j) = 0.0d0
+        end do
+    else
+        do j = 1, n
+            r(1:j-1,j) = 0.0d0
+            r(j:,j) = this%a(j:,j)
+        end do
+    end if
+end subroutine
+
+! ******************************************************************************
+! PROCEDURAL INTERFACE
 ! ------------------------------------------------------------------------------
 pure function cholesky_factor_dbl(a, upper) result(rst)
     !! Computes the Cholesky factorization of a symmetric, positive definite
@@ -54,7 +422,7 @@ pure function cholesky_factor_dbl(a, upper) result(rst)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: i, n, flag
+    integer :: i, n, flag
     real(real64) :: nan
 
     ! Initialization
@@ -118,7 +486,7 @@ pure function cholesky_factor_cmplx(a, upper) result(rst)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: i, n, flag
+    integer :: i, n, flag
     real(real64) :: nan
     complex(real64) :: cnan
 
@@ -176,7 +544,7 @@ pure subroutine cholesky_rank1_update_dbl(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork
+    integer :: n, lwork
     real(real64), allocatable, dimension(:) :: w
 
     ! Initialization
@@ -209,7 +577,7 @@ pure subroutine cholesky_rank1_update_cmplx(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork
+    integer :: n, lwork
     real(real64), allocatable, dimension(:) :: w
 
     ! Initialization
@@ -244,7 +612,7 @@ pure subroutine cholesky_rank1_downdate_dbl(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
+    integer :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64) :: nan
 
@@ -286,7 +654,7 @@ pure subroutine cholesky_rank1_downdate_cmplx(r, u)
         !! sines used to transform \(R\) to \(R_1\).
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
+    integer :: n, lwork, flag
     real(real64), allocatable, dimension(:) :: w
     real(real64) :: nan
     complex(real64) :: cnan
@@ -332,7 +700,7 @@ pure function solve_cholesky_mtx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -371,7 +739,7 @@ pure function solve_cholesky_mtx_cmplx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, nrhs, flag
+    integer :: n, nrhs, flag
 
     ! Initialization
     n = size(a, 1)
@@ -411,7 +779,7 @@ pure function solve_cholesky_vec(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)
@@ -450,7 +818,7 @@ pure function solve_cholesky_vec_cmplx(upper, a, b) result(x)
 
     ! Local Variables
     character :: uplo
-    integer(int32) :: n, flag
+    integer :: n, flag
 
     ! Initialization
     n = size(a, 1)

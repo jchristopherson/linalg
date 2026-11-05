@@ -135,6 +135,12 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\cholesky_factorization.html'>cholesky_factorization</a></td>
+                 <td><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\cholesky_rank1_downdate.html'>cholesky_rank1_downdate</a></td>
                  <td><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></td>
                  <td>Interface</td>
@@ -181,6 +187,12 @@
                  <td><a href='..\module\sparskit.html'>sparskit</a></td>
                  <td>Interface</td>
                  <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\csr_operator.html'>csr_operator</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td>Interface</td>
+                 <td><p>Constructs an owned operator from validated finite CSR storage.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\proc\csr_to_dense.html'>csr_to_dense</a></td>
@@ -504,7 +516,13 @@
                  <td><a href='..\interface\eigen.html'>eigen</a></td>
                  <td><a href='..\module\linalg_eigen.html'>linalg_eigen</a></td>
                  <td>Interface</td>
-                 <td><p>An interface to the eigenvalue and eigenvector routines.</p></td>
+                 <td><p>An interface to the eigenvalue and eigenvector routines.
+Real operator outputs select symmetric Lanczos iteration; complex
+outputs select nonsymmetric Arnoldi iteration. Symmetry is a caller
+assertion and is not checked by applying the operator.
+Generalized operator calls require a LINEAR_SOLVER for B, or for
+A - SIGMA * B when a shift is supplied. These routines retain the
+library's ERROR STOP behavior for invalid input or nonconvergence.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\extract_diagonal.html'>extract_diagonal</a></td>
@@ -555,10 +573,35 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\gmres.html'>gmres</a></td>
+                 <td><a href='..\module\sparskit.html'>sparskit</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\gmres_solve.html'>gmres_solve</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Solves A*X=B with restarted GMRES and optional fixed right preconditioning.
+Only operator applications are requested; no entries or transpose are
+needed. All callbacks must represent fixed linear maps during a solve.
+Nonfinite callback outputs are rejected, but callbacks must manage their
+own failures because LINEAR_OPERATOR%APPLY has no status argument.
+The original residual is checked independently of SPARSKIT's estimates,
+including after a reported Arnoldi breakdown (which may be convergence).
+This routine is NOT reentrant because the bundled backend uses SAVE.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\proc\identity.html'>identity</a></td>
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Function</td>
                  <td><p>Constructs an N-by-N identity matrix.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\ilu_preconditioner.html'>ilu_preconditioner</a></td>
+                 <td><a href='..\module\linalg_iterative_solvers.html'>linalg_iterative_solvers</a></td>
+                 <td>Interface</td>
+                 <td><p>Constructs an owned approximate-inverse operator from ILUT factors.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\ilud.html'>ilud</a></td>
@@ -592,6 +635,12 @@
                </tr>
 			   <tr>
                  <td><a href='..\interface\lu_factor.html'>lu_factor</a></td>
+                 <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\lu_factorization.html'>lu_factorization</a></td>
                  <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -705,6 +754,12 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\pgmres_solve.html'>pgmres_solve</a></td>
+                 <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
+                 <td>Interface</td>
+                 <td><p>Solves a CSR system with optional nonterminating status reporting.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\pgmres_solver.html'>pgmres_solver</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
                  <td>Interface</td>
@@ -712,6 +767,12 @@
                </tr>
 			   <tr>
                  <td><a href='..\interface\qr_factor.html'>qr_factor</a></td>
+                 <td><a href='..\module\linalg_qr.html'>linalg_qr</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\qr_factorization.html'>qr_factorization</a></td>
                  <td><a href='..\module\linalg_qr.html'>linalg_qr</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -742,6 +803,12 @@
                </tr>
 			   <tr>
                  <td><a href='..\interface\size.html'>size</a></td>
+                 <td><a href='..\module\linalg_types.html'>linalg_types</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\size~2.html'>size</a></td>
                  <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -807,7 +874,19 @@
                  <td></td>
                </tr>
 			   <tr>
+                 <td><a href='..\interface\sparse_lu_factorization.html'>sparse_lu_factorization</a></td>
+                 <td><a href='..\module\linalg_lu.html'>linalg_lu</a></td>
+                 <td>Interface</td>
+                 <td><p>Constructs an owned CSR system without performing factorization.</p></td>
+               </tr>
+			   <tr>
                  <td><a href='..\interface\svd.html'>svd</a></td>
+                 <td><a href='..\module\linalg_svd.html'>linalg_svd</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\interface\svd_factorization.html'>svd_factorization</a></td>
                  <td><a href='..\module\linalg_svd.html'>linalg_svd</a></td>
                  <td>Interface</td>
                  <td></td>
@@ -835,6 +914,22 @@
                  <td><a href='..\module\linalg_basic.html'>linalg_basic</a></td>
                  <td>Interface</td>
                  <td><p>An interface to the triangular matrix multiplication routines.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\validate_csr_storage.html'>validate_csr_storage</a></td>
+                 <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
+                 <td>Function</td>
+                 <td><p>Validates nonempty finite CSR storage before raw-array solver calls.
+Rectangular matrices and zero rows are accepted by this storage check;
+individual solvers impose their own square-system requirements.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='..\proc\validate_msr_lu.html'>validate_msr_lu</a></td>
+                 <td><a href='..\module\linalg_sparse.html'>linalg_sparse</a></td>
+                 <td>Function</td>
+                 <td><p>Validates the combined MSR triangular factors consumed by LUSOL.
+The diagonal contains inverse U pivots, not the original U diagonal.
+The unused value at N+1 and unused trailing capacity are not inspected.</p></td>
                </tr>
 			   <tr>
                  <td><a href='..\interface\zch1dn.html'>ZCH1DN</a></td>
@@ -1032,7 +1127,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

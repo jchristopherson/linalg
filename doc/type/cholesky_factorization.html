@@ -1,0 +1,1485 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="LINALG is a linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.">
+    <meta name="author" content="Jason Christopherson" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>cholesky_factorization &ndash; LINALG </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">LINALG </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>cholesky_factorization
+      <small>Derived Type</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip"
+                 data-bs-placement="bottom" data-html="true"
+                 title="<p>10.4% of total for derived types.</p>Including implementation: 193 statements, 13.8% of total for derived types.">19 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/linalg_cholesky.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_cholesky.f90.html'>linalg_cholesky.f90</a></li>
+                <li class="breadcrumb-item"><a href='..\module\linalg_cholesky.html'>linalg_cholesky</a></li>
+            <li class="breadcrumb-item active" aria-current="page">cholesky_factorization</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#cons-0"
+         aria-expanded="false" aria-controls="cons-0">
+         <h4 class="card-header bg-primary text-white">Constructor</h4>
+      </a>
+      <div id="cons-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/cholesky_factorization.html#interface-cholesky_factorization">cholesky_factorization</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#boundprocs-0"
+         aria-expanded="false" aria-controls="boundprocs-0">
+         <h4 class="card-header bg-primary text-white">Type-Bound Procedures</h4>
+      </a>
+      <div id="boundprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-factor~2">factor</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-get_factored_form">get_factored_form</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-is_factored~2">is_factored</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-is_upper">is_upper</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-size~2">size</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve~4">solve</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve_in_place~2">solve_in_place</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve_multiple_rhs~2">solve_multiple_rhs</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve_multiple_rhs_in_place~2">solve_multiple_rhs_in_place</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve_single_rhs~2">solve_single_rhs</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-solve_single_rhs_in_place~2">solve_single_rhs_in_place</a>
+            <a class="list-group-item" href="../type/cholesky_factorization.html#boundprocedure-update">update</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+      <h2>
+        type, public, extends(<a href='matrix_factorization.html'>matrix_factorization</a>) :: cholesky_factorization</h2>
+    <p>A container for Cholesky factorization of a matrix and associated
+operations.</p>
+    <br>
+
+    
+      <section>
+        <h2>Constructor</h2>
+            <div class="card">
+    <div class="card-header bg-light codesum">
+      <span class="anchor" id="interface-cholesky_factorization"></span>
+      <h3>public        interface <a href='..\interface\cholesky_factorization.html'>cholesky_factorization</a> 
+      </h3>
+    </div>
+    <ul class="list-group">
+          <li class="list-group-item">
+                <h3>
+    private  function cf_init(a, upper, flag) result(rst)  
+
+    </h3>
+  <p>Initializes a new <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~101"></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The N-by-N matrix <script type="math/tex">A</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-upper~2"></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>upper</strong></td>
+            <td>
+                <p>Set to true if the upper factorization is to be computed 
+(<script type="math/tex">A = U^T U</script>); else, set to false to compute the lower 
+factorization (<script type="math/tex">A = L L^T</script>).  The default is true such that
+the upper factorization is computed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flag~29"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>type(<a href='cholesky_factorization.html'>cholesky_factorization</a>)</small>
+    </h4>
+    <p>The new <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+
+          </li>
+    </ul>
+  </div>
+
+      </section>
+      <br>
+
+
+      <section>
+        <h2>Type-Bound Procedures</h2>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-factor~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>factor</strong> => cf_factor
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Factors the matrix.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine cf_factor(this, flag)  
+</h3>
+
+  <p>Factors the matrix.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-get_factored_form"></span>
+      <h3>
+          procedure, public ::
+  <strong>get_factored_form</strong> => cf_get_factored_matrix
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Gets the factored matrix.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine cf_get_factored_matrix(this, r, flag)  
+</h3>
+
+  <p>Returns the factored matrix, either upper or lower.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(out),</td>
+              <td></td>            <td>
+              allocatable, dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>r</strong></td>
+            <td>
+                <p>The factored matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-is_factored~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>is_factored</strong> => cf_is_factored
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Checks to see if the matrix has been factored.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private pure function cf_is_factored(this) result(rst)  
+</h3>
+
+  <p>Gets a value querying whether the matrix has been factored.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    <p>True if the matrix has been factored; else, false.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-is_upper"></span>
+      <h3>
+          procedure, public ::
+  <strong>is_upper</strong> => cf_is_upper
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Gets the type of Cholesky factorization.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private pure function cf_is_upper(this) result(rst)  
+</h3>
+
+  <p>Gets the type of Cholesky factorization.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    <p>Returns true if the upper factorization is stored; else, false if 
+the lower factorization is stored.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-size~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>size</strong> => cf_size
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Gets the size of the factored matrix.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private pure function cf_size(this, dim) result(rst)  
+</h3>
+
+  <p>Retrieves the size of the requested matrix dimension.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dim</strong></td>
+            <td>
+                <p>The dimension to query.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer</small>
+    </h4>
+    <p>The requested dimension size.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve~4"></span>
+      <h3>
+          generic, public ::
+  <strong>solve</strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs~4'>solve_multiple_rhs</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs~4'>solve_single_rhs</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  function qrf_solve_multiple_rhs(this, b, flag) result(rst)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining multiple right-hand-side vectors.
+The solution has N rows.  Underdetermined systems require column
+pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The right-hand-side matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The solution matrix.</p>
+
+        </li>
+        <li class="list-group-item">
+                  <h3>
+    private  function qrf_solve_single_rhs(this, b, flag) result(rst)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a single right-hand-side vector.
+The solution has N elements.  Underdetermined systems require column
+pivoting; otherwise, an LA_INVALID_OPERATION_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The right-hand-side vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The solution vector.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_in_place~2"></span>
+      <h3>
+          generic, public ::
+  <strong>solve_in_place</strong> => <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_multiple_rhs_in_place~4'>solve_multiple_rhs_in_place</a>, <a href='D:\Code\linalg\doc\type\qr_factorization.html#boundprocedure-solve_single_rhs_in_place~4'>solve_single_rhs_in_place</a>
+        
+      </h3>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine qrf_solve_multiple_rhs_in_place(this, b, flag)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining multiple right-hand-side vectors.
+The solution is returned in the first N rows of B, which must have
+MAX(M,N) rows.  Underdetermined systems require column pivoting.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-by-NRHS right-hand side occupies the first M rows.
+On output, the N-by-NRHS solution occupies the first N rows.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine qrf_solve_single_rhs_in_place(this, b, flag)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining a single right-hand-side vector.
+The solution is returned in the first N elements of B, which must have
+MAX(M,N) elements.  Underdetermined systems require column pivoting.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='qr_factorization.html'>qr_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\qr_factorization.html">qr_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the M-element right-hand side.  On output, the N-element
+solution occupies the first N elements.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_multiple_rhs~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_multiple_rhs</strong> => cf_solve_multiple_rhs
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Solves the factored system with multiple right-hand-side vectors.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  function cf_solve_multiple_rhs(this, b, flag) result(rst)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining multiple right-hand-side vectors.
+The encapsulated matrix must be square; else, an 
+LA_MATRIX_NOT_SQUARE_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The right-hand-side matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:,:)</small>
+    </h4>
+    <p>The solution matrix.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_multiple_rhs_in_place~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_multiple_rhs_in_place</strong> => cf_solve_multiple_rhs_in_place
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Solves the factored system with multiple right-hand-side vectors.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine cf_solve_multiple_rhs_in_place(this, b, flag)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining multiple right-hand-side vectors.
+The encapsulated matrix must be square; else, an 
+LA_MATRIX_NOT_SQUARE_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the right-hand-side matrix <script type="math/tex">B</script>.  On output, the solution
+matrix <script type="math/tex">X</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_single_rhs~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_single_rhs</strong> => cf_solve_single_rhs
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Solves the factored system with a single right-hand-side vector.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  function cf_solve_single_rhs(this, b, flag) result(rst)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining a single right-hand-side vector.
+The encapsulated matrix must be square; else, an 
+LA_MATRIX_NOT_SQUARE_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>The right-hand-side vector.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=real64), allocatable, dimension(:)</small>
+    </h4>
+    <p>The solution vector.</p>
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-solve_single_rhs_in_place~2"></span>
+      <h3>
+          procedure, public ::
+  <strong>solve_single_rhs_in_place</strong> => cf_solve_single_rhs_in_place
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Solves the factored system with a single right-hand-side vector.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine cf_solve_single_rhs_in_place(this, b, flag)  
+</h3>
+
+  <p>Solves the linear system <script type="math/tex">A X = B </script> where <script type="math/tex">B</script>
+is a matrix defining a single right-hand-side vector.
+The encapsulated matrix must be square; else, an 
+LA_MATRIX_NOT_SQUARE_ERROR is returned.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              dimension(:)
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+                <p>On input, the right-hand-side vector <script type="math/tex">B</script>.  On output, the solution
+vector <script type="math/tex">X</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+          <div class="row">
+              <div class="card mt-3">
+    <div class="card-header codesum">
+      <span class="anchor" id="boundprocedure-update"></span>
+      <h3>
+          procedure, public ::
+  <strong>update</strong> => cf_update
+        
+      </h3>
+    </div>
+      <div class="card-body">
+        
+        <p>Updates the factorization.</p>
+      </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+                  <h3>
+    private  subroutine cf_update(this, a, upper, flag)  
+</h3>
+
+  <p>Updates the <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object with a new matrix.  The matrix
+is only stored, not factored; therefore a call to factor is still 
+required.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              class(<a href='cholesky_factorization.html'>cholesky_factorization</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>this</strong></td>
+            <td>
+                <p>The <a href="..\type\cholesky_factorization.html">cholesky_factorization</a> object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              real(kind=real64),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              dimension(:,:)
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+                <p>The matrix to factor.  A copy of this matrix is made and stored by
+the object; therefore, this matrix is not altered.  Also, any
+existing factorization is destroyed by this routine.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              logical,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>upper</strong></td>
+            <td>
+                <p>Set to true if the upper factorization is to be computed 
+(<script type="math/tex">A = U^T U</script>); else, set to false to compute the lower 
+factorization (<script type="math/tex">A = L L^T</script>).  The default is true such that
+the upper factorization is computed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" ></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+                <p>An error flag.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+        </li>
+    </ul>
+  </div>
+
+          </div>
+      </section>
+
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col"><p>LINALG was developed by Jason Christopherson<br>&copy; 2026 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-05 06:48              </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>

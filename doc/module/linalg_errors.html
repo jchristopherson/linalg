@@ -74,7 +74,7 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title=" 0.1% of total for modules and submodules.">12 statements</a>
+                 title=" 0.2% of total for modules and submodules.">16 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -117,9 +117,13 @@
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_convergence_error">LA_CONVERGENCE_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_invalid_input_error">LA_INVALID_INPUT_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_invalid_operation_error">LA_INVALID_OPERATION_ERROR</a>
+            <a class="list-group-item" href="../module/linalg_errors.html#variable-la_matrix_dimension_error">LA_MATRIX_DIMENSION_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_matrix_format_error">LA_MATRIX_FORMAT_ERROR</a>
+            <a class="list-group-item" href="../module/linalg_errors.html#variable-la_matrix_not_square_error">LA_MATRIX_NOT_SQUARE_ERROR</a>
+            <a class="list-group-item" href="../module/linalg_errors.html#variable-la_not_initialized_error">LA_NOT_INITIALIZED_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_no_error">LA_NO_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_out_of_memory_error">LA_OUT_OF_MEMORY_ERROR</a>
+            <a class="list-group-item" href="../module/linalg_errors.html#variable-la_positive_definite_error">LA_POSITIVE_DEFINITE_ERROR</a>
             <a class="list-group-item" href="../module/linalg_errors.html#variable-la_singular_matrix_error">LA_SINGULAR_MATRIX_ERROR</a>
         </div>
       </div>
@@ -183,7 +187,7 @@
         <tr>
             <td>
               <span class="anchor" id="variable-la_array_size_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -200,7 +204,7 @@ parameter
         <tr>
             <td>
               <span class="anchor" id="variable-la_convergence_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -217,7 +221,7 @@ parameter
         <tr>
             <td>
               <span class="anchor" id="variable-la_invalid_input_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -234,7 +238,7 @@ parameter
         <tr>
             <td>
               <span class="anchor" id="variable-la_invalid_operation_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -250,8 +254,25 @@ parameter
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-la_matrix_dimension_error"></span>
+              integer,
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>LA_MATRIX_DIMENSION_ERROR</strong></td>
+<td> =</td>
+                <td>109</td>
+            <td>
+                <p>An error resulting from disagreement in matrix dimensions.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-la_matrix_format_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -267,8 +288,43 @@ parameter
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-la_matrix_not_square_error"></span>
+              integer,
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>LA_MATRIX_NOT_SQUARE_ERROR</strong></td>
+<td> =</td>
+                <td>108</td>
+            <td>
+                <p>An error resulting from passing a non-square matrix to a routine 
+expecting a square matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-la_not_initialized_error"></span>
+              integer,
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>LA_NOT_INITIALIZED_ERROR</strong></td>
+<td> =</td>
+                <td>110</td>
+            <td>
+                <p>An error resulting from trying to call an uninitialized object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-la_no_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -285,7 +341,7 @@ parameter
         <tr>
             <td>
               <span class="anchor" id="variable-la_out_of_memory_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -301,8 +357,25 @@ parameter
         </tr>
         <tr>
             <td>
+              <span class="anchor" id="variable-la_positive_definite_error"></span>
+              integer,
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>LA_POSITIVE_DEFINITE_ERROR</strong></td>
+<td> =</td>
+                <td>111</td>
+            <td>
+                <p>An error resulting from a non-positive definite matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
               <span class="anchor" id="variable-la_singular_matrix_error"></span>
-              integer(kind=int32),
+              integer,
             </td>
               <td>public,</td>
             <td>
@@ -345,7 +418,7 @@ parameter
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

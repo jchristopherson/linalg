@@ -74,20 +74,20 @@
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip"
                  data-bs-placement="bottom" data-html="true"
-                 title="<p> 0.0% of total for procedures.</p>Including implementation: 34 statements,  0.1% of total for procedures.">4 statements</a>
+                 title="<p> 0.0% of total for procedures.</p>Including implementation: 9 statements,  0.0% of total for procedures.">3 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/linalg_sparse.f90"> Source File</a>
+              <a href="../src/linalg_types.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_sparse.f90.html'>linalg_sparse.f90</a></li>
-                <li class="breadcrumb-item"><a href='..\module\linalg_sparse.html'>linalg_sparse</a></li>
+                <li class="breadcrumb-item"><a href='..\sourcefile\linalg_types.f90.html'>linalg_types.f90</a></li>
+                <li class="breadcrumb-item"><a href='..\module\linalg_types.html'>linalg_types</a></li>
             <li class="breadcrumb-item active" aria-current="page">size</li>
           </ol>
         </nav>
@@ -131,8 +131,7 @@
       </a>
       <div id="modprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../interface/size.html#moduleprocedure-csr_size">csr_size</a>
-            <a class="list-group-item" href="../interface/size.html#moduleprocedure-msr_size">msr_size</a>
+            <a class="list-group-item" href="../interface/size.html#moduleprocedure-mf_size">mf_size</a>
         </div>
       </div>
     </div>
@@ -152,10 +151,10 @@
 
         <h2>Module Procedures</h2>
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-csr_size"></span> <h3>private pure function csr_size(x, dim) result(rst)  
+    <div class="card-header codesum"><span class="anchor" id="proc-mf_size"></span> <h3>private pure function mf_size(x, dim) result(rst)  
 </h3></div>
     <div class="card-body">
-        <p>Returns the size of the matrix along the specified dimension.</p>
+        
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -170,8 +169,8 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~85"></span>
-              class(<a href='..\type\csr_matrix.html'>csr_matrix</a>),
+              <span class="anchor" id="variable-x~5"></span>
+              class(<a href='..\type\matrix_factorization.html'>matrix_factorization</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -180,72 +179,13 @@
             <td>::</td>
             <td><strong>x</strong></td>
             <td>
-                <p>The CSR matrix object.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dim"></span>
-              integer(kind=int32),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dim</strong></td>
-            <td>
-                <p>The dimension to return the size of.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-    <h4>
-    Return Value
-    <small>integer(kind=int32)</small>
-    </h4>
-    <p>The size of the matrix along the specified dimension.</p>
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-msr_size"></span> <h3>private pure function msr_size(x, dim) result(rst)  
-</h3></div>
-    <div class="card-body">
-        <p>Returns the size of the specified dimension of an MSR matrix.</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~89"></span>
-              class(<a href='..\type\msr_matrix.html'>msr_matrix</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>x</strong></td>
-            <td>
-                <p>The MSR matrix.</p>
+                
             </td>
         </tr>
         <tr>
             <td>
               <span class="anchor" id="variable-dim~2"></span>
-              integer(kind=int32),
+              integer,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -254,7 +194,7 @@
             <td>::</td>
             <td><strong>dim</strong></td>
             <td>
-                <p>The dimension to return the size of.</p>
+                
             </td>
         </tr>
     </tbody>
@@ -262,9 +202,9 @@
 
     <h4>
     Return Value
-    <small>integer(kind=int32)</small>
+    <small>integer</small>
     </h4>
-    <p>The size of the specified dimension.</p>
+    
 
     </div>
   </div>
@@ -283,7 +223,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-09-11 05:40              </p>
+ on 2026-11-05 06:48              </p>
           </div>
         </div>
         <br>

@@ -1,6 +1,10 @@
 # linalg
 A linear algebra library that provides a user-friendly interface to several BLAS and LAPACK routines.  The examples below provide an illustration of just how simple it is to perform a few common linear algebra operations.
 
+## Status
+![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
+[![Actions Status](https://github.com/jchristopherson/linalg/workflows/fpm/badge.svg)](https://github.com/jchristopherson/linalg/actions)
+
 ## Capabilities
 
 | Area | Capabilities |
@@ -13,12 +17,55 @@ A linear algebra library that provides a user-friendly interface to several BLAS
 | Factorization updates | QR and Cholesky updates and downdates |
 | Build options | CMake or FPM; CMake can fetch missing external dependencies |
 
-## Status
-![Build Status](https://github.com/jchristopherson/linalg/actions/workflows/cmake.yml/badge.svg)
-[![Actions Status](https://github.com/jchristopherson/linalg/workflows/fpm/badge.svg)](https://github.com/jchristopherson/linalg/actions)
-
 ## Documentation
 The documentation can be found [here](https://jchristopherson.github.io/linalg/).
+
+## Getting Started
+
+Build and install the library with [CMake](#cmake), or build it with
+[FPM](#fpm). For FPM projects, add LINALG as a dependency in `fpm.toml` as
+shown below. CMake can fetch missing external dependencies; with FPM, install
+BLAS, LAPACK, and ARPACK separately.
+
+Once LINALG is available to your project, import its public API with
+`use linalg`. For a first solve, see the [standard solution example](#standard-solution-example)
+or its [complete source](examples/linalg_lu_example.f90).
+
+## API Overview
+
+The `linalg` module re-exports the library's dense and sparse APIs. Many
+operations are provided as procedures (for example, `solve_least_squares_svd`),
+while factorizations can also be represented by types that expose factor and
+solve methods (for example, `lu_factorization`). This lets you factor a matrix
+once and reuse the factorization for multiple right-hand sides. The examples
+below show both styles; see the [API documentation](https://jchristopherson.github.io/linalg/)
+for argument details and additional routines.
+
+### Procedural and type-bound factorization APIs
+
+For dense LU, both styles can factor a matrix once and solve one or more
+right-hand sides. The procedural API returns the factors and pivot array for
+you to pass to `solve_lu`:
+
+```fortran
+call lu_factor(a, ipvt = ipvt, lu = factors)
+x = solve_lu(factors, ipvt, b)
+```
+
+The type-bound API keeps the factorization state in an object and exposes
+operations as methods:
+
+```fortran
+solver = lu_factorization(a)
+call solver%factor()
+x = solver%solve(b)
+```
+
+Choose the procedural form when you want explicit control over the factor
+arrays or need to pass them between procedures. Choose the type-bound form
+when you prefer the matrix and its factorization state to live together; it
+also offers methods such as `update`, `determinant`, and `inverse`. Both forms
+support solving multiple right-hand sides.
 
 ## Building LINALG
 ### CMake

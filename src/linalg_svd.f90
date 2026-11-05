@@ -475,7 +475,7 @@ pure subroutine svd_dbl(a, s, u, vt)
     real(real64), allocatable, target, dimension(:) :: w, sc
     real(real64), pointer, dimension(:) :: sptr
     real(real64), allocatable, dimension(:,:) :: ac
-    real(real64), dimension(1) :: temp
+    real(real64), dimension(1) :: temp, utemp, vttemp
 
     ! Initialization
     m = size(a, 1)
@@ -503,8 +503,21 @@ pure subroutine svd_dbl(a, s, u, vt)
     end if
 
     ! Workspace Query
-    call DGESVD(jobu, jobvt, m, n, ac, m, temp, temp, m, temp, n, temp, -1, &
-        flag)
+    if (present(u)) then
+        if (present(vt)) then
+            call DGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vt, n, temp, &
+                -1, flag)
+        else
+            call DGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vttemp, 1, &
+                temp, -1, flag)
+        end if
+    else if (present(vt)) then
+        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vt, n, temp, &
+            -1, flag)
+    else
+        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vttemp, 1, &
+            temp, -1, flag)
+    end if
     lwork = int(temp(1))
     allocate(w(lwork))
 
@@ -513,13 +526,13 @@ pure subroutine svd_dbl(a, s, u, vt)
         call DGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vt, n, w, lwork, &
             flag)
     else if (present(u) .and. .not.present(vt)) then
-        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, temp, n, w, &
+        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vttemp, 1, w, &
             lwork, flag)
     else if (.not.present(u) .and. present(vt)) then
-        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, temp, m, vt, n, w, &
+        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vt, n, w, &
             lwork, flag)
     else
-        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, temp, m, temp, n, w, &
+        call DGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vttemp, 1, w, &
             lwork, flag)
     end if
 
@@ -554,8 +567,7 @@ pure subroutine svd_cmplx(a, s, u, vt)
     integer :: m, n, mn, lwork, flag, lrwork
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: ac
-    complex(real64), dimension(1) :: temp
-    real(real64), dimension(1) :: rtemp
+    complex(real64), dimension(1) :: temp, utemp, vttemp
     real(real64), allocatable, target, dimension(:) :: rw, sc
     real(real64), pointer, dimension(:) :: sptr
 
@@ -586,23 +598,37 @@ pure subroutine svd_cmplx(a, s, u, vt)
     end if
 
     ! Workspace Query
-    call ZGESVD(jobu, jobvt, m, n, ac, m, rtemp, temp, m, temp, n, temp, -1, &
-        rtemp, flag)
+    allocate(rw(lrwork))
+    if (present(u)) then
+        if (present(vt)) then
+            call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vt, n, temp, &
+                -1, rw, flag)
+        else
+            call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vttemp, 1, &
+                temp, -1, rw, flag)
+        end if
+    else if (present(vt)) then
+        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vt, n, temp, &
+            -1, rw, flag)
+    else
+        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vttemp, 1, &
+            temp, -1, rw, flag)
+    end if
     lwork = int(temp(1))
-    allocate(w(lwork), rw(lrwork))
+    allocate(w(lwork))
 
     ! Call ZGESVD
     if (present(u) .and. present(vt)) then
         call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vt, n, w, lwork, &
             rw, flag)
     else if (present(u) .and. .not.present(vt)) then
-        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, temp, n, w, &
+        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, u, m, vttemp, 1, w, &
             lwork, rw, flag)
     else if (.not.present(u) .and. present(vt)) then
-        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, temp, m, vt, n, w, &
+        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vt, n, w, &
             lwork, rw, flag)
     else
-        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, temp, m, temp, n, w, &
+        call ZGESVD(jobu, jobvt, m, n, ac, m, sptr, utemp, 1, vttemp, 1, w, &
             lwork, rw, flag)
     end if
 

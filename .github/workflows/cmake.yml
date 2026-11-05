@@ -51,11 +51,11 @@ jobs:
             shared: true
           - os: windows-latest
             compiler: gcc
-            version: '14'
+            version: '15'
             shared: false
           - os: windows-latest
             compiler: gcc
-            version: '14'
+            version: '15'
             shared: true
 
     steps:

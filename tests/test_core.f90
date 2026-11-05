@@ -3,7 +3,7 @@
 
 ! A module containing routines to support basic testing operations.
 module test_core
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     implicit none
     private
     public :: is_mtx_equal
@@ -34,7 +34,7 @@ function is_mtx_equal_double(x, y, tol) result(check)
     logical :: check
 
     ! Local Variables
-    integer(int32) :: i, j, m, n
+    integer :: i, j, m, n
 
     ! Initialization
     m = size(x, 1)
@@ -64,7 +64,7 @@ function is_vec_equal_double(x, y, tol) result(check)
     logical :: check
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
 
     ! Initialization
     n = size(x)
@@ -86,11 +86,11 @@ end function
 ! ------------------------------------------------------------------------------
 function is_vec_equal_i32(x, y) result(check)
     ! Arguments
-    integer(int32), intent(in), dimension(:) :: x, y
+    integer, intent(in), dimension(:) :: x, y
     logical :: check
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
 
     ! Initialization
     n = size(x)
@@ -117,7 +117,7 @@ function is_mtx_equal_complex(x, y, tol) result(check)
     logical :: check
 
     ! Local Variables
-    integer(int32) :: i, j, m, n
+    integer :: i, j, m, n
 
     ! Initialization
     m = size(x, 1)
@@ -148,7 +148,7 @@ function is_vec_equal_complex(x, y, tol) result(check)
     logical :: check
 
     ! Local Variables
-    integer(int32) :: i, n
+    integer :: i, n
 
     ! Initialization
     n = size(x)

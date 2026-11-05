@@ -3,9 +3,10 @@
 
 ! Tests for QR factorization/solution operations.
 module test_qr
-    use, intrinsic :: iso_fortran_env, only : int32, real64
+    use, intrinsic :: iso_fortran_env, only : real64
     use test_core
     use linalg
+    use linalg_errors, only : LA_NO_ERROR
     use fortran_test_helper
     implicit none
 contains
@@ -14,13 +15,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -50,13 +51,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -86,13 +87,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -122,14 +123,14 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
-        integer(int32) :: i, j
+        integer :: i, j
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -159,13 +160,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
         real(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -195,13 +196,13 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_factor_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), allocatable, dimension(:,:) :: q1, q2, r1, r2, p2
-        integer(int32), dimension(n) :: pvt2
+        integer, dimension(n) :: pvt2
         logical :: rst
 
         ! Initialization
@@ -228,14 +229,227 @@ contains
         end if
     end function
 
+! ------------------------------------------------------------------------------
+    function test_qr_factorization_type() result(rst)
+        integer, parameter :: n = 3
+        integer, parameter :: m_tall = 4
+        integer, parameter :: m_wide = 2
+        real(real64), dimension(n, n), parameter :: a = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            2.0d0, 5.0d0, 7.0d0, &
+            3.0d0, 7.0d0, 11.0d0], [n, n])
+        real(real64), dimension(n, 2), parameter :: x_expected = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            4.0d0, 5.0d0, 6.0d0], [n, 2])
+        real(real64), dimension(m_tall, n), parameter :: a_tall = reshape([ &
+            1.0d0, 0.0d0, 0.0d0, 0.0d0, &
+            0.0d0, 1.0d0, 0.0d0, 0.0d0, &
+            0.0d0, 0.0d0, 1.0d0, 1.0d0], [m_tall, n])
+        real(real64), dimension(n, 2), parameter :: x_tall_expected = reshape([ &
+            1.0d0, 2.0d0, 3.0d0, &
+            4.0d0, 5.0d0, 6.0d0], [n, 2])
+        real(real64), dimension(m_wide, n), parameter :: a_wide = reshape([ &
+            1.0d0, 0.0d0, &
+            0.0d0, 1.0d0, &
+            1.0d0, 1.0d0], [m_wide, n])
+        real(real64), dimension(n, 2), parameter :: x_wide_expected = reshape([ &
+            0.0d0, 1.0d0, 1.0d0, &
+            1.0d0, 0.0d0, 1.0d0], [n, 2])
+        real(real64), dimension(m_wide, n), parameter :: a_rank_deficient = reshape([ &
+            1.0d0, 2.0d0, &
+            2.0d0, 4.0d0, &
+            3.0d0, 6.0d0], [m_wide, n])
+        real(real64), dimension(n, 2), parameter :: x_rank_deficient_expected = reshape([ &
+            1.0d0/14.0d0, 2.0d0/14.0d0, 3.0d0/14.0d0, &
+            2.0d0/14.0d0, 4.0d0/14.0d0, 6.0d0/14.0d0], [n, 2])
+
+        type(qr_factorization) :: fac, fac_pvt, fac_multiple_rhs, fac_single_rhs
+        type(qr_factorization) :: fac_multiple_in_place, fac_single_in_place
+        type(qr_factorization) :: fac_multiple_pvt_in_place, fac_single_pvt_in_place
+        type(qr_factorization) :: fac_tall_in_place, fac_tall_pvt_in_place
+        type(qr_factorization) :: fac_wide_pvt_in_place
+        type(qr_factorization) :: fac_rank_deficient_pvt_in_place
+        real(real64), allocatable, dimension(:,:) :: x_multiple, x_multiple_pvt
+        real(real64), allocatable, dimension(:,:) :: x_tall_solved, x_wide_solved
+        real(real64), allocatable, dimension(:) :: x_single, x_single_pvt
+        real(real64), dimension(n, 2) :: b_multiple
+        real(real64), dimension(n) :: b_single
+        real(real64), dimension(n, 2) :: b_multiple_in_place
+        real(real64), dimension(n) :: b_single_in_place
+        real(real64), dimension(m_tall, 2) :: b_tall_in_place
+        real(real64), dimension(n, 2) :: b_wide_in_place
+        real(real64), dimension(n) :: b_wide_single_in_place
+        real(real64), dimension(n, 2) :: b_rank_deficient_in_place
+        integer :: flag
+        logical :: rst
+
+        rst = .true.
+        b_multiple = matmul(a, x_expected)
+        b_single = matmul(a, x_expected(:, 1))
+
+        fac = qr_factorization(a)
+        if (fac%size(1) /= n .or. fac%size(2) /= n .or. fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Initialization"
+        end if
+
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Factor"
+        end if
+        call fac%factor(flag)
+        if (flag /= LA_NO_ERROR .or. .not.fac%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Repeated Factor"
+        end if
+
+        fac_multiple_rhs = qr_factorization(a)
+        x_multiple = fac_multiple_rhs%solve(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_multiple, x_expected, REAL64_TOL) .or. &
+            .not.fac_multiple_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Multiple RHS Solve"
+        end if
+
+        fac_single_rhs = qr_factorization(a)
+        x_single = fac_single_rhs%solve(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_single, x_expected(:,1), REAL64_TOL) .or. &
+            .not.fac_single_rhs%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Single RHS Solve"
+        end if
+
+        fac_pvt = qr_factorization(a, pvt = .true.)
+        x_multiple_pvt = fac_pvt%solve(b_multiple, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_multiple_pvt, x_expected, REAL64_TOL) .or. &
+            .not.fac_pvt%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Multiple RHS Solve"
+        end if
+
+        x_single_pvt = fac_pvt%solve(b_single, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_single_pvt, x_expected(:,1), REAL64_TOL) .or. &
+            .not.fac_pvt%is_factored()) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Single RHS Solve"
+        end if
+
+        fac_multiple_in_place = qr_factorization(a)
+        b_multiple_in_place = b_multiple
+        call fac_multiple_in_place%solve_in_place(b_multiple_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_multiple_in_place, x_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Multiple RHS In-Place Solve"
+        end if
+
+        fac_single_in_place = qr_factorization(a)
+        b_single_in_place = b_single
+        call fac_single_in_place%solve_in_place(b_single_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_single_in_place, x_expected(:,1), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Single RHS In-Place Solve"
+        end if
+
+        fac_multiple_pvt_in_place = qr_factorization(a, pvt = .true.)
+        b_multiple_in_place = b_multiple
+        call fac_multiple_pvt_in_place%solve_in_place(b_multiple_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_multiple_in_place, x_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Multiple RHS In-Place Solve"
+        end if
+
+        fac_single_pvt_in_place = qr_factorization(a, pvt = .true.)
+        b_single_in_place = b_single
+        call fac_single_pvt_in_place%solve_in_place(b_single_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_single_in_place, x_expected(:,1), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Single RHS In-Place Solve"
+        end if
+
+        b_tall_in_place = matmul(a_tall, x_tall_expected)
+        fac_tall_in_place = qr_factorization(a_tall)
+        call fac_tall_in_place%solve_in_place(b_tall_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_tall_in_place(1:n,:), x_tall_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Tall In-Place Solve"
+        end if
+
+        b_tall_in_place = matmul(a_tall, x_tall_expected)
+        fac_tall_pvt_in_place = qr_factorization(a_tall, pvt = .true.)
+        call fac_tall_pvt_in_place%solve_in_place(b_tall_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_tall_in_place(1:n,:), x_tall_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Tall In-Place Solve"
+        end if
+
+        b_wide_in_place = 0.0d0
+        b_wide_in_place(1:m_wide,:) = matmul(a_wide, x_wide_expected)
+        fac_wide_pvt_in_place = qr_factorization(a_wide, pvt = .true.)
+        call fac_wide_pvt_in_place%solve_in_place(b_wide_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_wide_in_place, x_wide_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Wide Multiple RHS In-Place Solve"
+        end if
+
+        b_wide_single_in_place = 0.0d0
+        b_wide_single_in_place(1:m_wide) = matmul(a_wide, x_wide_expected(:,1))
+        call fac_wide_pvt_in_place%solve_in_place(b_wide_single_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_wide_single_in_place, x_wide_expected(:,1), REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Wide Single RHS In-Place Solve"
+        end if
+
+        b_rank_deficient_in_place = 0.0d0
+        b_rank_deficient_in_place(1:m_wide,:) = &
+            matmul(a_rank_deficient, x_rank_deficient_expected)
+        fac_rank_deficient_pvt_in_place = qr_factorization(a_rank_deficient, pvt = .true.)
+        call fac_rank_deficient_pvt_in_place%solve_in_place(&
+            b_rank_deficient_in_place, flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(b_rank_deficient_in_place, &
+                x_rank_deficient_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Pivoted Rank-Deficient In-Place Solve"
+        end if
+
+        x_tall_solved = fac_tall_in_place%solve(&
+            matmul(a_tall, x_tall_expected), flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_tall_solved, x_tall_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Tall Multiple RHS Solve Shape"
+        end if
+
+        x_wide_solved = fac_wide_pvt_in_place%solve(&
+            matmul(a_wide, x_wide_expected), flag)
+        if (flag /= LA_NO_ERROR .or. &
+            .not.is_mtx_equal(x_wide_solved, x_wide_expected, REAL64_TOL)) then
+            rst = .false.
+            print '(A)', "Test Failed: QR Factorization Type Wide Multiple RHS Solve"
+        end if
+    end function
+
 ! ******************************************************************************
 ! QR MULTIPLICATION TEST
 ! ------------------------------------------------------------------------------
     ! LEFT SIDE
     function test_qr_mult() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -280,8 +494,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -327,8 +541,8 @@ contains
     ! OVERDETERMINED - LEFT
     function test_qr_mult_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -373,8 +587,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -420,8 +634,8 @@ contains
     ! UNDERDETERMINED - LEFT
     function test_qr_mult_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, c1, c2, ans
@@ -466,8 +680,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a, c1, c2, ans
@@ -513,8 +727,8 @@ contains
     ! RIGHT SIDE
     function test_qr_mult_right() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -560,8 +774,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -608,8 +822,8 @@ contains
     ! OVERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -655,8 +869,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -703,8 +917,8 @@ contains
     ! UNDERDETERMINED - RIGHT SIDE
     function test_qr_mult_right_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -750,8 +964,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_right_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -798,8 +1012,8 @@ contains
     ! VECTOR
     function test_qr_mult_vector() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -845,8 +1059,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_mult_vector_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -894,9 +1108,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -940,8 +1154,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -985,9 +1199,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1031,8 +1245,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 60
+        integer, parameter :: n = 60
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1076,9 +1290,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1087,7 +1301,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1124,8 +1338,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1134,7 +1348,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1171,9 +1385,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1182,7 +1396,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1219,8 +1433,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 100
-        integer(int32), parameter :: n = 100
+        integer, parameter :: m = 100
+        integer, parameter :: n = 100
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1229,7 +1443,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1266,18 +1480,18 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
         real(real64), dimension(m, nrhs) :: b1, b2
         real(real64), allocatable, dimension(:) :: work
         real(real64) :: temp(1), rcond
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         real(real64), allocatable :: tau(:), qr(:,:), x2(:,:)
-        integer(int32) :: lwork, info, rnk
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1310,9 +1524,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1320,8 +1534,8 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau, x2
         real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1), rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1354,9 +1568,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1366,8 +1580,8 @@ contains
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1401,9 +1615,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_od_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1413,8 +1627,8 @@ contains
         real(real64), dimension(2 * n) :: rwork
         complex(real64) :: temp(1)
         real(real64) :: rcond
-        integer(int32), dimension(n) :: pvt
-        integer(int32) :: lwork, info, rnk
+        integer, dimension(n) :: pvt
+        integer :: lwork, info, rnk
         logical :: rst
 
         ! Initialization
@@ -1448,9 +1662,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1459,7 +1673,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1496,8 +1710,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 50
-        integer(int32), parameter :: n = 60
+        integer, parameter :: m = 50
+        integer, parameter :: n = 60
 
         ! Local Variables
         real(real64), dimension(m, n) :: a
@@ -1506,7 +1720,7 @@ contains
         real(real64), dimension(m) :: b2, ans2
         real(real64), dimension(n) :: x2
         real(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1543,9 +1757,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 5
-        integer(int32), parameter :: n = 6
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 5
+        integer, parameter :: n = 6
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
@@ -1554,7 +1768,7 @@ contains
         complex(real64), dimension(m) :: b2, ans2
         complex(real64), dimension(n) :: x2
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1591,15 +1805,15 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_pivot_ud_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 5
-        integer(int32), parameter :: n = 6
+        integer, parameter :: m = 5
+        integer, parameter :: n = 6
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a
         complex(real64), dimension(m) :: b, ans
         complex(real64), dimension(n) :: x
         complex(real64), allocatable :: tau(:), qr(:,:)
-        integer(int32), dimension(n) :: pvt
+        integer, dimension(n) :: pvt
         logical :: rst
 
         ! Initialization
@@ -1625,9 +1839,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1635,7 +1849,7 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau
         real(real64), allocatable, dimension(:,:) :: qr, x2
         real(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1665,9 +1879,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         real(real64), dimension(m, n) :: a1, a2
@@ -1675,7 +1889,7 @@ contains
         real(real64), allocatable, dimension(:) :: work, tau, x2
         real(real64), allocatable, dimension(:,:) :: qr
         real(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1705,9 +1919,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 20
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 20
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1715,7 +1929,7 @@ contains
         complex(real64), allocatable, dimension(:) :: work, tau
         complex(real64), allocatable, dimension(:,:) :: qr, x2
         complex(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1745,9 +1959,9 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_solve_no_pivot_od_cmplx_vec() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 200
-        integer(int32), parameter :: n = 100
-        integer(int32), parameter :: nrhs = 1
+        integer, parameter :: m = 200
+        integer, parameter :: n = 100
+        integer, parameter :: nrhs = 1
 
         ! Local Variables
         complex(real64), dimension(m, n) :: a1, a2
@@ -1755,7 +1969,7 @@ contains
         complex(real64), allocatable, dimension(:) :: work, tau, x2
         complex(real64), allocatable, dimension(:,:) :: qr
         complex(real64) :: temp(1)
-        integer(int32) :: lwork, info
+        integer :: lwork, info
         logical :: rst
 
         ! Initialization
@@ -1787,8 +2001,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_update_1() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
 
         ! Local Variables
         real(real64), dimension(m, n) :: a, a1
@@ -1823,8 +2037,8 @@ contains
 ! ------------------------------------------------------------------------------
     function test_qr_update_1_cmplx() result(rst)
         ! Parameters
-        integer(int32), parameter :: m = 60
-        integer(int32), parameter :: n = 50
+        integer, parameter :: m = 60
+        integer, parameter :: n = 50
         complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
         ! Local Variables

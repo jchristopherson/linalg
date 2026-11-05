@@ -35,7 +35,7 @@ include(FetchContent)
 
 find_package(BLAS)
 find_package(LAPACK)
-find_package(arpackng)
+find_package(arpackng QUIET)
 
 if (NOT BLAS_FOUND OR NOT LAPACK_FOUND)
   message(STATUS "BLAS/LAPACK could not be found.  A reference version will be employed.")

@@ -17,7 +17,7 @@
 !
 ! Notice: x1" = the second time derivative of x1.
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
@@ -32,7 +32,7 @@ program example
     real(real64), parameter :: k4 = 5.0d6
 
     ! Local Variables
-    integer(int32) :: i, j
+    integer :: i, j
     real(real64) :: m(3,3), k(3,3), natFreq(3)
     complex(real64), allocatable :: vals(:), modeShapes(:,:)
 

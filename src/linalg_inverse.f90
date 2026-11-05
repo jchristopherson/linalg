@@ -2,7 +2,7 @@
 ! SPDX-License-Identifier: MIT
 module linalg_inverse
     !! Provides matrix inverse and Moore-Penrose pseudoinverse routines.
-    use iso_fortran_env, only : int32, real64
+    use iso_fortran_env, only : real64
     use lapack
     use blas
     use linalg_errors
@@ -32,8 +32,8 @@ pure function mtx_inverse_dbl(a) result(rst)
         !! The N-by-N inverted matrix.
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer :: n, lwork, flag
+    integer, allocatable, dimension(:) :: ipvt
     real(real64) :: nan
     real(real64), allocatable, dimension(:) :: w
     real(real64), dimension(1) :: temp
@@ -76,8 +76,8 @@ pure function mtx_inverse_cmplx(a) result(rst)
     complex(real64), allocatable, dimension(:,:) :: rst
 
     ! Local Variables
-    integer(int32) :: n, lwork, flag
-    integer(int32), allocatable, dimension(:) :: ipvt
+    integer :: n, lwork, flag
+    integer, allocatable, dimension(:) :: ipvt
     real(real64) :: nan
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), dimension(1) :: temp
@@ -130,7 +130,7 @@ pure function mtx_pinverse_dbl(a, tol) result(ainv)
     real(real64), parameter :: one = 1.0d0
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, flag
+    integer :: i, m, n, mn, lwork, flag
     real(real64), allocatable, dimension(:,:) :: u, vt, ac
     real(real64), allocatable, dimension(:) :: w, s
     real(real64), dimension(1) :: temp
@@ -173,8 +173,8 @@ pure function mtx_pinverse_dbl(a, tol) result(ainv)
     ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**T by
     ! first computing inv(S) * U**T
     do i = 1, mn
-        if (s(i) < t) then
-            ss = s(i)
+        if (s(i) < t .or. s(i) == zero) then
+            ss = zero
         else
             ss = one / s(i)
         end if
@@ -202,12 +202,12 @@ pure function mtx_pinverse_cmplx(a, tol) result(ainv)
     complex(real64), parameter :: one = (1.0d0, 0.0d0)
 
     ! Local Variables
-    integer(int32) :: i, m, n, mn, lwork, flag, lrwork
+    integer :: i, m, n, mn, lwork, flag, lrwork
     real(real64), allocatable, dimension(:) :: rw, s
     complex(real64), allocatable, dimension(:) :: w
     complex(real64), allocatable, dimension(:,:) :: u, vt, ac
     complex(real64) :: temp(1), val
-    real(real64) :: ss, t, tref, tolcheck, rtemp(1)
+    real(real64) :: ss, t, tref, tolcheck
 
     ! Initialization
     m = size(a, 1)
@@ -216,12 +216,12 @@ pure function mtx_pinverse_cmplx(a, tol) result(ainv)
     tolcheck = dlamch('s')
     lrwork = 5 * mn
     allocate(ac(m, n), source = a)
+    allocate(rw(lrwork), s(mn), u(m, mn), vt(mn, n))
 
     ! Workspace Query
-    call ZGESVD('S', 'S', m, n, ac, m, rtemp, ac, m, ac, mn, temp, -1, &
-        rtemp, flag)
+    call ZGESVD('S', 'S', m, n, ac, m, s, u, m, vt, mn, temp, -1, rw, flag)
     lwork = int(temp(1), int32)
-    allocate(w(lwork), rw(lrwork), s(mn), u(m, mn), vt(mn, n), ainv(n, m))
+    allocate(w(lwork), ainv(n, m))
 
     ! Compute the SVD of A
     call ZGESVD('S', 'S', m, n, ac, m, s, u, m, vt, mn, w, lwork, rw, flag)
@@ -248,8 +248,8 @@ pure function mtx_pinverse_cmplx(a, tol) result(ainv)
     ! Compute the pseudoinverse such that pinv(A) = V * inv(S) * U**H by
     ! first computing inv(S) * U**H
     do i = 1, mn
-        if (s(i) < t) then
-            ss = s(i)
+        if (s(i) < t .or. s(i) == 0.0d0) then
+            ss = 0.0d0
         else
             ss = 1.0d0 / s(i)
         end if

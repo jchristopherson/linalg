@@ -4,15 +4,14 @@
 ! Example Source: 
 ! https://www.mathworks.com/help/matlab/ref/lu.html?s_tid=srchtitle
 program example
-    use iso_fortran_env, only : real64, int32
+    use iso_fortran_env, only : real64
     use linalg
     implicit none
 
     ! Local Variables
     real(real64) :: a(3,3), b(3), x(3)
-    real(real64), allocatable :: lu(:,:)
-    integer(int32) :: i
-    integer(int32), allocatable :: pvt(:)
+    integer :: i
+    type(lu_factorization) :: lu
 
     ! Build the 3-by-3 matrix A.
     !     | 1   2   3 |
@@ -33,11 +32,10 @@ program example
     ! x = | -2/3 |
     !     |   0  |
 
-    ! Compute the LU factorization
-    call lu_factor(a, ipvt = pvt, lu = lu)
-
-    ! Compute the solution.  The results overwrite b.
-    x = solve_lu(lu, pvt, b)
+    ! Compute the LU factorization and solve
+    lu = lu_factorization(a)
+    call lu%factor()
+    x = lu%solve(b)
 
     ! Display the results.
     print '(A)', "LU Solution: X = "

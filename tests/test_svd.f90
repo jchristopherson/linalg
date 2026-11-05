@@ -683,18 +683,25 @@ contains
     ! ------------------------------------------------------------------------------
     function check_complex_orthogonality(u, vt) result(passed)
         complex(real64), intent(in) :: u(:,:), vt(:,:)
-        complex(real64) :: gram(size(u,2),size(u,2)), identity(size(u,2),size(u,2))
+        complex(real64) :: gram_u(size(u,2),size(u,2))
+        complex(real64) :: gram_v(size(vt,1),size(vt,1))
+        complex(real64) :: identity_u(size(u,2),size(u,2))
+        complex(real64) :: identity_v(size(vt,1),size(vt,1))
         logical :: passed
         integer :: i
 
-        identity = (0.0_real64, 0.0_real64)
-        do i = 1, size(identity,1)
-            identity(i,i) = (1.0_real64, 0.0_real64)
+        identity_u = (0.0_real64, 0.0_real64)
+        do i = 1, size(identity_u,1)
+            identity_u(i,i) = (1.0_real64, 0.0_real64)
         end do
-        gram = matmul(transpose(conjg(u)), u)
-        passed = assert(gram, identity, tol = REAL64_TOL)
-        gram = matmul(vt, transpose(conjg(vt)))
-        passed = passed .and. assert(gram, identity, tol = REAL64_TOL)
+        identity_v = (0.0_real64, 0.0_real64)
+        do i = 1, size(identity_v,1)
+            identity_v(i,i) = (1.0_real64, 0.0_real64)
+        end do
+        gram_u = matmul(transpose(conjg(u)), u)
+        passed = assert(gram_u, identity_u, tol = REAL64_TOL)
+        gram_v = matmul(vt, transpose(conjg(vt)))
+        passed = passed .and. assert(gram_v, identity_v, tol = REAL64_TOL)
     end function
 
     ! ------------------------------------------------------------------------------

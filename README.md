@@ -95,7 +95,7 @@ linalg = { git = "https://github.com/jchristopherson/linalg" }
 ```
 
 ## Standard Solution Example
-This example solves a normally defined system of 3 equations of 3 unknowns.
+This example solves a normally defined system of N equations of N unknowns.
 
 Full example: [examples/linalg_lu_example.f90](examples/linalg_lu_example.f90).
 
@@ -108,7 +108,7 @@ x = lu%solve(b)
 ```
 
 ## Overdetermined System Example
-This example solves an overdetermined system of 3 equations of 2 unknowns.
+This example solves an overdetermined system of M equations of N unknowns.
 
 Full example: [examples/linalg_od_example.f90](examples/linalg_od_example.f90).
 
